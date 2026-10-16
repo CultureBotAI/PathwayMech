@@ -186,12 +186,38 @@ class SiteError(ValueError):
     """The records cannot be rendered to one unambiguous site."""
 
 
+def _record_facets(record: object) -> tuple[str, list[str], list[str]]:
+    kind = record_kind(record)
+    taxa = sorted({
+        (taxon.get("label") or taxon["id"]).strip()
+        for taxon in getattr(record, "taxa", [])
+        if (taxon.get("label") or taxon.get("id"))
+    })
+    grounding: list[str] = []
+    has_protein = any(
+        str(p.get("id", "")).startswith("UniProtKB:") or p.get("category") in {"protein", "gene_product"}
+        for p in getattr(record, "participants", [])
+    )
+    if has_protein:
+        grounding.append("protein-grounded")
+    if getattr(record, "reaction_mechanisms", []):
+        grounding.append("reaction-mechanisms")
+    if getattr(record, "gene_clusters", []):
+        grounding.append("gene-clusters")
+    if getattr(record, "mechanistic_edges", []):
+        grounding.append("curated-edges")
+    return kind, taxa, grounding
+
+
 def render_site(records: list, source_paths: dict[str, str] | None = None,
-                histories: dict[str, list[dict]] | None = None) -> dict[str, str]:
+                histories: dict[str, list[dict]] | None = None,
+                *, root: Path = ROOT) -> dict[str, str]:
     """Every file the renderer owns under pages/, keyed by its path there."""
     files: dict[str, str] = {}
     claimed: dict[str, str] = {}
     rows = []
+    all_kinds: set[str] = set()
+    taxon_counts: dict[str, int] = {}
     for record in sorted(records, key=lambda r: (plain_label(r.label).casefold(), r.id)):
         slug = _slug(record.id)
         # Compared without case: on a case-insensitive filesystem two slugs that
@@ -201,9 +227,22 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
             raise SiteError(
                 f"{other} and {record.id} both render to pages/records/{slug}.html"
             )
+        kind, taxa, grounding = _record_facets(record)
+        all_kinds.add(kind)
+        for t in taxa:
+            taxon_counts[t] = taxon_counts.get(t, 0) + 1
         search = html.escape(f"{plain_label(record.label)} {record.id}", quote=True)
+        label_attr = html.escape(plain_label(record.label).casefold(), quote=True)
+        id_attr = html.escape(record.id, quote=True)
+        edge_count = len(getattr(record, "mechanistic_edges", []))
+        type_attr = html.escape(kind, quote=True)
+        taxa_attr = html.escape("|".join(taxa), quote=True)
+        grounding_attr = html.escape("|".join(grounding), quote=True)
         rows.append(
-            f'<li data-search="{search}"><a href="records/{slug}.html">'
+            f'<li data-search="{search}" data-label="{label_attr}" data-id="{id_attr}" '
+            f'data-edges="{edge_count}" data-type="{type_attr}" '
+            f'data-taxa="{taxa_attr}" data-grounding="{grounding_attr}">'
+            f'<a href="records/{slug}.html">'
             f'<strong>{label_html(record.label)}</strong>'
             f"<span>{html.escape(record.id)} — {record_kind(record)}</span></a></li>"
         )
@@ -212,11 +251,24 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
             record, source_path, (histories or {}).get(source_path, [])
         )
 
+    sorted_kinds = sorted(all_kinds)
+    sorted_taxa = [
+        t for t, _ in sorted(taxon_counts.items(), key=lambda kv: (-kv[1], kv[0].casefold()))
+    ]
     browse_body = "\n".join(rows) if rows else "<p>No curated pathway records yet.</p>"
     files["browse.html"] = _page(
         "PathwayMech records",
-        _browse_controls() + f'<ul class="record-list" id="pathway-list">{browse_body}</ul>'
+        '<nav class="breadcrumb" aria-label="Breadcrumb">'
+        '<a href="index.html">PathwayMech</a> <span aria-hidden="true">/</span> '
+        '<span aria-current="page">Browse pathways</span></nav>'
+        '<div class="browse-layout">'
+        + _browse_controls(sorted_kinds, sorted_taxa)
+        + '<div class="browse-results">'
+        + f'<ul class="record-list" id="pathway-list">{browse_body}</ul>'
+        + "</div></div>"
     )
+    files["map.html"] = _map_page(records, root=root)
+    files["sequence-map.html"] = _sequence_map_page(records, root=root)
     exports = render_kgx(records)
     fingerprint = hashlib.sha256("".join(exports.values()).encode()).hexdigest()
     for name, text in exports.items():
@@ -255,9 +307,17 @@ def _home_page(records: list, version: str = "") -> str:
       <h1 id="home-title">PathwayMech</h1>
       <p class="home-tagline">Explore microbial pathways, their molecular participants,
         and the evidence behind their mechanistic connections.</p>
+      <form class="hero-search" action="browse.html" method="get" role="search">
+        <label class="visually-hidden" for="hero-search-input">Search pathways by name, organism, or identifier</label>
+        <input id="hero-search-input" name="q" type="search"
+               placeholder="Search {len(records):,} pathways by name, organism, reaction, or ID (e.g. methanogenesis, MetaCyc)...">
+        <button type="submit">Search pathways</button>
+      </form>
       <div class="home-actions">
         <a class="home-button" href="browse.html">Browse pathways
           <span aria-hidden="true">→</span></a>
+        <a class="home-button home-button-secondary" href="map.html">Text embedding map</a>
+        <a class="home-button home-button-secondary" href="sequence-map.html">Sequence map (ESM-2 pLM)</a>
         <a class="home-button home-button-secondary"
            href="https://github.com/CultureBotAI/PathwayMech">View on GitHub</a>
       </div>
@@ -265,43 +325,70 @@ def _home_page(records: list, version: str = "") -> str:
     </section>
     <section class="home-explore" aria-labelledby="explore-title">
       <h2 id="explore-title">Explore PathwayMech</h2>
-      <p class="home-section-intro">Find a pathway, follow its evidence, or contribute a record.</p>
+      <p class="home-section-intro">Find a pathway, explore embedding spaces, follow its evidence, or contribute a record.</p>
       <div class="home-cards">
         <article class="home-card">
           <h3>Pathway browser</h3>
-          <p>Search the published collection by name or identifier. Open a record to inspect
-            its mechanistic edges, participants, and cited evidence.</p>
+          <p>Filter and search the published collection by pathway class, organism, protein grounding, or identifier.</p>
           <a href="browse.html">Browse pathway records <span aria-hidden="true">→</span></a>
         </article>
         <article class="home-card">
-          <h3>Source records</h3>
-          <p>Inspect the underlying YAML records, including pathway descriptions,
-            organism scope, molecular participants, and references.</p>
-          <a href="https://github.com/CultureBotAI/PathwayMech/tree/main/data/pathways">
-            Explore source records <span aria-hidden="true">→</span></a>
+          <h3>Corpus text embedding map</h3>
+          <p>Interactive 2D PaCMAP projection of BAAI/bge-large-en-v1.5 embeddings across all {len(records):,} pathway records.</p>
+          <a href="map.html">Explore text embedding map <span aria-hidden="true">→</span></a>
         </article>
         <article class="home-card">
-          <h3>Curation guide</h3>
-          <p>Learn how to describe a pathway, connect its mechanism, and attach evidence
-            to individual edges.</p>
-          <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/docs/CURATION.md">
-            Read the curation guide <span aria-hidden="true">→</span></a>
+          <h3>Sequence map (ESM-2 pLM)</h3>
+          <p>Explore protein language model (ESM-2 650M) representations for UniProt-grounded pathway proteins and centroids.</p>
+          <a href="sequence-map.html">Explore pLM sequence map <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="home-card">
+          <h3>Source records &amp; curation</h3>
+          <p>Inspect the underlying YAML records and learn how to attach mechanistic evidence to individual pathway edges.</p>
+          <a href="https://github.com/CultureBotAI/PathwayMech/tree/main/data/pathways">
+            Explore source records <span aria-hidden="true">→</span></a>
         </article>
       </div>
     </section>
     <section aria-labelledby="downloads-title">
-      <h2 id="downloads-title">Download the complete pathway graph</h2>
+      <h2 id="downloads-title">Downloads, schema &amp; complete pathway graph</h2>
       <p>KGX TSV exports from the same {len(records):,} pathway records shown here:
-        <a href="downloads/nodes.tsv" download>All nodes (TSV)</a> and
-        <a href="downloads/edges.tsv" download>All edges (TSV)</a>.
+        <a href="downloads/nodes.tsv" download>All nodes (TSV)</a>,
+        <a href="downloads/edges.tsv" download>All edges (TSV)</a>,
+        <a href="pathway_index.json" download>Pathway index (JSON)</a>, and
         <a href="downloads/manifest.json">Version, row counts and file checksums</a>.</p>
+      <p><strong>LinkML Schema &amp; Data Model:</strong>
+        <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/src/pathwaymech/schema/pathwaymech.yaml">PathwayMech LinkML schema (<code>pathwaymech.yaml</code>)</a> ·
+        <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/src/pathwaymech/schema/mech_shared.yaml">Shared X-Mech primitives (<code>mech_shared.yaml</code>)</a> ·
+        <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/src/pathwaymech/schema/history.yaml">Curation history schema (<code>history.yaml</code>)</a> ·
+        <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/conf/sources.yaml">Source authority registry (<code>sources.yaml</code>)</a> ·
+        <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/data/embeddings/corpus_map.json">Corpus text embedding coordinates (JSON)</a> ·
+        <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/data/embeddings/sequence_map.json">ESM-2 sequence embedding coordinates (JSON)</a>.</p>
       <p>Graph version: <code>{version or "See download manifest"}</code>.
         Data: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>;
         upstream source terms still apply.</p>
     </section>
     <footer class="home-footer">Part of the CultureBotAI Mech knowledge bases.
       <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a>
-    </footer>"""
+    </footer>
+    <script>
+    (function () {{
+      try {{
+        var saved = localStorage.getItem('mech-theme');
+        if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+      }} catch (e) {{}}
+      var btn = document.getElementById('theme-toggle');
+      if (btn) {{
+        btn.addEventListener('click', function () {{
+          var cur = document.documentElement.getAttribute('data-theme');
+          var isDark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var next = isDark ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
+        }});
+      }}
+    }}());
+    </script>"""
     return _page("PathwayMech", body, homepage=True)
 
 
@@ -346,7 +433,7 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
             yaml.safe_load(path.read_text())["id"]: path.relative_to(root).as_posix()
             for path in pathway_files(root / "data" / "pathways")
         }
-        expected = render_site(records, source_paths, load_site_history(root))
+        expected = render_site(records, source_paths, load_site_history(root), root=root)
     except SiteError as error:
         print(str(error), file=sys.stderr)
         return 1
@@ -366,7 +453,10 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
     # case-insensitive filesystem the new name is written rather than kept
     # under the old one. Other unexpected files are left for the check to name.
     rendered = {path for path in _files_under(pages) if path.startswith("records/")}
-    rendered |= {name for name in ("browse.html", "index.html") if (pages / name).is_file()}
+    rendered |= {
+        name for name in ("browse.html", "index.html", "map.html", "sequence-map.html")
+        if (pages / name).is_file()
+    }
     orphaned = sorted(path for path in rendered - set(expected) if path.endswith(".html"))
     for path in orphaned:
         (pages / path).unlink()
@@ -1017,8 +1107,12 @@ def _page(
   <header><nav aria-label="Main navigation">
     <a href="{site_root}index.html">PathwayMech overview</a>
     <a href="{site_root}browse.html">Browse pathways</a>
+    <a href="{site_root}map.html">Text map</a>
+    <a href="{site_root}sequence-map.html">Sequence map (pLM)</a>
+    <a href="{site_root}index.html#downloads-title">Downloads &amp; Schema</a>
     <a href="https://github.com/CultureBotAI/PathwayMech">Source</a>
     <a href="https://culturebotai.github.io/mechs/">All Mech projects</a>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">Theme</button>
   </nav></header>
   <main id="main-content" tabindex="-1">
 {heading}
@@ -1029,47 +1123,893 @@ def _page(
 """
 
 
-def _browse_controls() -> str:
-    return """<form id="pathway-search" hidden>
-<label for="pathway-query">Search pathway name or identifier</label>
-<input id="pathway-query" type="search"><button type="reset">Reset</button>
-</form><p id="pathway-status" role="status" aria-live="polite"></p>
+def _browse_controls(
+    kinds: list[str] | None = None,
+    taxa: list[str] | None = None,
+) -> str:
+    kind_opts = "".join(
+        f'<option value="{html.escape(k, quote=True)}">{html.escape(k)}</option>'
+        for k in (kinds or [])
+    )
+    taxon_opts = "".join(
+        f'<option value="{html.escape(t, quote=True)}">{html.escape(t)}</option>'
+        for t in (taxa or [])[:150]
+    )
+    return f"""<aside class="facet-sidebar" aria-label="Pathway filters">
+<form id="pathway-search" class="facet-form" hidden>
+  <div class="facet-group">
+    <label for="pathway-query">Search pathway name, organism, or identifier</label>
+    <input id="pathway-query" name="q" type="search" placeholder="e.g. methanogenesis, MetaCyc...">
+  </div>
+  <div class="facet-group">
+    <label for="pathway-type">Pathway class</label>
+    <select id="pathway-type">
+      <option value="">All pathway classes</option>
+      {kind_opts}
+    </select>
+  </div>
+  <div class="facet-group">
+    <label for="pathway-taxon">Organism / Taxon</label>
+    <select id="pathway-taxon">
+      <option value="">All organisms / taxa</option>
+      {taxon_opts}
+    </select>
+  </div>
+  <div class="facet-group">
+    <label for="pathway-grounding">Grounding &amp; mechanism</label>
+    <select id="pathway-grounding">
+      <option value="">All records</option>
+      <option value="protein-grounded">Protein-grounded (UniProtKB)</option>
+      <option value="reaction-mechanisms">Detailed reaction mechanisms</option>
+      <option value="gene-clusters">Biosynthetic gene clusters</option>
+      <option value="curated-edges">Curated mechanistic edges</option>
+    </select>
+  </div>
+  <div class="facet-group">
+    <label for="pathway-sort">Sort pathways</label>
+    <select id="pathway-sort">
+      <option value="label-asc">Pathway name (A–Z)</option>
+      <option value="label-desc">Pathway name (Z–A)</option>
+      <option value="edges-desc">Mechanistic edges (high–low)</option>
+      <option value="edges-asc">Mechanistic edges (low–high)</option>
+      <option value="id-asc">Identifier (A–Z)</option>
+      <option value="type-asc">Pathway class (A–Z)</option>
+    </select>
+  </div>
+  <div class="facet-actions">
+    <button type="reset">Reset</button>
+  </div>
+</form>
+<p id="pathway-status" class="facet-status" role="status" aria-live="polite"></p>
 <p id="pathway-empty" hidden>No pathways match. Try another term or reset the search.</p>
+<div class="facet-links">
+  <a href="map.html">Explore 2D text map →</a>
+  <a href="sequence-map.html">Explore ESM-2 sequence map →</a>
+</div>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {{
   'use strict';
   const form = document.getElementById('pathway-search');
   const query = document.getElementById('pathway-query');
+  const typeFilter = document.getElementById('pathway-type');
+  const taxonFilter = document.getElementById('pathway-taxon');
+  const groundingFilter = document.getElementById('pathway-grounding');
+  const sortSelect = document.getElementById('pathway-sort');
+  const listEl = document.getElementById('pathway-list');
+  const themeBtn = document.getElementById('theme-toggle');
+  if (themeBtn && document.documentElement) {{
+    try {{
+      const saved = localStorage.getItem('mech-theme');
+      if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+    }} catch (e) {{}}
+    themeBtn.addEventListener('click', function () {{
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
+    }});
+  }}
   const rows = Array.from(document.querySelectorAll('#pathway-list li'));
-  function filter() {
+  function filter() {{
     const term = query.value.trim().toLowerCase();
+    const typeVal = typeFilter ? typeFilter.value : '';
+    const taxonVal = taxonFilter ? taxonFilter.value : '';
+    const groundingVal = groundingFilter ? groundingFilter.value : '';
+    const sortVal = sortSelect ? sortSelect.value : 'label-asc';
     let count = 0;
-    rows.forEach(row => { row.hidden = !row.dataset.search.toLowerCase().includes(term);
-      if (!row.hidden) count += 1; });
+    rows.forEach(row => {{
+      const searchText = row.dataset.search + (row.dataset.taxa ? ' ' + row.dataset.taxa : '');
+      const matchesTerm = searchText.toLowerCase().includes(term);
+      const matchesType = !typeVal || (row.dataset.type || '') === typeVal;
+      const matchesTaxon = !taxonVal || (row.dataset.taxa || '').split('|').includes(taxonVal);
+      const matchesGrounding = !groundingVal || (row.dataset.grounding || '').split('|').includes(groundingVal);
+      row.hidden = !(matchesTerm && matchesType && matchesTaxon && matchesGrounding);
+      if (!row.hidden) count += 1;
+    }});
+    if (listEl && listEl.appendChild && sortSelect) {{
+      const sorted = rows.slice().sort((a, b) => {{
+        const la = a.dataset.label || '';
+        const lb = b.dataset.label || '';
+        const ia = a.dataset.id || '';
+        const ib = b.dataset.id || '';
+        const ea = Number(a.dataset.edges || '0');
+        const eb = Number(b.dataset.edges || '0');
+        const ta = a.dataset.type || '';
+        const tb = b.dataset.type || '';
+        if (sortVal === 'label-desc') return lb.localeCompare(la) || ia.localeCompare(ib);
+        if (sortVal === 'edges-desc') return (eb - ea) || la.localeCompare(lb);
+        if (sortVal === 'edges-asc') return (ea - eb) || la.localeCompare(lb);
+        if (sortVal === 'id-asc') return ia.localeCompare(ib);
+        if (sortVal === 'type-asc') return ta.localeCompare(tb) || la.localeCompare(lb);
+        return la.localeCompare(lb) || ia.localeCompare(ib);
+      }});
+      sorted.forEach(r => listEl.appendChild(r));
+    }}
     document.getElementById('pathway-status').textContent =
       count + ' of ' + rows.length + ' pathways match';
     document.getElementById('pathway-empty').hidden = count !== 0;
-  }
-  function remember() {
+  }}
+  function remember() {{
     const url = new URL(window.location.href);
     if (query.value) url.searchParams.set('q', query.value); else url.searchParams.delete('q');
+    if (typeFilter && typeFilter.value) url.searchParams.set('type', typeFilter.value); else url.searchParams.delete('type');
+    if (taxonFilter && taxonFilter.value) url.searchParams.set('taxon', taxonFilter.value); else url.searchParams.delete('taxon');
+    if (groundingFilter && groundingFilter.value) url.searchParams.set('grounding', groundingFilter.value); else url.searchParams.delete('grounding');
+    if (sortSelect && sortSelect.value && sortSelect.value !== 'label-asc') url.searchParams.set('sort', sortSelect.value); else url.searchParams.delete('sort');
     history.replaceState(null, '', url);
     filter();
-  }
-  function restore() {
-    query.value = new URLSearchParams(window.location.search).get('q') || '';
+  }}
+  function restore() {{
+    const params = new URLSearchParams(window.location.search);
+    query.value = params.get('q') || '';
+    if (typeFilter) typeFilter.value = params.get('type') || '';
+    if (taxonFilter) taxonFilter.value = params.get('taxon') || '';
+    if (groundingFilter) groundingFilter.value = params.get('grounding') || '';
+    if (sortSelect) sortSelect.value = params.get('sort') || 'label-asc';
     filter();
-  }
+  }}
   query.addEventListener('input', remember);
+  [typeFilter, taxonFilter, groundingFilter, sortSelect].forEach(el => {{
+    if (el) el.addEventListener('change', remember);
+  }});
   window.addEventListener('pageshow', restore);
-  form.addEventListener('submit', event => { event.preventDefault(); filter(); });
-  form.addEventListener('reset', event => {
-    event.preventDefault(); query.value = ''; remember(); query.focus();
-  });
+  form.addEventListener('submit', event => {{ event.preventDefault(); filter(); }});
+  form.addEventListener('reset', event => {{
+    event.preventDefault();
+    query.value = '';
+    if (typeFilter) typeFilter.value = '';
+    if (taxonFilter) taxonFilter.value = '';
+    if (groundingFilter) groundingFilter.value = '';
+    if (sortSelect) sortSelect.value = 'label-asc';
+    remember();
+    query.focus();
+  }});
   form.hidden = false;
   restore();
-});
-</script>"""
+}});
+</script>
+</aside>"""
+
+
+def _load_or_fallback_corpus_map(records: list, root: Path) -> dict[str, Any]:
+    map_path = root / "data" / "embeddings" / "corpus_map.json"
+    rec_by_id = {r.id: r for r in records}
+    if map_path.is_file():
+        try:
+            raw = json.loads(map_path.read_text(encoding="utf-8"))
+            classes = raw.get("classes") or []
+            hrefs = raw.get("hrefs") or {}
+            norm_points = []
+            for pt in raw.get("points") or []:
+                if isinstance(pt, list) and len(pt) >= 7:
+                    x, y, cidx, ident, lbl, ptype, taxon = pt[:7]
+                    rec = rec_by_id.get(ident)
+                    kind, taxa, grounding = (
+                        _record_facets(rec) if rec else (ptype, [taxon] if taxon else [], [])
+                    )
+                    p_count = sum(
+                        1 for p in getattr(rec, "participants", [])
+                        if str(p.get("id", "")).startswith("UniProtKB:")
+                    ) if rec else 0
+                    norm_points.append({
+                        "id": ident,
+                        "slug": _slug(ident),
+                        "label": lbl,
+                        "url": hrefs.get(ident) or f"records/{_slug(ident)}.html",
+                        "x": x,
+                        "y": y,
+                        "pathway_type": classes[cidx] if 0 <= cidx < len(classes) else kind,
+                        "top_taxon": taxon or (taxa[0] if taxa else "Unspecified"),
+                        "taxa": taxa or ([taxon] if taxon else []),
+                        "has_proteins": "protein-grounded" in grounding,
+                        "edge_count": len(getattr(rec, "mechanistic_edges", [])) if rec else 0,
+                        "reaction_count": len(getattr(rec, "reactions", [])) if rec else 0,
+                        "protein_count": p_count,
+                    })
+                elif isinstance(pt, dict):
+                    norm_points.append(pt)
+            return {
+                "model": raw.get("model", "BAAI/bge-large-en-v1.5"),
+                "method": raw.get("method", "pacmap"),
+                "dim": raw.get("dim", 1024),
+                "count": len(norm_points),
+                "points": norm_points,
+            }
+        except (OSError, ValueError):
+            pass
+    points = []
+    for idx, rec in enumerate(records):
+        kind, taxa, grounding = _record_facets(rec)
+        points.append({
+            "id": rec.id,
+            "slug": _slug(rec.id),
+            "label": plain_label(rec.label),
+            "url": f"records/{_slug(rec.id)}.html",
+            "x": round((idx % 10) / 10.0, 4),
+            "y": round((idx // 10) / max(1.0, len(records) / 10.0), 4),
+            "pathway_type": kind,
+            "top_taxon": taxa[0] if taxa else "Unspecified",
+            "taxa": taxa[:5],
+            "has_proteins": "protein-grounded" in grounding,
+            "edge_count": len(getattr(rec, "mechanistic_edges", [])),
+            "reaction_count": len(getattr(rec, "reactions", [])),
+            "protein_count": 0,
+        })
+    return {
+        "model": "BAAI/bge-large-en-v1.5",
+        "method": "pacmap",
+        "dim": 1024,
+        "count": len(points),
+        "points": points,
+    }
+
+
+def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
+    seq_path = root / "data" / "embeddings" / "sequence_map.json"
+    if seq_path.is_file():
+        try:
+            raw = json.loads(seq_path.read_text(encoding="utf-8"))
+            if "proteins" in raw and "pathways" in raw:
+                return raw
+            proteins = []
+            by_pw: dict[str, dict[str, Any]] = {}
+            for pt in raw.get("points") or []:
+                recs = pt.get("records") or []
+                pw_labels = [r["label"] for r in recs if r.get("label")]
+                pw_urls = [r["href"] for r in recs if r.get("href")]
+                org = pt.get("organism") or "Unspecified"
+                p_cls = pt.get("class") or "pathway"
+                proteins.append({
+                    "id": pt.get("protein_id", ""),
+                    "label": pt.get("label", ""),
+                    "x": pt.get("x", 0.5),
+                    "y": pt.get("y", 0.5),
+                    "pathway_type": p_cls,
+                    "taxon": org,
+                    "taxa": [org],
+                    "length": pt.get("length", 0),
+                    "pathway_labels": pw_labels,
+                    "pathway_urls": pw_urls,
+                    "url": pt.get("primary_href") or (pw_urls[0] if pw_urls else ""),
+                })
+                for r in recs:
+                    pw_id = r.get("id")
+                    if not pw_id:
+                        continue
+                    entry = by_pw.setdefault(pw_id, {
+                        "id": pw_id,
+                        "label": r.get("label", pw_id),
+                        "url": r.get("href", f"records/{_slug(pw_id)}.html"),
+                        "pathway_type": r.get("class") or p_cls,
+                        "top_taxon": org,
+                        "taxa": set(),
+                        "xs": [],
+                        "ys": [],
+                        "proteins": [],
+                    })
+                    entry["taxa"].add(org)
+                    entry["xs"].append(float(pt.get("x", 0.5)))
+                    entry["ys"].append(float(pt.get("y", 0.5)))
+                    entry["proteins"].append(pt.get("protein_id", ""))
+            pathways = []
+            for _, entry in sorted(by_pw.items()):
+                xs, ys = entry["xs"], entry["ys"]
+                pathways.append({
+                    "id": entry["id"],
+                    "label": entry["label"],
+                    "url": entry["url"],
+                    "x": round(sum(xs) / len(xs), 4),
+                    "y": round(sum(ys) / len(ys), 4),
+                    "pathway_type": entry["pathway_type"],
+                    "top_taxon": entry["top_taxon"],
+                    "taxa": sorted(entry["taxa"]),
+                    "protein_count": len(entry["proteins"]),
+                    "proteins": entry["proteins"],
+                })
+            return {
+                "model": raw.get("model", "facebook/esm2_t33_650M_UR50D"),
+                "method": raw.get("method", "pacmap"),
+                "dim": raw.get("dim", 1280),
+                "protein_count": len(proteins),
+                "pathway_count": len(pathways),
+                "proteins": proteins,
+                "pathways": pathways,
+            }
+        except (OSError, ValueError):
+            pass
+    return {
+        "model": "facebook/esm2_t33_650M_UR50D",
+        "method": "pacmap",
+        "dim": 1280,
+        "protein_count": 0,
+        "pathway_count": 0,
+        "proteins": [],
+        "pathways": [],
+    }
+
+
+def _map_page(records: list, *, root: Path = ROOT) -> str:
+    payload = _load_or_fallback_corpus_map(records, root)
+    points = payload.get("points", [])
+    types = sorted({str(p.get("pathway_type", "pathway")) for p in points})
+    taxon_counts: dict[str, int] = {}
+    for p in points:
+        for t in p.get("taxa", []):
+            taxon_counts[str(t)] = taxon_counts.get(str(t), 0) + 1
+    top_taxa = [
+        t for t, _ in sorted(taxon_counts.items(), key=lambda kv: (-kv[1], kv[0].casefold()))
+    ][:100]
+    type_opts = "".join(
+        f'<option value="{html.escape(k, quote=True)}">{html.escape(k)}</option>'
+        for k in types
+    )
+    taxon_opts = "".join(
+        f'<option value="{html.escape(t, quote=True)}">{html.escape(t)}</option>'
+        for t in top_taxa
+    )
+    json_blob = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
+    body = f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">PathwayMech</a> <span aria-hidden="true">/</span>
+      <span aria-current="page">Text embedding map</span>
+    </nav>
+    <p class="map-intro">Interactive 2D projection (<code>{html.escape(str(payload.get("method", "pacmap")))}</code>)
+      of <code>{html.escape(str(payload.get("model", "BAAI/bge-large-en-v1.5")))}</code>
+      ({int(payload.get("dim", 1024))}-d) text embeddings across {len(points):,} curated pathways.
+      Drag to pan, scroll to zoom, hover for details, and click any point to open its pathway record.</p>
+    <div class="browse-layout">
+      <aside class="facet-sidebar" aria-label="Embedding map filters">
+        <form id="map-filter-form" class="facet-form">
+          <div class="facet-group">
+            <label for="map-query">Search pathways</label>
+            <input id="map-query" name="q" type="search" placeholder="Name, ID, or organism...">
+          </div>
+          <div class="facet-group">
+            <label for="map-color">Color points by</label>
+            <select id="map-color">
+              <option value="pathway_type">Pathway class</option>
+              <option value="top_taxon">Primary organism / taxon</option>
+              <option value="has_proteins">Protein grounding (UniProtKB)</option>
+            </select>
+          </div>
+          <div class="facet-group">
+            <label for="map-type">Pathway class</label>
+            <select id="map-type">
+              <option value="">All pathway classes</option>
+              {type_opts}
+            </select>
+          </div>
+          <div class="facet-group">
+            <label for="map-taxon">Organism / Taxon</label>
+            <select id="map-taxon">
+              <option value="">All organisms / taxa</option>
+              {taxon_opts}
+            </select>
+          </div>
+          <div class="facet-group">
+            <label for="map-grounding">Protein grounding</label>
+            <select id="map-grounding">
+              <option value="">All pathways</option>
+              <option value="yes">Has UniProtKB proteins</option>
+              <option value="no">No UniProtKB proteins</option>
+            </select>
+          </div>
+          <div class="facet-actions">
+            <button type="reset" id="map-reset">Reset filters &amp; zoom</button>
+          </div>
+        </form>
+        <p id="map-status" class="facet-status" role="status" aria-live="polite"></p>
+        <div id="map-legend" class="map-legend" aria-label="Color legend"></div>
+      </aside>
+      <div class="browse-results">
+        <div class="map-canvas-wrap">
+          <canvas id="map-canvas" width="920" height="620" aria-label="2D corpus embedding scatter plot"></canvas>
+          <div id="map-tooltip" class="map-tooltip" hidden></div>
+        </div>
+      </div>
+    </div>
+    <script id="corpus-map-data" type="application/json">{json_blob}</script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {{
+      'use strict';
+      const themeBtn = document.getElementById('theme-toggle');
+      if (themeBtn) {{
+        try {{
+          const saved = localStorage.getItem('mech-theme');
+          if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+        }} catch (e) {{}}
+        themeBtn.addEventListener('click', function () {{
+          const cur = document.documentElement.getAttribute('data-theme');
+          const next = cur === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
+          draw();
+        }});
+      }}
+      const payload = JSON.parse(document.getElementById('corpus-map-data').textContent);
+      const points = payload.points || [];
+      const canvas = document.getElementById('map-canvas');
+      const ctx = canvas.getContext('2d');
+      const tooltip = document.getElementById('map-tooltip');
+      const queryEl = document.getElementById('map-query');
+      const colorEl = document.getElementById('map-color');
+      const typeEl = document.getElementById('map-type');
+      const taxonEl = document.getElementById('map-taxon');
+      const groundEl = document.getElementById('map-grounding');
+      const statusEl = document.getElementById('map-status');
+      const legendEl = document.getElementById('map-legend');
+      const formEl = document.getElementById('map-filter-form');
+      const PALETTE = ['#0f766e', '#2563eb', '#d97706', '#9333ea', '#dc2626', '#059669', '#4f46e5', '#db2777', '#0284c7', '#65a30d', '#64748b'];
+      let scale = 1, panX = 0, panY = 0, dragging = false, lastX = 0, lastY = 0, hovered = null;
+      let colorMap = new Map();
+
+      function buildLegend() {{
+        const field = colorEl.value;
+        const counts = new Map();
+        points.forEach(p => {{
+          const val = field === 'has_proteins' ? (p.has_proteins ? 'Protein-grounded' : 'Other') : String(p[field] || 'Other');
+          counts.set(val, (counts.get(val) || 0) + 1);
+        }});
+        const top = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        colorMap = new Map();
+        legendEl.innerHTML = '';
+        top.forEach(([val, cnt], idx) => {{
+          const col = PALETTE[idx % (PALETTE.length - 1)];
+          colorMap.set(val, col);
+          const item = document.createElement('div');
+          item.className = 'legend-item';
+          item.innerHTML = '<span class="legend-swatch" style="background:' + col + '"></span>' +
+            '<span class="legend-label">' + val + ' (' + cnt + ')</span>';
+          legendEl.appendChild(item);
+        }});
+      }}
+
+      function matches(p) {{
+        const q = queryEl.value.trim().toLowerCase();
+        if (q) {{
+          const hay = (p.label + ' ' + p.id + ' ' + (p.taxa || []).join(' ')).toLowerCase();
+          if (!hay.includes(q)) return false;
+        }}
+        if (typeEl.value && p.pathway_type !== typeEl.value) return false;
+        if (taxonEl.value && !(p.taxa || []).includes(taxonEl.value)) return false;
+        if (groundEl.value === 'yes' && !p.has_proteins) return false;
+        if (groundEl.value === 'no' && p.has_proteins) return false;
+        return true;
+      }}
+
+      function project(p) {{
+        const pad = 42;
+        const w = canvas.width - pad * 2;
+        const h = canvas.height - pad * 2;
+        return {{
+          cx: (pad + p.x * w) * scale + panX,
+          cy: (pad + (1 - p.y) * h) * scale + panY,
+        }};
+      }}
+
+      function draw() {{
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const field = colorEl.value;
+        let activeCount = 0;
+        points.forEach(p => {{
+          p._active = matches(p);
+          if (p._active) activeCount += 1;
+        }});
+        points.forEach(p => {{
+          if (p._active) return;
+          const pos = project(p);
+          p._cx = pos.cx; p._cy = pos.cy;
+          ctx.beginPath();
+          ctx.arc(pos.cx, pos.cy, 4, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(148, 163, 184, 0.22)';
+          ctx.fill();
+        }});
+        points.forEach(p => {{
+          if (!p._active) return;
+          const pos = project(p);
+          p._cx = pos.cx; p._cy = pos.cy;
+          const val = field === 'has_proteins' ? (p.has_proteins ? 'Protein-grounded' : 'Other') : String(p[field] || 'Other');
+          const col = colorMap.get(val) || '#64748b';
+          ctx.beginPath();
+          ctx.arc(pos.cx, pos.cy, p === hovered ? 8 : 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = col;
+          ctx.fill();
+          ctx.lineWidth = p === hovered ? 2 : 1;
+          ctx.strokeStyle = p === hovered ? '#0f172a' : '#ffffff';
+          ctx.stroke();
+        }});
+        statusEl.textContent = activeCount + ' of ' + points.length + ' pathways visible';
+      }}
+
+      function syncUrl() {{
+        const url = new URL(window.location.href);
+        if (queryEl.value) url.searchParams.set('q', queryEl.value); else url.searchParams.delete('q');
+        if (colorEl.value && colorEl.value !== 'pathway_type') url.searchParams.set('color', colorEl.value); else url.searchParams.delete('color');
+        if (typeEl.value) url.searchParams.set('type', typeEl.value); else url.searchParams.delete('type');
+        if (taxonEl.value) url.searchParams.set('taxon', taxonEl.value); else url.searchParams.delete('taxon');
+        if (groundEl.value) url.searchParams.set('grounding', groundEl.value); else url.searchParams.delete('grounding');
+        history.replaceState(null, '', url);
+        draw();
+      }}
+
+      canvas.addEventListener('mousedown', e => {{ dragging = true; lastX = e.clientX; lastY = e.clientY; }});
+      window.addEventListener('mouseup', () => {{ dragging = false; }});
+      canvas.addEventListener('mousemove', e => {{
+        const rect = canvas.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+        if (dragging) {{
+          panX += (e.clientX - lastX) * (canvas.width / rect.width);
+          panY += (e.clientY - lastY) * (canvas.height / rect.height);
+          lastX = e.clientX; lastY = e.clientY;
+          draw();
+          return;
+        }}
+        let best = null, bestDist = 144;
+        points.forEach(p => {{
+          if (!p._active) return;
+          const dx = (p._cx || 0) - mx, dy = (p._cy || 0) - my;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < bestDist) {{ bestDist = d2; best = p; }}
+        }});
+        if (best !== hovered) {{
+          hovered = best;
+          draw();
+        }}
+        if (best) {{
+          tooltip.hidden = false;
+          tooltip.style.left = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14)) + 'px';
+          tooltip.style.top = Math.max(8, e.clientY - rect.top - 10) + 'px';
+          tooltip.innerHTML = '<strong>' + best.label + '</strong><br><code>' + best.id + '</code><br>' +
+            '<span>' + best.pathway_type + ' · ' + best.top_taxon + '</span><br>' +
+            '<span>' + best.edge_count + ' edges · ' + best.reaction_count + ' reactions · ' + best.protein_count + ' proteins</span>';
+        }} else {{
+          tooltip.hidden = true;
+        }}
+      }});
+      canvas.addEventListener('click', () => {{
+        if (hovered && hovered.url) window.location.href = hovered.url;
+      }});
+      canvas.addEventListener('wheel', e => {{
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+        scale = Math.min(8, Math.max(0.5, scale * factor));
+        draw();
+      }}, {{ passive: false }});
+
+      queryEl.addEventListener('input', syncUrl);
+      colorEl.addEventListener('change', () => {{ buildLegend(); syncUrl(); }});
+      [typeEl, taxonEl, groundEl].forEach(el => el.addEventListener('change', syncUrl));
+      formEl.addEventListener('submit', e => {{ e.preventDefault(); syncUrl(); }});
+      formEl.addEventListener('reset', e => {{
+        e.preventDefault();
+        queryEl.value = ''; colorEl.value = 'pathway_type'; typeEl.value = ''; taxonEl.value = ''; groundEl.value = '';
+        scale = 1; panX = 0; panY = 0;
+        buildLegend();
+        syncUrl();
+      }});
+      const mapParams = new URLSearchParams(window.location.search);
+      queryEl.value = mapParams.get('q') || '';
+      if (mapParams.get('color')) colorEl.value = mapParams.get('color');
+      if (mapParams.get('type')) typeEl.value = mapParams.get('type');
+      if (mapParams.get('taxon')) taxonEl.value = mapParams.get('taxon');
+      if (mapParams.get('grounding')) groundEl.value = mapParams.get('grounding');
+      buildLegend();
+      draw();
+    }});
+    </script>"""
+    return _page("PathwayMech text embedding map", body)
+
+
+def _sequence_map_page(records: list, *, root: Path = ROOT) -> str:
+    payload = _load_or_fallback_sequence_map(records, root)
+    proteins = payload.get("proteins", [])
+    pathways = payload.get("pathways", [])
+    types = sorted({
+        str(p.get("pathway_type", "pathway"))
+        for item in (*pathways, *proteins)
+        for p in ([item] if "pathway_type" in item else [])
+    })
+    taxa = sorted({
+        str(t)
+        for item in (*pathways, *proteins)
+        for t in (item.get("taxa") or ([item["taxon"]] if item.get("taxon") else []))
+        if t
+    })[:100]
+    type_opts = "".join(
+        f'<option value="{html.escape(k, quote=True)}">{html.escape(k)}</option>'
+        for k in types
+    )
+    taxon_opts = "".join(
+        f'<option value="{html.escape(t, quote=True)}">{html.escape(t)}</option>'
+        for t in taxa
+    )
+    json_blob = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
+    body = f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">PathwayMech</a> <span aria-hidden="true">/</span>
+      <span aria-current="page">Sequence map (ESM-2 pLM)</span>
+    </nav>
+    <p class="map-intro">Protein language model (<code>{html.escape(str(payload.get("model", "facebook/esm2_t33_650M_UR50D")))}</code>,
+      {int(payload.get("dim", 1280))}-d) PaCMAP projection across <strong>{len(proteins):,}</strong> UniProtKB proteins
+      and <strong>{len(pathways):,}</strong> mean-pooled pathway sequence centroids.
+      Switch between pathway centroids and individual proteins in the sidebar.</p>
+    <div class="browse-layout">
+      <aside class="facet-sidebar" aria-label="Sequence map filters">
+        <form id="seq-filter-form" class="facet-form">
+          <div class="facet-group">
+            <label for="seq-mode">Projection view</label>
+            <select id="seq-mode">
+              <option value="pathways">Pathway centroids ({len(pathways):,})</option>
+              <option value="proteins">Individual proteins ({len(proteins):,})</option>
+            </select>
+          </div>
+          <div class="facet-group">
+            <label for="seq-query">Search protein, pathway, or UniProtKB ID</label>
+            <input id="seq-query" name="q" type="search" placeholder="e.g. UniProtKB, rubisco, E. coli...">
+          </div>
+          <div class="facet-group">
+            <label for="seq-color">Color points by</label>
+            <select id="seq-color">
+              <option value="pathway_type">Pathway class</option>
+              <option value="top_taxon">Organism / Taxon</option>
+            </select>
+          </div>
+          <div class="facet-group">
+            <label for="seq-type">Pathway class</label>
+            <select id="seq-type">
+              <option value="">All pathway classes</option>
+              {type_opts}
+            </select>
+          </div>
+          <div class="facet-group">
+            <label for="seq-taxon">Organism / Taxon</label>
+            <select id="seq-taxon">
+              <option value="">All organisms / taxa</option>
+              {taxon_opts}
+            </select>
+          </div>
+          <div class="facet-actions">
+            <button type="reset" id="seq-reset">Reset filters &amp; zoom</button>
+          </div>
+        </form>
+        <p id="seq-status" class="facet-status" role="status" aria-live="polite"></p>
+        <div id="seq-legend" class="map-legend" aria-label="Color legend"></div>
+      </aside>
+      <div class="browse-results">
+        <div class="map-canvas-wrap">
+          <canvas id="seq-canvas" width="920" height="620" aria-label="2D ESM-2 sequence embedding scatter plot"></canvas>
+          <div id="seq-tooltip" class="map-tooltip" hidden></div>
+        </div>
+      </div>
+    </div>
+    <script id="seq-map-data" type="application/json">{json_blob}</script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {{
+      'use strict';
+      const themeBtn = document.getElementById('theme-toggle');
+      if (themeBtn) {{
+        try {{
+          const saved = localStorage.getItem('mech-theme');
+          if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+        }} catch (e) {{}}
+        themeBtn.addEventListener('click', function () {{
+          const cur = document.documentElement.getAttribute('data-theme');
+          const next = cur === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
+          draw();
+        }});
+      }}
+      const payload = JSON.parse(document.getElementById('seq-map-data').textContent);
+      const canvas = document.getElementById('seq-canvas');
+      const ctx = canvas.getContext('2d');
+      const tooltip = document.getElementById('seq-tooltip');
+      const modeEl = document.getElementById('seq-mode');
+      const queryEl = document.getElementById('seq-query');
+      const colorEl = document.getElementById('seq-color');
+      const typeEl = document.getElementById('seq-type');
+      const taxonEl = document.getElementById('seq-taxon');
+      const statusEl = document.getElementById('seq-status');
+      const legendEl = document.getElementById('seq-legend');
+      const formEl = document.getElementById('seq-filter-form');
+      const PALETTE = ['#0f766e', '#2563eb', '#d97706', '#9333ea', '#dc2626', '#059669', '#4f46e5', '#db2777', '#0284c7', '#65a30d', '#64748b'];
+      let scale = 1, panX = 0, panY = 0, dragging = false, lastX = 0, lastY = 0, hovered = null;
+      let colorMap = new Map();
+
+      function activePoints() {{
+        return modeEl.value === 'proteins' ? (payload.proteins || []) : (payload.pathways || []);
+      }}
+
+      function pointGroup(p) {{
+        if (colorEl.value === 'top_taxon') {{
+          return p.top_taxon || p.taxon || 'Unspecified';
+        }}
+        return p.pathway_type || 'pathway';
+      }}
+
+      function buildLegend() {{
+        const pts = activePoints();
+        const counts = new Map();
+        pts.forEach(p => {{
+          const g = pointGroup(p);
+          counts.set(g, (counts.get(g) || 0) + 1);
+        }});
+        const top = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        colorMap = new Map();
+        legendEl.innerHTML = '';
+        top.forEach(([val, cnt], idx) => {{
+          const col = PALETTE[idx % (PALETTE.length - 1)];
+          colorMap.set(val, col);
+          const item = document.createElement('div');
+          item.className = 'legend-item';
+          item.innerHTML = '<span class="legend-swatch" style="background:' + col + '"></span>' +
+            '<span class="legend-label">' + val + ' (' + cnt + ')</span>';
+          legendEl.appendChild(item);
+        }});
+      }}
+
+      function matches(p) {{
+        const q = queryEl.value.trim().toLowerCase();
+        if (q) {{
+          const extra = (p.pathway_labels || []).join(' ') + ' ' + (p.proteins || []).join(' ') + ' ' + (p.gene_symbol || '') + ' ' + (p.taxon || '');
+          const hay = (p.label + ' ' + p.id + ' ' + extra).toLowerCase();
+          if (!hay.includes(q)) return false;
+        }}
+        if (typeEl.value && p.pathway_type !== typeEl.value) return false;
+        if (taxonEl.value) {{
+          const pTaxa = p.taxa || (p.taxon ? [p.taxon] : []);
+          if (!pTaxa.includes(taxonEl.value)) return false;
+        }}
+        return true;
+      }}
+
+      function project(p) {{
+        const pad = 42;
+        const w = canvas.width - pad * 2;
+        const h = canvas.height - pad * 2;
+        return {{
+          cx: (pad + p.x * w) * scale + panX,
+          cy: (pad + (1 - p.y) * h) * scale + panY,
+        }};
+      }}
+
+      function draw() {{
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const pts = activePoints();
+        let activeCount = 0;
+        pts.forEach(p => {{
+          p._active = matches(p);
+          if (p._active) activeCount += 1;
+        }});
+        pts.forEach(p => {{
+          if (p._active) return;
+          const pos = project(p);
+          p._cx = pos.cx; p._cy = pos.cy;
+          ctx.beginPath();
+          ctx.arc(pos.cx, pos.cy, 4, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(148, 163, 184, 0.22)';
+          ctx.fill();
+        }});
+        pts.forEach(p => {{
+          if (!p._active) return;
+          const pos = project(p);
+          p._cx = pos.cx; p._cy = pos.cy;
+          const col = colorMap.get(pointGroup(p)) || '#64748b';
+          ctx.beginPath();
+          ctx.arc(pos.cx, pos.cy, p === hovered ? 8 : 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = col;
+          ctx.fill();
+          ctx.lineWidth = p === hovered ? 2 : 1;
+          ctx.strokeStyle = p === hovered ? '#0f172a' : '#ffffff';
+          ctx.stroke();
+        }});
+        const unit = modeEl.value === 'proteins' ? 'proteins' : 'pathway centroids';
+        statusEl.textContent = activeCount + ' of ' + pts.length + ' ' + unit + ' visible';
+      }}
+
+      function syncSeqUrl() {{
+        const url = new URL(window.location.href);
+        if (queryEl.value) url.searchParams.set('q', queryEl.value); else url.searchParams.delete('q');
+        if (modeEl.value && modeEl.value !== 'pathways') url.searchParams.set('mode', modeEl.value); else url.searchParams.delete('mode');
+        if (colorEl.value && colorEl.value !== 'pathway_type') url.searchParams.set('color', colorEl.value); else url.searchParams.delete('color');
+        if (typeEl.value) url.searchParams.set('type', typeEl.value); else url.searchParams.delete('type');
+        if (taxonEl.value) url.searchParams.set('taxon', taxonEl.value); else url.searchParams.delete('taxon');
+        history.replaceState(null, '', url);
+        draw();
+      }}
+
+      canvas.addEventListener('mousedown', e => {{ dragging = true; lastX = e.clientX; lastY = e.clientY; }});
+      window.addEventListener('mouseup', () => {{ dragging = false; }});
+      canvas.addEventListener('mousemove', e => {{
+        const rect = canvas.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+        if (dragging) {{
+          panX += (e.clientX - lastX) * (canvas.width / rect.width);
+          panY += (e.clientY - lastY) * (canvas.height / rect.height);
+          lastX = e.clientX; lastY = e.clientY;
+          draw();
+          return;
+        }}
+        const pts = activePoints();
+        let best = null, bestDist = 144;
+        pts.forEach(p => {{
+          if (!p._active) return;
+          const dx = (p._cx || 0) - mx, dy = (p._cy || 0) - my;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < bestDist) {{ bestDist = d2; best = p; }}
+        }});
+        if (best !== hovered) {{ hovered = best; draw(); }}
+        if (best) {{
+          tooltip.hidden = false;
+          tooltip.style.left = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14)) + 'px';
+          tooltip.style.top = Math.max(8, e.clientY - rect.top - 10) + 'px';
+          if (modeEl.value === 'proteins') {{
+            tooltip.innerHTML = '<strong>' + best.label + '</strong><br><code>' + best.id + '</code><br>' +
+              '<span>' + (best.taxon || 'Unspecified') + ' · ' + (best.length || 0) + ' aa</span><br>' +
+              '<span>Pathways: ' + (best.pathway_labels || []).join(', ') + '</span>';
+          }} else {{
+            tooltip.innerHTML = '<strong>' + best.label + '</strong><br><code>' + best.id + '</code><br>' +
+              '<span>' + best.pathway_type + ' · ' + best.top_taxon + '</span><br>' +
+              '<span>' + best.protein_count + ' ESM-2 grounded protein(s)</span>';
+          }}
+        }} else {{
+          tooltip.hidden = true;
+        }}
+      }});
+      canvas.addEventListener('click', () => {{
+        if (!hovered) return;
+        const url = hovered.url || (hovered.pathway_urls && hovered.pathway_urls[0]);
+        if (url) window.location.href = url;
+      }});
+      canvas.addEventListener('wheel', e => {{
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+        scale = Math.min(8, Math.max(0.5, scale * factor));
+        draw();
+      }}, {{ passive: false }});
+
+      modeEl.addEventListener('change', () => {{ hovered = null; buildLegend(); syncSeqUrl(); }});
+      colorEl.addEventListener('change', () => {{ buildLegend(); syncSeqUrl(); }});
+      queryEl.addEventListener('input', syncSeqUrl);
+      [typeEl, taxonEl].forEach(el => el.addEventListener('change', syncSeqUrl));
+      formEl.addEventListener('submit', e => {{ e.preventDefault(); syncSeqUrl(); }});
+      formEl.addEventListener('reset', e => {{
+        e.preventDefault();
+        queryEl.value = ''; modeEl.value = 'pathways'; colorEl.value = 'pathway_type'; typeEl.value = ''; taxonEl.value = '';
+        scale = 1; panX = 0; panY = 0;
+        buildLegend(); syncSeqUrl();
+      }});
+      const seqParams = new URLSearchParams(window.location.search);
+      queryEl.value = seqParams.get('q') || '';
+      if (seqParams.get('mode')) modeEl.value = seqParams.get('mode');
+      if (seqParams.get('color')) colorEl.value = seqParams.get('color');
+      if (seqParams.get('type')) typeEl.value = seqParams.get('type');
+      if (seqParams.get('taxon')) taxonEl.value = seqParams.get('taxon');
+      buildLegend();
+      draw();
+    }});
+    </script>"""
+    return _page("PathwayMech sequence embedding map (ESM-2 pLM)", body)
 
 
 def _reference_url(identifier: str) -> str | None:
@@ -1211,9 +2151,21 @@ def _record_page(record: object, source_path: str | None = None,
     if getattr(record, "id", None):
         component_anchors.setdefault(record.id, "pathway-identity")
     details = mechanism_views(record, nodes, component_anchors, citations_html)
+    top_bar = (
+        '<div class="downstream-top-bar">'
+        '<nav class="breadcrumb" aria-label="Breadcrumb">'
+        '<a href="../index.html">PathwayMech</a> <span aria-hidden="true">/</span> '
+        '<a href="../browse.html">Browse pathways</a> <span aria-hidden="true">/</span> '
+        f'<span aria-current="page">{identifier}</span></nav>'
+        '<form class="page-search" action="../browse.html" method="get" role="search">'
+        '<label class="visually-hidden" for="record-page-search">Search pathways</label>'
+        '<input id="record-page-search" name="q" type="search" '
+        'placeholder="Search pathways, organisms, or IDs...">'
+        '<button type="submit">Search</button></form></div>'
+    )
     return _page(
         record.label,
-        f'<p id="pathway-identity"><code>{identifier}</code></p>'
+        f'{top_bar}<p id="pathway-identity"><code>{identifier}</code></p>'
         + "".join(f"<p>{label_html(paragraph)}</p>"
                   for paragraph in re.split(r"\n\s*\n", record.description))
         + f"{record_metadata(record)}{provenance}{graph_html(record, nodes, component_anchors)}"
