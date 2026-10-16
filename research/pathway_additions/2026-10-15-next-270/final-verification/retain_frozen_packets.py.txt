@@ -1,0 +1,82 @@
+"""Pack a manifest-pinned finite packet selection into a new output directory."""
+
+import argparse
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import io
+import json
+from pathlib import Path
+import tarfile
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("selection", type=Path)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args()
+    selection = json.loads(args.selection.read_text())
+    args.output.mkdir(exist_ok=False)
+    packets = []
+    for spec in selection["packets"]:
+        source = Path(spec["source"])
+        manifest = source / "artifact-manifest.json"
+        assert sha(manifest.read_bytes()) == spec["manifest_sha256"]
+        rows = json.loads(manifest.read_text())["files"]
+        listed = {r["path"]: r for r in rows}
+        entries = list(source.rglob("*"))
+        assert not any(p.is_symlink() for p in entries)
+        paths = sorted(p for p in entries if p.is_file())
+        assert {str(p.relative_to(source)) for p in paths} == set(listed) | {
+            "artifact-manifest.json", "freeze-proof.json"
+        }
+        members = []
+        archive = args.output / (spec["name"] + ".tar.gz")
+        with archive.open("wb") as raw:
+            with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as gz:
+                with tarfile.open(fileobj=gz, mode="w") as tar:
+                    for p in paths:
+                        rel = str(p.relative_to(source))
+                        data = p.read_bytes()
+                        row = {"path": rel, "bytes": len(data), "sha256": sha(data)}
+                        if rel in listed:
+                            assert row["bytes"] == listed[rel]["bytes"]
+                            assert row["sha256"] == listed[rel]["sha256"]
+                        info = tarfile.TarInfo(rel)
+                        info.size, info.mode = len(data), 0o644
+                        tar.addfile(info, io.BytesIO(data))
+                        members.append(row)
+        with tarfile.open(archive, "r:gz") as tar:
+            assert tar.getnames() == [r["path"] for r in members]
+            for row in members:
+                member = tar.getmember(row["path"])
+                assert member.isfile()
+                data = tar.extractfile(member).read()
+                assert len(data) == row["bytes"] and sha(data) == row["sha256"]
+                assert sha((source / row["path"]).read_bytes()) == row["sha256"]
+        packets.append({
+            "name": spec["name"], "role": spec["role"],
+            "source_path": str(source), "source_manifest_sha256": spec["manifest_sha256"],
+            "archive": archive.name, "archive_bytes": archive.stat().st_size,
+            "archive_sha256": sha(archive.read_bytes()), "files": members,
+        })
+        print(spec["name"], len(members), archive.stat().st_size, flush=True)
+    inventory = {
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "scope": selection["scope"],
+        "file_identity": "Exact relative paths and bytes; filesystem metadata is not asserted",
+        "inventory_includes_hidden_and_ignored": True,
+        "verification": "Frozen manifest checked; every physical file packed; every tar member decoded and hashed; original owners rehashed unchanged afterward",
+        "packets": packets,
+    }
+    (args.output / "inventory.json").write_text(json.dumps(inventory, indent=2) + "\n")
+    (args.output / "README.md").write_text(selection["readme"])
+    print(json.dumps({"packets": len(packets), "members": sum(len(p["files"]) for p in packets), "archive_bytes": sum(p["archive_bytes"] for p in packets)}))
+
+
+if __name__ == "__main__":
+    main()

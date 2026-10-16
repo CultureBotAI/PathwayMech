@@ -1,0 +1,4076 @@
+# Maintained scientific review: methanogenesis from H2 and CO2
+
+- Review: 20261016T025354Z-methanogenesis-maintained-record-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-16T02:24:31Z
+- Finished UTC: 2026-10-16T02:53:54Z
+- Reviewer: Codex /root/next268_reaction_review_completion (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+No actionable finding in the complete maintained record. Its six-member native route, 101 biochemical declarations, 3 rank-qualified direct taxa, 125 evidence-bearing edges, 148 artifact-bound references and 20 accepted scope qualifications remain faithful. Source-only assertions, chemistry/transport, direction/cofactor, strain/sequence and primary-access limits stay explicit. Required final maintained gates passed at the retained exact inputs; this is neither a physiological whole-route proof nor permission to close issue 626 before verified merge. Issue 628 likewise remains open pending verified merge.
+
+## Scope And Provenance
+
+Complete maintained scientific review of one exact pathway record, reusing explicitly accepted independent native/source/issuer/graph/novelty/composition evidence and final gate/page review receipts.
+
+Selection: Exactly data/pathways/methanogenesis-from-h2-and-co2.yaml, MetaCyc:METHANOGENESIS-PWY, SHA553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e; all declared fields, nodes, edges, references and 20 narrative/incident claims.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base e8ae5e445d3288717c31d3012611e226fd5cca34.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:METHANOGENESIS-PWY | data/pathways/methanogenesis-from-h2-and-co2.yaml | maintained | methanogenesis from H2 and CO2 |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Complete maintained scientific/reference/claim rebind | passed | True | MetaCyc:METHANOGENESIS-PWY | 1811 finite checks passed; exact maintained553922, reference originals, all 20 claim placements, graph closure and retained source/review inputs. |
+| Preserved initial reviewer harness attempt | failed | False | MetaCyc:METHANOGENESIS-PWY | Initial script assumed uniform direct status fields for receipt bindings and raised KeyError on root wrapper. Original script/logs retained; explicit root-wrapper and sodium-reuse handling in the successor passes. This is not a record defect. |
+| Additional iModulonDB discovery | skipped | False | MetaCyc:METHANOGENESIS-PWY | No new cross-database network/dataset survey was part of this bounded canonical task and no iModulonDB-derived claim is made. Existing structured native and issuer evidence was used; no dataset-absence or negative biological inference is asserted. |
+| just render-pages | passed | True | MetaCyc:METHANOGENESIS-PWY | Rendered all 267 maintained pathways. |
+| just validate | passed | True | MetaCyc:METHANOGENESIS-PWY | 267 records pass Python, closed LinkML and identifier/label policies; 21, 255 evidence blocks, 512 histories, 30 source records and generated pages pass. |
+| just test | passed | True | MetaCyc:METHANOGENESIS-PWY | 7149 passed, 3 skipped, 7 warnings in 1093.26s (0:18:13) |
+| just lint | passed | True | MetaCyc:METHANOGENESIS-PWY | All checks passed. |
+| git diff --check | passed | True | MetaCyc:METHANOGENESIS-PWY | Tracked working diff whitespace check passed. |
+| just vendored-check | passed | True | MetaCyc:METHANOGENESIS-PWY | 22 governed artifacts match the pinned canonical revision. |
+| git diff --cached --check | passed | True | MetaCyc:METHANOGENESIS-PWY | Corrected complete staged check passed after the narrowly scoped XML byte-preservation attribute; original exit 2 is retained separately. |
+| Historical original staged whitespace check | failed | False | MetaCyc:METHANOGENESIS-PWY | Initial exit 2: 137 upstream trailing-space diagnostics in 72 exact native XML originals. Accepted one-file attribute successor preserves all 703 previous owners and all 223 source bytes; separate passing staged check is required above. Issue 628 remains open pending verified merge. |
+| Final exact gate logs and stable source inspection | passed | True | MetaCyc:METHANOGENESIS-PWY | 2416 checks passed; all 704 integrated owners, 16 compressed/decoded original logs and 792 direct source inputs are bound. One literal-percent receipt path is indirectly bound under unchanged governed path grammar. |
+| Preserved rejected initial final inspection | failed | False | MetaCyc:METHANOGENESIS-PWY | The governed inspector rejected the literal-percent direct-NA%2B.json receipt filename as an unsafe direct source-input path. Exact source bytes remain unchanged and were hashed; its digest is bound indirectly through gates.json and the accepted authority archive. Original inspector stderr and wrapper failure are retained. |
+| Preserved peer-manifest helper assumption | failed | False | MetaCyc:METHANOGENESIS-PWY | Initial reviewer retention helper assumed self_excluded for both packet manifests; the second uses self_exclusions. Corrected helper accepts the two exact declared spellings and verifies all 58 retained outer members; no source or science defect. |
+| Current selected taxonomy rows and unchanged cache metadata | passed | False | MetaCyc:METHANOGENESIS-PWY | Three read-only statement sets match retained rows exactly: 2208 has 11 rows, 145262 has 16 and 2179 has 7; cache size and mtime unchanged before/after. Full-cache hash reused, not recalculated. |
+| Preserved first review-content validation | failed | False | MetaCyc:METHANOGENESIS-PWY | Initial scratch YAML writer emitted aliases for shared target-ID arrays. The governed validator correctly rejected aliases. The successor uses an alias-free dumper; no maintained bundle was saved from the rejected draft and no scientific values changed. |
+
+## Scientific And Domain Assessments
+
+### Exact pathway boundary and actual landed novelty
+
+identity: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+Retain the issued six-member MetaCyc definition ending at methyl-CoM. METHFORM/methane output and Mvh/Hdr regeneration are outside it; Hmd/H2 is not Mtd/F420. All 266 earlier maintained records and finite alias/context search scopes were independently adjudicated; no duplicate exact route was found.
+
+### Three direct taxon associations and rank limits
+
+grounding: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+2208 and 145262 are species;2179 is a genus. Native species-slot placement is not a rank conversion. Historical range28890 and catalyst-specific species/strains remain context, not proof of all six reactions or all strains. The three reference digests correctly identify the pinned complete cache; selected issuer statements and accepted unchanged-cache metadata support reuse.
+
+### Complete source graph and local evidence closure
+
+graph: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+All 101 native biochemical declarations, 125 edges and 220 evidence blocks are preserved with unique IDs and local endpoint/reference closure. Six memberships, 5 order links, 30 materials, 13 qualified catalog catalyses, 5 exact activity enables, 43 components, 6 cofactors, 10 locations and 7 regulations reconcile. The16 absent component coefficients remain unspecified; subunit membership is not independent catalysis.
+
+### Selected route versus generic and enzyme-specific directions
+
+consistency: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+Five generic reactions remain reversible and selected root orientation is explicit. The two Mch hydrolysis activities oppose selected dehydration; exact activity/enables/regulations remain, without positive catalysts incorrectly assigned to dehydration. Native source-only associations, including five Archaeoglobus activities, are qualified rather than promoted to independently read catalysis.
+
+### Exact occurrence quantities and compartment limitations
+
+quantity: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+Mtr source transport remains2 Na inside to2 Na outside with all 4 carrier occurrences inside; other 24 material occurrences are unlocated. Complete incident prose/evidence and retained occurrence ledger preserve coefficients, omissions, source sides and locations. Top-level triples do not encode typed occurrence quantities/compartments; no globally located sodium, invented carrier identity or transport mechanism is inferred.
+
+### Class, microstate, isotope and structure scope
+
+representation: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+Native methanofuran, F420 and ferredoxin classes remain generic. FORMYL-THMPT does not become an exact ChEBI17114/58018 mapping; KEGG ionic and Rhea proton/location differences remain. Twelve concrete native CML constitution/formula/charge comparisons and eleven direct ChEBI InChI-derived comparisons retain isotope/stereo/fixed-proton limits. Formal Hmd/Mch/Mtr balance is not physiological full-route balance; remaining generic equations are undetermined.
+
+### Catalyst-specific cofactors, inhibition and native conflicts
+
+evidence: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+Mo-specific cyanide inhibition is not transferred to tungsten/all Fmd. Mtr activity FeS/cobamide versus complex cobamide-only statements remain separately supported on affected edges. Historical Hmd absence of Ni/FeS/flavin does not establish absence of iron. Seven real regulators retain exact activity targets and signs; no class object becomes an eighth instance. Source-only assertions remain visibly source-only.
+
+### Protein, strain, paralog and preparation limits
+
+grounding: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+Marburg Q50744 versus DeltaH O27784 retains exact 321 aa ENA comparison, five residue differences and distinct sequence cautions/taxon parents; no kinetic transfer. AF_RS10430 family/similarity support is distinct from AF_RS11105 and eight divergent GeneIDs stay unresolved. AM1 Mch is bacterial C1 context, not methane formation. Historical Hmd/Mtr assembly preparations and quantities are not conflated.
+
+### All 20 accepted claim qualifications and primary reading limits
+
+scope: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+All 20 complete accepted claim paragraphs and every planned incident clause survive. Kurth Mto demethylation/expression, H4F surrogate/CoM negative acceptor, distinct MtoA/MtrH and proposed energy/flux interpretations are correctly bounded. Full Kurth main/SI and selected spreadsheet scope are reused from accepted reading; historical papers retain abstract, unavailable-full or inherited partial-main limits. Native citations do not become whole-route experiments.
+
+### Corrected assay locator incorporated
+
+provenance: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+S15 uses Methods PDF 6–7, Figure 4C/caption, Results PDF 11–12 and supplementary S2B in maintained root and incident prose. Figure 3 is explicitly not the assay locator. This verifies incorporation, not GitHub issue closure or merged publication; issue 626 remains governed by the later verified merge.
+
+### Complete evidence artifact identity and durable retention
+
+provenance: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+All 148 declared references have exact source artifact bindings:131 own native bodies, 13 complete abstract-batch hashes, 1 authentic Kurth PDF and 3 pinned taxonomy-cache references. Exact root receipt and sodium reuse are distinguished from failed attempts. Sixteen complete frozen packets retain original author/reviewer attempts and scopes. Archive retention is not itself new scientific acceptance.
+
+### Typed authority existence, canonical labels and current schema
+
+schema: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+The separately accepted finite authority implementation and actual integrated owners preserve all old authorities and add only92 verified native terms and 3 taxa. Native unnamed reaction labels, bounded homomer naming and exact class/category roles remain. Final current corpus schema/identifier gates and stable input hashes support maintained integration; no global policy weakening or unsupported public equivalence is asserted.
+
+### Visible complete scope and exported context
+
+representation: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+The separate final maintained page/KGX review is reused at its stated structural scope. All 101 biochemical SVG nodes/125 links and 104 KGX nodes/125 edges retain complete edge evidence and descriptions;3 unconnected taxa remain in ordinary page text/KGX. Root-only limitations are duplicated on incident descriptions. No pixel-level or interactive-browser validation is asserted by this scientific review.
+
+### Final documented maintained verification
+
+other: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+Final root-run validate, test, lint, diff and vendored/render results were independently rebound to retained compressed logs with exact decoded-byte hashes. No expensive suite was repeated. These gates establish deterministic consistency at declared inputs; they do not independently establish scientific truth.
+
+### Original XML bytes retained with narrowly scoped staging metadata
+
+provenance: supported. Targets: MetaCyc:METHANOGENESIS-PWY.
+
+The one added owner-local attribute file accepts upstream end-of-line spaces without modifying source XML or broadening code/document whitespace rules. The initial failed root check and corrected successor are separately retained and independently accepted. This scientific review does not close issue 628.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+- retain: MetaCyc:METHANOGENESIS-PWY. Preserve the exact native six-reaction CO2-to-methyl-CoM definition. Adjacent methane formation/electron regeneration, Mtd alternative and broader pathway classes must not be silently merged.
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| record | data/pathways/methanogenesis-from-h2-and-co2.yaml; Complete 3,360-line maintained document: root, taxa,94participants,6reactions,125edges and148references | supports | Entire maintained document parsed/read and byte-equal to the previously fully read accepted composition; all fields and assertions are in scope. |
+| composition | research/pathway_additions/2026-10-15-next-270/record-preparation/independent-record-composition-review.tar.gz; REVIEW.md,RESULT.json,scientific-dispositions.json,reference-bindings.json; manifest04198da4b79437a0fbbc29f3b5ed72768d8008e2942bb1feb1b484d89bb6f4e5 | supports | Independent complete composition review passed 1, 589 checks, all 148 references and 20 claims, 13 reproduced outputs. Exact record bytes are unchanged; its declared scientific reading and caveats are reused. |
+| native-graph | research/pathway_additions/2026-10-15-next-270/accepted-preparation/native-graph-independent-review.tar.gz; REVIEW.md; manifestd945acd1f4e48e462e4db2bc3ed4f3db197bc421d8ed99ef3a40946fc613c19e | supports | Independent finite native review covers 177 exact originals/2061 own slots, 101 declarations and 125 edges, all 30 material and 43 component occurrences, 15 activities and 7 real regulations. Unchanged claims retain exact original assertions and native source-only limits. |
+| source | research/pathway_additions/2026-10-15-next-270/accepted-preparation/independent-source-closure-review.tar.gz; REVIEW.md; manifesta64814d2b73ce4f5399704f087a816be51bae880fc448f13ec231a935d6812fe | supports | Earlier independent source review covers authentic Kurth main/all 5 figures, supplementary DOCX body/all 7 figures, selectedS1/S2 and all S3;14 abstracts and explicit unavailable/partial historical scopes. Its sole locator finding is superseded by the separate accepted correction; no new full reading is claimed. |
+| locator | research/pathway_additions/2026-10-15-next-270/accepted-preparation/source-locator-independent-acceptance.tar.gz; REVIEW.md/RESULT.json; manifestef8ceb23771aae539748233f9f0099cfe14e363606d1bcfccacbe3c457597caf | supports | Corrected S15 locator is Methods PDF 6–7, Figure 4C/caption, Results PDF 11–12, and supplementary S2B. All 20 claim values otherwise remain; JSON escaping of unchanged S14 punctuation was separately disclosed. Current maintained root/incident prose contains the corrected locator. Issue 626 remains open pending verified merge. |
+| issuer | research/pathway_additions/2026-10-15-next-270/accepted-preparation/independent-issuer-review.tar.gz; REVIEW.md; manifest3d2baf4aa3bfbb0cf7278337e7796ea5c6c02c822ced83b7d4bfb6f611573a50 | supports | All 108 finite 18 material/6 reaction/57 protein/15 activity/12 taxon dispositions accepted with exact 76 fresh acquisition bindings and 6 reuses, retaining chemical class/ionic/stereo/transport and strain/sequence conflicts. Existing full-cache hash is reused with selected statements and unchanged metadata, not freshly recalculated. |
+| native-originals | research/pathway_additions/2026-10-15-next-270/authority-source-originals/reference-original-bindings.json; All131 native reference entries, own original bodies and exact successful acquisition or reuse receipts | supports | Current maintained original hashes exactly match the record reference hashes and accepted frozen originals. Root acquisition is a hash-bound receipt wrapper; sodium is explicit historical reuse, not a fresh successful request. |
+| primary-originals | research/pathway_additions/2026-10-15-next-270/accepted-preparation/methanogenesis-source-preparation.tar.gz; originals/primary/selected-pubmed.xml SHAa7594bb3cea7d15bf6afaa53a756016b6e592daaa297410a7faff97871c1c260; originals/primary/kurth2021.pdf SHAf15d78d1ccca763d30f0ba74eb5f1867688623a4e6833c05373ff056811d008b | supports | Thirteen references hash the authentic complete abstract batch and Kurth hashes the authentic main PDF; all 14 IDs/titles and artifact identities were checked in the accepted composition and rebound now. Paper citations in native objects do not become independently read experimental evidence. |
+| taxonomy | research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/three-direct-taxon-selected-statements.json; Complete selected issuing statements for2208,145262,2179 and retained taxonomy-query-receipt.json | supports | Exact native direct associations agree with pinned taxonomy labels/ranks: M. barkeri species, M. thermautotrophicus species, Methanothermus genus. Reference hashes identify the full pinned database89998447813e3151d1116222a3ec4b74959ccfb492114db134acee753f63548d; selected-row JSON is not misrepresented as that artifact. |
+| authority | research/pathway_additions/2026-10-15-next-270/integration-preparation/native-authority-independent-review.tar.gz; REVIEW.md,RESULT.json; frozen independent implementation acceptance | supports | Independent peer review accepted exactly 92 new native terms and 3 taxa, preserving9 prior graph authorities and every previous source/ontology owner/value/order;10478 assertions, 273 adversarial cases and 1645 targeted regression tests. This is reused implementation acceptance, not a fresh author self-review or full-suite rerun. |
+| integration | research/pathway_additions/2026-10-15-next-270/record-preparation/integrated-authority-independent-review.tar.gz; REVIEW.md,RESULT.json; complete24-file frozen review | supports | Peer integration review binds669 approved authority paths, 12 retention paths, append-only documentation and all prior owner values/order;20089 checks. The current actual source snapshots and adapter are separately hashed canonical inputs. |
+| novelty | research/pathway_additions/2026-10-15-next-270/integration-preparation/landed-novelty-review.tar.gz; REVIEW.md; manifest7bc78495e1a7d55c2a7a9ba5b412677570d34f54d9d9414620769547e7765645 | supports | No duplicate maintained route at actual landed e8ae5e445d3288717c31d3012611e226fd5cca34/tree1c03509290f5c76048cb293bdd19c1f57143059c. Acetogenesis, methylphosphonate methane and broader methanogenesis mentions are distinct or contextual. |
+| maintained-rebind | /private/tmp/pathwaymech-next-270-canonical-maintained-review/maintained-scientific-rebind.json; scientific-rebind-checks.json; exact terminal successor and retained initial harness failure | supports | 1811 current rebind checks passed: exact complete target, all 148 references, 131 native originals, 20 root/incident claim placements, 125 edges/220 evidence blocks and 16 retained archive digests. Full outer path/type/size inventory and selected member bodies were checked; prior complete outer hashing is reused and nested containers remain opaque. |
+| gates | research/pathway_additions/2026-10-15-next-270/final-verification/gates.json; All seven terminal commands, 16 exact gzip/raw logs, integrated_owners, supporting_receipts and resolved_attempts; raw full-test summary and warning section read | supports | All required root commands pass; 7, 149 tests passed, 3 skipped, 7 warnings. Current independent hash checks bind every retained gzip and decoded log to its raw original and all 704 integrated owners. Initial staged exit 2 is retained, separately corrected. Inventory was captured during the run and rebound afterward, not before launch. |
+| source-preservation | research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/source-attribute-independent-review.tar.gz; Complete33-file frozen packet; REVIEW.md and RESULT.json; manifest30a5ac89bf6d29c163fcb5ea7e819f18ff15f18f929f7106e85035d3a106d066 | supports | Independent 3, 776-check acceptance of the one-file directory-local XML attribute successor. All 703 previous owners/223 XML bytes unchanged; original failure and case-alias reviewer assumption retained. 17 negative boundary controls pass; case-fold behavior documented. Issue 628 stays open pending verified merge. |
+| page-export | research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/maintained-page-export-independent-review.tar.gz; Complete25-file frozen packet; REVIEW.md/RESULT.json; manifest227cee3cae9552f609407bb68bd04dcf2d34e2d23b0a6d7046d1ec381b4b3f67 | supports | Independent 2, 742-check final page/KGX review; actual page9e78b48a differs from accepted preview only by maintained source link and CREATE history. All 125 full edge payloads, 20 claims, 148 references, 104 KGX nodes, 101 SVG nodes/125 links and three taxa preserved; all 266 previous records/pages exact. Structural no-JS scope only, no pixel/browser QA. |
+
+## Limits And Additional Notes
+
+- Authoritative native structured-source assertions are valid at their stated source scope; attached papers and evidence tags do not establish independently read whole-pathway experiments. Historical unavailable or partial papers remain limitations, not silently filled gaps.
+- Generic methanofuran, F420 and ferredoxin classes, charge/stereo/isotope uncertainty, native versus Rhea/KEGG equation/compartment differences and disputed cofactor/direction assertions remain unresolved where stated. No new public biological identifier mapping is approved.
+- Top-level graph endpoints alone do not encode typed coefficients or per-occurrence compartments. Complete incident descriptions/evidence and retained occurrence ledgers preserve source facts; consumers discarding that context lose transport/quantity information.
+- Taxon associations do not prove every strain or pathway reaction. Species/genus/strain differences, historical Marburg/DeltaH mappings, AF paralogs and unresolved GeneID pointers remain qualified.
+- Full Kurth main/SI and bounded spreadsheet reading are reused from prior independent source review; this canonical turn does not claim a repeated full literature read or new acquisition. Vorholt full main remains unavailable and Kaster scope remains the exactly inherited partial-main/abstract scope.
+- Full pinned 14.1 GB taxonomy-cache SHA256 is reused with accepted selected-row and unchanged-metadata evidence; no new whole-cache hash was performed. Nested archives remain opaque except for specifically declared earlier scientific scopes; finite novelty checks are not global discovery exhaustion.
+- No additional iModulonDB dataset survey, interactive-browser test or pixel-level readability audit was performed. The separate maintained page/export review supplies its declared structural no-JS/context scope.
+- Issue 626 corrected locator is incorporated, but this clean canonical observation does not close the existing issue or authorize an unverified merge. Public-release licensing review remains deferred under the user instruction.
+- Governed source-input path grammar excludes the literal-percent filename research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-NA%2B.json from direct source.inputs. Its exact SHA256 4cf3976976a7e1683d0975a11f5f98775f1580767cf96c1922f8029e24b423cc was checked and is bound indirectly by gates.json integrated_owners and the accepted native-authority implementation archive membership. No filename, byte, schema or rule was changed; not every one of the 704 owners is a direct input entry.
+- Review preparation began at the actual recorded UTC time; governed inspect ran after root declared target ready and before maintained assessment. Initial hashes were rechecked rather than silently refreshed.
+- Required full maintained commands were run by root and reused through exact retained terminal receipts and decoded logs; no duplicate full suite. Initial reviewer harness failure remains preserved and was corrected solely in owned scratch code.
+- Only the new canonical bundle is written through the governed saver. Record, pages, histories, Git/GitHub, source owners, cache and installed runtime remain untouched by this review.
+- Actual page/output owner hashes are included; generated products are owned by the maintained renderer/export modules and record/history inputs, not hand-edited pages.
+- Two final peer archives contain 58 complete outer files independently decoded and compared; prior 16 preparation archives retain their narrower original 6, 883-member scope. No count is silently expanded into a new full source read.
+- Additional exploratory receipt filename and manifest-key assumptions were corrected only in reviewer scratch helpers. Initial failures and additive final owner-context inspection history are retained. No product finding resulted.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261016T025354Z-methanogenesis-maintained-record-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Maintained scientific review: methanogenesis from H2 and CO2'
+started_at: '2026-10-16T02:24:31Z'
+finished_at: '2026-10-16T02:53:54Z'
+reviewer:
+  identity: Codex /root/next268_reaction_review_completion
+  kind: agent
+  independence: independent
+  independence_basis: Did not author the record, native graph or new authority adapter.
+    Earlier independent source, locator, issuer, novelty and composition reviews by
+    this reviewer are explicitly reused. Peer graph/authority reviewers authored source/issuer
+    preparation and historical renderer contributions; their scientific inputs rely
+    on the separate source/issuer peer acceptance. No own authored scientific record
+    or new implementation is self-accepted.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+native_verdict: Qualified scientific acceptance of the maintained six-member source-native
+  record
+scientific_review: true
+summary: No actionable finding in the complete maintained record. Its six-member native
+  route, 101 biochemical declarations, 3 rank-qualified direct taxa, 125 evidence-bearing
+  edges, 148 artifact-bound references and 20 accepted scope qualifications remain
+  faithful. Source-only assertions, chemistry/transport, direction/cofactor, strain/sequence
+  and primary-access limits stay explicit. Required final maintained gates passed
+  at the retained exact inputs; this is neither a physiological whole-route proof
+  nor permission to close issue 626 before verified merge. Issue 628 likewise remains
+  open pending verified merge.
+source:
+  git_revision: e8ae5e445d3288717c31d3012611e226fd5cca34
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 4836f2ecdec689c8ddec07e848b77dc120096b62dae6119e2a3948348adae4b8
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: ac1de7c96a49c1e76d3981bc048671e4c5576086c6688ec528c6e12b3b644f29
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: a667c8566e30187ca29b7828095b1732a3511461c3da5eeb54296fdc298b0bfb
+    role: actual integrated authority snapshot consumed by required identifier gate
+  - path: data/identifier_authorities/sources.json
+    sha256: ad3a64a4ed6c596545563e4208dc1e7cff57134be9550074a1a0153ac6d2b575
+    role: actual integrated authority snapshot consumed by required identifier gate
+  - path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+    sha256: 553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 9cc272d3663ff415c89c906693993bea39d74f3fc8b9e023154a3f102ff91848
+    role: context
+  - path: docs/CURATION.md
+    sha256: 2a90c445177b52a179df6b4ee237dbff61e6bcf0e7918a798764dcb0e9292e0b
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 2d2c7d0a069f58fb74a9d44f5ccb8ecb61fee89360f9f0bca20798c801a02d16
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 8d2f0f4746aeaaf6e0a66c6eb0bb63950c160d00f395698dd9be1fa47a463861
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/infrastructure/native-methanogenesis-authority/2026-10-16T021851Z-codex-b08afc.yaml
+    sha256: e3782cb60f7b8430c41b83b8e507f26f582d0997fa69e7f38499e04e67a59da9
+    role: context
+  - path: history/records/methanogenesis-from-h2-and-co2/2026-10-16T022458Z-codex-501fa5.yaml
+    sha256: 4e30534da013b57288bb983a87ae0998ffe5083c0d6b5d966d9adc8d7841b31b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/browse.html
+    sha256: bb102271cbd2807f9240525872b132a32fe31a3cfeb1342f96635ebf3c1e7c72
+    role: generated output context; owners src/pathwaymech/cli.py, site_display.py,
+      graph_view.py and kgx.py, driven by maintained records/history
+  - path: pages/downloads/edges.tsv
+    sha256: 6cb547f54b98bd6022c11a4254671148c35413161e44c3187039d328187ba9f0
+    role: generated output context; owners src/pathwaymech/cli.py, site_display.py,
+      graph_view.py and kgx.py, driven by maintained records/history
+  - path: pages/downloads/manifest.json
+    sha256: 33d2044658b5588dbb491330edd9bba09b034fdeba42cfcf8ab1677bf00678dd
+    role: generated output context; owners src/pathwaymech/cli.py, site_display.py,
+      graph_view.py and kgx.py, driven by maintained records/history
+  - path: pages/downloads/nodes.tsv
+    sha256: ea64e7bfdbb0a6f983c14edab1988ab72c542fa6891ee721631f982d97bf5eb6
+    role: generated output context; owners src/pathwaymech/cli.py, site_display.py,
+      graph_view.py and kgx.py, driven by maintained records/history
+  - path: pages/index.html
+    sha256: f52e3db5aa35ce00b5260f00c14f3fbee58d716f25a9c789c90f05c3abf710a0
+    role: generated output context; owners src/pathwaymech/cli.py, site_display.py,
+      graph_view.py and kgx.py, driven by maintained records/history
+  - path: pages/pathway_index.json
+    sha256: 7f5dc7b70a7784cefbe8b9e4528d464b4b01e1d0887b92fb53fc9f74edf96f10
+    role: generated output context; owners src/pathwaymech/cli.py, site_display.py,
+      graph_view.py and kgx.py, driven by maintained records/history
+  - path: pages/records/MetaCyc_METHANOGENESIS-PWY.html
+    sha256: 9e78b48afb06c2d2a5bbfb50e745eda6995b1857ce6c93d5d159a7bb9b02e30d
+    role: generated output context; owners src/pathwaymech/cli.py, site_display.py,
+      graph_view.py and kgx.py, driven by maintained records/history
+  - path: pyproject.toml
+    sha256: 4b2e0f7c4613ca71985eac779df68d6847f12ece4c373f6a49090125bd1b2b83
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-270/README.md
+    sha256: 77ccab0392e568964e0373265386fd84cfa59ef802e83032eec075909893d45b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/README.md
+    sha256: 8a01d1f61e4b1dda06934838ae9756c427b70b4184f7d4fa828e8b05dbefd84f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/discovery.tar.gz
+    sha256: f882d4ab167b4ed0d54c39094502a6189b22adf418c7aee01c3d6799815b39fb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/independent-issuer-review.tar.gz
+    sha256: 1d501414d6b8dbb67e1cc2400bd65098bea4fbd0eff31136e876092fc959697b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/independent-preflight-review.tar.gz
+    sha256: f7a3f2751ba6a247abee4a8e03853a18e737639802c55ce26fa772fc4ddf49fb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/independent-source-closure-review.tar.gz
+    sha256: 9b7dc91a8ddd369c6304367b61991b9e7a9e79bde163bd97e441e8645d6a2e90
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/inventory.json
+    sha256: 65ca2aff644df7d93c56ee66bd87bb0988102666987fc4aaa3bb55cf6240d539
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/methanogenesis-issuer-preparation.tar.gz
+    sha256: 5d4752e6e55426a7c96ee9739d727ed40052bee04b9210551502611223b4904e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/methanogenesis-source-preparation.tar.gz
+    sha256: cd032a34c083644f2543973e192dc61a40bf6a99c50273976afbb5e98aba8ee0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/native-graph-design.tar.gz
+    sha256: f55de26d5a7c7e32c6546757f3cc6cd309d1050dfc5c69bbb33fce397d356ef8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/native-graph-independent-review.tar.gz
+    sha256: 6a2ebc22640db12007fc9a8ca8592b56d697729035aecd022f59092dd41f2975
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/source-locator-correction.tar.gz
+    sha256: be0a486d839fc6d5962781ca0094a8f570fd152def9841b75be01968e1610872
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/accepted-preparation/source-locator-independent-acceptance.tar.gz
+    sha256: d2bcac40d8b6bb151e07dbffa48a776dc0df98b5ab1ea1dcf0cbccc9aad0e5b9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/.gitattributes
+    sha256: 7f12bedf58cfc88064420816fc4bd0a5c23f50b089c7afc312dbe0e8ba238d9f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/README.md
+    sha256: b5b86242b16e3bb7241d12cefa0a9b66e9281b269930cd516cae2c56850b737e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition-bindings.json
+    sha256: a95577321f0ab70889a89ec96d4b90a94e2cb3db9b2b163b22eb5eda3cd4e99f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/discovery/results/acquisition-network-METHANOGENESIS-PWY.json
+    sha256: fcc7db248e34435dad2231fb35cd665e65b2c78f63911a8f4938b5e13b12263e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS00880-MONOMER.json
+    sha256: afa229c894d4747226f7fdc1282cca77166f17ac72d4efcc24f2eb43a3687b2f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS08270-MONOMER.json
+    sha256: 159775b4ffc2c8fa05a6d777fd7cda4da6c09ad3f6b414a27a48b3dcf61be763
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS08295-MONOMER.json
+    sha256: f0b2844b6b54e1095a06c3b73fa486d10366a48d5953c871af894d7ebd5d006f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS08305-MONOMER.json
+    sha256: 9253035ee1adec70e68640aa46925f2bad2fb7ee75f09e82e44643fbf6b1defb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS09685-MONOMER.json
+    sha256: 6f57eb5676e48217d70d007791ee3e88bc269e81252e864d4ca1bebf16d7fd5a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS09690-MONOMER.json
+    sha256: c22d1fa08f76b6d330f296d7413b0da7558fca3c150df053be104347c7e2643e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS09695-MONOMER.json
+    sha256: 08039a87263b1576250d88cd0732287dd1ab5c5f6c87075bf95f90afb7ddaf43
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-AF_RS09700-MONOMER.json
+    sha256: b4c3b07d731806349dac4a98d84b229f8f00e176eccecbc617be40fdab5d0b5a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06315-MONOMER.json
+    sha256: f457d57de8b785ce19e564b239ff08e17b99dc0f80533db2b918174e87fb8659
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06320-MONOMER.json
+    sha256: c394f69f505b6fbf9b183a26ce7c60862aa0b0be9fc5928dd24b5271df41a6f3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06325-MONOMER.json
+    sha256: f3199c25602bcab66a5d53d0c59d7329da467273ac6dc8f4ce37ffa87e6c303e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06330-MONOMER.json
+    sha256: 66c749a209c0c58e95b8f9326fbdc610f6717aca3bf4780666b9369864ed2459
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06335-MONOMER.json
+    sha256: 5a6adfb7cfeace82b3db27abdb4a13f18fb1999f391fe158606ec7d22d350d96
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06340-MONOMER.json
+    sha256: aab9a01201f7ce6b79be04573c11270156abb127d5ff11df3aecb8aed5045a74
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06345-MONOMER.json
+    sha256: 685e4e41e303d89b524dd0c67ac64f5345f430237c6fd25af317f1623d2f6441
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-BP07_RS06350-MONOMER.json
+    sha256: f4a579932c9c91df11e99ba3e02b87196287bb6498fc69ac40d187c963d48022
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CCO-CYTOSOL.json
+    sha256: 9c4fe7f750a0841617d5903f54bed40a2e095a680395c57dee12d568fd233e0f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CCO-MEMBRANE.json
+    sha256: 5d4823af94bddd8061faf28206a1f6da27f6b314b2c6cae58461482fc4fbe16c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CPD-15873.json
+    sha256: 654f64ee97729d42b23789ccf89dab34c5ce20202e649ae9380d07b66c2e0dfa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CPD-19570.json
+    sha256: 4247e698c9c0a20f8f4bf58424d09f3d01802f307329b72a2952f469dce73aeb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CPD-21374.json
+    sha256: 5d07efafa5d1b1f8587f8989debd5ae0810986dda39187cd653a000e046dd20b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CPD-7.json
+    sha256: 239c1801a36ea838ec3480c2b71939d28422a1302cd22d080447adcd92ed02d0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CPD-7162.json
+    sha256: a603e2cf709294f6ca0761e076a15c308dbb82a99fe5e363f97d70e9923c8210
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-CPLX-642.json
+    sha256: c6e9a3edd358e98842901cfb1526ad3a6e5b44e5838d1a802a4c7e5fbd1541c5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDAMBARK-MONOMER.json
+    sha256: 9bba9b99e048878d4134557a6f85572e546e535a40e8c1fb167d36e22bfcc97a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDBMAUTO-MONOMER.json
+    sha256: a2b6424d38c988eaa3cbef7e8e7d3063e857191f3c3b5410c6227a94dd6b9883
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDBMBARK-MONOMER.json
+    sha256: 2ee8d0fb6086ec5ae9f04f2052035ad854c62b65131053d853d91aef92bbe196
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDCMAUTO-MONOMER.json
+    sha256: b6c3e28855790b9ad80f204668fdb89c03e66e9c72c549e3ede6ccf0194aab2b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDCMBARK-MONOMER.json
+    sha256: 0bc3dadc2bf8620aa0bfacd2b472a8060df6d2b983a4a48feb90c7a6469ce515
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDDMBARK-MONOMER.json
+    sha256: f26e871835ade0c5cddd9d7b19958429976e18853c7fc9ea4a775af59b7453bb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDEMBARK-MONOMER.json
+    sha256: a8ed7f9273dc35e063b5fdf3e2e67cf754bb3197d86eebb2d60b8375f0dcc2b3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FMDFMBARK-MONOMER.json
+    sha256: a0cc1fd7f541981c31a9ab8f082c6241c64f3951441e0af6e7e15c48b86b6f6f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FTRMAUTO-MONOMER.json
+    sha256: d2f7fe81cdaa95ef76625d33ad9941bcb6ba8d5540806429ca2dce006790f7da
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FWDAMAUTO-MONOMER.json
+    sha256: 774430116f9611678fe6043ac46ea2d1edfa4571144cf3134d2d57cf5e0ab808
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FWDBMAUTO-MONOMER.json
+    sha256: e6659d92a3e423cf64748efe2ea0a9c9ebafc676d49283041896f7b6ff64b1e4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FWDCMAUTO-MONOMER.json
+    sha256: 516e7161472c69cddb275e14ba4e1cb84f410f9a0b1b2eb921090b93354d839a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FWDDMAUTO-MONOMER.json
+    sha256: 75132d5cf723ecbc88ca85d337e3e0ccf2501844ffcbd30eff072e75b03caa11
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-FeS-Centers.json
+    sha256: ab737dc93166d78320a1eb8049817eb5cb7718524172bc5b5d77df5a4ce77901
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-HCN.json
+    sha256: 9dcbcc4feabcf1ecf29556ecf8b71fdfcdfa83c60501b2e4b1b31277efea044e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-HMDMAUTO-MONOMER.json
+    sha256: 5e88fc8b79b58c4f08943eaa5ad99f27d2ce77d18ed9d136de603cbb2a9a2ef8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-MCHMAUTO-MONOMER.json
+    sha256: b78226139e2fd839a901230d35e89f5ba6f49d1d324a335bd386d9c64a3d2680
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-MERMAUTO-MONOMER.json
+    sha256: c23c097c9413dfd007db4492eea9064857d0e5c900e32ff5e5a5eb14d7dd73c9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-MG+2.json
+    sha256: 937ca69549997f9ddded31f9e6968e866dbb330df95ad37e5d0f8719bad6cfb8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-MN+2.json
+    sha256: 6be66eea6b673b4bf88f2d23d981702523dfbaca7e8aa61c72f49efcb991ef0a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-MONOMER-4021.json
+    sha256: c5b8fb626fd9ca3fb61b5eaa684586f132f3a91f8a8b0508f649b5ee3dddfa84
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-OXYGEN-MOLECULE.json
+    sha256: 3db72a037812ea2bac6047332f755cd55f73dfe228411d5716aa865dd0b4cebe
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-REG-10183.json
+    sha256: af12a148b601a1f62eb2453eb0388e9fad50c06c2810d27d1f974f9401b443d2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-REG-10357.json
+    sha256: 99313cfc44f2b3be7bc245a27558abeae3b711d955c5d9b923c280cb0acea46b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-REG-11191.json
+    sha256: 909fcdd510dc6f4f58705ddde0d801745d4978101014a2fd83cd5265b53f5448
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-REG-15400.json
+    sha256: 973db04ec5316c20c39453599656d22bc226f096dc26347d7a7bb0cf5c0ccf10
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-REG-8185.json
+    sha256: 9dc0cce3f9239ae768e055576cc5b8989df11d8a410e1644e8aa5dc0947a0cc9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-REG-9174.json
+    sha256: c919d35911307f551dc43a6a9430c4364a24d9ac11441236f87f4688524a7d35
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-REG-9176.json
+    sha256: 66f381f0209d89585e7e49d8576119b86fd112215132d94aa3898fb98722addd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-145260.json
+    sha256: 052f85f2e795cac1629891c6f58cb6e7cd8ab50294378ef69c7b5e84c78e6033
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-2207.json
+    sha256: a8246dc7f781bf8356cc7c12cc95061447fadcbe3eeb6964d182c78e8813acee
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-2234.json
+    sha256: a192c54e1883d583656c4717462630e799ded9fa967576be7aefadbb6f01c075
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-224325.json
+    sha256: 78dfafc746bfecb288580a0ce52c98a050047e609b9c7114c3f9313ef9c33461
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-272630.json
+    sha256: c19d4a622da3c7019ee6530b2d0800726ad93665e66a13117c0a79a580625b72
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-408.json
+    sha256: dda40b5560306d0b4d786e9024a61d423885e3fa5052069ae8442f7fed38a717
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-660063.json
+    sha256: 78be254b19a91ecc70ba0ac008fe32637dd43cf45b280cdf68b7bb435bb8740a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure1-TAX-660064.json
+    sha256: a84dfce84418222e65d29cfaa17421750d8e996de65a6e0cdd5cf43f909f238c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTRAMAUTO-MONOMER.json
+    sha256: 1007acd1a6f295821afaf2ad22400c448d3949a9342d09dc989a08216d96cdd6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTRBMAUTO-MONOMER.json
+    sha256: 2d3687dabed71b785e5697708d3af9e6079e3eae4a6cf4ea588738d8942028bd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTRCMAUTO-MONOMER.json
+    sha256: b70cef45c57caeaea18af41aaec78c49bee4de45647c8e4d4b0c7aba18a102f4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTRDMAUTO-MONOMER.json
+    sha256: 23aa40940263d4dfc0fc8cc61e79df68c46f5783c2588ad40bd15d0418c66ab3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTREMAUTO-MONOMER.json
+    sha256: c9d028550b50779cf3e87b44eb90a766e87daed3e06d1126c28a95150a1441f8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTRFMAUTO-MONOMER.json
+    sha256: 2228fdcc8da32158d2b9d991009d45ca9ebd79591715b96de4fba0d6bd5c0263
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTRGMAUTO-MONOMER.json
+    sha256: 0385a1ade1374dcf622827ee4c2fd9e8115b9856d3249d380b25b91abde6fe18
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/closure2-MTRHMAUTO-MONOMER.json
+    sha256: 219cb1f780d89bf57da94a9206bbbd12b8d124d10ecf762dd8f294086851a024
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-AF_RS05405-MONOMER.json
+    sha256: 2e765b4b95fc0cd90758289355df20dfb1456b205363a6303dcacca74352dead
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-AF_RS09720-MONOMER.json
+    sha256: 48b942a314e7c5e7c477052b3bbf48b6fc97d3350d8f0926a395810ca47e7088
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-AF_RS10430-MONOMER.json
+    sha256: f31bb0f835fbc446aff200f53b1dc39d124ca7bf25215d020bfd070ae9872039
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-AF_RS11105-MONOMER.json
+    sha256: e338df7c721b9e7f72a55b720f76b76b44a007e52b0caab54d818bdd5ee0117c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CARBON-DIOXIDE.json
+    sha256: 6e56cb52fa80df3256766d9403db0a344825e9ea2aeac83d2968a07d603479f1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CCO-IN.json
+    sha256: 018ab74daddd64e0e2ed591f586f14249ae2718446791f9683424ba291fb3dfb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CCO-OUT.json
+    sha256: a62207b2f304569b6358d1e05fb2f1629ea57883043beb4a2bbdc531f91cf424
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-3321.json
+    sha256: c8badc54a252ddf186312fb0345d72337e6ab84e0af09a12ab14e412a20bed16
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-381.json
+    sha256: 613e96b851970b7cde3b68cf4ee8d8dd300cb3dfe4c04a4abf68b4eaec632036
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-561.json
+    sha256: af36c0aef4ee1c8eb61391f29dffc36be21040c3c0069e14e9a733c6adafa1d4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-562.json
+    sha256: af17b1e49d75f77b457aa5363514942d3c19c6cf1c2ac16422e4befa54025658
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-581.json
+    sha256: 09ad2b7eeebd780dd21b7779bd51dfedaf6caff2e7396e3ffa2ab51e4fe4e20a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-601.json
+    sha256: 6cb5c59e9f8d00dbfa90601d704962a11f3377e72c956808148fb0470db2eb0f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-622.json
+    sha256: cc97549458221a1b5b3dcf03aeda4879c46b5e8ab4d5ca1a5794cd36b6164bd2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-641.json
+    sha256: 0fa1f2e2f47a557a3be2cea27281af9956b33eed6b31f5bd391b82614179d7e3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX-643.json
+    sha256: 841c30d6ed8e7fda09b62c0ec6407f3c3bcf19275bd32bc51ad942945d608346
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX2065-6.json
+    sha256: f182a64616e18328bb7edd2496af88a115de37687c2c4ab06cba444b9605db85
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CPLX26TB-9.json
+    sha256: ce8b360c0751270289c34b020307ded94c86defc7060fa96644bc55e3e8c6479
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-CoM.json
+    sha256: 50f92723d366e2dbedd2a2a9d4406c4144c12a763c3e2fef8e8fa4f935152876
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-4121.json
+    sha256: 2afa5166838179a08bdb13ac17650f0c2810313d680e1c077c92742d8912f336
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-422.json
+    sha256: dc4c5f19dfe1036c6f9c7c834abbbb9b822158bc3d7afde474292c58a9296978
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-641.json
+    sha256: 09482238e0993eff30a7030830a27d6948ae9f0739f5a24369e4eaa15bf86e62
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-642.json
+    sha256: 86e2deb17307bb0c0b77f2be47535c72fa95dac495bcb95665d212068492b8c2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-661.json
+    sha256: a659f5c1d9f64beabc481e09d1643f38ad992df59c9e6c3b4fc09fce3c583e77
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-662.json
+    sha256: bd9af3c15e6849c9c8e6c2e6196cc3090bd26586e80f3b104d44b6f18938fe13
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-682.json
+    sha256: 537b0bee9499751fd00f5bde423d5b2e9c62f106b62de61d2553b057e0c99e45
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-701.json
+    sha256: d9f851ddd551be4259527eacda7f17ccce0f939b2d1bd764e638ac1e5ee74553
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN-702.json
+    sha256: b8026cc2cc92cf746ea2d32da9e510901295ba868a73244cb1b866532bb913bc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN2065-393.json
+    sha256: 6d8eb785cf8ddac11cd8222e42a016ca15ad23e2a74b6367d00499071a8ea1a6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN26TB-100.json
+    sha256: a1f0b19f66e3115b14b0847f437d7fb3baddc46155ca57b6596d13c98be06d72
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN26TB-273.json
+    sha256: d439ab2b86332931ef61144221752042c6de66f0986e90f6f52059097dd3e36c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN26TB-48.json
+    sha256: c496df9ebf7208703dfe474b12cb53f1ff94b67172c0c6be2d43bac53a948050
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN26TB-75.json
+    sha256: 9ea81abf33dd4da5aeee75f851a5f543e37ad6c43e16124d47f19d75a0df6e50
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-ENZRXN26TB-96.json
+    sha256: 628174f0d0fb0c29278334dc76577a27acc3db842691a5fae4cc0e00c528d082
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-FORMYL-THMPT.json
+    sha256: a6004fb5db5c7383dc28f00d4a34c4789b0161ebe84119f9e12b268cb2182c84
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-Formyl-methanofurans.json
+    sha256: 91f82793173b1529f38c810ebf5b10af0271685f1877f6926905fd88b640bc64
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-HYDROGEN-MOLECULE.json
+    sha256: ebf0af3b13b769f4964835450019a345b3ecd4149d29ef2a217870b64c5cba41
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-METHENYLTETRAHYDROMETHANOPTERIN.json
+    sha256: 7b45aec35c8231d2575b2431934dc1f0c644b0296a8f5c6eecea19358c5d9d43
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-METHYL-THMPT.json
+    sha256: 3f39f02e0622a0f7b86ec9b49b628a949080f995eb4c02aa5cae4f0c41a3a2c8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-METHYLENETETRAHYDROMETHANOPTERIN.json
+    sha256: e11d467811b316cb25fd10d48ecc714f6ddd99079b3dac5d1cb24413f607c3cb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-Me-CoM.json
+    sha256: 05cfc91bb457eeee8b15be16016bf383a0f9d3a0d98037299a7b1c795ea832f2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-Methanofurans.json
+    sha256: 5ef9c1618e2bf976bb947721a99c8140ffc0c8d6e811ed680e077add7b8349fa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-Oxidized-Factor-F420.json
+    sha256: 41a3fb3598a0bc698443637d86e8c6751fb6b673a5e0355414bb4f80673daeeb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-Oxidized-ferredoxins.json
+    sha256: d79d3882d83236c97f7c742db755371fe8d6b037fbf24c897eb837c5eb910362
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-PROTON.json
+    sha256: a5892de5b768b79a13d3e1a46a25646c80e7c98d37eca8ee472190de4f35a4c6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-Reduced-Factor-F420.json
+    sha256: e30ef4b37a883a19b4d08e2bf5125d55187593eb533762f43fdd049176de92cc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-Reduced-ferredoxins.json
+    sha256: 0796e7d3d2789648be5370d48d2f4236eaa79aeecdf10ea0fdc9ce725046f5ae
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-TAX-145262.json
+    sha256: ce7ef003f6cb99807976f604fa6f23091835a32a6854e3420a369deea7afcac8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-TAX-2179.json
+    sha256: 017e4b68e88237859c5a2a8f390828379b0c2d7e692c6eebfd7c11424d0384ed
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-TAX-2208.json
+    sha256: 92919c27fa220ab60553296a76633c44b1ba400673be89572f0aea94dccc6030
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-TAX-28890.json
+    sha256: dfe072336bd947edae527c69a1c2bcc4624caa853bd82c89792fb29641e5a494
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-THMPT.json
+    sha256: 7cf2183aecc94baff2f0cd41235d1159eefc49455ee3f62fcf8f166d050ee073
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/direct-WATER.json
+    sha256: 5f5bef2c0982e31316cf0598053fed0225900e523ecda60ea478c9b72c6aae81
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/members-2.1.1.86-RXN.json
+    sha256: 89c4b2a9e784228c2ae336aeacf0cf951e8aeb30d81036acc0e0425108ead2f3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/members-2.3.1.101-RXN.json
+    sha256: 40aeb50a9b9690e99cb51d160e1e40a921d92b36b0e86e191ceb0ca05c7f3ebd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/members-3.5.4.27-RXN.json
+    sha256: 3b95b8bf077a6776a8878b7de83fced03b4e7cc53f587e86fb97bdc7454864a5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/members-FORMYLMETHANOFURAN-DEHYDROGENASE-RXN.json
+    sha256: f31841da750bbe5a69657b17ab159ad61979d99a703bd0606c1a9d0a029ad63e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/members-H2-METHYLENE-THMPT-DEHYDRO-RXN.json
+    sha256: 5536822dc626ef69c53a53a98757f9344d4c2975438bc91fd65f2ecdf2270eab
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/members-METHELENE-THMPT-OXI-RXN.json
+    sha256: 65bbe5185e0a8990b28a09b72dac92e2e795b7b3fd38ab3ff99215922f2290cb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/members-METHFORM-PWY.json
+    sha256: f82bfe177b10091dae9be9587e8274e256f456efd13e85de4e3079150a9b5152
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/exact-reference-bindings/inputs/source-preparation/receipts/reuse-NA+.json
+    sha256: 104f3fd8a07fc477eb7a59e6050a4784371caa3a9acbee41bdf3f12fb48dbc5e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS00880-MONOMER.json
+    sha256: afa229c894d4747226f7fdc1282cca77166f17ac72d4efcc24f2eb43a3687b2f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS05405.json
+    sha256: 69dfb3be66c301f34847cf1f03d10e15652e53550de9040e1313cf474337c006
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS08270-MONOMER.json
+    sha256: 159775b4ffc2c8fa05a6d777fd7cda4da6c09ad3f6b414a27a48b3dcf61be763
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS08295-MONOMER.json
+    sha256: f0b2844b6b54e1095a06c3b73fa486d10366a48d5953c871af894d7ebd5d006f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS08305-MONOMER.json
+    sha256: 9253035ee1adec70e68640aa46925f2bad2fb7ee75f09e82e44643fbf6b1defb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS09685-MONOMER.json
+    sha256: 6f57eb5676e48217d70d007791ee3e88bc269e81252e864d4ca1bebf16d7fd5a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS09690-MONOMER.json
+    sha256: c22d1fa08f76b6d330f296d7413b0da7558fca3c150df053be104347c7e2643e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS09695-MONOMER.json
+    sha256: 08039a87263b1576250d88cd0732287dd1ab5c5f6c87075bf95f90afb7ddaf43
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS09700-MONOMER.json
+    sha256: b4c3b07d731806349dac4a98d84b229f8f00e176eccecbc617be40fdab5d0b5a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS09720.json
+    sha256: f30249e794bf05b9d2905c5d25296503f550c7c685f530448b3831dcd8d9da5e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS10430.json
+    sha256: eada6aca82413a02d7ab2a76e832674acd8813ffb5e1a8f6ca50d76bfe07959b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-AF_RS11105.json
+    sha256: 14b2d617f8c0bd40884dad901faef8fb5245308b635deda243b666120a9d4d34
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06315-MONOMER.json
+    sha256: f457d57de8b785ce19e564b239ff08e17b99dc0f80533db2b918174e87fb8659
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06320-MONOMER.json
+    sha256: c394f69f505b6fbf9b183a26ce7c60862aa0b0be9fc5928dd24b5271df41a6f3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06325-MONOMER.json
+    sha256: f3199c25602bcab66a5d53d0c59d7329da467273ac6dc8f4ce37ffa87e6c303e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06330-MONOMER.json
+    sha256: 66c749a209c0c58e95b8f9326fbdc610f6717aca3bf4780666b9369864ed2459
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06335-MONOMER.json
+    sha256: 5a6adfb7cfeace82b3db27abdb4a13f18fb1999f391fe158606ec7d22d350d96
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06340-MONOMER.json
+    sha256: aab9a01201f7ce6b79be04573c11270156abb127d5ff11df3aecb8aed5045a74
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06345-MONOMER.json
+    sha256: 685e4e41e303d89b524dd0c67ac64f5345f430237c6fd25af317f1623d2f6441
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-BP07_RS06350-MONOMER.json
+    sha256: f4a579932c9c91df11e99ba3e02b87196287bb6498fc69ac40d187c963d48022
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CCO-CYTOSOL.json
+    sha256: 9c4fe7f750a0841617d5903f54bed40a2e095a680395c57dee12d568fd233e0f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CCO-MEMBRANE.json
+    sha256: 5d4823af94bddd8061faf28206a1f6da27f6b314b2c6cae58461482fc4fbe16c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CPD-15873.json
+    sha256: 654f64ee97729d42b23789ccf89dab34c5ce20202e649ae9380d07b66c2e0dfa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CPD-19570.json
+    sha256: 4247e698c9c0a20f8f4bf58424d09f3d01802f307329b72a2952f469dce73aeb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CPD-21374.json
+    sha256: 5d07efafa5d1b1f8587f8989debd5ae0810986dda39187cd653a000e046dd20b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CPD-7.json
+    sha256: 239c1801a36ea838ec3480c2b71939d28422a1302cd22d080447adcd92ed02d0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CPD-7162.json
+    sha256: a603e2cf709294f6ca0761e076a15c308dbb82a99fe5e363f97d70e9923c8210
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-CPLX-642.json
+    sha256: c6e9a3edd358e98842901cfb1526ad3a6e5b44e5838d1a802a4c7e5fbd1541c5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDAMBARK-MONOMER.json
+    sha256: 9bba9b99e048878d4134557a6f85572e546e535a40e8c1fb167d36e22bfcc97a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDBMAUTO-MONOMER.json
+    sha256: a2b6424d38c988eaa3cbef7e8e7d3063e857191f3c3b5410c6227a94dd6b9883
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDBMBARK-MONOMER.json
+    sha256: 2ee8d0fb6086ec5ae9f04f2052035ad854c62b65131053d853d91aef92bbe196
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDCMAUTO-MONOMER.json
+    sha256: b6c3e28855790b9ad80f204668fdb89c03e66e9c72c549e3ede6ccf0194aab2b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDCMBARK-MONOMER.json
+    sha256: 0bc3dadc2bf8620aa0bfacd2b472a8060df6d2b983a4a48feb90c7a6469ce515
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDDMBARK-MONOMER.json
+    sha256: f26e871835ade0c5cddd9d7b19958429976e18853c7fc9ea4a775af59b7453bb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDEMBARK-MONOMER.json
+    sha256: a8ed7f9273dc35e063b5fdf3e2e67cf754bb3197d86eebb2d60b8375f0dcc2b3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FMDFMBARK-MONOMER.json
+    sha256: a0cc1fd7f541981c31a9ab8f082c6241c64f3951441e0af6e7e15c48b86b6f6f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FTRMAUTO-MONOMER.json
+    sha256: d2f7fe81cdaa95ef76625d33ad9941bcb6ba8d5540806429ca2dce006790f7da
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FWDAMAUTO-MONOMER.json
+    sha256: 774430116f9611678fe6043ac46ea2d1edfa4571144cf3134d2d57cf5e0ab808
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FWDBMAUTO-MONOMER.json
+    sha256: e6659d92a3e423cf64748efe2ea0a9c9ebafc676d49283041896f7b6ff64b1e4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FWDCMAUTO-MONOMER.json
+    sha256: 516e7161472c69cddb275e14ba4e1cb84f410f9a0b1b2eb921090b93354d839a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FWDDMAUTO-MONOMER.json
+    sha256: 75132d5cf723ecbc88ca85d337e3e0ccf2501844ffcbd30eff072e75b03caa11
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-FeS-Centers.json
+    sha256: ab737dc93166d78320a1eb8049817eb5cb7718524172bc5b5d77df5a4ce77901
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-HCN.json
+    sha256: 9dcbcc4feabcf1ecf29556ecf8b71fdfcdfa83c60501b2e4b1b31277efea044e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-HMDMAUTO-MONOMER.json
+    sha256: 5e88fc8b79b58c4f08943eaa5ad99f27d2ce77d18ed9d136de603cbb2a9a2ef8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-MCHMAUTO-MONOMER.json
+    sha256: b78226139e2fd839a901230d35e89f5ba6f49d1d324a335bd386d9c64a3d2680
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-MERMAUTO-MONOMER.json
+    sha256: c23c097c9413dfd007db4492eea9064857d0e5c900e32ff5e5a5eb14d7dd73c9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-MG+2.json
+    sha256: 937ca69549997f9ddded31f9e6968e866dbb330df95ad37e5d0f8719bad6cfb8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-MN+2.json
+    sha256: 6be66eea6b673b4bf88f2d23d981702523dfbaca7e8aa61c72f49efcb991ef0a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-MONOMER-4021.json
+    sha256: c5b8fb626fd9ca3fb61b5eaa684586f132f3a91f8a8b0508f649b5ee3dddfa84
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-NA+.json
+    sha256: 6dbb6753a03dae3fb8b6539622fb6206c5abdbde90cffa94fe45738c45a3b572
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-OXYGEN-MOLECULE.json
+    sha256: 3db72a037812ea2bac6047332f755cd55f73dfe228411d5716aa865dd0b4cebe
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-REG-10183.json
+    sha256: af12a148b601a1f62eb2453eb0388e9fad50c06c2810d27d1f974f9401b443d2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-REG-10357.json
+    sha256: 99313cfc44f2b3be7bc245a27558abeae3b711d955c5d9b923c280cb0acea46b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-REG-11191.json
+    sha256: 909fcdd510dc6f4f58705ddde0d801745d4978101014a2fd83cd5265b53f5448
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-REG-15400.json
+    sha256: 973db04ec5316c20c39453599656d22bc226f096dc26347d7a7bb0cf5c0ccf10
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-REG-8185.json
+    sha256: 9dc0cce3f9239ae768e055576cc5b8989df11d8a410e1644e8aa5dc0947a0cc9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-REG-9174.json
+    sha256: c919d35911307f551dc43a6a9430c4364a24d9ac11441236f87f4688524a7d35
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-REG-9176.json
+    sha256: 66f381f0209d89585e7e49d8576119b86fd112215132d94aa3898fb98722addd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-Regulation-of-Enzyme-Activity.json
+    sha256: e249c5a3afe33965337c3fa1a81853d9332e769058a7ade7d3de307119be4725
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-145260.json
+    sha256: 052f85f2e795cac1629891c6f58cb6e7cd8ab50294378ef69c7b5e84c78e6033
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-2207.json
+    sha256: a8246dc7f781bf8356cc7c12cc95061447fadcbe3eeb6964d182c78e8813acee
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-2234.json
+    sha256: a192c54e1883d583656c4717462630e799ded9fa967576be7aefadbb6f01c075
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-224325.json
+    sha256: 78dfafc746bfecb288580a0ce52c98a050047e609b9c7114c3f9313ef9c33461
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-272630.json
+    sha256: c19d4a622da3c7019ee6530b2d0800726ad93665e66a13117c0a79a580625b72
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-408.json
+    sha256: dda40b5560306d0b4d786e9024a61d423885e3fa5052069ae8442f7fed38a717
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-660063.json
+    sha256: 78be254b19a91ecc70ba0ac008fe32637dd43cf45b280cdf68b7bb435bb8740a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure1-TAX-660064.json
+    sha256: a84dfce84418222e65d29cfaa17421750d8e996de65a6e0cdd5cf43f909f238c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS00880.json
+    sha256: 6cac691b6b1a83a1ae5cf4dafc566ea97dc6cd37ae5f68165e5f4a88b155104f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS08270.json
+    sha256: 11d5392e24c89fa0854edb8370a27e4fa2450d2a502c08dbb3a1ba0f431e1c28
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS08295.json
+    sha256: d67412e0cf3f332c27128a9c1cb1b82ad6be523317685e67a13330faede365f2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS08305.json
+    sha256: 7c5e7cdd407970a621bf966ca0e6ab37021b9060278bb58a483c4fb9a8fc3760
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS09685.json
+    sha256: 50ab0ff001052aff9dd649d909917c86f33f40cabed20127536b678304eda18d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS09690.json
+    sha256: fdb760ec86a8ba0ad78eb2a6bb744651fb84d44307fc556c4eeb59f60bc666cf
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS09695.json
+    sha256: cc364273415e11315c8215ce21f201fb98eb04bc0b14014934913010084361d3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-AF_RS09700.json
+    sha256: 11ce7767a1670d532e9c9e959da395358b7d128fc9608486c727b1b5b148ede3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06315.json
+    sha256: ab9ed00aae958fc7bbe7124becfb6b3348b78ecbe53e62a8b48a050ae9d19a6b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06320.json
+    sha256: 55189443b843709b5634e8a119e9df5186852ccb50a9ea50a5a6ccb847eea7de
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06325.json
+    sha256: e19bcf52c801ed1582ee567d858c03fb4ad5aefef8871fa2cb248cbb4975acd9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06330.json
+    sha256: c9aa55a6e5403dcc04ce8efa84cf1181023e536cd6aba1dfa0cfca4a1329d7b8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06335.json
+    sha256: 092650a09c4ba88a6d6e99fe260616c68014f2d96f7c32622f82e2b9df5f780f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06340.json
+    sha256: b1f1a861acfd86f3c9abc57a6a412e6681a56aa648e1ff812c41f92f06cd76dc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06345.json
+    sha256: 2e73d5266a44833f423c8b1931077f8fc2ab6fb1e14aedefe6068bd550b229de
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-BP07_RS06350.json
+    sha256: c310b3800ac28a4ca8f3c70bf3633fee2d626edccb5b6655bfe60c510a88279d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-3061.json
+    sha256: e304f644f9ff3e6c43e3ee525bc6665a78d24deded2e4901e7d6f6389dd39f2a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-346.json
+    sha256: da421550c8bcc7183e8855fa2ec1a9818d9880ace4e7bdce0e4312fe37cbc3b6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-347.json
+    sha256: 18b202f05a233ceadee1b3acb55b914296bcdd28ad6fd3748dfb621d68409edf
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-348.json
+    sha256: f37ebe182a07fe42c48326a18d54de3b1e0b1aef74b2357f908ebbbe50ee2436
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-349.json
+    sha256: fff67cc19c231f2faf3dd5f023424b366974390ec0afc39d911e35139030bec1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-350.json
+    sha256: 34ad1d736bbc7accfb0d80805953d9b7a6b36c54c53887b95f9446b471dc54e7
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-351.json
+    sha256: fe67a8288ee1424e4c820bb26177f45e996acc1c5cae4fffb44542af37850f21
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-352.json
+    sha256: b3b79e0d1b0cecb3631fc047b66b81bb9c0bf3d7d2298e198302b804d81517b3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-353.json
+    sha256: 44faac98898eeba4b48194e4a2094a46df8baf0149a255b091682fab5f6ae370
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-355.json
+    sha256: 2ae39d42c135d89d3cf5c597952143205d3486708d394eaedee638406cf3f469
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-356.json
+    sha256: 61b72cd38422970b5e2d63dfeae78aec02ad4781aa1f77d7d035eb3bce702d6e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-375.json
+    sha256: 7d99f63f370b8e9abd40eefe9dbdce83c6b648d029e62d8857d7dd82f64a9847
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-376.json
+    sha256: 00826df8caceba99c1bf8a448c84d4c88c047ba5b7912c71fbf5bd53020d78c4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-377.json
+    sha256: c1b7f4c4a8b9ccbc313082e315b3f4b68d2edc6a4c35921246a6611e1d5dd5e1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-378.json
+    sha256: 105a089a34d4d926c86809397a99a37dd7e53cb41611c43315f85559f43fb4ad
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-379.json
+    sha256: 722baa93f11048945a06b70cd5851ef4d7213271351d2cbebcb386175f744e31
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-G-380.json
+    sha256: fc16d5ceed3a1a683e93e3ff71337847b86b2f66005de731763de6508b3173c4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTRAMAUTO-MONOMER.json
+    sha256: 1007acd1a6f295821afaf2ad22400c448d3949a9342d09dc989a08216d96cdd6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTRBMAUTO-MONOMER.json
+    sha256: 2d3687dabed71b785e5697708d3af9e6079e3eae4a6cf4ea588738d8942028bd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTRCMAUTO-MONOMER.json
+    sha256: b70cef45c57caeaea18af41aaec78c49bee4de45647c8e4d4b0c7aba18a102f4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTRDMAUTO-MONOMER.json
+    sha256: 23aa40940263d4dfc0fc8cc61e79df68c46f5783c2588ad40bd15d0418c66ab3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTREMAUTO-MONOMER.json
+    sha256: c9d028550b50779cf3e87b44eb90a766e87daed3e06d1126c28a95150a1441f8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTRFMAUTO-MONOMER.json
+    sha256: 2228fdcc8da32158d2b9d991009d45ca9ebd79591715b96de4fba0d6bd5c0263
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTRGMAUTO-MONOMER.json
+    sha256: 0385a1ade1374dcf622827ee4c2fd9e8115b9856d3249d380b25b91abde6fe18
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure2-MTRHMAUTO-MONOMER.json
+    sha256: 219cb1f780d89bf57da94a9206bbbd12b8d124d10ecf762dd8f294086851a024
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-327.json
+    sha256: 7a8ab064b50fc21b727cf8c4bea7ea794ab46a5bd93510b67ec755649a53283d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-328.json
+    sha256: 082d4f127ef0907c1abe4a82bc9d74385b261b5a207128f781eca5b066d04588
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-329.json
+    sha256: 855d2433161cd7aa7e78a9659a52fe3ff5a6241692e5e919d8c720a8cf4d53f4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-330.json
+    sha256: 90ed844655eed89e8209e7d0400dd5f2951589183d7c2c042fba46937ea89c44
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-331.json
+    sha256: abbdd85563de5459cf41814e6e045120cd0582a3876d9d7fecb7f0748ee6e821
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-332.json
+    sha256: ca44ca20056b18341c9dc74db3787ba1e4a9459150158f08627ee884c5d5373e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-333.json
+    sha256: 1cf03c994dc70f96056cbbc5a433092ec7f5418c6838280832a38efa9645d5eb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/closure3-G-334.json
+    sha256: d0d5053dbaa483f3cf47d6fcfae730e89d7ea9e051e8a58349d4c2f2e0621eca
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-AF_RS05405-MONOMER.json
+    sha256: 2e765b4b95fc0cd90758289355df20dfb1456b205363a6303dcacca74352dead
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-AF_RS09720-MONOMER.json
+    sha256: 48b942a314e7c5e7c477052b3bbf48b6fc97d3350d8f0926a395810ca47e7088
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-AF_RS10430-MONOMER.json
+    sha256: f31bb0f835fbc446aff200f53b1dc39d124ca7bf25215d020bfd070ae9872039
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-AF_RS11105-MONOMER.json
+    sha256: e338df7c721b9e7f72a55b720f76b76b44a007e52b0caab54d818bdd5ee0117c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CARBON-DIOXIDE.json
+    sha256: 6e56cb52fa80df3256766d9403db0a344825e9ea2aeac83d2968a07d603479f1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CCO-IN.json
+    sha256: 018ab74daddd64e0e2ed591f586f14249ae2718446791f9683424ba291fb3dfb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CCO-OUT.json
+    sha256: a62207b2f304569b6358d1e05fb2f1629ea57883043beb4a2bbdc531f91cf424
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-3321.json
+    sha256: c8badc54a252ddf186312fb0345d72337e6ab84e0af09a12ab14e412a20bed16
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-381.json
+    sha256: 613e96b851970b7cde3b68cf4ee8d8dd300cb3dfe4c04a4abf68b4eaec632036
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-561.json
+    sha256: af36c0aef4ee1c8eb61391f29dffc36be21040c3c0069e14e9a733c6adafa1d4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-562.json
+    sha256: af17b1e49d75f77b457aa5363514942d3c19c6cf1c2ac16422e4befa54025658
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-581.json
+    sha256: 09ad2b7eeebd780dd21b7779bd51dfedaf6caff2e7396e3ffa2ab51e4fe4e20a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-601.json
+    sha256: 6cb5c59e9f8d00dbfa90601d704962a11f3377e72c956808148fb0470db2eb0f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-622.json
+    sha256: cc97549458221a1b5b3dcf03aeda4879c46b5e8ab4d5ca1a5794cd36b6164bd2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-641.json
+    sha256: 0fa1f2e2f47a557a3be2cea27281af9956b33eed6b31f5bd391b82614179d7e3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX-643.json
+    sha256: 841c30d6ed8e7fda09b62c0ec6407f3c3bcf19275bd32bc51ad942945d608346
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX2065-6.json
+    sha256: f182a64616e18328bb7edd2496af88a115de37687c2c4ab06cba444b9605db85
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CPLX26TB-9.json
+    sha256: ce8b360c0751270289c34b020307ded94c86defc7060fa96644bc55e3e8c6479
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-CoM.json
+    sha256: 50f92723d366e2dbedd2a2a9d4406c4144c12a763c3e2fef8e8fa4f935152876
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-4121.json
+    sha256: 2afa5166838179a08bdb13ac17650f0c2810313d680e1c077c92742d8912f336
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-422.json
+    sha256: dc4c5f19dfe1036c6f9c7c834abbbb9b822158bc3d7afde474292c58a9296978
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-641.json
+    sha256: 09482238e0993eff30a7030830a27d6948ae9f0739f5a24369e4eaa15bf86e62
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-642.json
+    sha256: 86e2deb17307bb0c0b77f2be47535c72fa95dac495bcb95665d212068492b8c2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-661.json
+    sha256: a659f5c1d9f64beabc481e09d1643f38ad992df59c9e6c3b4fc09fce3c583e77
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-662.json
+    sha256: bd9af3c15e6849c9c8e6c2e6196cc3090bd26586e80f3b104d44b6f18938fe13
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-682.json
+    sha256: 537b0bee9499751fd00f5bde423d5b2e9c62f106b62de61d2553b057e0c99e45
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-701.json
+    sha256: d9f851ddd551be4259527eacda7f17ccce0f939b2d1bd764e638ac1e5ee74553
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN-702.json
+    sha256: b8026cc2cc92cf746ea2d32da9e510901295ba868a73244cb1b866532bb913bc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN2065-393.json
+    sha256: 6d8eb785cf8ddac11cd8222e42a016ca15ad23e2a74b6367d00499071a8ea1a6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN26TB-100.json
+    sha256: a1f0b19f66e3115b14b0847f437d7fb3baddc46155ca57b6596d13c98be06d72
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN26TB-273.json
+    sha256: d439ab2b86332931ef61144221752042c6de66f0986e90f6f52059097dd3e36c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN26TB-48.json
+    sha256: c496df9ebf7208703dfe474b12cb53f1ff94b67172c0c6be2d43bac53a948050
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN26TB-75.json
+    sha256: 9ea81abf33dd4da5aeee75f851a5f543e37ad6c43e16124d47f19d75a0df6e50
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-ENZRXN26TB-96.json
+    sha256: 628174f0d0fb0c29278334dc76577a27acc3db842691a5fae4cc0e00c528d082
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-FORMYL-THMPT.json
+    sha256: a6004fb5db5c7383dc28f00d4a34c4789b0161ebe84119f9e12b268cb2182c84
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-Formyl-methanofurans.json
+    sha256: 91f82793173b1529f38c810ebf5b10af0271685f1877f6926905fd88b640bc64
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-HYDROGEN-MOLECULE.json
+    sha256: ebf0af3b13b769f4964835450019a345b3ecd4149d29ef2a217870b64c5cba41
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-METHENYLTETRAHYDROMETHANOPTERIN.json
+    sha256: 7b45aec35c8231d2575b2431934dc1f0c644b0296a8f5c6eecea19358c5d9d43
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-METHYL-THMPT.json
+    sha256: 3f39f02e0622a0f7b86ec9b49b628a949080f995eb4c02aa5cae4f0c41a3a2c8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-METHYLENETETRAHYDROMETHANOPTERIN.json
+    sha256: e11d467811b316cb25fd10d48ecc714f6ddd99079b3dac5d1cb24413f607c3cb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-Me-CoM.json
+    sha256: 05cfc91bb457eeee8b15be16016bf383a0f9d3a0d98037299a7b1c795ea832f2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-Methanofurans.json
+    sha256: 5ef9c1618e2bf976bb947721a99c8140ffc0c8d6e811ed680e077add7b8349fa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-Oxidized-Factor-F420.json
+    sha256: 41a3fb3598a0bc698443637d86e8c6751fb6b673a5e0355414bb4f80673daeeb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-Oxidized-ferredoxins.json
+    sha256: d79d3882d83236c97f7c742db755371fe8d6b037fbf24c897eb837c5eb910362
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-PROTON.json
+    sha256: a5892de5b768b79a13d3e1a46a25646c80e7c98d37eca8ee472190de4f35a4c6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-Reduced-Factor-F420.json
+    sha256: e30ef4b37a883a19b4d08e2bf5125d55187593eb533762f43fdd049176de92cc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-Reduced-ferredoxins.json
+    sha256: 0796e7d3d2789648be5370d48d2f4236eaa79aeecdf10ea0fdc9ce725046f5ae
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-TAX-145262.json
+    sha256: ce7ef003f6cb99807976f604fa6f23091835a32a6854e3420a369deea7afcac8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-TAX-2179.json
+    sha256: 017e4b68e88237859c5a2a8f390828379b0c2d7e692c6eebfd7c11424d0384ed
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-TAX-2208.json
+    sha256: 92919c27fa220ab60553296a76633c44b1ba400673be89572f0aea94dccc6030
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-TAX-28890.json
+    sha256: dfe072336bd947edae527c69a1c2bcc4624caa853bd82c89792fb29641e5a494
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-THMPT.json
+    sha256: 7cf2183aecc94baff2f0cd41235d1159eefc49455ee3f62fcf8f166d050ee073
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-WATER.json
+    sha256: 5f5bef2c0982e31316cf0598053fed0225900e523ecda60ea478c9b72c6aae81
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/exact-primary-hmd-wiley.json
+    sha256: 3f37991c2ec93463a7d8b3eb08b016049d17acdf06d0b210697fccdfb4a79075
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/exact-primary-kaster-pmc-efetch.json
+    sha256: 68e7abb3e09befef871d0d3ce1676ba70f02188c8e77e9178ec6528ed7ad002b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/exact-primary-kurth-main-pdf.json
+    sha256: 040a8da100cc094738d6b5528d57d42c5f0d05ca2f2ad39d567199ff541dccfa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/exact-primary-mer-pmc-efetch.json
+    sha256: 0d1e1840fe83255ef99d4b5448952d28ad2a1275673fe8e9b304391d82fa98ff
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/final-primary-ftr1986-jbc-pdf.json
+    sha256: 11546ffe08ce0ca7de3b670ead7df022ede2ea824848985a79bb6804b686a7a6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/final-primary-mch1986-asm-pdf.json
+    sha256: db9ce54332251e3ff45f160640d0a9537b2fd5db8acc67b287739486319ab6f8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/final-primary-pomper1999-wiley-pdf.json
+    sha256: 980a5ec957fa61db13186c085fcc7dedae09f3c88af78d949080a1aef26b8ca7
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/final-primary-selected-pubmed-metadata.json
+    sha256: 185569bc6f95c5fb9f09a8f525be54f65fe70d7fc21496e44212a6da3c90f7a6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/kurth-supp-kurth-supp-1.json
+    sha256: c0feb19de16e5b5f6d88707de7e91d10657496395c4fa49cc01d8c25c3375d35
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/kurth-supp-kurth-supp-2.json
+    sha256: fd22ed5cd0dc717b97b0eda6ec4179c7d81040dc0a6911efaf7e13eb05ec04bc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/kurth-supp-kurth-supp-3.json
+    sha256: 7349645df42264bc6729f6f0678a00bf58fd90b5afb12e62c45746fa2f933064
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/kurth-supp-kurth-supp-4.json
+    sha256: 0fe1eab3afeed1d452baf18da835c97063a06cd7d79a0cb2f477a24f9895e9c8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/member-primary-kaster-mpg-api.json
+    sha256: 05d19f5f0658bef83c182475050419f788355af09d0c42f80cf2a08619676053
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/member-primary-kurth2021-institutional-pdf.json
+    sha256: f7698a4c136c1119f71593cd515f242ff453860ff0bf1248a93fcff71cc9f6b1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/member-primary-kurth2021-publisher-html.json
+    sha256: a451a2df3854fcd058c60adc500ca97c43dab2f0f84396c9f1d8dcf6e465b9b4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/member-primary-mer1995-pmc.json
+    sha256: 2ce9d2d938b17450fbf72a5982edb594e819a1e68aef5e5a65563e6118c1cded
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/members-2.1.1.86-RXN.json
+    sha256: 89c4b2a9e784228c2ae336aeacf0cf951e8aeb30d81036acc0e0425108ead2f3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/members-2.3.1.101-RXN.json
+    sha256: 40aeb50a9b9690e99cb51d160e1e40a921d92b36b0e86e191ceb0ca05c7f3ebd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/members-3.5.4.27-RXN.json
+    sha256: 3b95b8bf077a6776a8878b7de83fced03b4e7cc53f587e86fb97bdc7454864a5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/members-FORMYLMETHANOFURAN-DEHYDROGENASE-RXN.json
+    sha256: f31841da750bbe5a69657b17ab159ad61979d99a703bd0606c1a9d0a029ad63e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/members-H2-METHYLENE-THMPT-DEHYDRO-RXN.json
+    sha256: 5536822dc626ef69c53a53a98757f9344d4c2975438bc91fd65f2ecdf2270eab
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/members-METHELENE-THMPT-OXI-RXN.json
+    sha256: 65bbe5185e0a8990b28a09b72dac92e2e795b7b3fd38ab3ff99215922f2290cb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/members-METHFORM-PWY.json
+    sha256: f82bfe177b10091dae9be9587e8274e256f456efd13e85de4e3079150a9b5152
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/priority-kaster-europepmc-xml.json
+    sha256: 157834bf65fec9d263b4af0723b49eb267dafe6faf0d2f260dddc3a2aac207a9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/priority-kaster-oa-discovery.json
+    sha256: 82bfd05faa8cb14c35a671b6dbe5891e782cb7939171d13b75da87f420191efd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/priority-kaster-pnas-pdf.json
+    sha256: b116ac8b274bd990258ec549b9b48198a3a36541843bd79d8a7fb9a71d173e87
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/priority-vorholt-wiley-pdfdirect.json
+    sha256: 737bd7f00a846280f0dfe6c34ef51fab569297bb163e2fc2c3588fb67294a8d6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/repository-kaster-europepmc-html.json
+    sha256: 21f3fc1d8581178cf0c2b4e822011d174d72ccdd3d00fafd3143e45d95a24042
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/repository-kaster-mpg-handle.json
+    sha256: 20ff7b65b9c3cac0dcc6dcd00cade4ce484e6247bfd2890762a6099478f82c74
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/repository-kaster-oa-modern.json
+    sha256: 7da5af86128ccb63a1436e063db211101825f3fa893bc66b92dfc6b9cd5edad6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/reuse-NA+.json
+    sha256: 104f3fd8a07fc477eb7a59e6050a4784371caa3a9acbee41bdf3f12fb48dbc5e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/web-search-and-open-results.json
+    sha256: f711cff3dde253082705a862bc3cb0895a5d2cb2f58902fd173ed4af55e56b3b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-2.1.1.86-RXN.xml
+    sha256: 5ccba94366d7b434b0ca8c0bf6a0dbfc7bccbaa5a377bc56af74ff048e3fd35a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-2.3.1.101-RXN.xml
+    sha256: fb328b2f856380aab11998bcc8477b81ed205d930a9b5db0da736887b3e9a71c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-3.5.4.27-RXN.xml
+    sha256: bf3886cdb8aa440c33c9d1c65da0cae2308a45a2417882a5d1dd94a91697a181
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS00880-MONOMER.xml
+    sha256: cf0d3244dbe73321660820086f129267c378a67b1b4bd260008a8ea85678a506
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS05405-MONOMER.xml
+    sha256: 794b86ea8202570220d6c65e9731934a9bc3b139862d8b34159a8f0c8d36e1ec
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS08270-MONOMER.xml
+    sha256: adb947ce69aac5c555a09e63a3120af0a3ee4df53238389bc957fe06734e5314
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS08295-MONOMER.xml
+    sha256: e0b2ad596e6856ea45231ac9720c0194c415fd25d6eadb5df04ae4ac7dc4b6dc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS08305-MONOMER.xml
+    sha256: fc605efe47204cde29da7d8066c6f038f552ea1cf1989164fa43d0bfd8733cba
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS09685-MONOMER.xml
+    sha256: 21c60e23a1cd21c55fda19f7e7af4ab231719d76a88c7ae7a3ab1810f4ae24e6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS09690-MONOMER.xml
+    sha256: 80f86a641ae78b0b6947332c746860efbec579283f8b91ed907abda4362c7a84
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS09695-MONOMER.xml
+    sha256: a85be08fdd9cded19947416453f09a2fdb85be3f2e0b4e75634af606a16fba76
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS09700-MONOMER.xml
+    sha256: 1421822f2c5b9c8d8cf071a47432b0504163a997eb1397eb3fea2951102d3f26
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS09720-MONOMER.xml
+    sha256: 3060915a391869a2e6b9681e3fbaf8b3af4170d643ad6c5b2cb483110da7e114
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS10430-MONOMER.xml
+    sha256: 70a57d5a308f8f3223c4ba7a9fa5779829541c2caf359604b4fa14364442d5b8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-AF_RS11105-MONOMER.xml
+    sha256: e5dbac70535d07eac4953026cfcce7b741dfccc9940555e452451277696ef2d3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06315-MONOMER.xml
+    sha256: d46e7cde2f43ec2a6cd4e10529d1649ba4f325a186f9fb31cc5ca29926172c7a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06320-MONOMER.xml
+    sha256: 3e9cb3ad739a4d63b97e527e57c108bca7a29e69b79e225ceaefc28ac9da1c63
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06325-MONOMER.xml
+    sha256: f3e155f7a6007ea8af6c1d849670230007a5f5050b3d597fe1f19fbe7a3e63be
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06330-MONOMER.xml
+    sha256: 3124ce62b4d7fe52ce452bd880fcfabdafdd2d3b6717ae0d12935fad9334c46f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06335-MONOMER.xml
+    sha256: 69a172221451638242f88b10fdbfe9e027dd87fc86f7a5b75cea1d1c58abcfa0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06340-MONOMER.xml
+    sha256: 1b7607dfc944a1279c7c2cd678c35305d21ab486ba38d9e4fa05003b3d29b27a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06345-MONOMER.xml
+    sha256: 80d0a158fe6b84f4715456227a1d56b56ab124e66bf35df165b2c6583a576e16
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-BP07_RS06350-MONOMER.xml
+    sha256: 17a99775564a33397d033ab3a3bee3c6e67c2b259ae2439ddce90c8b1778c5a3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CARBON-DIOXIDE.xml
+    sha256: 16677ae4485723fed7a4ab2955f1800f20f8458bd491d7a5e53ae2bc341d5aff
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CCO-CYTOSOL.xml
+    sha256: 2148ff106b9c7e456cbd1063b5e94ef01713783f2d59d8cb40c60ebecf2f91a9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CCO-IN.xml
+    sha256: 7299d7101dfff6bab436dbfc57c4fe03cb3b682630641c37301ded2817301455
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CCO-MEMBRANE.xml
+    sha256: 5b340847070acb9f50dbaa9ec6f2526c37a9fe39cb37ac36583cbe0e968cc001
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CCO-OUT.xml
+    sha256: fd80d93ccaf57b6b2276e82fa7d65c46f269c08fd4b6767fed43f6719f3a9bdd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPD-15873.xml
+    sha256: dc66955e5ebc393f66ad56934461b80de2528124c468c6c06d24f7d4dcee733d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPD-19570.xml
+    sha256: 0555cb84440ea9b4e1295355020d2152d5322446357dba30b71858c91bd60fc2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPD-21374.xml
+    sha256: 59bf8e3d3f127f50f2afa0e447e4567bead0404c79e7e1be633f1181c0648cc2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPD-7.xml
+    sha256: b6ca32e6a37bcb2da163246463e07cf748cd1f5a63e62838fb37312a9b45f177
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPD-7162.xml
+    sha256: 931ce928fb5f996de98209971f6bac47f3abbbe126b2662720a7bec30c046e51
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-3321.xml
+    sha256: 0e1856150190ee693e662786cc83298e9f3049c4b6177502e8ece8b21f12c27d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-381.xml
+    sha256: 3d4fd2af51b22105bca4577968d45767e3222d180f560840df9e694f56a4e6dc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-561.xml
+    sha256: 238e2bb3ed2c44b3c11197879bb15ff5ffea5dccba4de9ce8a89ef1596343dec
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-562.xml
+    sha256: 1bd68a2bead4b93a081ea552aaa7f2f41cd292688dd7abeacc6118124334f12d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-581.xml
+    sha256: 8c04699ece3050f34d418b6ca3cf92231d41248ca5c3a3468c116b495c111573
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-601.xml
+    sha256: ba7747feed23e60cd8f38372d1197af7fe665e582575954ede70494bffa1b5e9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-622.xml
+    sha256: c8b5436ab5d2e0b5d096546e92b64d5f3a38d104d25f38fa63b0ada51b3bc554
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-641.xml
+    sha256: 50ea751e8b7e2a0b5fd84658190fb24b50188f5078f1bbf3f13c250be6e5897a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-642.xml
+    sha256: e2b37b6dbb4825b18f68e6f39d9477b9f4ffe85629db6d0dc64da647b6291b44
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX-643.xml
+    sha256: d3db4bbc5f7a75aff77bc50278c3ff24094e715a9333efc31f2daa541e7df78e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX2065-6.xml
+    sha256: 89ea9c9284bae3127633813b505583159ca89d4fa758d29f1332843c6a923504
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CPLX26TB-9.xml
+    sha256: 21a336350d1c52fe78663d1e4a2b4def58118832303d9ac894b34279103ad2bf
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-CoM.xml
+    sha256: 13ec2365981e3461517e98be66dd38f84df7b33ef92df55cf722535cb75428e8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-4121.xml
+    sha256: 65c5d1c5ca396b9867bc27a5d944227a825cae52db8ba714137ca44842540868
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-422.xml
+    sha256: 532d1566ed29031fc784bc92ff3267eca8ddd23f6b07a4fb970a547ae4ae707e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-641.xml
+    sha256: 1a63bd3eb81238a911ba93b3253843a0d944fa7b5c50466e08292069af350ef6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-642.xml
+    sha256: 9a43812dcaca6375bcba5ead7d2c1669fdfbcaa118006f212513863ceecd4323
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-661.xml
+    sha256: 45e17d328ab33f19c37bffce9a2639586945d3b1566e6e976ca36fdada4723f8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-662.xml
+    sha256: db72c5d6f75ea5628d8dca9c49729b07cd400bcf39caf165cd5b926a7b43346e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-682.xml
+    sha256: 0a64c2da5a20c5710c382dbeafd87416ef3a3e00927da47926056d55ae0ce8ad
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-701.xml
+    sha256: fd636a13ca60640f5db777a6ad9b0f5a84ff60d934833efbccf627f40a369701
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN-702.xml
+    sha256: 43654a4f9da9163dfae76762d43835870b96f429b0e37def284e515b8f1c732e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN2065-393.xml
+    sha256: 519357250586d9535caa16812c592ea517b527b501a04cc775e75fbf27988083
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN26TB-100.xml
+    sha256: d5928e8ec8ebbf7a32190d367ab437316d8993be4638d8f7d20c7f588d765476
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN26TB-273.xml
+    sha256: 999098da0f6cf78a95740f9fbd5b5254105150aa531503a5d48b4903527f06d6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN26TB-48.xml
+    sha256: debbd2900505254a4ab8542d8e4f0c13ea1e7d7421e02547df872ab8f2c259d9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN26TB-75.xml
+    sha256: f9c3aa7f31bd15e7bd7c360312c0fabc20733d96e5534b1b1ab4a08d57ee8229
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-ENZRXN26TB-96.xml
+    sha256: ab682a0033e9a9eea1a93bc39c6caa2c449bb5681b96031e0dbdb53fb80152aa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDAMBARK-MONOMER.xml
+    sha256: 589d873f460b12aba86e701593ba6df6ffc3ebbbce07e5c5e56be9667446da87
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDBMAUTO-MONOMER.xml
+    sha256: d3c59f9c2062c8d18d060dddb09fcc12574ad3b3aef86c585e60241c808c050d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDBMBARK-MONOMER.xml
+    sha256: a7010271529ff145cc98600ec3b597c22244c7a863126430bd18d7871cd3b518
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDCMAUTO-MONOMER.xml
+    sha256: 17b0b110ccbf1f5c31d9a8657830d5deccc72d04edc576dde5a5a62c96c02c23
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDCMBARK-MONOMER.xml
+    sha256: b0cf55bc5d68a48e8e889f5f2d967ee3953cfb99e6f7841829157413359094a5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDDMBARK-MONOMER.xml
+    sha256: 7bc54cc10587571cfceffe53329b2144db2d1bdafd1d6d9e6bb8463cc6a2cce2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDEMBARK-MONOMER.xml
+    sha256: 92b53c152f57cbce9af3fb5e1ce269852315f454159da0f87f8143ebfd08e44d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FMDFMBARK-MONOMER.xml
+    sha256: 535446a60ccc29a2612086e2ebfd36464beaef24eb72e3f92418806b59905b35
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FORMYL-THMPT.xml
+    sha256: c1fd7da8a0c2a0616009f5a5846643970a1f925cf9413ec68abf8aa7cdedd07b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FORMYLMETHANOFURAN-DEHYDROGENASE-RXN.xml
+    sha256: 07dd61e1019fe055a650c64e230f4df08cfdbe5716f3903658217537069aeee9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FTRMAUTO-MONOMER.xml
+    sha256: 7cf4924fea99d1d1fda92c062b379444442cb3686813844fe7cbcb40619b94fd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FWDAMAUTO-MONOMER.xml
+    sha256: e818a719d7c88e0c2cb2c7b146c75b2848c6f454163db37791860870cdfcf837
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FWDBMAUTO-MONOMER.xml
+    sha256: da9f7a7b854d1814bae1c17a8d6a27239989c5918d705260e0a1be1c9151e429
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FWDCMAUTO-MONOMER.xml
+    sha256: 6304382ce821ccc2067950f02c299cd66609f8941179de94eef35a5cec4de4a4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FWDDMAUTO-MONOMER.xml
+    sha256: 52174b7f1a85532a364e912d3cd736b2a8fdecdecc5d83a59565e2a229309f8b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-FeS-Centers.xml
+    sha256: c157320e8026b6bc4249c1dcf8b4d9145fb0bca5d8141024cf2639810073213b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-Formyl-methanofurans.xml
+    sha256: 0e257fc31c3fec58e9f6af09eb2355b3100a9818a55499890b83acfa7fcec181
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-H2-METHYLENE-THMPT-DEHYDRO-RXN.xml
+    sha256: 7cbdcf5cf751be19b6a0c37d6b4104b46efbbcf9812fdd68027f5bee24bae35c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-HCN.xml
+    sha256: 53ddb9cb745e55a64afdf94d661961e8a01be1da0c4c1da0de827087d199e660
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-HMDMAUTO-MONOMER.xml
+    sha256: 3a626f54d145a7fbee6e3f3ff8143cdedfda560a5f999a5ef95b1ae9c366a5aa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-HYDROGEN-MOLECULE.xml
+    sha256: b1abcaa77b6c003614c5016847584160eed36d877692d02b49dcadc13f4cef8a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MCHMAUTO-MONOMER.xml
+    sha256: 5a225e5e15cbc050704ad1d222dd12283eb6b7c95e27e38afe60d30c386904ee
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MERMAUTO-MONOMER.xml
+    sha256: 787f2eea1ed35b21f8068558baa1bc84ef50005c5b1a6216b7ac50abebbdd5e0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-METHANOGENESIS-PWY.xml
+    sha256: 35e06e69cc42fe911cee1f6e33ddd950628d24bcb45a2807878099dd8dae43c8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-METHELENE-THMPT-OXI-RXN.xml
+    sha256: dd2120662ae4bcdb2057705ace60e7c197af2a8104d03dfd61aef965a0957116
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-METHENYLTETRAHYDROMETHANOPTERIN.xml
+    sha256: 690f3973a72251651ac100c6e3cbf806c74ed617dad2c153dd788d471c7fa5ea
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-METHFORM-PWY.xml
+    sha256: be87e60055e58f1d6de7d79f2aceb98227095ebd7056afcc81c32356a1c244d6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-METHYL-THMPT.xml
+    sha256: 274affee6c40f04b98d0528074234029dbd96e97b00159195e010126f0a558ea
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-METHYLENETETRAHYDROMETHANOPTERIN.xml
+    sha256: f24312d9748d62f24b184dc5674e5d9425e5e4c38c71ab99c5b3604d90a98584
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MG+2.xml
+    sha256: 5b2ceecf6efac584d0c062142b992adfab40d99e600a934e1ac6bac836bca7d3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MN+2.xml
+    sha256: 7e39dc1680e21da66cdd2832f2de9dfc5df98c1fd0efc130f3c6dccacdb196ce
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MONOMER-4021.xml
+    sha256: 36e4dfd3f1ac5a99037798a410ab60b7b44aa3ddad0aeb4c0ecd491596f947df
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTRAMAUTO-MONOMER.xml
+    sha256: 0f2434ffd354beefa7ea465dcf9c234ff845e993ae6746229eadacd271ce3fe1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTRBMAUTO-MONOMER.xml
+    sha256: 5b65696c819d2d7671f4feafd1cdc5c36ba40d35ad9288542752a8f40c3483ab
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTRCMAUTO-MONOMER.xml
+    sha256: 782d92c62ff7a4316406d724cdc43bb92ae73f95d9966313098f0b47df940938
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTRDMAUTO-MONOMER.xml
+    sha256: 28541b1ae307638003238aedf1aac749124ea0ad515bb71bb96c2d23d6b85ef5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTREMAUTO-MONOMER.xml
+    sha256: 6bd846f66533b95058325a9ae15b58941a509962b784012c3490bc0998fedd54
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTRFMAUTO-MONOMER.xml
+    sha256: de7e8ee8c6e3bae01c5782945f1d12f1aab2d388e2dd9eadab80ace0fbd1999a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTRGMAUTO-MONOMER.xml
+    sha256: 75913c9e9685e8d5ae535183da797085b65f60f00b283879cf603a75e10b5acc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-MTRHMAUTO-MONOMER.xml
+    sha256: ccd90fafae11ad0bb59a317357a76fd5fa5049ffc1f8770d74fc9fd9d6d5720b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-Me-CoM.xml
+    sha256: ea699fb7a269ab90c74d234739fffcea5398f26d6b30efde89d9b11bebbe538c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-Methanofurans.xml
+    sha256: 54e31c8282e1e271f2b1710200b683a855fd59e1913d21832d36bd40d8b12fa8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-NA+.xml
+    sha256: c3b1ee0068e9cc541ff35c48b595d5e318f1d93c541e698501337c1ba69c9d88
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-OXYGEN-MOLECULE.xml
+    sha256: eab3c0ffa9ee251e44409634e47420dcf8e3416d32943ad8c3cf4ca3a2208701
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-Oxidized-Factor-F420.xml
+    sha256: 3b76d4ae9731cb30971905bcb77a51602d42334e255a6f91ba6c51e1d5c08265
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-Oxidized-ferredoxins.xml
+    sha256: fc1a3ef82b82913d0c408cabf3e7ca04e81757842d7dcf88cfbb22d3589ba4e0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-PROTON.xml
+    sha256: 22115ac465b8f70fb4d34d11e93120cafb805cbc00c2391f21a5a27f1563602f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-REG-10183.xml
+    sha256: 28ef754ad6e6698a74f5934ac3b6fdd0dbb4fbc0c2630eefc6e2a4512216b53f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-REG-10357.xml
+    sha256: 55ead5e685efa3be5a366d72a78052e46b039dd74e68ca322a10914d93c9feaa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-REG-11191.xml
+    sha256: dba7fd28c9e12423d3a9024323af3e4738337dcae4fd691c77065f843453e758
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-REG-15400.xml
+    sha256: 795c20f8144b095c1d03b66772a933cd6750e06f43a62821edba06dc8683387d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-REG-8185.xml
+    sha256: 3d4a67f966a9c674c25ebc46bfbcc4df5e53f5f667efbc8a36ee56fda04e7f65
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-REG-9174.xml
+    sha256: 765410958b7fa0df2d67c41a61ad8214a89baa4e63124558a135e983472e4deb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-REG-9176.xml
+    sha256: e604f009adef1b49db424a66f225ecce2c87d08f147eb16c421f2bc6e30f6f36
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-Reduced-Factor-F420.xml
+    sha256: dd5b401300b243035091447bb945b656292d81c790b8f1bc232a8b1347fb1bb7
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-Reduced-ferredoxins.xml
+    sha256: 8a2567b37766a24b0cc8c184ba662fd6eea555322207753484744c6e6713ed71
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-145260.xml
+    sha256: bb12abed05848eae2059f47d1e76e7b5be977dc91e48df8f5a0fd39cd750971e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-145262.xml
+    sha256: 76e0dc42a850785f2909914792f5a57ca2f54008e0bab2dd499e7899cffb95e8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-2179.xml
+    sha256: 835d304c1ff460b98252be5d5284f5a4166beef2da6ad617049430b810951497
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-2207.xml
+    sha256: 7c0fef7a7577aa7058c70379dd41c09b1bddad97084f7a4d37408aeea8102daa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-2208.xml
+    sha256: 7d15c91e155b6a1b5683167ec8941bc877e755e7a38f34d92da4913f9dc8c1c2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-2234.xml
+    sha256: 2bb4d92ab2b07bc372e4523011873d1763ce2e61ff1600fe238e4cf564d725c1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-224325.xml
+    sha256: a35d2c56bb3fb67dd021e35511677ee9d3b113c26e1e72cccb47ff03138d3938
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-272630.xml
+    sha256: 75b4c208d7a75f507fffd5876acfc697391f0285da811a509f8a3d818da2c314
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-28890.xml
+    sha256: bacc07e3b3f6a578ce79d29355d32518c5e1c25049fd879cb0cdd7ddb46d3edc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-408.xml
+    sha256: d1ffbbfcab8936eff1fb645b9d86d3d16f9f76effa9b40584d222d5ed6ebb38e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-660063.xml
+    sha256: a3f8f8f2c9144b0affb6c328337d35ee2200c9d70a6cbb60e984c3b846c7db4f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-TAX-660064.xml
+    sha256: 1c1a5b243ee1484394d02c1e84c8704f46962e8cac3ad46adc401c1345f316a0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-THMPT.xml
+    sha256: a5dfd786e874ef35122448542293887bea7a0155e6c23d52db9b77ab6cefecc4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/all-reference-originals/META-WATER.xml
+    sha256: 29201d5730308535e65744b47f9f6e0eb3ef9ffdcdd2eb442888a34da8a8c366
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/manifest.json
+    sha256: 392f572e18249598d1d7919c32a5983216a7c20e379bfc0c2f975bb1d8733834
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-2.1.1.86-RXN.xml
+    sha256: 5ccba94366d7b434b0ca8c0bf6a0dbfc7bccbaa5a377bc56af74ff048e3fd35a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-2.3.1.101-RXN.xml
+    sha256: fb328b2f856380aab11998bcc8477b81ed205d930a9b5db0da736887b3e9a71c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-3.5.4.27-RXN.xml
+    sha256: bf3886cdb8aa440c33c9d1c65da0cae2308a45a2417882a5d1dd94a91697a181
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS00880-MONOMER.xml
+    sha256: cf0d3244dbe73321660820086f129267c378a67b1b4bd260008a8ea85678a506
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS05405-MONOMER.xml
+    sha256: 794b86ea8202570220d6c65e9731934a9bc3b139862d8b34159a8f0c8d36e1ec
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS08270-MONOMER.xml
+    sha256: adb947ce69aac5c555a09e63a3120af0a3ee4df53238389bc957fe06734e5314
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS08295-MONOMER.xml
+    sha256: e0b2ad596e6856ea45231ac9720c0194c415fd25d6eadb5df04ae4ac7dc4b6dc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS08305-MONOMER.xml
+    sha256: fc605efe47204cde29da7d8066c6f038f552ea1cf1989164fa43d0bfd8733cba
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS09685-MONOMER.xml
+    sha256: 21c60e23a1cd21c55fda19f7e7af4ab231719d76a88c7ae7a3ab1810f4ae24e6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS09690-MONOMER.xml
+    sha256: 80f86a641ae78b0b6947332c746860efbec579283f8b91ed907abda4362c7a84
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS09695-MONOMER.xml
+    sha256: a85be08fdd9cded19947416453f09a2fdb85be3f2e0b4e75634af606a16fba76
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS09700-MONOMER.xml
+    sha256: 1421822f2c5b9c8d8cf071a47432b0504163a997eb1397eb3fea2951102d3f26
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS09720-MONOMER.xml
+    sha256: 3060915a391869a2e6b9681e3fbaf8b3af4170d643ad6c5b2cb483110da7e114
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS10430-MONOMER.xml
+    sha256: 70a57d5a308f8f3223c4ba7a9fa5779829541c2caf359604b4fa14364442d5b8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-AF_RS11105-MONOMER.xml
+    sha256: e5dbac70535d07eac4953026cfcce7b741dfccc9940555e452451277696ef2d3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06315-MONOMER.xml
+    sha256: d46e7cde2f43ec2a6cd4e10529d1649ba4f325a186f9fb31cc5ca29926172c7a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06320-MONOMER.xml
+    sha256: 3e9cb3ad739a4d63b97e527e57c108bca7a29e69b79e225ceaefc28ac9da1c63
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06325-MONOMER.xml
+    sha256: f3e155f7a6007ea8af6c1d849670230007a5f5050b3d597fe1f19fbe7a3e63be
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06330-MONOMER.xml
+    sha256: 3124ce62b4d7fe52ce452bd880fcfabdafdd2d3b6717ae0d12935fad9334c46f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06335-MONOMER.xml
+    sha256: 69a172221451638242f88b10fdbfe9e027dd87fc86f7a5b75cea1d1c58abcfa0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06340-MONOMER.xml
+    sha256: 1b7607dfc944a1279c7c2cd678c35305d21ab486ba38d9e4fa05003b3d29b27a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06345-MONOMER.xml
+    sha256: 80d0a158fe6b84f4715456227a1d56b56ab124e66bf35df165b2c6583a576e16
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-BP07_RS06350-MONOMER.xml
+    sha256: 17a99775564a33397d033ab3a3bee3c6e67c2b259ae2439ddce90c8b1778c5a3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CCO-IN.xml
+    sha256: 7299d7101dfff6bab436dbfc57c4fe03cb3b682630641c37301ded2817301455
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CCO-MEMBRANE.xml
+    sha256: 5b340847070acb9f50dbaa9ec6f2526c37a9fe39cb37ac36583cbe0e968cc001
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CCO-OUT.xml
+    sha256: fd80d93ccaf57b6b2276e82fa7d65c46f269c08fd4b6767fed43f6719f3a9bdd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPD-15873.xml
+    sha256: dc66955e5ebc393f66ad56934461b80de2528124c468c6c06d24f7d4dcee733d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPD-19570.xml
+    sha256: 0555cb84440ea9b4e1295355020d2152d5322446357dba30b71858c91bd60fc2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPD-21374.xml
+    sha256: 59bf8e3d3f127f50f2afa0e447e4567bead0404c79e7e1be633f1181c0648cc2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPD-7162.xml
+    sha256: 931ce928fb5f996de98209971f6bac47f3abbbe126b2662720a7bec30c046e51
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-3321.xml
+    sha256: 0e1856150190ee693e662786cc83298e9f3049c4b6177502e8ece8b21f12c27d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-381.xml
+    sha256: 3d4fd2af51b22105bca4577968d45767e3222d180f560840df9e694f56a4e6dc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-561.xml
+    sha256: 238e2bb3ed2c44b3c11197879bb15ff5ffea5dccba4de9ce8a89ef1596343dec
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-562.xml
+    sha256: 1bd68a2bead4b93a081ea552aaa7f2f41cd292688dd7abeacc6118124334f12d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-581.xml
+    sha256: 8c04699ece3050f34d418b6ca3cf92231d41248ca5c3a3468c116b495c111573
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-601.xml
+    sha256: ba7747feed23e60cd8f38372d1197af7fe665e582575954ede70494bffa1b5e9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-622.xml
+    sha256: c8b5436ab5d2e0b5d096546e92b64d5f3a38d104d25f38fa63b0ada51b3bc554
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-641.xml
+    sha256: 50ea751e8b7e2a0b5fd84658190fb24b50188f5078f1bbf3f13c250be6e5897a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-642.xml
+    sha256: e2b37b6dbb4825b18f68e6f39d9477b9f4ffe85629db6d0dc64da647b6291b44
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX-643.xml
+    sha256: d3db4bbc5f7a75aff77bc50278c3ff24094e715a9333efc31f2daa541e7df78e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX2065-6.xml
+    sha256: 89ea9c9284bae3127633813b505583159ca89d4fa758d29f1332843c6a923504
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CPLX26TB-9.xml
+    sha256: 21a336350d1c52fe78663d1e4a2b4def58118832303d9ac894b34279103ad2bf
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-CoM.xml
+    sha256: 13ec2365981e3461517e98be66dd38f84df7b33ef92df55cf722535cb75428e8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-ENZRXN-4121.xml
+    sha256: 65c5d1c5ca396b9867bc27a5d944227a825cae52db8ba714137ca44842540868
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-ENZRXN-422.xml
+    sha256: 532d1566ed29031fc784bc92ff3267eca8ddd23f6b07a4fb970a547ae4ae707e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-ENZRXN-641.xml
+    sha256: 1a63bd3eb81238a911ba93b3253843a0d944fa7b5c50466e08292069af350ef6
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-ENZRXN-662.xml
+    sha256: db72c5d6f75ea5628d8dca9c49729b07cd400bcf39caf165cd5b926a7b43346e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-ENZRXN-702.xml
+    sha256: 43654a4f9da9163dfae76762d43835870b96f429b0e37def284e515b8f1c732e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDAMBARK-MONOMER.xml
+    sha256: 589d873f460b12aba86e701593ba6df6ffc3ebbbce07e5c5e56be9667446da87
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDBMAUTO-MONOMER.xml
+    sha256: d3c59f9c2062c8d18d060dddb09fcc12574ad3b3aef86c585e60241c808c050d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDBMBARK-MONOMER.xml
+    sha256: a7010271529ff145cc98600ec3b597c22244c7a863126430bd18d7871cd3b518
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDCMAUTO-MONOMER.xml
+    sha256: 17b0b110ccbf1f5c31d9a8657830d5deccc72d04edc576dde5a5a62c96c02c23
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDCMBARK-MONOMER.xml
+    sha256: b0cf55bc5d68a48e8e889f5f2d967ee3953cfb99e6f7841829157413359094a5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDDMBARK-MONOMER.xml
+    sha256: 7bc54cc10587571cfceffe53329b2144db2d1bdafd1d6d9e6bb8463cc6a2cce2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDEMBARK-MONOMER.xml
+    sha256: 92b53c152f57cbce9af3fb5e1ce269852315f454159da0f87f8143ebfd08e44d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FMDFMBARK-MONOMER.xml
+    sha256: 535446a60ccc29a2612086e2ebfd36464beaef24eb72e3f92418806b59905b35
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FORMYL-THMPT.xml
+    sha256: c1fd7da8a0c2a0616009f5a5846643970a1f925cf9413ec68abf8aa7cdedd07b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FORMYLMETHANOFURAN-DEHYDROGENASE-RXN.xml
+    sha256: 07dd61e1019fe055a650c64e230f4df08cfdbe5716f3903658217537069aeee9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FTRMAUTO-MONOMER.xml
+    sha256: 7cf4924fea99d1d1fda92c062b379444442cb3686813844fe7cbcb40619b94fd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FWDAMAUTO-MONOMER.xml
+    sha256: e818a719d7c88e0c2cb2c7b146c75b2848c6f454163db37791860870cdfcf837
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FWDBMAUTO-MONOMER.xml
+    sha256: da9f7a7b854d1814bae1c17a8d6a27239989c5918d705260e0a1be1c9151e429
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FWDCMAUTO-MONOMER.xml
+    sha256: 6304382ce821ccc2067950f02c299cd66609f8941179de94eef35a5cec4de4a4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-FWDDMAUTO-MONOMER.xml
+    sha256: 52174b7f1a85532a364e912d3cd736b2a8fdecdecc5d83a59565e2a229309f8b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-Formyl-methanofurans.xml
+    sha256: 0e257fc31c3fec58e9f6af09eb2355b3100a9818a55499890b83acfa7fcec181
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-H2-METHYLENE-THMPT-DEHYDRO-RXN.xml
+    sha256: 7cbdcf5cf751be19b6a0c37d6b4104b46efbbcf9812fdd68027f5bee24bae35c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-HCN.xml
+    sha256: 53ddb9cb745e55a64afdf94d661961e8a01be1da0c4c1da0de827087d199e660
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-HMDMAUTO-MONOMER.xml
+    sha256: 3a626f54d145a7fbee6e3f3ff8143cdedfda560a5f999a5ef95b1ae9c366a5aa
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-HYDROGEN-MOLECULE.xml
+    sha256: b1abcaa77b6c003614c5016847584160eed36d877692d02b49dcadc13f4cef8a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MCHMAUTO-MONOMER.xml
+    sha256: 5a225e5e15cbc050704ad1d222dd12283eb6b7c95e27e38afe60d30c386904ee
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MERMAUTO-MONOMER.xml
+    sha256: 787f2eea1ed35b21f8068558baa1bc84ef50005c5b1a6216b7ac50abebbdd5e0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-METHANOGENESIS-PWY.xml
+    sha256: 35e06e69cc42fe911cee1f6e33ddd950628d24bcb45a2807878099dd8dae43c8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-METHELENE-THMPT-OXI-RXN.xml
+    sha256: dd2120662ae4bcdb2057705ace60e7c197af2a8104d03dfd61aef965a0957116
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-METHENYLTETRAHYDROMETHANOPTERIN.xml
+    sha256: 690f3973a72251651ac100c6e3cbf806c74ed617dad2c153dd788d471c7fa5ea
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-METHYL-THMPT.xml
+    sha256: 274affee6c40f04b98d0528074234029dbd96e97b00159195e010126f0a558ea
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-METHYLENETETRAHYDROMETHANOPTERIN.xml
+    sha256: f24312d9748d62f24b184dc5674e5d9425e5e4c38c71ab99c5b3604d90a98584
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MG+2.xml
+    sha256: 5b2ceecf6efac584d0c062142b992adfab40d99e600a934e1ac6bac836bca7d3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MN+2.xml
+    sha256: 7e39dc1680e21da66cdd2832f2de9dfc5df98c1fd0efc130f3c6dccacdb196ce
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MONOMER-4021.xml
+    sha256: 36e4dfd3f1ac5a99037798a410ab60b7b44aa3ddad0aeb4c0ecd491596f947df
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTRAMAUTO-MONOMER.xml
+    sha256: 0f2434ffd354beefa7ea465dcf9c234ff845e993ae6746229eadacd271ce3fe1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTRBMAUTO-MONOMER.xml
+    sha256: 5b65696c819d2d7671f4feafd1cdc5c36ba40d35ad9288542752a8f40c3483ab
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTRCMAUTO-MONOMER.xml
+    sha256: 782d92c62ff7a4316406d724cdc43bb92ae73f95d9966313098f0b47df940938
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTRDMAUTO-MONOMER.xml
+    sha256: 28541b1ae307638003238aedf1aac749124ea0ad515bb71bb96c2d23d6b85ef5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTREMAUTO-MONOMER.xml
+    sha256: 6bd846f66533b95058325a9ae15b58941a509962b784012c3490bc0998fedd54
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTRFMAUTO-MONOMER.xml
+    sha256: de7e8ee8c6e3bae01c5782945f1d12f1aab2d388e2dd9eadab80ace0fbd1999a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTRGMAUTO-MONOMER.xml
+    sha256: 75913c9e9685e8d5ae535183da797085b65f60f00b283879cf603a75e10b5acc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-MTRHMAUTO-MONOMER.xml
+    sha256: ccd90fafae11ad0bb59a317357a76fd5fa5049ffc1f8770d74fc9fd9d6d5720b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-Me-CoM.xml
+    sha256: ea699fb7a269ab90c74d234739fffcea5398f26d6b30efde89d9b11bebbe538c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-Methanofurans.xml
+    sha256: 54e31c8282e1e271f2b1710200b683a855fd59e1913d21832d36bd40d8b12fa8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-NA+.xml
+    sha256: c3b1ee0068e9cc541ff35c48b595d5e318f1d93c541e698501337c1ba69c9d88
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-Oxidized-Factor-F420.xml
+    sha256: 3b76d4ae9731cb30971905bcb77a51602d42334e255a6f91ba6c51e1d5c08265
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-Reduced-Factor-F420.xml
+    sha256: dd5b401300b243035091447bb945b656292d81c790b8f1bc232a8b1347fb1bb7
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/originals/META-THMPT.xml
+    sha256: a5dfd786e874ef35122448542293887bea7a0155e6c23d52db9b77ab6cefecc4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/reference-original-bindings.json
+    sha256: 081da125616fb7edc6a79322e38c5327972dc59a4e1d916189e2159bd074f537
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/selected-original-bindings.json
+    sha256: 90fde4714000b78789a9fd166fdfce317c6f99e3476136e42535dcc009dcaa84
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/projection-receipt.json
+    sha256: 6c55c070f92c8a70788ad550183a44c40d5938cb4e625c15328b730630d44d95
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/taxon-dispositions.json
+    sha256: c0d419cf2e8ca9ec2126c685fe3c1ba27c8d120a9caf27e18b06b685b4c9cf43
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/taxonomy-complete-selected-statements.json
+    sha256: 88b358509e81e5347b6377b2dd9f515619366e43db145c4403b1ee8482f1d52c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/taxonomy-final-unchanged.json
+    sha256: 852be3101252ce1f2fdd7fe49dbf6f56dad891d199077fae5ea7a038a79dde25
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/taxonomy-query-receipt.json
+    sha256: f2830a9fa9de2fe52ff555499ad25678632eb3fb645643cbd58ec91686ed490e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/three-additive-terms.json
+    sha256: bea03af147de7539e09c065ba923633a7f40e8ca5ba29290932881e8bb3c5640
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/three-direct-taxon-selected-statements.json
+    sha256: 073b5dd485f91cfacfdc093a8ae25c8074808dfdd7b04375321836d8a6757d61
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/N270-R02-issue-body.md
+    sha256: 5b4a4f8428e720dc47409e34591d3bc3a334d7b734c8ae4930309e5fbeb42644
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/N270-R02-issue-create.json
+    sha256: 25e4f31e03ed24739e916c5073db6d1d09cff062b1de7b73134a2faf1b8aa892
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/N270-R02-reproduction.json
+    sha256: 2be27f3e84bddf83cf976cd1c7a1fac4ae5ee7f7aac2e53061844bf871ae3e36
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/README.md
+    sha256: 652959ac4e284cbed0b5ceb670150a39f3afa717bd554d2c1ad0fd73b616768d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/candidate-owner-snapshot-during-gates.json
+    sha256: 45a76d7fff1bf77e3e0d3a4f688181d40bd1c6c50e93e38471021ebb9e5a9a7f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-diff-check.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-diff-check.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-gates-live.json
+    sha256: 62bad9c1280345252373af2b7a5e25cb2bd9030bdce3f333a7e495ee8f752cbc
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-lint.stderr.gz
+    sha256: ff10a449597a4588ff16ef94271acf3d2288c1264dadbd0246b1154fbcb1dcd9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-lint.stdout.gz
+    sha256: f3af4d142827f5aad2eb0c72d556d325488a57fb6219aac10afeb51085667d53
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-test.stderr.gz
+    sha256: 32994efd3116b0ba3b3a4eef2d490b25cb4a4798dba9705ae73d189a97903af2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-test.stdout.gz
+    sha256: e5d39e754e0b2d19f3d835791ac9844a8e093782b5e20d965780f9a53c38ec87
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-validate.stderr.gz
+    sha256: 8d2e112407093fe72d75d032437a6dc3e438be626e22e3d428dc146f367015b9
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/full-validate.stdout.gz
+    sha256: 34b33084d0446e6ee43d92db8caf21e92f07792e77f155fac2be39238e0a3931
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/gates.json
+    sha256: d0af0069bd0e3dfe5f4e13eb6da24aea00271f289be64a1b364ac414f11bb56c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/infrastructure-history-actions.json
+    sha256: 5496fe5d2c28300a215e95284f9d22d6cb4b92d4c7bd2aaa39f7f13ed49e70b5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/infrastructure-history.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/infrastructure-history.stdout
+    sha256: 568e3949e2811dd078d7da47d89421c073bbef494cbb7b3eb9671b0eea4e9e8c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/initial-authority-retention-integration.json
+    sha256: 18937ca2004bbc794657322ea507a5f8b2e56e0f11465b371c22227df67017c7
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/initial-staged-diff-check.json
+    sha256: ae50c174c79d6d10f073b718accbaaa883a79ff87b9d4e95902d865db65f0808
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/initial-staged-diff-check.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/initial-staged-diff-check.stdout.gz
+    sha256: d879c5ca8e11a1b815e981448edd78c3168c38f06e50212ef97b01c42a1c1731
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/initial-staging-actions.json
+    sha256: d28381f9c839fc31b31fd2a9e6273f97f4198d294d7d997b056491e0b15b5f32
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/integration-retention-actions.json
+    sha256: f89612027d17540e582c57bbf43a9bb6349c90929e55e82b8f7e711022eb8d4a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/integration-retention-selection.json
+    sha256: afd4d912d51db05edfc77222e8ffd17d91ade958e85febad53154bb78f5b91b2
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/maintained-review-retention-actions.json
+    sha256: bff574abbe91f82e8e229abb14d6035acfb2739fcd5ec0e6e1a9d3e77f724464
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/maintained-review-retention-selection.json
+    sha256: 38a226e0a6e2a9a8a723d9f91b9de7ff764df232aabdac2dea4f2f34dd6b9103
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/record-history-actions.json
+    sha256: ba44f7f24b2662b95a6ad265ca0233ea6c5bbcc6186de296109c801d5ea316ba
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/record-history.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/record-history.stdout
+    sha256: 0a991a03641bc33eb0d4182d5844855e7674c46a342ff353d5a77122496069b0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/record-integration.json
+    sha256: f6ac7a9f3c491a154ef8f8b70170e105c400ba26b43eaa36fd978db5daa77601
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/record-retention-actions.json
+    sha256: 399f5b35c9c533428777ae6892fb2b72e4814f8396f336327ccbfdb0fe57534f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/record-retention-selection.json
+    sha256: 07bb3ca810f69ab6e950f05226ca7b8ad9920f4943808c7b2244851ee031d739
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/render-pages-result.json
+    sha256: 0eebcc696b5a03d37fb8f30d73e7247fd0602522a5dfe26bf25ed01c4e1791b0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/render-pages.stderr.gz
+    sha256: 63fc7fdaa7ce9ebf6aa8251a5b45657a66f219d7021c8df864ab91d41d72108b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/render-pages.stdout.gz
+    sha256: 2f3dae1b05af166a64521f1676f6952a5c47a66e2ae2b76929eb18641b01f793
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/retain_final_gates.py.txt
+    sha256: df52b8816ea7c09114f6dd5ad32477ab02bc1cae5ccd9c611288a299283605bd
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/retain_frozen_packets.py.txt
+    sha256: 10bd64138f64ad9314c12f487a9e6d05a17e499cecd6cab9981ea04a57549509
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-independent-issuer-review.json
+    sha256: 0be7cd5a36028309e1ba3b09f2517666c0494a7e81e42d73ffd20bc034c60627
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-independent-preflight-review.json
+    sha256: abb2850d3e958c15f995e8837e66648132e8081785d670cf99cec7d7163a7669
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-independent-record-composition-review.json
+    sha256: 6b786d578478f84a733603a12a7734bdac33b1659e56256195fe11cf61d47a98
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-independent-source-closure-review.json
+    sha256: 57592f44e42f4190b053683234c680ebc4ef39b84ef7b08ebf6d4ca0ac631d98
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-integrated-authority-independent-review.json
+    sha256: eb2169f4b081e6f6bd82c5b7524689c96f785b762b65beed3eea70bf6009d3d5
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-maintained-page-export-independent-review.json
+    sha256: a2fb9e175e24d32d8ef80c3358ca2482bbfa77a2fc77108bcbc3df1489d8e99f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-methanogenesis-issuer-preparation.json
+    sha256: a3582981d3271e3b3b71ac25849b470a1e0708449adf79401115927d01e07ff8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-methanogenesis-source-preparation.json
+    sha256: 19c9f2342799ed30e788729dadec3c285b5fe644cc2de81129a9aced56ebc02d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-native-authority-implementation.json
+    sha256: 35f6c150ea079bbd1d4b353a05381e2c2d16ad28d3d9c304a8f56171ab3c3867
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-native-authority-independent-review.json
+    sha256: c48f34af9776420a0832966c1356fb75b216f219df41c66c6abc6965167b79f3
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-native-graph-design.json
+    sha256: f709b3c5db12044730ad84b81c9637a492484d92fd4a490fc6cee8bdc4aea432
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-native-graph-independent-review.json
+    sha256: 8334732f3cca42ce99a2c2a8e0ea0944870e9889aa7363fc0657c564e0e68d55
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-published-tree-novelty-review.json
+    sha256: f3d7c4c0edc76fe4e44ea5dd03e8848052eeee277d1800a54e5b22b4f8af128e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-retention-preparation.json
+    sha256: f3130742c544189c6fad8677ca7de88ccce595290d6677c64ffa47c490f2ea7e
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-source-attribute-independent-review.json
+    sha256: 54753465defe3f745f56dc802210cff2e3c6768b1ca2137816c209be07e31117
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-source-locator-correction.json
+    sha256: 8404d37b96a4b398eb044df4aa81b3893ffcf0e88b7f55cee2e3d1a5825b0f1d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/root-intake-pathwaymech-next-270-source-locator-independent-acceptance.json
+    sha256: 7707f6cb1ec706e63f17d173d8dbd2cabffdddc81901983ee49554fcaf9ed4d0
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/run_full_gates.py.txt
+    sha256: 9dbcb9bbf100bf50dc625cf2c5a5180863bf1b70f3551b9e7818a91485a0797b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/source-preserving-staged-diff-check.json
+    sha256: 88d5deb587d84b568e1dba9cf398c1ab26d26c1e66b589a9640b8cf1b85eaaeb
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/source-preserving-staged-diff-check.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/source-preserving-staged-diff-check.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/source-preserving-staging-actions.json
+    sha256: e576eeee54a8d171d5fb0696bf7b7135386b0ef9e2b0e2575adc416b76621cd1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/vendored-check-result.json
+    sha256: 0279387d7c8e9771800c5493cb5e1df1e370986df3c1c0208ac72623623b6fe1
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/vendored-check.stderr.gz
+    sha256: bc8956679b9279ce247590a13c62d394d4eb4fd75aa5cc9befa4170a95db0253
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/final-verification/vendored-check.stdout.gz
+    sha256: 84eb2f5823f900ef37165db66efb1234f4f1b653ddd847144fe9c2ae287ce18d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/integration-preparation/README.md
+    sha256: 272f8c0698fdf80543c77ca3762340cb849cc63245cce83431c78bc7eb9ec2a4
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/integration-preparation/inventory.json
+    sha256: 1585b49dc9f7021e8215f9347523cf45c008e7ba5225ac117bcafd0f3cdb516c
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/integration-preparation/landed-novelty-review.tar.gz
+    sha256: e93ddde3088e6fd7a063b1683ddeac1f6f6e535f71f150f5793c1c341b72d855
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/integration-preparation/native-authority-implementation.tar.gz
+    sha256: 4abec6a8ed6a2c0775d3a647a71eaf96385cd4fc60ae4c93d4fb70ede9293e3b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/integration-preparation/native-authority-independent-review.tar.gz
+    sha256: 0993770986f5ccd8e4eaf83fd385b1b82f5021eea7eadeb6bad43240ae85531b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/README.md
+    sha256: 110ae8cdef764e2d1067f92b845fe7044e9951cf4c133cb8229e3e87fed91e7a
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/inventory.json
+    sha256: d5376612a257b553280bdbbf98bb8066ee7e2c8613c9e1571173f875e5bf6b2b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/maintained-page-export-independent-review.tar.gz
+    sha256: fd2913ed5ab7518617c40b236137cd800f7214e2c8c2172f5c10b6994c9e8b08
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/source-attribute-independent-review.tar.gz
+    sha256: 9453ceab88cb81e745ae278a97d7d154fb1c3d001d9b4ae0bcce61c1ef45c6a8
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/record-preparation/README.md
+    sha256: 46c26a0ab0badaabae973a286a4604184e2bd69dd1485ed06d10f26b3675172b
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/record-preparation/complete-record-composition.tar.gz
+    sha256: e5b11b19c7316bfe16f3219a661318b7939bb50657c53e047e5e1ab7ee2d399f
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/record-preparation/independent-record-composition-review.tar.gz
+    sha256: 77da044769395ff37beef2436df81f4ceee4f5806bd210f0eea58127b01f5a57
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/record-preparation/integrated-authority-independent-review.tar.gz
+    sha256: 0f0cb5712de5b868630f3120923792a6a4e4e3019632ecf69f0e3d0edcd19e88
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: research/pathway_additions/2026-10-15-next-270/record-preparation/inventory.json
+    sha256: b94de315ec36a0f87c9fe4cddbd6ef6506c638773e7618e41e33fa891566dc3d
+    role: retained source, review or verification artifact; accepted scientific and
+      technical scopes explicitly reused
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: d1ad5c9aa05014e762e986ab1b747a8e2948ebe81ded49f9cf5e4c8fcb1a5530
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/assets/pathway-network.css
+    sha256: e99bb0849523c22b8688ab871223d6ca63bdee772727eb51b78e089e8fed769c
+    role: context
+  - path: src/pathwaymech/assets/pathway-network.js
+    sha256: 0d819650c809344f813826178f4ec570d392260a6120c14913b20b64b33ae1e2
+    role: context
+  - path: src/pathwaymech/biocyc_methanogenesis.py
+    sha256: 34ba589e822a60756e58578a6931a39abfab4d248edfa885b4d9c1bb5ad717fd
+    role: context
+  - path: src/pathwaymech/cli.py
+    sha256: 23ea9de9bd6f526f7020f369ee76729ffc76ef5a01e0c2cd1e34835fc168e0ac
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 48bf07c9ff14fe286e38f5f97e47470b3068c2a9c3f8c5575ccbb8e13dc972f0
+    role: context
+  - path: src/pathwaymech/identifiers.py
+    sha256: 91287f52d3cff19ba16650f7778f16c35bab2ae2670d6095c211bd5fe1e43604
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: d7f44be9ac077c8eb700876ead551095c53ff8728cf8afe60cbee6307ee7dca5
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 8eded58bb1e8d292079bf2dd66440f1d382243a3c35538dc65f360e1ef67ad2e
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: f08c07c84685fc718a7465292efbf1546c4a684948ea363ef7524a4fcf6cd112
+    role: context
+  - path: src/pathwaymech/site_display.py
+    sha256: f70d143af1d9be9c72e73c736ae4ce3e0b7abfbf24f82b814235f7a9670e9a73
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-2.1.1.86-RXN.xml.gz
+    sha256: 704710ad05a0ba160971c7e1bcbc9ffb0e9861279784d725e048ac84c5c1a8b2
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-2.3.1.101-RXN.xml.gz
+    sha256: be477c8e1fa441d9cca3c057be49dc3b111785939bbe14c0601eecfd913dafcf
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-3.5.4.27-RXN.xml.gz
+    sha256: 1516ed54b6836627c7e37d233e4dca4646fe8fcf8359d4017f28c9b6496e5e9a
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS00880-MONOMER.xml.gz
+    sha256: 37899d30a1170d8ba4b8ba684f78e3b2f4fdbe865ac32bb9a69e2f21fc4f5eea
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS05405-MONOMER.xml.gz
+    sha256: fe4d1f477f957ffbe641f98a881c5e574ce4acbea52f66eb6e99253da00fb792
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS08270-MONOMER.xml.gz
+    sha256: b08fbbca66678bf817cdd798498b4e93310e49d27e22ded6a3556c7841d8a8b9
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS08295-MONOMER.xml.gz
+    sha256: a634e15d834a43ea6c7558c1705617c01712a4a6bd50118f7ad99640db81c72f
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS08305-MONOMER.xml.gz
+    sha256: 7c7ef2b96d96653ce35fb130cbdbec0ad8ed2b04f3926dece737700b5c2cd94e
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS09685-MONOMER.xml.gz
+    sha256: 2ecaf6a639f06688fd5ecc4982b875f328f109164a9d7b91128026127bc12bfd
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS09690-MONOMER.xml.gz
+    sha256: fc8e8d6575fba18a1da265a3a3e49f5c1ebdb6310d28c640a403e88b9e843a3b
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS09695-MONOMER.xml.gz
+    sha256: 01602ad1588707c8318c2b1986d54ceb33768db42cb8db9c523179002d12ce90
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS09700-MONOMER.xml.gz
+    sha256: 9e5489a760358b12e0b5c36c20f76f28244033553e986830a1d826df99f08a70
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS09720-MONOMER.xml.gz
+    sha256: 926203d56a4fade3eb5a280690a74c8e5e1aa125947b3f4579361a7f6ae681de
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS10430-MONOMER.xml.gz
+    sha256: f021728b70e7b2b0b98016e9b6a17b2764e9ecc7c6d72fa381737f991da8e973
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-AF_RS11105-MONOMER.xml.gz
+    sha256: b91ad0f1c000a36ebb03e49878c4b6a371b32bac60cecbb99b7ef437421cafe2
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06315-MONOMER.xml.gz
+    sha256: 52807360d0c234e7e6967bed114887491319082015cdf3245e25aa871d953fed
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06320-MONOMER.xml.gz
+    sha256: 02feb2c25d1c0080e101a9fda2918e9aaecd408b5854928ae705d94777834105
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06325-MONOMER.xml.gz
+    sha256: 7781bd792c8c6b92b71d6690973a6d6bab9999d35ac0800ec5443386b3134c81
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06330-MONOMER.xml.gz
+    sha256: 44f394a79fcc129313853145961281a10cd7b1dee25293f46e44d9647d3fce57
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06335-MONOMER.xml.gz
+    sha256: a97471deb3b560beb158ec02b8c66c4d04703379fd52a327f0a4555daf002a00
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06340-MONOMER.xml.gz
+    sha256: d488104ee4a8729c8b1b2304ea23102d205e1531dfcf99ea37403e64eb0b9785
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06345-MONOMER.xml.gz
+    sha256: fc9c5d67119a8aaf386046c01538a34ab76aae52d8f960f7dd6373b8130cf9f6
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-BP07_RS06350-MONOMER.xml.gz
+    sha256: e91786a5bb78bcf557310ca32d85e758ef9d3e97f62bd2d4d314b04876a75c8a
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CCO-IN.xml.gz
+    sha256: feca2d673ef3c870064d7394e36f4db63dcf6fd2c61914376c4144ac24f48550
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CCO-MEMBRANE.xml.gz
+    sha256: ae2391250ad3e85e855b71eecb7e661ff2239c7fefe78e4eac477c95a344b32f
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CCO-OUT.xml.gz
+    sha256: 69d091695b8c17ca2c3af98b3887bd74074cca5beeb9390e24a27e201f6e70db
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPD-15873.xml.gz
+    sha256: bdc40621fe85b4594464a1693108ede0dfc5777d4b0a5382f1f52b9a8b48d68e
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPD-19570.xml.gz
+    sha256: e0793e554233adee413da1e7e0fdec4f5e669fefc3f22da0804ec918c185592d
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPD-21374.xml.gz
+    sha256: d190a2a048269613a77c32ede238952181e6abb56a1c6085596d425813268619
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPD-7162.xml.gz
+    sha256: 5456d65e51c4e06d08ee9c3273e9714976ec4b1a59184a23c7b37a1baa9fda01
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-3321.xml.gz
+    sha256: c89edc0eea585f6211d1110b2815a509d414588e9c264ac9c074b8b6de94c743
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-381.xml.gz
+    sha256: 050835216bcf7bb5396eed2b3eac94d72ee083c90145126e48c7ddadcc5e62b4
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-561.xml.gz
+    sha256: db445e8e545255a579860529daf3d525ab80a337c3d0f0e702bcb3ea453d81dd
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-562.xml.gz
+    sha256: c0446163d9494871138c9f3238522710fe0b315eb201a4b236a5086200f296e0
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-581.xml.gz
+    sha256: 7a74aa4b30310ab4b4f445a058b3197e9d3153d90cbdfb00efb11a050b526fc0
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-601.xml.gz
+    sha256: eefd9b5452170d12f3428049a6a7fb50a7001bdd437528cd8510f4a0d9c2c124
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-622.xml.gz
+    sha256: 7de17686e71ee31a6850390972cbf9d5cba8878097c80516b4db9a1f11d850d9
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-641.xml.gz
+    sha256: c6badc5ec0e8cfbb62d1e803114e769c101d4f5b97cc1c02173b909569a19b10
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-642.xml.gz
+    sha256: c99b19ebedf95673394d4259ec3d0104e4c1edba6f4f4e71146bdc93b4ee6ccf
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX-643.xml.gz
+    sha256: 287bfb64bcc04adfe2ca665cbf35cc9682b0dd373fab84c9d0bd5539f876c017
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX2065-6.xml.gz
+    sha256: b46a42d5f135223b56683b5c4fd7deb16c71d82f675c1c91f43d89a8a0a3baf1
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CPLX26TB-9.xml.gz
+    sha256: 1e5f8e7d8729fc7841a5d50e35485fd76e152ee12a26081a60860fbe67b00e96
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-CoM.xml.gz
+    sha256: 89cb4fed9e05b51e67626979e1f27c523d287a177f170ce1f0dfdf9be4c6bf8c
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-ENZRXN-4121.xml.gz
+    sha256: 848ed19798315248bfea45972e6d05e512fdc21530fce24eeb86a91aa41a55ec
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-ENZRXN-422.xml.gz
+    sha256: 80be0ee8e5e976ba98ca622cf6ac491beda3cdd13fa6adee6ccfc961025777ac
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-ENZRXN-641.xml.gz
+    sha256: b4474df76b8671cd37f9ad2605cd979d98af4fa77601efa1955ca58d45475a68
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-ENZRXN-662.xml.gz
+    sha256: 441a72395b3a63ba9361e1562f7211a33c9d4846200d1505e198b00b7ebed53a
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-ENZRXN-702.xml.gz
+    sha256: 5f6f1c2a8913c4fe30efe9e34c489a550129ca37c92b78c674e6f1ec56418140
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDAMBARK-MONOMER.xml.gz
+    sha256: bd05cb044c49c6466114b59d11b0f2b4e0aaa55d34e1d0cd8f378dcacdde7bba
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDBMAUTO-MONOMER.xml.gz
+    sha256: 8a8636b69751eb6831adbe15b11ef0a3a5cd20a269f7fad0de4f6889795101ad
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDBMBARK-MONOMER.xml.gz
+    sha256: 8cc7aec81c9522d4a572963942d7a3698900549ad5692c29eb41e1ed53bac146
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDCMAUTO-MONOMER.xml.gz
+    sha256: db28408c3eee44c569cd29887c12afef667bff988adacba21009fcc185a3b141
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDCMBARK-MONOMER.xml.gz
+    sha256: c972ac513c174a7e701425a3b3e1aa91d7a946747f6edd13a06ba47a62d76ffe
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDDMBARK-MONOMER.xml.gz
+    sha256: a134aa2cfe53887dcf10fa65faaf44ac91e769a35e31dec73af65ff5431f367b
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDEMBARK-MONOMER.xml.gz
+    sha256: 17b156a5e5aea9626052d8f923ef07a68574b115af07312fdb4f63340b350ae6
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FMDFMBARK-MONOMER.xml.gz
+    sha256: 7d1efa82acc543adbe52587361ecde1e02cb688123ad8a56ab731f0e5ee474a0
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FORMYL-THMPT.xml.gz
+    sha256: 624ff30904aa6e6ccc4c74d0eef4fcf0f58cada793fbb88c9ba70266cd5fd0d8
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FORMYLMETHANOFURAN-DEHYDROGENASE-RXN.xml.gz
+    sha256: 0c4c4de74a384bd88af70bb5335445d6811ae59a572dc29a1357ea7a7d7d199e
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FTRMAUTO-MONOMER.xml.gz
+    sha256: bff8de0977ac41bd004941ffa65218045229f60be6f687b5319c107a1c79da7f
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FWDAMAUTO-MONOMER.xml.gz
+    sha256: fa0d586024b2cb9575ab06f56fa0fea934369e301a0b9e75de495d8a3edc22ec
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FWDBMAUTO-MONOMER.xml.gz
+    sha256: 749f198e7beadcdcd425853ee3054dca0123cd7a57be4cf7f78e7b641d1f0d08
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FWDCMAUTO-MONOMER.xml.gz
+    sha256: fcdb4eb5dec12a973d4926bb6863d200efb903566ed345ce29f44ba4eb60b738
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-FWDDMAUTO-MONOMER.xml.gz
+    sha256: 9ff7ee48889225ebb3c769ba87c565f193e06bff5c41f0eb49239ce2d437c04d
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-Formyl-methanofurans.xml.gz
+    sha256: 11f7c80a8f460ed2a8a7945bc29b0c28c459256cbcf6b4b78e82cf64d20dc7c3
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-H2-METHYLENE-THMPT-DEHYDRO-RXN.xml.gz
+    sha256: 88ebb435ed7dd95afd600a507516cb5402c53f486c39eb79865d1aa3c9134072
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-HCN.xml.gz
+    sha256: 2a906a6fe505905e4c03fc6056479d6b6e106c3621e392bc3bc824c736be8c7c
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-HMDMAUTO-MONOMER.xml.gz
+    sha256: 02ee678ef5119eeb9d94bfc6acb372836f279ca9c13bee43fde4dc761b653960
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-HYDROGEN-MOLECULE.xml.gz
+    sha256: 9357055a7424d6c90ec181a9b3354bc21e5d157317b5bdfa31e814267d079763
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MCHMAUTO-MONOMER.xml.gz
+    sha256: d66baf7230b63d1a2cae933d1167a7320821a48397833b42fd31dca14f7d0cac
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MERMAUTO-MONOMER.xml.gz
+    sha256: 44666d7d4d7676afd357fce845a94007fa410cf23e1d6afc80bb2c4b8dfe6ed6
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-METHANOGENESIS-PWY.xml.gz
+    sha256: 4e3f64beda29bc6f863daac848f3a947f798d8f651caa49156c22ba5e1361b8a
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-METHELENE-THMPT-OXI-RXN.xml.gz
+    sha256: 9e02e2276d5f4776b6eee020b5222039aaf52db5fa565c60426b02d8b85bba57
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-METHENYLTETRAHYDROMETHANOPTERIN.xml.gz
+    sha256: 0974d46937fe73eeea39c36c7dd391c0cfdf12e72aca662f7586ace8bb35a46b
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-METHYL-THMPT.xml.gz
+    sha256: 19978ab1fd8b5c89b00bd16b394acd461aa443bdcbd943d748aa09da0bd89556
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-METHYLENETETRAHYDROMETHANOPTERIN.xml.gz
+    sha256: 7f31026e6b2f83a2455103a904ab54e9f6027d3f03dac2edfbc600b2e47ec5d5
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MG+2.xml.gz
+    sha256: 84ec528193be442f19576121bc5f276c26bcf13e790bd751c53d9eb1262ac1b6
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MN+2.xml.gz
+    sha256: 747dc792f8457476fd6d53f843241359e2741309ca5e8f0a6a624e7b295f9b10
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MONOMER-4021.xml.gz
+    sha256: 2d45fad4357ecedcfe0a7cc62025147d940550af86b21c83837d5c582271f508
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTRAMAUTO-MONOMER.xml.gz
+    sha256: 66a935ba434e6a90090cf7f263bea8e67d14128e87be080f8d7ebf6de55dde89
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTRBMAUTO-MONOMER.xml.gz
+    sha256: 4fcd3833fdcb72a56cef9237a5942a3886d1d6c239913ad3e5578ba9cdd0f0f7
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTRCMAUTO-MONOMER.xml.gz
+    sha256: 4c54916a71cf80916a639649f0ebe05bbe47ba732a6778244f35637006df5627
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTRDMAUTO-MONOMER.xml.gz
+    sha256: 0c484fd078d37e8d47af951b1f2262fe5a55757437052f23448d457df2ab16fd
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTREMAUTO-MONOMER.xml.gz
+    sha256: 5612a08e83e9bf3bafacc59bb7cc70c9c052aa4cd86118c9de31c11f4232fb5c
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTRFMAUTO-MONOMER.xml.gz
+    sha256: 063287e9fd4cbec63a8ff4df59349d0027bfbfeb8a45cbdeeb42f56bc0e0e495
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTRGMAUTO-MONOMER.xml.gz
+    sha256: 4a905ff644e3e9493f84c210d593dbde96391c90bd54f9d98ea6e8ce3583a13d
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-MTRHMAUTO-MONOMER.xml.gz
+    sha256: a086b16974efc89679d1e2b13c0b8eb49334004e6d58e1a383f130ae072a2720
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-Me-CoM.xml.gz
+    sha256: 0698e6254a73a3a280b8716adc452a9a618304d137566877ece0739f46aa6f97
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-Methanofurans.xml.gz
+    sha256: 88941156472b7adf332c5b4ab559458fcbd1ecc4ba6d903a7810507992fa329a
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-NA+.xml.gz
+    sha256: 1aa351a2901334c29c4a80e7d588a99ad94a6c80c3b346da8482176b82941c3c
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-Oxidized-Factor-F420.xml.gz
+    sha256: 08a074efc3895c9b8c808395a1d47b7852945f464404af4d0dacfb860428b7e6
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-Reduced-Factor-F420.xml.gz
+    sha256: 1fc125a82b31610365f81fdff9baf6449032270085d5f65b84e67f2e455f1a5d
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/META-THMPT.xml.gz
+    sha256: 3e155d8dc1ba5c102d3dad8589c8fa676c6cfd857c8dd76a0accfc03bc700344
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/manifest.json
+    sha256: 392f572e18249598d1d7919c32a5983216a7c20e379bfc0c2f975bb1d8733834
+    role: context
+  - path: tests/fixtures/methanogenesis_authority/storage.json
+    sha256: 8ce37d849c62e790d63a6c8c3d39371343e617c68a59d6ea05ab15515aa0492b
+    role: context
+  - path: tests/test_methanogenesis_authority.py
+    sha256: f92ff40257c8618e473053bb1b6fd5c15b909dd9a87e60881a0eef0f1b0a66bc
+    role: context
+scope:
+  description: Complete maintained scientific review of one exact pathway record,
+    reusing explicitly accepted independent native/source/issuer/graph/novelty/composition
+    evidence and final gate/page review receipts.
+  selection: Exactly data/pathways/methanogenesis-from-h2-and-co2.yaml, MetaCyc:METHANOGENESIS-PWY,
+    SHA553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e; all declared
+    fields, nodes, edges, references and 20 narrative/incident claims.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  exclusions:
+  - target: Other266 maintained records
+    reason: Reuse actual-landed novelty and deterministic corpus/unchanged-owner checks;
+      no new scientific review of those records.
+  - target: New literature acquisition, complete historical primary papers, full taxonomy
+      cache and global source landscape
+    reason: Previously accepted exact source scopes reused; unavailable originals
+      and bounded archive searches remain explicit.
+  - target: Historical renderer and new authority code independent authorship
+    reason: Separate peer implementation/integration reviews reused; this canonical
+      target is the maintained scientific record, not a new code audit.
+targets:
+- target_id: MetaCyc:METHANOGENESIS-PWY
+  path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+  label: methanogenesis from H2 and CO2
+  kind: maintained
+  record_class: PathwayRecord
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+    role: maintained scientific record
+checks:
+- check_id: scientific-rebind
+  name: Complete maintained scientific/reference/claim rebind
+  status: passed
+  required: true
+  summary: 1811 finite checks passed; exact maintained553922, reference originals,
+    all 20 claim placements, graph closure and retained source/review inputs.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 /private/tmp/pathwaymech-next-263-verified-venv/bin/python
+    -B /private/tmp/pathwaymech-next-270-canonical-maintained-review/rebind_maintained.py
+  exit_code: 0
+  evidence_ids:
+  - maintained-rebind
+- check_id: reviewer-initial-receipt-harness
+  name: Preserved initial reviewer harness attempt
+  status: failed
+  required: false
+  summary: Initial script assumed uniform direct status fields for receipt bindings
+    and raised KeyError on root wrapper. Original script/logs retained; explicit root-wrapper
+    and sodium-reuse handling in the successor passes. This is not a record defect.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: Initial preserved rebind_maintained.py.attempt1 executed with existing
+    verified Python runtime
+  exit_code: 1
+  evidence_ids:
+  - maintained-rebind
+- check_id: additional-expression-survey
+  name: Additional iModulonDB discovery
+  status: skipped
+  required: false
+  summary: No new cross-database network/dataset survey was part of this bounded canonical
+    task and no iModulonDB-derived claim is made. Existing structured native and issuer
+    evidence was used; no dataset-absence or negative biological inference is asserted.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  scope_note: No claim that an unqueried organism/dataset is absent; computational
+    module membership would not establish pathway catalysis or route membership.
+- check_id: root-gate-1
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Rendered all 267 maintained pathways.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: just render-pages
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Root executed 2026-10-16T02:26:45.495856+00:00 through 2026-10-16T02:28:02.223519+00:00;
+    exact compressed and decoded logs independently verified, no rerun. The owner
+    inventory was captured during execution and rechecked afterward, not claimed as
+    a pre-launch attestation.
+- check_id: root-gate-2
+  name: just validate
+  status: passed
+  required: true
+  summary: 267 records pass Python, closed LinkML and identifier/label policies; 21,
+    255 evidence blocks, 512 histories, 30 source records and generated pages pass.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: just validate
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Root executed 2026-10-16T02:28:07.219799+00:00 through 2026-10-16T02:32:59.292065+00:00;
+    exact compressed and decoded logs independently verified, no rerun. The owner
+    inventory was captured during execution and rechecked afterward, not claimed as
+    a pre-launch attestation.
+- check_id: root-gate-3
+  name: just test
+  status: passed
+  required: true
+  summary: 7149 passed, 3 skipped, 7 warnings in 1093.26s (0:18:13)
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: just test
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Root executed 2026-10-16T02:28:07.225661+00:00 through 2026-10-16T02:46:24.713821+00:00;
+    exact compressed and decoded logs independently verified, no rerun. The owner
+    inventory was captured during execution and rechecked afterward, not claimed as
+    a pre-launch attestation.
+- check_id: root-gate-4
+  name: just lint
+  status: passed
+  required: true
+  summary: All checks passed.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: just lint
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Root executed 2026-10-16T02:28:07.230144+00:00 through 2026-10-16T02:28:07.937166+00:00;
+    exact compressed and decoded logs independently verified, no rerun. The owner
+    inventory was captured during execution and rechecked afterward, not claimed as
+    a pre-launch attestation.
+- check_id: root-gate-5
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Tracked working diff whitespace check passed.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: git diff --check
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Root executed 2026-10-16T02:28:07.236055+00:00 through 2026-10-16T02:28:08.822803+00:00;
+    exact compressed and decoded logs independently verified, no rerun. The owner
+    inventory was captured during execution and rechecked afterward, not claimed as
+    a pre-launch attestation.
+- check_id: root-gate-6
+  name: just vendored-check
+  status: passed
+  required: true
+  summary: 22 governed artifacts match the pinned canonical revision.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: just vendored-check
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Root executed 2026-10-16T02:27:32.954498+00:00 through 2026-10-16T02:27:37.166457+00:00;
+    exact compressed and decoded logs independently verified, no rerun. The owner
+    inventory was captured during execution and rechecked afterward, not claimed as
+    a pre-launch attestation.
+- check_id: root-gate-7
+  name: git diff --cached --check
+  status: passed
+  required: true
+  summary: Corrected complete staged check passed after the narrowly scoped XML byte-preservation
+    attribute; original exit 2 is retained separately.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: git diff --cached --check
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Root executed 2026-10-16T02:34:37.133718+00:00 through 2026-10-16T02:34:38.017033+00:00;
+    exact compressed and decoded logs independently verified, no rerun. The owner
+    inventory was captured during execution and rechecked afterward, not claimed as
+    a pre-launch attestation.
+- check_id: original-staged-whitespace
+  name: Historical original staged whitespace check
+  status: failed
+  required: false
+  summary: 'Initial exit 2: 137 upstream trailing-space diagnostics in 72 exact native
+    XML originals. Accepted one-file attribute successor preserves all 703 previous
+    owners and all 223 source bytes; separate passing staged check is required above.
+    Issue 628 remains open pending verified merge.'
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: git diff --cached --check
+  exit_code: 2
+  evidence_ids:
+  - gates
+  - source-preservation
+- check_id: final-input-binding
+  name: Final exact gate logs and stable source inspection
+  status: passed
+  required: true
+  summary: 2416 checks passed; all 704 integrated owners, 16 compressed/decoded original
+    logs and 792 direct source inputs are bound. One literal-percent receipt path
+    is indirectly bound under unchanged governed path grammar.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 /private/tmp/pathwaymech-next-263-verified-venv/bin/python
+    -B /private/tmp/pathwaymech-next-270-canonical-maintained-review/final_input_bind.py
+  exit_code: 0
+  evidence_ids:
+  - gates
+  - maintained-rebind
+- check_id: initial-final-inspect
+  name: Preserved rejected initial final inspection
+  status: failed
+  required: false
+  summary: The governed inspector rejected the literal-percent direct-NA%2B.json receipt
+    filename as an unsafe direct source-input path. Exact source bytes remain unchanged
+    and were hashed; its digest is bound indirectly through gates.json and the accepted
+    authority archive. Original inspector stderr and wrapper failure are retained.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: scripts/record_review.py inspect with the original final input set
+  exit_code: 1
+  evidence_ids:
+  - gates
+  - authority
+- check_id: peer-manifest-helper-attempt
+  name: Preserved peer-manifest helper assumption
+  status: failed
+  required: false
+  summary: Initial reviewer retention helper assumed self_excluded for both packet
+    manifests; the second uses self_exclusions. Corrected helper accepts the two exact
+    declared spellings and verifies all 58 retained outer members; no source or science
+    defect.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: Inline Python peer-retention helper, preserved equivalent attempt1 and
+    observed traceback
+  exit_code: 1
+  evidence_ids:
+  - page-export
+  - source-preservation
+- check_id: current-selected-taxonomy
+  name: Current selected taxonomy rows and unchanged cache metadata
+  status: passed
+  required: false
+  summary: 'Three read-only statement sets match retained rows exactly: 2208 has 11
+    rows, 145262 has 16 and 2179 has 7; cache size and mtime unchanged before/after.
+    Full-cache hash reused, not recalculated.'
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 /private/tmp/pathwaymech-next-263-verified-venv/bin/python
+    -B /private/tmp/pathwaymech-next-270-canonical-maintained-review/check_taxonomy_metadata.py
+  exit_code: 0
+  evidence_ids:
+  - taxonomy
+- check_id: initial-review-serialization
+  name: Preserved first review-content validation
+  status: failed
+  required: false
+  summary: Initial scratch YAML writer emitted aliases for shared target-ID arrays.
+    The governed validator correctly rejected aliases. The successor uses an alias-free
+    dumper; no maintained bundle was saved from the rejected draft and no scientific
+    values changed.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  command: scripts/record_review.py validate completed-review.yaml (retained serialization-attempt1)
+  exit_code: 1
+  evidence_ids:
+  - maintained-rebind
+evidence:
+- evidence_id: record
+  kind: record_content
+  reference: data/pathways/methanogenesis-from-h2-and-co2.yaml
+  locator: 'Complete 3,360-line maintained document: root, taxa,94participants,6reactions,125edges
+    and148references'
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Entire maintained document parsed/read and byte-equal to the previously
+    fully read accepted composition; all fields and assertions are in scope.
+  snapshot_sha256: 553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e
+- evidence_id: composition
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/record-preparation/independent-record-composition-review.tar.gz
+  locator: REVIEW.md,RESULT.json,scientific-dispositions.json,reference-bindings.json;
+    manifest04198da4b79437a0fbbc29f3b5ed72768d8008e2942bb1feb1b484d89bb6f4e5
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Independent complete composition review passed 1, 589 checks, all 148 references
+    and 20 claims, 13 reproduced outputs. Exact record bytes are unchanged; its declared
+    scientific reading and caveats are reused.
+  snapshot_sha256: 77da044769395ff37beef2436df81f4ceee4f5806bd210f0eea58127b01f5a57
+- evidence_id: native-graph
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/accepted-preparation/native-graph-independent-review.tar.gz
+  locator: REVIEW.md; manifestd945acd1f4e48e462e4db2bc3ed4f3db197bc421d8ed99ef3a40946fc613c19e
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Independent finite native review covers 177 exact originals/2061 own slots,
+    101 declarations and 125 edges, all 30 material and 43 component occurrences,
+    15 activities and 7 real regulations. Unchanged claims retain exact original assertions
+    and native source-only limits.
+  snapshot_sha256: 6a2ebc22640db12007fc9a8ca8592b56d697729035aecd022f59092dd41f2975
+- evidence_id: source
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/accepted-preparation/independent-source-closure-review.tar.gz
+  locator: REVIEW.md; manifesta64814d2b73ce4f5399704f087a816be51bae880fc448f13ec231a935d6812fe
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Earlier independent source review covers authentic Kurth main/all 5 figures,
+    supplementary DOCX body/all 7 figures, selectedS1/S2 and all S3;14 abstracts and
+    explicit unavailable/partial historical scopes. Its sole locator finding is superseded
+    by the separate accepted correction; no new full reading is claimed.
+  snapshot_sha256: 9b7dc91a8ddd369c6304367b61991b9e7a9e79bde163bd97e441e8645d6a2e90
+- evidence_id: locator
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/accepted-preparation/source-locator-independent-acceptance.tar.gz
+  locator: REVIEW.md/RESULT.json; manifestef8ceb23771aae539748233f9f0099cfe14e363606d1bcfccacbe3c457597caf
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Corrected S15 locator is Methods PDF 6–7, Figure 4C/caption, Results PDF
+    11–12, and supplementary S2B. All 20 claim values otherwise remain; JSON escaping
+    of unchanged S14 punctuation was separately disclosed. Current maintained root/incident
+    prose contains the corrected locator. Issue 626 remains open pending verified
+    merge.
+  snapshot_sha256: d2bcac40d8b6bb151e07dbffa48a776dc0df98b5ab1ea1dcf0cbccc9aad0e5b9
+- evidence_id: issuer
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/accepted-preparation/independent-issuer-review.tar.gz
+  locator: REVIEW.md; manifest3d2baf4aa3bfbb0cf7278337e7796ea5c6c02c822ced83b7d4bfb6f611573a50
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: All 108 finite 18 material/6 reaction/57 protein/15 activity/12 taxon dispositions
+    accepted with exact 76 fresh acquisition bindings and 6 reuses, retaining chemical
+    class/ionic/stereo/transport and strain/sequence conflicts. Existing full-cache
+    hash is reused with selected statements and unchanged metadata, not freshly recalculated.
+  snapshot_sha256: 1d501414d6b8dbb67e1cc2400bd65098bea4fbd0eff31136e876092fc959697b
+- evidence_id: native-originals
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-270/authority-source-originals/reference-original-bindings.json
+  locator: All131 native reference entries, own original bodies and exact successful
+    acquisition or reuse receipts
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Current maintained original hashes exactly match the record reference hashes
+    and accepted frozen originals. Root acquisition is a hash-bound receipt wrapper;
+    sodium is explicit historical reuse, not a fresh successful request.
+  snapshot_sha256: 081da125616fb7edc6a79322e38c5327972dc59a4e1d916189e2159bd074f537
+- evidence_id: primary-originals
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-270/accepted-preparation/methanogenesis-source-preparation.tar.gz
+  locator: originals/primary/selected-pubmed.xml SHAa7594bb3cea7d15bf6afaa53a756016b6e592daaa297410a7faff97871c1c260;
+    originals/primary/kurth2021.pdf SHAf15d78d1ccca763d30f0ba74eb5f1867688623a4e6833c05373ff056811d008b
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Thirteen references hash the authentic complete abstract batch and Kurth
+    hashes the authentic main PDF; all 14 IDs/titles and artifact identities were
+    checked in the accepted composition and rebound now. Paper citations in native
+    objects do not become independently read experimental evidence.
+  snapshot_sha256: cd032a34c083644f2543973e192dc61a40bf6a99c50273976afbb5e98aba8ee0
+- evidence_id: taxonomy
+  kind: authority
+  reference: research/pathway_additions/2026-10-15-next-270/authority-source-originals/taxonomy/three-direct-taxon-selected-statements.json
+  locator: Complete selected issuing statements for2208,145262,2179 and retained taxonomy-query-receipt.json
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: 'Exact native direct associations agree with pinned taxonomy labels/ranks:
+    M. barkeri species, M. thermautotrophicus species, Methanothermus genus. Reference
+    hashes identify the full pinned database89998447813e3151d1116222a3ec4b74959ccfb492114db134acee753f63548d;
+    selected-row JSON is not misrepresented as that artifact.'
+  snapshot_sha256: 073b5dd485f91cfacfdc093a8ae25c8074808dfdd7b04375321836d8a6757d61
+- evidence_id: authority
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/integration-preparation/native-authority-independent-review.tar.gz
+  locator: REVIEW.md,RESULT.json; frozen independent implementation acceptance
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Independent peer review accepted exactly 92 new native terms and 3 taxa,
+    preserving9 prior graph authorities and every previous source/ontology owner/value/order;10478
+    assertions, 273 adversarial cases and 1645 targeted regression tests. This is
+    reused implementation acceptance, not a fresh author self-review or full-suite
+    rerun.
+  snapshot_sha256: 0993770986f5ccd8e4eaf83fd385b1b82f5021eea7eadeb6bad43240ae85531b
+- evidence_id: integration
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/record-preparation/integrated-authority-independent-review.tar.gz
+  locator: REVIEW.md,RESULT.json; complete24-file frozen review
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Peer integration review binds669 approved authority paths, 12 retention
+    paths, append-only documentation and all prior owner values/order;20089 checks.
+    The current actual source snapshots and adapter are separately hashed canonical
+    inputs.
+  snapshot_sha256: 0f0cb5712de5b868630f3120923792a6a4e4e3019632ecf69f0e3d0edcd19e88
+- evidence_id: novelty
+  kind: search
+  reference: research/pathway_additions/2026-10-15-next-270/integration-preparation/landed-novelty-review.tar.gz
+  locator: REVIEW.md; manifest7bc78495e1a7d55c2a7a9ba5b412677570d34f54d9d9414620769547e7765645
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: No duplicate maintained route at actual landed e8ae5e445d3288717c31d3012611e226fd5cca34/tree1c03509290f5c76048cb293bdd19c1f57143059c.
+    Acetogenesis, methylphosphonate methane and broader methanogenesis mentions are
+    distinct or contextual.
+  search_scope: All 266 maintained Git-bound records, exact pathway/six-member/reaction/issuer
+    aliases;144 ordinary source inventories;401 hidden/ignored physical files across4
+    bounded roots. Published archive denominator16742/1340462030bytes inventoried;116
+    older gzip hashes and24849128 decoded bytes/17 older search patterns reused,0
+    fresh archive interior search. Expanded aliases were not applied to compressed
+    contents. No global absence or source exhaustion claim.
+  snapshot_sha256: e93ddde3088e6fd7a063b1683ddeac1f6f6e535f71f150f5793c1c341b72d855
+- evidence_id: maintained-rebind
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-270-canonical-maintained-review/maintained-scientific-rebind.json
+  locator: scientific-rebind-checks.json; exact terminal successor and retained initial
+    harness failure
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: '1811 current rebind checks passed: exact complete target, all 148 references,
+    131 native originals, 20 root/incident claim placements, 125 edges/220 evidence
+    blocks and 16 retained archive digests. Full outer path/type/size inventory and
+    selected member bodies were checked; prior complete outer hashing is reused and
+    nested containers remain opaque.'
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-270/final-verification/gates.json
+  locator: All seven terminal commands, 16 exact gzip/raw logs, integrated_owners,
+    supporting_receipts and resolved_attempts; raw full-test summary and warning section
+    read
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: All required root commands pass; 7, 149 tests passed, 3 skipped, 7 warnings.
+    Current independent hash checks bind every retained gzip and decoded log to its
+    raw original and all 704 integrated owners. Initial staged exit 2 is retained,
+    separately corrected. Inventory was captured during the run and rebound afterward,
+    not before launch.
+  snapshot_sha256: d0af0069bd0e3dfe5f4e13eb6da24aea00271f289be64a1b364ac414f11bb56c
+- evidence_id: source-preservation
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/source-attribute-independent-review.tar.gz
+  locator: Complete33-file frozen packet; REVIEW.md and RESULT.json; manifest30a5ac89bf6d29c163fcb5ea7e819f18ff15f18f929f7106e85035d3a106d066
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Independent 3, 776-check acceptance of the one-file directory-local XML
+    attribute successor. All 703 previous owners/223 XML bytes unchanged; original
+    failure and case-alias reviewer assumption retained. 17 negative boundary controls
+    pass; case-fold behavior documented. Issue 628 stays open pending verified merge.
+  snapshot_sha256: 9453ceab88cb81e745ae278a97d7d154fb1c3d001d9b4ae0bcce61c1ef45c6a8
+- evidence_id: page-export
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-270/maintained-review-preparation/maintained-page-export-independent-review.tar.gz
+  locator: Complete25-file frozen packet; REVIEW.md/RESULT.json; manifest227cee3cae9552f609407bb68bd04dcf2d34e2d23b0a6d7046d1ec381b4b3f67
+  accessed_at: '2026-10-16T02:53:54Z'
+  support: supports
+  summary: Independent 2, 742-check final page/KGX review; actual page9e78b48a differs
+    from accepted preview only by maintained source link and CREATE history. All 125
+    full edge payloads, 20 claims, 148 references, 104 KGX nodes, 101 SVG nodes/125
+    links and three taxa preserved; all 266 previous records/pages exact. Structural
+    no-JS scope only, no pixel/browser QA.
+  snapshot_sha256: fd2913ed5ab7518617c40b236137cd800f7214e2c8c2172f5c10b6994c9e8b08
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact pathway boundary and actual landed novelty
+  outcome: supported
+  summary: Retain the issued six-member MetaCyc definition ending at methyl-CoM. METHFORM/methane
+    output and Mvh/Hdr regeneration are outside it; Hmd/H2 is not Mtd/F420. All 266
+    earlier maintained records and finite alias/context search scopes were independently
+    adjudicated; no duplicate exact route was found.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - native-graph
+  - novelty
+  dimensions:
+  - name: source_object
+    value: MetaCyc:METHANOGENESIS-PWY, six own reaction-list/reaction-layout members
+    definition: Exact source identity and member boundary; source name alone does
+      not expand its endpoint.
+    evidence_ids:
+    - native-graph
+    - native-originals
+- assessment_id: taxon
+  area: grounding
+  topic: Three direct taxon associations and rank limits
+  outcome: supported
+  summary: 2208 and 145262 are species;2179 is a genus. Native species-slot placement
+    is not a rank conversion. Historical range28890 and catalyst-specific species/strains
+    remain context, not proof of all six reactions or all strains. The three reference
+    digests correctly identify the pinned complete cache; selected issuer statements
+    and accepted unchanged-cache metadata support reuse.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - issuer
+  - taxonomy
+  - composition
+  dimensions:
+  - name: taxon_condition
+    value: Methanosarcina barkeri species; Methanothermobacter thermautotrophicus
+      species; Methanothermus genus; native direct pathway associations only
+    definition: Source-supported taxon scope; no all-strain, culture condition or
+      whole-route assay generalization.
+    evidence_ids:
+    - taxonomy
+    - native-originals
+- assessment_id: graph
+  area: graph
+  topic: Complete source graph and local evidence closure
+  outcome: supported
+  summary: All 101 native biochemical declarations, 125 edges and 220 evidence blocks
+    are preserved with unique IDs and local endpoint/reference closure. Six memberships,
+    5 order links, 30 materials, 13 qualified catalog catalyses, 5 exact activity
+    enables, 43 components, 6 cofactors, 10 locations and 7 regulations reconcile.
+    The16 absent component coefficients remain unspecified; subunit membership is
+    not independent catalysis.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - native-graph
+  - maintained-rebind
+  dimensions:
+  - name: component_role
+    value: Chemical classes and molecules, proteins/complexes, exact molecular activities
+      and cellular components retain their distinct categories and relation roles
+    definition: Native role semantics and source coverage; category alone does not
+      establish experimental function.
+    evidence_ids:
+    - native-graph
+    - issuer
+- assessment_id: direction
+  area: consistency
+  topic: Selected route versus generic and enzyme-specific directions
+  outcome: supported
+  summary: Five generic reactions remain reversible and selected root orientation
+    is explicit. The two Mch hydrolysis activities oppose selected dehydration; exact
+    activity/enables/regulations remain, without positive catalysts incorrectly assigned
+    to dehydration. Native source-only associations, including five Archaeoglobus
+    activities, are qualified rather than promoted to independently read catalysis.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - native-graph
+  - source
+  - issuer
+- assessment_id: transport
+  area: quantity
+  topic: Exact occurrence quantities and compartment limitations
+  outcome: supported
+  summary: Mtr source transport remains2 Na inside to2 Na outside with all 4 carrier
+    occurrences inside; other 24 material occurrences are unlocated. Complete incident
+    prose/evidence and retained occurrence ledger preserve coefficients, omissions,
+    source sides and locations. Top-level triples do not encode typed occurrence quantities/compartments;
+    no globally located sodium, invented carrier identity or transport mechanism is
+    inferred.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - native-graph
+  - issuer
+  - page-export
+- assessment_id: chemistry
+  area: representation
+  topic: Class, microstate, isotope and structure scope
+  outcome: supported
+  summary: Native methanofuran, F420 and ferredoxin classes remain generic. FORMYL-THMPT
+    does not become an exact ChEBI17114/58018 mapping; KEGG ionic and Rhea proton/location
+    differences remain. Twelve concrete native CML constitution/formula/charge comparisons
+    and eleven direct ChEBI InChI-derived comparisons retain isotope/stereo/fixed-proton
+    limits. Formal Hmd/Mch/Mtr balance is not physiological full-route balance; remaining
+    generic equations are undetermined.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - issuer
+  - composition
+- assessment_id: cofactor-regulation
+  area: evidence
+  topic: Catalyst-specific cofactors, inhibition and native conflicts
+  outcome: supported
+  summary: Mo-specific cyanide inhibition is not transferred to tungsten/all Fmd.
+    Mtr activity FeS/cobamide versus complex cobamide-only statements remain separately
+    supported on affected edges. Historical Hmd absence of Ni/FeS/flavin does not
+    establish absence of iron. Seven real regulators retain exact activity targets
+    and signs; no class object becomes an eighth instance. Source-only assertions
+    remain visibly source-only.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - native-graph
+  - source
+  dimensions:
+  - name: evidence_tier
+    value: Native structured source_assertion with exact own-slot locator; selected
+      historical abstracts corroborate bounded claims
+    definition: Database evidence tags and attached citations do not establish independently
+      read assay evidence.
+    evidence_ids:
+    - source
+    - native-originals
+    - primary-originals
+- assessment_id: sequence
+  area: grounding
+  topic: Protein, strain, paralog and preparation limits
+  outcome: supported
+  summary: Marburg Q50744 versus DeltaH O27784 retains exact 321 aa ENA comparison,
+    five residue differences and distinct sequence cautions/taxon parents; no kinetic
+    transfer. AF_RS10430 family/similarity support is distinct from AF_RS11105 and
+    eight divergent GeneIDs stay unresolved. AM1 Mch is bacterial C1 context, not
+    methane formation. Historical Hmd/Mtr assembly preparations and quantities are
+    not conflated.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - issuer
+  - composition
+- assessment_id: primary
+  area: scope
+  topic: All 20 accepted claim qualifications and primary reading limits
+  outcome: supported
+  summary: All 20 complete accepted claim paragraphs and every planned incident clause
+    survive. Kurth Mto demethylation/expression, H4F surrogate/CoM negative acceptor,
+    distinct MtoA/MtrH and proposed energy/flux interpretations are correctly bounded.
+    Full Kurth main/SI and selected spreadsheet scope are reused from accepted reading;
+    historical papers retain abstract, unavailable-full or inherited partial-main
+    limits. Native citations do not become whole-route experiments.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - source
+  - composition
+  - primary-originals
+  - maintained-rebind
+- assessment_id: locator626
+  area: provenance
+  topic: Corrected assay locator incorporated
+  outcome: supported
+  summary: S15 uses Methods PDF 6–7, Figure 4C/caption, Results PDF 11–12 and supplementary
+    S2B in maintained root and incident prose. Figure 3 is explicitly not the assay
+    locator. This verifies incorporation, not GitHub issue closure or merged publication;
+    issue 626 remains governed by the later verified merge.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - record
+  - locator
+  - maintained-rebind
+- assessment_id: references
+  area: provenance
+  topic: Complete evidence artifact identity and durable retention
+  outcome: supported
+  summary: All 148 declared references have exact source artifact bindings:131 own
+    native bodies, 13 complete abstract-batch hashes, 1 authentic Kurth PDF and 3
+    pinned taxonomy-cache references. Exact root receipt and sodium reuse are distinguished
+    from failed attempts. Sixteen complete frozen packets retain original author/reviewer
+    attempts and scopes. Archive retention is not itself new scientific acceptance.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - composition
+  - native-originals
+  - primary-originals
+  - taxonomy
+  - maintained-rebind
+- assessment_id: identifier-policy
+  area: schema
+  topic: Typed authority existence, canonical labels and current schema
+  outcome: supported
+  summary: The separately accepted finite authority implementation and actual integrated
+    owners preserve all old authorities and add only92 verified native terms and 3
+    taxa. Native unnamed reaction labels, bounded homomer naming and exact class/category
+    roles remain. Final current corpus schema/identifier gates and stable input hashes
+    support maintained integration; no global policy weakening or unsupported public
+    equivalence is asserted.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - authority
+  - integration
+  - gates
+  - record
+- assessment_id: page-export
+  area: representation
+  topic: Visible complete scope and exported context
+  outcome: supported
+  summary: The separate final maintained page/KGX review is reused at its stated structural
+    scope. All 101 biochemical SVG nodes/125 links and 104 KGX nodes/125 edges retain
+    complete edge evidence and descriptions;3 unconnected taxa remain in ordinary
+    page text/KGX. Root-only limitations are duplicated on incident descriptions.
+    No pixel-level or interactive-browser validation is asserted by this scientific
+    review.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - page-export
+  - record
+  - composition
+- assessment_id: gates
+  area: other
+  topic: Final documented maintained verification
+  outcome: supported
+  summary: Final root-run validate, test, lint, diff and vendored/render results were
+    independently rebound to retained compressed logs with exact decoded-byte hashes.
+    No expensive suite was repeated. These gates establish deterministic consistency
+    at declared inputs; they do not independently establish scientific truth.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - gates
+  - page-export
+  - maintained-rebind
+- assessment_id: source-preservation
+  area: provenance
+  topic: Original XML bytes retained with narrowly scoped staging metadata
+  outcome: supported
+  summary: The one added owner-local attribute file accepts upstream end-of-line spaces
+    without modifying source XML or broadening code/document whitespace rules. The
+    initial failed root check and corrected successor are separately retained and
+    independently accepted. This scientific review does not close issue 628.
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  evidence_ids:
+  - source-preservation
+  - gates
+findings: []
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - MetaCyc:METHANOGENESIS-PWY
+  rationale: Preserve the exact native six-reaction CO2-to-methyl-CoM definition.
+    Adjacent methane formation/electron regeneration, Mtd alternative and broader
+    pathway classes must not be silently merged.
+  evidence_ids:
+  - native-graph
+  - novelty
+  - record
+limitations:
+- Authoritative native structured-source assertions are valid at their stated source
+  scope; attached papers and evidence tags do not establish independently read whole-pathway
+  experiments. Historical unavailable or partial papers remain limitations, not silently
+  filled gaps.
+- Generic methanofuran, F420 and ferredoxin classes, charge/stereo/isotope uncertainty,
+  native versus Rhea/KEGG equation/compartment differences and disputed cofactor/direction
+  assertions remain unresolved where stated. No new public biological identifier mapping
+  is approved.
+- Top-level graph endpoints alone do not encode typed coefficients or per-occurrence
+  compartments. Complete incident descriptions/evidence and retained occurrence ledgers
+  preserve source facts; consumers discarding that context lose transport/quantity
+  information.
+- Taxon associations do not prove every strain or pathway reaction. Species/genus/strain
+  differences, historical Marburg/DeltaH mappings, AF paralogs and unresolved GeneID
+  pointers remain qualified.
+- Full Kurth main/SI and bounded spreadsheet reading are reused from prior independent
+  source review; this canonical turn does not claim a repeated full literature read
+  or new acquisition. Vorholt full main remains unavailable and Kaster scope remains
+  the exactly inherited partial-main/abstract scope.
+- Full pinned 14.1 GB taxonomy-cache SHA256 is reused with accepted selected-row and
+  unchanged-metadata evidence; no new whole-cache hash was performed. Nested archives
+  remain opaque except for specifically declared earlier scientific scopes; finite
+  novelty checks are not global discovery exhaustion.
+- No additional iModulonDB dataset survey, interactive-browser test or pixel-level
+  readability audit was performed. The separate maintained page/export review supplies
+  its declared structural no-JS/context scope.
+- Issue 626 corrected locator is incorporated, but this clean canonical observation
+  does not close the existing issue or authorize an unverified merge. Public-release
+  licensing review remains deferred under the user instruction.
+- Governed source-input path grammar excludes the literal-percent filename research/pathway_additions/2026-10-15-next-270/authority-source-originals/acquisition/native-preparation/direct-NA%2B.json
+  from direct source.inputs. Its exact SHA256 4cf3976976a7e1683d0975a11f5f98775f1580767cf96c1922f8029e24b423cc
+  was checked and is bound indirectly by gates.json integrated_owners and the accepted
+  native-authority implementation archive membership. No filename, byte, schema or
+  rule was changed; not every one of the 704 owners is a direct input entry.
+notes:
+- Review preparation began at the actual recorded UTC time; governed inspect ran after
+  root declared target ready and before maintained assessment. Initial hashes were
+  rechecked rather than silently refreshed.
+- Required full maintained commands were run by root and reused through exact retained
+  terminal receipts and decoded logs; no duplicate full suite. Initial reviewer harness
+  failure remains preserved and was corrected solely in owned scratch code.
+- Only the new canonical bundle is written through the governed saver. Record, pages,
+  histories, Git/GitHub, source owners, cache and installed runtime remain untouched
+  by this review.
+- Actual page/output owner hashes are included; generated products are owned by the
+  maintained renderer/export modules and record/history inputs, not hand-edited pages.
+- Two final peer archives contain 58 complete outer files independently decoded and
+  compared; prior 16 preparation archives retain their narrower original 6, 883-member
+  scope. No count is silently expanded into a new full source read.
+- Additional exploratory receipt filename and manifest-key assumptions were corrected
+  only in reviewer scratch helpers. Initial failures and additive final owner-context
+  inspection history are retained. No product finding resulted.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/626
+- https://github.com/CultureBotAI/PathwayMech/issues/628
+tags:
+- pathway
+- methanogenesis
+- source-native
+- independent-review
+- next270
+```

@@ -1,0 +1,9 @@
+# Maintained output and source-preservation reviews
+
+These two complete frozen packets retain the actual page/KGX review and the independent issue #628 attribute-fix acceptance. [inventory.json](inventory.json) binds every outer member, including hidden/ignored files, manifests, freeze proofs and original failed attempts. Every member was decoded and compared to its original bytes; no additional scientific or recursive-container acceptance follows from packaging.
+
+The page/export review passed 2,742 checks. It accounts for the maintained source link and CREATE-history difference from the scratch preview, preserves all 125 full edge payloads and 20 scope clauses, and verifies 104 record-local KGX nodes, 101 SVG nodes, three taxa and 148 references. All 266 earlier record pages remain unchanged, and only the six expected aggregate files changed. Its 16-archive count refers to the three earlier preparation groups, before these two review archives were added. No browser or pixel-level QA is claimed.
+
+The issue #628 successor passed 3,776 checks. The exact staged-tree difference is one owner-local Git attribute file. All 703 earlier proposed owners and 223 native XML originals remain unchanged. The initial 137 trailing-space diagnostics across 72 files, original exit 2, successor exit 0 and initial failed uppercase-control assumption are retained. Git case-fold behavior is explicitly documented; all 17 negative boundary controls pass. Issue628 remains open until verified merge.
+
+Read the complete HANDOFF and REVIEW reports inside each archive for independence, reused scientific scopes and exact limits. Full maintained gates, canonical scientific review, publication and merge remain separate events. Copy a whole frozen packet to a new scratch owner before reproducing historical scripts.
