@@ -1000,3 +1000,54 @@ This is an additive source replay. All 65 new bodies reproduce through the norma
 source builder. Existing snapshot terms/metadata are reused unchanged and passed
 through the full consumer; this does not claim that all historical source bodies
 were newly downloaded or regenerated.
+
+## Complete glutaryl-CoA native authority originals
+
+The bounded `metacyc-glutaryl-xml` kind covers 49 additional graph identities
+from PWY-5177: nine Compound instances, 30 Protein instances (including nine
+complexes), four Enzymatic-Reaction instances, five Reaction instances and one
+Pathway instance. Eleven existing graph identities retain their prior owners.
+The separate P321 and phenylacetate profiles are unchanged.
+
+Producer and consumer replay the complete original bytes and all 891 direct
+slots, checking the request, envelope, META database, release 27.0, object type
+and full native identity. Requests retain the actual acquired
+`https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?META:FRAME` syntax; an unacquired
+`id=` URL is not substituted. Embedded native objects require coherent
+frame/PGDB/ID-or-resource identities, including when all identity attributes
+have been removed. Structural checks do not authenticate an arbitrary
+replacement response; pinned hashes and acquisition receipts bind the originals.
+
+Names and synonyms come from direct issuing slots. A missing common name uses
+the exact frame token with `label_kind: source_context`. The RXN-11667 label
+remains `(S)-3-hydroxybutanoyl-CoA dehydrogenase`, despite its hydration equation;
+the record explains this conflict in visible prose and incident-edge evidence.
+Source spelling and chemistry are not silently corrected by the authority parser.
+
+Typed Enzymatic-Reaction nodes require `participants/category: molecular_activity`;
+generic Reaction nodes require `reactions/category: molecular_activity`. Protein
+and complex roles remain distinct. The composite reaction retains its two
+constituents, six material occurrences and explicit two-proton coefficient,
+separately from the five pathway members. Existing ETF Protein classes remain
+generic classes, without inferred exact sequences or physiological partners.
+
+The record's 60 native graph identities and 46 native evidence references have
+an 86-ID union. Citation-only references are not selected as authority terms.
+The [source owner](../research/pathway_additions/2026-10-15-next-269/authority-source-originals/README.md)
+retains the 49 authoritative originals, 26 reference-only originals and their
+exact acquisition bindings. Tests use a separate checksum-verified compressed
+copy of the authoritative originals.
+
+Three NCBI Taxonomy terms (316277, 43774 and 43775) are extracted through the
+unchanged ontology builder from the existing pinned 2026-07-12 SQLite cache.
+Its full hash, release and license remain unchanged. The selected complete
+issuing statement sets are retained; the full external database is not copied
+into the repository. Taxonomy reference hashes identify that batch database,
+not individual browser responses or the selected-row JSON.
+
+This additive replay preserves every prior authority source, term and insertion
+order; it does not claim fresh reproduction of all historical source caches.
+Closed NamedNode fields do not include `description`. Taxon and hydration
+qualifications therefore belong in ordinary record prose and appropriate
+incident-edge descriptions/evidence. Current KGX omits the root description,
+so the edge context is required to preserve those qualifications on export.

@@ -1,0 +1,2196 @@
+# Glutaryl-CoA degradation: maintained scientific, provenance and graph review
+
+- Review: 20261016T013207Z-glutaryl-coa-maintained-record-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-16T01:12:25.041830Z
+- Finished UTC: 2026-10-16T01:32:07.605916Z
+- Reviewer: Codex /root/next268_current_bigg_completion (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The complete maintained PWY-5177 record is supported within its declared source and primary scope. Five native members, eight microbial taxa,60 native declarations,80 edges,88 source assertions and 59 references retain exact identity and limitations. Legacy taxon/label/navigation corrections are verified; no new actionable finding. Maintained page/KGX reproduction and all required terminal repository gates pass.
+
+## Scope And Provenance
+
+Complete review of one actual maintained glutaryl-CoA degradation record, its native graph/evidence, primary-context limits, exact source retention, generated page/export and accepted authority integration.
+
+Selection: Exact requested new maintained target MetaCyc:PWY-5177; full selected-record coverage, no sampling.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 7dcc4e6586a7c2b8a9c0a3d733e0399e7ba68105.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5177 | data/pathways/glutaryl-coa-degradation.yaml | maintained | glutaryl-CoA degradation |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Maintained evidence and source retention replay | passed | True | MetaCyc:PWY-5177 | All 24 retained archives / 4,781 outer member occurrences and 59 reference bindings verified; exact frozen maintained review of 117 members rebound in the canonical stage. |
+| Complete scoped scientific record assessment | passed | True | MetaCyc:PWY-5177 | Full actual YAML read; all 80 edges/88 source assertions/59 references assessed by exact-byte carryover of complete independent science and URL successor evidence, with limitations preserved. |
+| Fresh maintained schema, page and KGX reproduction | passed | True | MetaCyc:PWY-5177 | 1,185 final bounded checks pass; exact current page and corrected KGX reproduce. |
+| Applicable existing iModulonDB adapter context check | passed | True | MetaCyc:PWY-5177 | Datasets query and six bounded applicable searches succeeded; no component hit requiring summarize. |
+| Terminal repository just render-pages | passed | True | MetaCyc:PWY-5177 | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| Terminal repository just validate | passed | True | MetaCyc:PWY-5177 | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| Terminal repository just lint | passed | True | MetaCyc:PWY-5177 | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| Terminal repository just test | passed | True | MetaCyc:PWY-5177 | 6827 passed, 3 skipped, 7 warnings in 1287.86s (0:21:27) |
+| Terminal repository git diff --check | passed | True | MetaCyc:PWY-5177 | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| Terminal repository just vendored-check | passed | True | MetaCyc:PWY-5177 | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| Terminal repository git diff --cached --check | passed | True | MetaCyc:PWY-5177 | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+
+## Scientific And Domain Assessments
+
+### Exact native pathway and prior source reuse
+
+identity: supported. Targets: MetaCyc:PWY-5177.
+
+The record denotes the five-member MetaCyc PWY-5177 glutaryl-CoA degradation route; adjacent activation/hydroxylation routes and downstream metabolism remain outside its boundary.
+
+The complete native original already existed in next266 retained research and is reused with exact identity. The incomplete source-specific YeastPathways lead is not equivalent evidence. A generic shared thiolase and upstream routes ending at glutaryl-CoA are not duplicate complete routes. The baseline search includes ignored/hidden files but expressly excludes unread binary/nested interiors; no global discovery absence is claimed.
+
+### Five members, source direction and composite separation
+
+graph: supported. Targets: MetaCyc:PWY-5177.
+
+All five native memberships, four ordering links, 20 member material occurrences and six composite occurrences retain exact objects and coefficients. Selected hydration/thiolysis do not overwrite source reversibility.
+
+The composite has two input protons and two constituent reactions and remains outside the five-member set. K172 and KT2440 catalysts attach only to that composite, never the isolated halves. Source ordering does not establish channeling or measured flux.
+
+### Legacy issue 624 canonical-label and hydration conflict
+
+nomenclature: supported. Targets: MetaCyc:PWY-5177.
+
+All six Reaction labels remain canonical. RXN-11667 retains its source dehydrogenase label while the accurate hydration equation and naming conflict are conspicuous before the graph and in exported incident-edge context.
+
+This is evidence of the applied legacy issue 624 correction, not a fabricated structured resolved finding. No broad label-policy waiver, silent source rename or unsupported NamedNode description field was introduced.
+
+### Encoded structures, ETF, FAD and sodium transport
+
+grounding: supported. Targets: MetaCyc:PWY-5177.
+
+Native identifiers preserve chemistry scope: generic oxidized/reduced ETF Protein classes remain distinct from exact carrier sequences and FAD; the Rhea sodium-transport equation is not adopted.
+
+Twelve accepted ChEBI comparisons concern normalized encoded ionic structures; nine KEGG microstates differ. CML stereo/tautomer detail is not blanket equivalence. Generic ETF lacks complete formula/charge, so complete first-reaction or route elemental balance and physiological ETF coupling remain unproven. No sodium pumping stoichiometry is added.
+
+### Native catalyst and component roles
+
+scope: supported. Targets: MetaCyc:PWY-5177.
+
+Twenty-one source-only catalyst assertions preserve organism, direction and native evidence code; nine complex-component edges retain explicit or unspecified stoichiometry without independent subunit-catalysis claims.
+
+All 29 native activities are accounted for. Four microbial activities with opposing physiological condensation directions do not become route-thiolysis catalysts; four human/plant activities remain excluded. THLCLOS retains its regulated exact activity, enzyme and assembly context. Missing direction is not physiological flux.
+
+### Exact enzyme-specific targets and source units
+
+evidence: supported. Targets: MetaCyc:PWY-5177.
+
+Eight microbial inhibition assertions target four exact activity participants, linked by four enables edges. They do not inhibit every enzyme of a generic Reaction.
+
+Two human ion-regulation contexts remain excluded. REG-14465 Ki 120 retains literal &amp;micro;mole without micromolar conversion. The selenium-source conflict is retained without a selenium cofactor edge. Native source evidence is not relabelled as an independently read historical assay.
+
+### Legacy issue 623 direct-taxon completion and issuing rank
+
+scope: supported. Targets: MetaCyc:PWY-5177.
+
+All eight direct microbial pathway associations are present with exact issuing scope; the ninth human association is explicitly excluded.
+
+NCBITaxon:303, 1076, 316277, 43774, 43775, 59405, 44139 and 59406 are preserved. Historical K172 binds the issuing strain 44139 separately from species 59405; KB740 binds Aromatoleum evansii species/type material, not an invented strain/modern sequence. Other enzyme organism contexts do not broaden whole-route taxa. These accepted legacy issue 623 changes are assessed without inventing canonical finding lineage.
+
+### 2009 organism, construct and assay scope
+
+evidence: supported. Targets: MetaCyc:PWY-5177.
+
+The narrative keeps native GS15, tagged recombinant GS15 and tagged DSM2059 preparations separate and confines their results to the artificial-ferrocenium assays.
+
+GS15 oxidative decarboxylation and DSM2059 dehydrogenation without detected crotonyl-CoA are preparation-specific. Membrane extract plus 20 mM NaCl is not a purified sodium pump or physiological ETF experiment. The 52±5 µM / 11±1 µmol min−1 mg−1 values refer to the reported DSM2059 preparation at 30°C/pH 7.8. No engineered construct is silently represented as an unqualified native enzyme endpoint.
+
+### 2018 growth, complements and alternative route
+
+evidence: supported. Targets: MetaCyc:PWY-5177.
+
+KT2440 deletion/growth, substrate-consumption and expression context is qualified by exact experimental scope; the separate CsiD/LhgO route is not promoted to the native graph.
+
+Complement inserts include gdh+pp0159 and csiD+lhgO. Sampling occurred after glutarate contact; plate observations distinguish 36 h Figure 4c from 12 h Supplementary Figure 9. Figure 7 is a network interpretation without 13C tracing. Proposed CsiR/glutarate control is not a demonstrated edge. All 16 corrected accepted claims have record/context dispositions.
+
+### Historical protein, gene and sequence conflicts
+
+consistency: supported. Targets: MetaCyc:PWY-5177.
+
+The record preserves the 1993 abstract-only scope and unresolved historical/modern sequence and strain bindings, without substituting convenient accessions.
+
+K172/AE016774 conflicts with the issuing KT2440 record; KB740/MAY27 and the current KT2440 gene identity remain unresolved. Sequence length, residue numbering and accession/version coordinates remain explicit retained limitations. The 1993 abstract supports FAD homotetramers but not unacquired methods or a physiological ETF partner.
+
+### Unresolved 2009/issuer/2010 kinetic discrepancy
+
+quantity: unknown. Targets: MetaCyc:PWY-5177.
+
+The kinetic discrepancy remains evidence-limited and explicitly disclosed; the record makes no global numerical correction or attribution of the database values to the inaccessible 2010 main.
+
+The verified 2010 citation and four-page supplement contain no kinetic reconciliation or exact 2010 assay-preparation result. This uncertainty does not invalidate the correctly scoped native source graph, but prevents an unqualified pass on those kinetic values.
+
+### Legacy issue 625 navigation correction and original-byte retention
+
+provenance: supported. Targets: MetaCyc:PWY-5177.
+
+All 46 native navigation URLs now use their exact acquired HTTPS bare-query URLs. All original XML, embedded source bases, assertions, source versions and digests remain unchanged.
+
+Thirteen other references are unchanged. Existing successful acquisition receipts bind all 46 replacements; only one representative pair was freshly live-tested in the predecessor. This is applied legacy issue 625 fix evidence, not a fabricated structured predecessor or GitHub closure. All 59 hashes are accounted for: 51 full referenced artifacts retained and eight external pinned taxonomy batch references.
+
+### External batch digest semantics
+
+provenance: supported. Targets: MetaCyc:PWY-5177.
+
+Eight NCBITaxon source_sha256 values correctly identify the entire external pinned 2026-07-12 SQLite source, not individual browser responses or selected-row JSON.
+
+The database is 14,115,225,600 bytes with SHA 89998447813e3151d1116222a3ec4b74959ccfb492114db134acee753f63548d. Complete selected statement sets and independently accepted cache/hash/query receipts are retained. This canonical stage does not repeat the 14 GB hash or claim that 59 complete source bodies were committed.
+
+### Separate authority acceptance and exact maintained owners
+
+ownership: supported. Targets: MetaCyc:PWY-5177.
+
+The 49 new native terms and three additive pinned taxa are supported by separate peer implementation and maintained integration acceptances; all 152 actual owners match those accepted bytes.
+
+This reviewer authored the adapter and does not self-accept it. Peer verification preserves all prior owners/terms and ordering, genuine full source identity and exact labels, four activity roles and 26 reference-only exclusions. The separate profiles are unchanged. Authority identity alone is not experimental biological support.
+
+### No-JS reading and graph/export fidelity
+
+representation: supported. Targets: MetaCyc:PWY-5177.
+
+The actual page and corrected KGX reproduce exactly with maintained modules: all 60 native SVG nodes, 80 directed evidence-linked edges and 68 KGX declarations remain faithful.
+
+Every root paragraph and the taxon/hydration qualifications remain ordinary visible HTML before the graph. All local fragments resolve and IDs are unique. KGX omits root description by contract; relevant incident-edge context, exact evidence and reference metadata remain intact. Static review is bounded; no new interactive browser or complete pixel-level label audit is claimed.
+
+### Append-only integration and actor correction
+
+provenance: supported. Targets: MetaCyc:PWY-5177.
+
+The only maintained-page additions over the accepted corrected preview are the source-YAML link and two transparent record history events.
+
+The initial integration event inherited actor name claude-code while agent_tool/model already identified Codex/GPT-6. The visible append-only successor corrects attribution to codex without rewriting the original or biological owners. The corresponding infrastructure histories are also input-bound. Events truthfully preserve their integration-time pending-gate statements.
+
+### Preservation of prior records and aggregate outputs
+
+consistency: supported. Targets: MetaCyc:PWY-5177.
+
+Separate independent integration evidence supports the candidate increment without changing existing biological owners or prior graph assertions.
+
+The peer verified all 265 prior records and pages, all 13,869 old KGX edge rows, 52 added node IDs and 80 edges. Sixteen shared nodes only gain new PWY-5177 source context; all prior attributes/contexts remain. This is bounded integration acceptance, not a scientific review of those 265 records or acceptance of the later final-gate README edits.
+
+### iModulonDB applicability and bounded context
+
+scope: supported. Targets: MetaCyc:PWY-5177.
+
+The existing structured adapter was available and its applicable P. putida/E. coli queries succeeded. Returned gene annotations are contextual leads and add no biochemical or regulatory assertion.
+
+Queries gdh/glutaryl/CsiR/csiD/lhgO in p_putida/precise321 and acetyl-CoA acetyltransferase in e_coli/precise_mg1655 returned gene keys including PP_0158 (gcdH), PP_2908, PP_2909, PP_2910 and b2224 (atoB). gdh alone returned glutamate-dehydrogenase near misses. No component hit was returned, so no summarize k applied; no absence of membership is inferred. These dataset-local keys do not resolve the issuing gene/sequence conflicts or prove CsiR control.
+
+### Terminal whole-repository checks
+
+schema: supported. Targets: MetaCyc:PWY-5177.
+
+All seven root integration commands terminated with exit 0. Full test: 6,827 passed, 3 skipped, 7 warnings; validation covers 266 records, 21,035 evidence blocks and 510 histories. Lint, rendering, 22-artifact vendored integrity and both diff checks pass.
+
+Root executed the documented full gates against the unchanged integrated owners. This reviewer inspected terminal receipts and log hashes without duplicating the expensive suite. Deterministic gates do not replace the scientific assessment.
+
+### Post-suite documentation metadata successor
+
+provenance: supported. Targets: MetaCyc:PWY-5177.
+
+The final research README accurately reports terminal gates and links the retained independent evidence and stable structured-review directory.
+
+The gate receipt inventories 201 owners after the run; it is not an immutable pre-launch attestation. Exactly 200 remain byte-identical. The README alone has a documented later metadata update: both old/new hashes and the precise diff were independently reconstructed, all preceding scientific text is unchanged, and all 12 local links resolve. The full suite preceded this metadata-only change; this assessment does not falsely claim that the earlier suite tested the later README or this new canonical bundle.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| record | data/pathways/glutaryl-coa-degradation.yaml | supports | Full actual maintained record read before assessment; exact accepted corrected YAML, 60 native declarations, eight taxa, 80 edges, 88 structured assertions and 59 references. |
+| maintained-science | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; REVIEW.md | supports | Complete bounded maintained scientific and projection assessment, with authorship disclosures, unchanged-byte carryover, primary limits and exact current target. Full repository gates and canonical save were expressly excluded. |
+| maintained-projection | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/projection-review.json | supports | Fresh actual maintained imports: 1,185 final schema/HTML/SVG/KGX checks pass. Exact generated page, no-JS qualifications, every arrow/evidence target and all export descriptions/references retained. |
+| maintained-retention | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/retained-archive-replay.json | supports | All 24 named retained archives and 4,781 outer member occurrences decoded/rehashed. Nested archives are exact opaque bytes here, not a new recursive-interior replay. |
+| reference-replay | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/59-reference-retention-replay.json | supports | All declared matches for 51 reference bodies rehashed; eight taxonomy references explicitly bind the external pinned batch source and retained selected statements. |
+| probe-correction | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/probe-correction.json | supports | Retained initial reviewer-probe mismatch concerned entity decoding of literal source units, not an owner defect; corrected final probe passes. |
+| original-science | research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz; REVIEW.md | supports | Independent complete scratch-record science review: 2,095 final bounded assertions, all 80 edges and 59 references; identified legacy R01 navigation defect. Exact scientific content carried through URL-only successor. |
+| native-replay | research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz; results/all80-edge-source-replay.json; native-ne001 through native-ne080; exact per-edge original slot selections | supports | Every native edge and all 88 source assertions compared with selected full original XML slots; exact object ownership, coefficient, direction, activity and component scope. |
+| native-context | research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz; results/all29-activities-and10-regulations.json | supports | All native activity/regulatory contexts accounted for, including opposed microbial condensation activities and excluded human/plant contexts. |
+| primary-locators | research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz; results/primary-original-extracts.json | supports | Inspected original HTML source elements and exact retained source hashes for the 2009 and 2018 claims; supporting extracts are carried at the previously read scope. |
+| primary2018-placement | research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz; results/all16-primary-claim-placement.json | supports | Each of 16 accepted corrected 2018 primary claims mapped to actual narrative or retained unasserted context; no additional positive native graph claim inferred. |
+| pwy-original | research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-preparation.tar.gz; originals/META-PWY-5177.xml; /ptools-xml/Pathway[@frameid='PWY-5177']/reaction-list; reaction-ordering; reaction-layout; species | supports | Exact full native Pathway original; five members, ordering/layout and nine direct organism associations. Source assertions are not paper quotations. |
+| paper2009 | research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-preparation.tar.gz; originals/PMC2698508.html; PMID:19395484; Abstract, Materials and Methods enzyme preparations/activity assay, Results product analysis and Table 1; exact element locators in primary-locators | supports | 2009 full main supports distinct native/recombinant organisms and constructs, ferrocenium assays, reported GDHDes kinetics and membrane-extract conversion scope. |
+| paper2018 | research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-source-completion.tar.gz; originals/PMC5974017.html; PMID:29844506; Figure 4c, Figure 7, associated Results/Methods; 16 corrected claim placements and retained supplementary insert/plate evidence | supports | 2018 main with retained supplement/peer-review evidence supports bounded deletion/growth and separate CsiD/LhgO route context, not every native member or physiological ETF. |
+| paper1993 | research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-source-completion.tar.gz; originals/BF00250279.pdf; PMID:8439237; publisher abstract/preview | partial | Authentic publisher HTML abstract/preview despite its .pdf filename. Supports historical K172/KB740 FAD-containing homotetramers; full methods and exact modern sequence remain unacquired. |
+| paper2010-si | research/pathway_additions/2026-10-15-next-269/accepted-preparation/ip08-2010-primary-completion.tar.gz; originals/Figshare-bi100317m_si_001.pdf; All four SI pages; exact citation PMID:20486657 / DOI:10.1021/bi100317m | partial | Authentic four-page 2010 supplement, DOI10.1021/bi100317m.s001, inspected fully; primer/sequence material contains no kinetic reconciliation. Full main was not acquired. |
+| uniprot-kinetics | research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-issuer-preparation.tar.gz; originals/UniProt-C3UVB0.json; C3UVB0 kinetic annotation and publication list | partial | Exact retained issuer annotation has 25 µM and 11 mmol/min/mg without per-value evidence, conflicting with the reported 2009 preparation values. Does not establish the origin of those numbers. |
+| issuer-scope | research/pathway_additions/2026-10-15-next-269/accepted-preparation/independent-glutaryl-issuer-review.tar.gz; REVIEW.md | supports | Previously authored independent issuer review retained at its bounded chemistry, taxon/protein/gene/sequence and five-reaction disposition scope; not represented as a new independent self-review. |
+| taxon-label-fix | research/pathway_additions/2026-10-15-next-269/accepted-preparation/direct-taxon-label-independent-acceptance.tar.gz; REVIEW.md | supports | Separate peer accepted all eight microbial associations, exact issuing ranks/type-material scope and canonical reaction labels; source anomalies remain in visible chemistry prose. |
+| taxon-statements | research/pathway_additions/2026-10-15-next-269/accepted-preparation/direct-taxon-completion.tar.gz; results/nine-taxonomy-statement-sets.json; NCBITaxon:303,1076,316277,43774,43775,59405,44139,59406,9606 | supports | Complete selected issuing statement sets for nine native direct associations, including excluded human. Full source database identity/rank/lineage scope is distinct from browser responses. |
+| url-acceptance | research/pathway_additions/2026-10-15-next-269/review-preparation/reference-url-independent-acceptance.tar.gz; REVIEW.md | supports | Independent 461-check acceptance of exactly 46 native reference URL scalar corrections. All scientific semantics, original XML/xml:base, locators and digests unchanged; 13 other references unchanged. |
+| url-diffs | research/pathway_additions/2026-10-15-next-269/review-preparation/reference-url-independent-acceptance.tar.gz; results/exact-record-scalar-diffs.json | supports | Exact 46 acquired-HTTPS navigation replacements, supported by retained HTTP200 acquisition receipts and matching original bodies. Only one representative old/new URL pair was freshly network-tested in the predecessor. |
+| authority-peer | research/pathway_additions/2026-10-15-next-269/review-preparation/native-authority-independent-review.tar.gz; REVIEW.md | supports | Separate peer accepted the 152-owner bounded implementation with 386 fresh tests, coherent semantic mutation checks, exact original acquisitions, additive snapshot reproduction and complete pinned-cache verification. This reviewer authored the implementation and relies on this independent acceptance. |
+| authority-integration-peer | research/pathway_additions/2026-10-15-next-269/integration-review/authority-integration-independent-review.tar.gz; REVIEW.md | supports | Separate peer verified exact maintained authority integration, documentation append and XML preservation rule; current consumer imports pass. Excludes this scientific record and full repository gates. |
+| supporting-integration | research/pathway_additions/2026-10-15-next-269/supporting-integration-review/root-integration-independent-review.tar.gz; REVIEW.md | supports | Separate peer verified supporting retention/ledgers/history and aggregate integration with 1,831 checks: all 265 prior records/pages and 13,869 old KGX edges remain exact; 52 nodes / 80 edges added and 16 shared nodes only gain new source context. Earlier README version accepted; later gate/canonical metadata excluded. |
+| authority-rebind | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/accepted-authority-owner-rebind.json | supports | All 152 maintained owners freshly match the independent integration acceptance. Byte rebind is not independent scientific or implementation self-acceptance. |
+| baseline | research/pathway_additions/2026-10-15-next-269/integration-preparation/actual-merged-baseline-rebind.tar.gz; REVIEW.md | supports | Actual merged baseline7dcc has 265 records; complete candidate source was already retained in next266; incomplete YeastPathways lead remains distinct. Bounded hidden/ignored and compressed-text duplicate/provenance search retains all exclusions. |
+| lineage | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/canonical-lineage-search.json | supports | Current hidden/ignored-inclusive structured-review text search found no target/slug/N269-D01/D02/R01 match; legacy issues are not fabricated canonical predecessors. |
+| imodulon | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/imodulondb-search-receipts.json | context_only | Six actual existing-adapter searches succeeded for applicable P. putida/E. coli context. Dataset-local gene annotations are context only; no component hit was returned by these bounded searches. |
+| imodulon-applicability | research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz; results/imodulondb-applicability.json | supports | Existing local console available; initial sandbox DNS failure retained, network-enabled datasets retry succeeded without installation. No returned component hit requiring summarize; no absent-membership inference. |
+| reference-retention | research/pathway_additions/2026-10-15-next-269/reference-original-retention.json | supports | Maintained reference retention map binds all 59 source hashes: 51 complete referenced bodies and eight explicit external pinned taxonomy batch references. |
+| page | pages/records/MetaCyc_PWY-5177.html | supports | Actual generated maintained page, source-YAML link and both append-only record histories; all source-only/primary boundaries remain visible without JavaScript. |
+| history1 | history/records/glutaryl-coa-degradation/2026-10-16T010136Z-claude-code-cda9a1.yaml | supports | Read exact append-only record integration history and actor-attribution successor; statements preserve integration-time pending gates and do not claim a merged scientific pass. |
+| history2 | history/records/glutaryl-coa-degradation/2026-10-16T010214Z-codex-6cffaa.yaml | supports | Read exact append-only record integration history and actor-attribution successor; statements preserve integration-time pending gates and do not claim a merged scientific pass. |
+| gate-terminal-receipt | research/pathway_additions/2026-10-15-next-269/final-verification/gates.json | supports | Authoritative root terminal results for all seven required commands, exact log hashes and post-run integrated-owner inventory; no invented pre-launch attestation. |
+| gate-render-stdout | research/pathway_additions/2026-10-15-next-269/final-verification/render-pages.stdout | supports | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| gate-validate-stdout | research/pathway_additions/2026-10-15-next-269/final-verification/full-validate.stdout | supports | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| gate-lint-stdout | research/pathway_additions/2026-10-15-next-269/final-verification/full-lint.stdout | supports | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| gate-test-stdout | research/pathway_additions/2026-10-15-next-269/final-verification/full-test.stdout | supports | 6827 passed, 3 skipped, 7 warnings in 1287.86s (0:21:27) |
+| gate-diff-stdout | research/pathway_additions/2026-10-15-next-269/final-verification/full-diff-check.stdout | supports | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| gate-vendored-stdout | research/pathway_additions/2026-10-15-next-269/final-verification/vendored-check.stdout | supports | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| gate-staged-diff-stdout | research/pathway_additions/2026-10-15-next-269/final-verification/initial-staged-diff-check.stdout | supports | Root command completed with exit 0; exact retained stdout and stderr match the terminal receipt. |
+| gate-readme-delta | research/pathway_additions/2026-10-15-next-269/final-verification/readme-metadata-update.json | supports | Exactly one post-suite README metadata change independently reconstructed against both hashes and the exact unified diff; 12 local links resolve. Previous scientific prose remains unchanged. |
+| gate-final-readme | research/pathway_additions/2026-10-15-next-269/README.md | supports | Full final research README read: accurate terminal results and retained evidence links, with unchanged scientific limits and clear distinction between preparation, canonical and merged-tree evidence. |
+
+## Limits And Additional Notes
+
+- IP08 remains evidence-limited: the authentic 2010 supplement does not reconcile UniProt C3UVB0 kinetics against the 2009 preparation; full main was not acquired.
+- Generic ETF lacks exact physiological carrier identity and complete formula/charge; no complete route elemental balance, physiological ETF coupling, sodium pump or whole-route flux claim.
+- Historical strain/protein/gene/sequence and selenium-source conflicts remain explicitly unresolved at their retained source scope; native annotations are not independently read primary assays.
+- Eight taxonomy reference hashes bind one external full pinned SQLite database, not eight browser responses. Fifty-one other referenced body artifacts are retained; no claim that 59 complete originals were committed.
+- This stage replays outer retained members and carries exact prior accepted evidence; it does not rehash the 14 GB taxonomy database, re-read every historical paper or perform global discovery.
+- Current KGX does not export root description; verified incident-edge qualifications preserve required taxon/hydration scope. Broader primary narrative is not claimed as experimental graph evidence.
+- Static no-JS/HTML/SVG checks and prior static image review do not constitute new interactive-browser or exhaustive pixel-level readability testing.
+- The six applicable iModulonDB searches return source-local gene context and no component hit; this is not negative evidence for module membership and does not resolve issuing-gene or regulatory conflicts.
+- Legacy issues 623/624/625 are issue/research history, not fabricated canonical predecessors. This clean current finding list does not itself close external issues or supersede unlinked structured findings.
+- Prescribed inspect ran before the maintained assessment, then explicit successor inspections assessed released page/history/authority inputs; all previous inputs remained byte-identical. Canonical stage reinspected the retained 117-member evidence packet and actual target.
+- Initial reviewer entity-decoding probe failure and sandbox DNS failure are preserved with successful bounded successors. No scientific/production owner was edited by this reviewer.
+- Review saving changes only the immutable canonical review bundle; no history, native scientific status, source record, Git or GitHub mutation is implied.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261016T013207Z-glutaryl-coa-maintained-record-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Glutaryl-CoA degradation: maintained scientific, provenance and graph review'
+started_at: '2026-10-16T01:12:25.041830Z'
+finished_at: '2026-10-16T01:32:07.605916Z'
+reviewer:
+  identity: Codex /root/next268_current_bigg_completion
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Independent of the peer-authored scientific record, native graph
+    design, taxon/label successor and root URL correction. This reviewer authored
+    the prospective authority adapter, earlier issuer review and IP08 source completion;
+    their authorship is disclosed, and authority acceptance relies on a separate peer
+    implementation/integration review. This is not independent self-acceptance of
+    that adapter.
+skill: .claude/skills/review-yaml-record/SKILL.md; docs/record-reviews.md; docs/record-review-profile.md
+completion: completed
+verdict: pass_with_limitations
+native_verdict: Supported native source graph with explicit primary/issuer limits
+scientific_review: true
+summary: The complete maintained PWY-5177 record is supported within its declared
+  source and primary scope. Five native members, eight microbial taxa,60 native declarations,80
+  edges,88 source assertions and 59 references retain exact identity and limitations.
+  Legacy taxon/label/navigation corrections are verified; no new actionable finding.
+  Maintained page/KGX reproduction and all required terminal repository gates pass.
+source:
+  git_revision: 7dcc4e6586a7c2b8a9c0a3d733e0399e7ba68105
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 4836f2ecdec689c8ddec07e848b77dc120096b62dae6119e2a3948348adae4b8
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: fa95d84f4a0847fb24679d444cbd9bc4b370b3fbbd3192a5d36aa544008fc178
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: c85976044e27fdda307d2e91092ca55e363562a2d711bf9713d3f7793fbf2f0d
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 561dcf3e589a64367ead93d25df574fe36162c3f8cc0cb973fde5c80655ff8e4
+    role: context
+  - path: data/pathways/glutaryl-coa-degradation.yaml
+    sha256: 3c2ac2ae8443a7bdac87bd8ca9e612eee869fb479f3625231fadf84658e16317
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 9cc272d3663ff415c89c906693993bea39d74f3fc8b9e023154a3f102ff91848
+    role: context
+  - path: docs/CURATION.md
+    sha256: 2a90c445177b52a179df6b4ee237dbff61e6bcf0e7918a798764dcb0e9292e0b
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 2d2c7d0a069f58fb74a9d44f5ccb8ecb61fee89360f9f0bca20798c801a02d16
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 8f820d4afb5c7e0fea86b499a82625349809da97cb8153b87d18e300c14d2172
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/infrastructure/glutaryl-native-authority/2026-10-16T010138Z-claude-code-3d2975.yaml
+    sha256: 66d42d789c016dcc59fc6694f360d6bfea7cf86582f4549b49b743c8400455c4
+    role: context
+  - path: history/infrastructure/glutaryl-native-authority/2026-10-16T010216Z-codex-ca4c92.yaml
+    sha256: 570d534c4d25c9159aa59b767d89cb5508813435444f6924b03e51118c747aaf
+    role: context
+  - path: history/records/glutaryl-coa-degradation/2026-10-16T010136Z-claude-code-cda9a1.yaml
+    sha256: 11c884241fb468d20f5fa15c20a4cf810372f5f04bcc2dd575433bae0e9c58ad
+    role: context
+  - path: history/records/glutaryl-coa-degradation/2026-10-16T010214Z-codex-6cffaa.yaml
+    sha256: 98ddc7fb73ed0be390837a8b637f7adbf6bb45d28185359120efaf83c84bfb57
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/browse.html
+    sha256: 0e300f743d3c6ba581455b6f2cd38d98ba1017969f73171f09af7add9be7e848
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: bc196b17ae375ece52158cdb1e547d571b6fe847c8668fc8959a42760027095d
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 6f64a0671cde5c09c489014f68f8dc02659bfc594341d4c8842f9d8eb5119849
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 557b0398fd41487e578d6ad04733f0767b04961cf7314daa49c433bfcd908e62
+    role: context
+  - path: pages/index.html
+    sha256: 978e24b78cbd065afdb1b1290ba9469634ff850d6a99c9dc01344837d1415bb2
+    role: context
+  - path: pages/pathway_index.json
+    sha256: 4f060ba966e8d522670a42932ec932b73625a4d8c1105c9b90a1c290706c38c3
+    role: context
+  - path: pages/records/MetaCyc_PWY-5177.html
+    sha256: cdc1f22bb645a92e09adf30a04b0d1bf637ff48e5529c005a1c26948e1fcf369
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/README.md
+    sha256: 77ad69238d07a78a6edc12a0f9fa5301aea6b49daea53a48f16979d6dbaacb7a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/README.md
+    sha256: 54ef7d1ce92632dccfb04ec9358756fdf4c655b9f655d9857fb13f6cc766ddf7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/direct-taxon-completion.tar.gz
+    sha256: 677087199f5c0cc98c6dfa454fe3e9b061dad3147b0d2885a349e81d2f1eeaba
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/direct-taxon-label-independent-acceptance.tar.gz
+    sha256: ebfe0625930b687f0c405f8a87dc598fa57e893bace81b9291faff4b46e98354
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-independent-initial-review.tar.gz
+    sha256: 1f28d939fb82fe49d175eedf01a04c1e09df834bb71179451326991364b37f07
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-issuer-preparation.tar.gz
+    sha256: 74975eb7f4b728e64b3f519d155e9c8a0edfe03645b0058a71c598c0b0792315
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-preparation.tar.gz
+    sha256: 5d17195733773d69935324158c9725f6d44b7125eaddf6f61459525b186090af
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-source-completion-independent-review.tar.gz
+    sha256: dfee127d8888dd7e377a5f0db07e1badc8312b684cb5792f2678d8a436c36490
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-source-completion.tar.gz
+    sha256: d557690e4c68c1b1bd4850ab06b89ed57584715a5eb244703c37beae69893326
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/independent-glutaryl-issuer-review.tar.gz
+    sha256: 1d1f4f1217a1b85871cd6fb37b3142c9f82b6adb193817398ccff64f0e7f3d7e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/inventory.json
+    sha256: d1987d21eb53ae00ac7200e886ca9b7d3ba98f2d253229d0b5300bd0c60560dc
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/ip08-2010-primary-completion.tar.gz
+    sha256: ec51d42821b9668559d179719e3a44b6f9e99c0e59e9631bc00813fa42ec4696
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/locator-correction-independent-acceptance.tar.gz
+    sha256: 247a829d7d399196e850499064fa62b535734f0c6a786206f9423409c590e6df
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/native-design-independent-review.tar.gz
+    sha256: 5289161af54fa402c7e7942377a363229b82d9e5393f6f30e8aee906773446a3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/native-graph-design.tar.gz
+    sha256: 15fa8145e5c003290a86d6a748e3f063d4ac5e68ba77d93990bcfb05d0924167
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/root-chemical-diagnostic.tar.gz
+    sha256: 1e1d9e31fc86bfcc63ebac528c0bb086b95ce18f895dc6b441c2cb3d68ae4eea
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/root-cml-constitution.tar.gz
+    sha256: aa52d19f9ac95f4d5cc1ab2ab5977b6a8f3f6aa9f80f31895d626d34e41eb742
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/root-locator-correction.tar.gz
+    sha256: e771280c3d65f52a46105e749e764333f25ea9f1036c0287e98ba898c7e05fe8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/accepted-preparation/root-publication-aliases.tar.gz
+    sha256: 8678a6aee09156e9f2be9de79d25e39a5354acc14abc9e6aa1084693ef1c334c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/.gitattributes
+    sha256: e45a7b03da689cb95ab36d3ac17d8d7f44b40ce285e6bf05bbcff8e14f200367
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/README.md
+    sha256: ba77fbdd02949b8ed7b648c8f11f66c3c7574e581dc14f09ab4ef73f5c5bf4c3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition-bindings.json
+    sha256: 365a113125d20b12de5e2c9fe2fd623de3199f4296599b863e34568c736e0c32
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/artifact-manifest.json
+    sha256: bce3ac166611cb811b334a57d4780fc1dae7c3670faae676873520a1e84b229b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/freeze-proof.json
+    sha256: 60b718bbb5d71c95050e17d8a87087fbf754a67d911bd7fee0d8c82599a3b593
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/receipts/composite.json
+    sha256: e19f8042c286ce6ca6f4803b5729828fe8772afafa278731089ed369b65956f8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/receipts/context.json
+    sha256: bda705afdc69b7f9beb2880b7367815dfdeec4ba8ec794f39cbdea582a38e967
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/receipts/figures.json
+    sha256: 930277955cd66ceb6d56e78585afb53a14ab4353fd817eadd1208e9329887678
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/receipts/forward-native.json
+    sha256: 2112afc2c23b53e98b9356f72033fb083204e13ddfccdca6397d3c9f26178dec
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/receipts/initial.json
+    sha256: 8c01980006a3565b21df65f44b480f751bcc66de2b679e817d69a345a71d076e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-preparation/receipts/network-retry.json
+    sha256: fe648064014badf1ad559dad745f300013ffbab8c6345308977d89531ccc92a6
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-source-completion/artifact-manifest.json
+    sha256: 064e77fe52d9a72510acb39c6693f0da230ee44b986969ee48c34a5de857a6ed
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-source-completion/freeze-proof.json
+    sha256: 001d97fd934d6348ee9c643dd07549f9aa964821ef9414b44fddaa1ad3531c44
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-source-completion/receipts/first-acquisition.json
+    sha256: b2ce05de2cf239906a38cc297915c6cc8981ef78c56ae6cd73b4c972ebabafd7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-source-completion/receipts/gene-completion.json
+    sha256: 8db3764a6350c7638f5cd59296d60ad12f4c0669e3a15767140f93c7ad0ea967
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/acquisition/pathwaymech-next-269-glutaryl-source-completion/receipts/supplements-and-query-retry.json
+    sha256: dee3230bd7f8fe3b468d6c8af7f9780fb70978a49e4c91d3056656c1b5700273
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/manifest.json
+    sha256: ad49ec551c88c238db0050fa8afd4d7979418c5b69ce0d2eb8a77e11ceae1b8b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-ACETOACETYL-COA.xml
+    sha256: 334f1b94b73703a702550ceb9b2b945490a1ff547e4b8f03e56b4d4c2ce75178
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+    sha256: 316eb491678dfd0babb67f0e1f7af9b5848c87275f7ba42296975be10807cfaf
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-ACETYL-COA-ACETYLTRANSFER-ENZRXN.xml
+    sha256: 6a1071090069ab87b236fb8775049ed692c35865a521a35c302db119e3d54933
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-ACETYL-COA-ACETYLTRANSFER-MONOMER.xml
+    sha256: 1db5eff2433407927682cd11717907080159286197e9ac9ed01ccc9b548fccb9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-BUTYRYL-COA.xml
+    sha256: a37fab3b02dcdcccae4acf092ec0498783c93b3acdb5534dde1f02ed91ff19f4
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CARBON-DIOXIDE.xml
+    sha256: 16677ae4485723fed7a4ab2955f1800f20f8458bd491d7a5e53ae2bc341d5aff
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CPLX-4041.xml
+    sha256: dc64ba6e9719368f15756242bd5ac80b0bae45caa5b90f99aba3e0a5c8ce29c5
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CPLX-41.xml
+    sha256: b88add70d39c33a98e38d5744c2038171867b2bf23d6446b0b9357917440f24e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CPLX-6989.xml
+    sha256: 7620aa66f8b680040775524456f3afb7bf92c105b4e21e36b7e4e7f8c80f3ab9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CPLX-7035.xml
+    sha256: 7f75ac0d8c49b9f9b19c035aa5438920d47ab418ac40803927622dec77dbb8e5
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CPLX-706.xml
+    sha256: 0447ddcde8e5b2c578bee4c8be5f5cf4ddebb5f0c213731e4f49746134da3bcf
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CPLX-7355.xml
+    sha256: 0566e4b683898704a3efb7eab7b58ca421cc4b1b035c9a2c2e88f0a4ba4b1a03
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CPLX-7788.xml
+    sha256: c35ecb1cd373823140f50999a60602d6976e67105485d3e0100fcb3505c634e9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CROTONYL-COA.xml
+    sha256: c93d30c2fa95c718df9634fcbcc1ceee55caa26c0c06231b6c7edee0222cb5f9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-CRTCLOS-MONOMER.xml
+    sha256: 69f182474553ab3d93761d7397d9663c0da2a95b6666a8c0eef3ed7dc87b862b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-ENZRXN-22164.xml
+    sha256: ac281b7e683670ca59147b9043fc9e5bf7512ceed6453a24633f33b33dcab39e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-ENZRXN-41.xml
+    sha256: e36350fb45916225ef94d6192afbe3dc8c4fb9ccdfebb24dcc8b9a0b0dcb0dec
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-FAD.xml
+    sha256: 66284690eedb29ee919542ada242e4cbaa799d6d84b9cb98231b5e6c1aba35cd
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-G1G01-166-MONOMER.xml
+    sha256: 254c43ba0ae36f9c82fbc7e860ea711b71401d6999cb312684ddfcca90e6bbd9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-GLUTACONYL-COA-DECARBOXYLASE-RXN.xml
+    sha256: 793b813364910f00a0a0198b84c4816086f18726325c7c907dac37bdd36c7d13
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-GLUTACONYL-COA.xml
+    sha256: 4d07ac41687d27e465c3f5c351f3e1e95be74486355a2299582a8ef86037f455
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-GLUTARYL-COA-DEHYDROG-RXN.xml
+    sha256: 4215022c2931e6f0c21b516496c2ec5e6e197e20d35aa10726f5146377c23cbb
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-GLUTARYL-COA-DEHYDROGENASE-RXN.xml
+    sha256: f6f546aa7d5d5e757667cdbd1562b18d7ff762889a892ea89ffe7fe45d23c8a4
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-GLUTARYL-COA.xml
+    sha256: cda3cc0d83815fae5fce4a94d4bed309808147f90842a47d7c4db998cb090de3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-IODOACETAMIDE.xml
+    sha256: 265d2281df5377f740674ab01d6978da97d34f72373c365211414f092294bf70
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-10.xml
+    sha256: fca71822edc481875c78c6d55811a6bba8249c1b8658ffb9b2e5c9146942352c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-11806.xml
+    sha256: 52546369c08c6dfc0e68a6a7f94cba10aa537be70bc41e36d1260dbe7d2762d0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-11936.xml
+    sha256: 7351bf74f91592e06169f7e93b8d5b71f3081d6fc265bdb872182faba29f995b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-12290.xml
+    sha256: a1d348cca9818c7edee65433508949da590a8a746fffd666a47eaeff8e3f781f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-13086.xml
+    sha256: 791f588b19b52f8f92236ce1ef01aebd6718db81567eecc6281254491743302b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-13469.xml
+    sha256: 444a0e6d1c0e5e75bf2920bdff0173336375f534f931fcf6fbfd6e2d1ff7ed9c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-13585.xml
+    sha256: d33ea71e47d29d80ec8675f61f7127838d816726d10e576f92afc4d2b48e948b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-13738.xml
+    sha256: 19d73cf00a9f5023864e094e213dcaad42ddfd62794c452fe324c8d83a458e68
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-13740.xml
+    sha256: aa63b86c8e5a0baaa3366eb89a59bbc590f28df28960a62193f8cbf17c3e0741
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-14626.xml
+    sha256: bb1e6e6aa86361ee5f0d9d49bf9af33e8438ffba7039cce3bcf91e6a3aaa7be7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-16803.xml
+    sha256: 4812825eb5e7cd706b1bada1982f823978f40358b210e62262b31a6683c2f44a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-18244.xml
+    sha256: 3a01788f6109b1085fc82e4fca6043ae818343d9f06b853a54f4e89627381840
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-19851.xml
+    sha256: 4a677e62a3e62879c85bfa11fce47749d009b765905f93bb26b37b5746012d59
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-19852.xml
+    sha256: 69f46b524c43ec8f905f1f679bf3f980849790db77434b3e00921bbce2bfe321
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-20831.xml
+    sha256: 916feaef4a13710e52d3fe247c8b7252f4ef2b609ab0f020a738339cff5ae980
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-MONOMER-5381.xml
+    sha256: d92e3cdbe916d7095d6f74751a7b400fa652e9b7583353cac69f1b914b503f66
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-PWY-5177.xml
+    sha256: 18ad29bd6fdc7cc1a11c942bc07a6280064cb221f49ae70f5f344b38916932d0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-RXN-11662.xml
+    sha256: 27a04f23d758c3774386798378e3f8e9a9750066f8d1aa9793917b80c0be4879
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-RXN-11667.xml
+    sha256: 998680ca45939634b350ca6b57e05ea7d93ac1f1f6cd1becfc04ebb8270afc3c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-S-3-HYDROXYBUTANOYL-COA.xml
+    sha256: 0fa113e4202fbb0e5154fd2874ed71e9e83fcca7b5e6dbc7c27689b6b37845e2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-THLCLOS-CPLX.xml
+    sha256: aad8d02a1d0d582c367ebbf7eec58bf02f44d9a666d0d5f431be5b8d4cb8cdb8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-THLCLOS-ENZRXN.xml
+    sha256: ac5c734ca88fe519e53a07c13b8a9139b88c49e7ab24cd95b1379839128b3bc8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-THLCLOS-MONOMER.xml
+    sha256: b7f9c047cdb816d01d081b3a0bd2da8644563cb5907fbe95d56aa7801d22baac
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/originals/META-YPL028W-MONOMER.xml
+    sha256: 1c59c3db60084468b1106c76cceab57eec5e06e3bf3e3d440b89bb61d95627ab
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-bindings.json
+    sha256: d84256ee3eb5946527fc1ad46c0404348dedaa931a1b1284cb2255c7d98be888
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-12257.xml
+    sha256: fec96d26cca986528e23d0ee6b6d609f607d01b3658e7878eca8491037b5f9f2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-12914.xml
+    sha256: 1f06f9f575e365df28c14f86bc0b3fb105dfaefb867a5e6b8ae262ab557dd8da
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-13941.xml
+    sha256: 9984e1cfd81b34f1d6ce167402e55a07001188d4ff25420eef7e28594ee39704
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-14344.xml
+    sha256: 649327884e62535728389084466ab2003a4100e9a5592414705f4b404431ef74
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-14479.xml
+    sha256: 508a0c30e917065ad3fd4fd9440adf73e27041f6b14ded0bafa6c0d0cf0dc1bd
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-14679.xml
+    sha256: ba6f66630a9fcb549a4ffe1edac42a303ed906a0bfe0596756b54e1cf2ecf2f0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-14680.xml
+    sha256: 462c60e6d5f8d771114b8a6082493fd920f983ad540a3a9da59bddbb579f96ed
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-14681.xml
+    sha256: afeea5294a0ea91087c2d984d41fb9ea21fbc8d098e5ea9e1647468f4201a6fe
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-16103.xml
+    sha256: ad3a3bef40cc74748c5c9516a6074c70503015119cf7d3afe5660431a1aa830f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-18144.xml
+    sha256: deb2cbd63ea8bfe42ea58fad70d0c8616266c8ba9cd24db75d7c6830bc5f2467
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-20211.xml
+    sha256: 6d549ee9db3caf28690a99fa580f5a933961ae441400837c598cce63cd65c04d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-24755.xml
+    sha256: e64104ef6e2c8821c8c68072580250358f988b0a4a2d40a8544fe4beedbec2be
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-24756.xml
+    sha256: 4c0f25681067bdb8e9e2716a7da9498c47811d1339ea5c50aa89c76bd0270f39
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-27150.xml
+    sha256: 43223ed5be1a84825a801d2cb0e24c94a975f935db981da9de0cdafdf769f634
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-332.xml
+    sha256: eacf0b287cfa810ebac4a5932173238edf70ddad42a311df5c6c392d22546557
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-5541.xml
+    sha256: 05d5f833660e273117ea0336c77dd68eb164dd4bfea502cb75a212022442dcf9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN-945.xml
+    sha256: fe544cbc1e5909ab6a4e3aa2b00edf5a1b8755d4702c93016efaaf45138a7175
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-ENZRXN1G01-2525.xml
+    sha256: d2b44ed06c0436d84046e168d84d47957204a285677d4ef83d478cdcc62894c6
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG-10076.xml
+    sha256: eae01bf7bae067a773c9f8dea2aa719d89829f4bc376646dba05ff25512a1fab
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG-13248.xml
+    sha256: a45acb98883a021bfbfe975ff2b70e2863dedcd40129331d06119657c014bfd3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG-14465.xml
+    sha256: 10a7086f287d16e0fd99b4588ccd06c75564052b311b3f614d5112f318f166b7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG-7495.xml
+    sha256: 5b329faea9160df6aec49c77ac839e2146d245cdfb7a1ffc8d8256b9aaaf95cc
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG-7496.xml
+    sha256: 77475c53c36230a69d3945a3380e055bcc4ae2ad7599a2c1303b5bf331414912
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG-7497.xml
+    sha256: e0c80da5ab11b54d13ba28ed934c49b6dd726ddc4063cb58f85de0148d113b60
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG-7498.xml
+    sha256: 12fdbf9939cf1c976fbfad2268a0e2c8e927c25104e386dba57025ae7bc9d29d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/reference-context-originals/META-REG0-7500.xml
+    sha256: 8a51be3ac4340737c1d9d8373d2af139d1dcc3ab3737e4c63dd55c5709a44cd4
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/authority-source-originals/source-bindings.json
+    sha256: bf5fbbd237096ca87c067e94b394f5c9718ab7aed87262f28f87112300f05e69
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/README.md
+    sha256: d4a66832e75106782384b41a4d28a64b77608b6836fb2c67a5ce5fff767ed937
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/authority-maintained-integration.json
+    sha256: 5aab09fd87e6978f9f5791853d3d71bc6e441f31b6cc959311e53da3aad9a999
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-diff-check.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-diff-check.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-gates-live.json
+    sha256: 4d43c0114655b1d462bc3e810610be97c36f298232a664ea6def7f14622bb8b3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-lint.stderr
+    sha256: 5c7ebb57d894a7d5e679d74d3786f7e5d12e2c5afadba5107331c8cdc23588dd
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-lint.stdout
+    sha256: 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-test.stderr
+    sha256: ffd727130a8423d9c78d1b13c9cc7ddce775261f22a448bf1510eab5645c22ad
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-test.stdout
+    sha256: 2d7cb173d673508a804f02141579f0a43ce7d96285cef9928a1b249a334a3bec
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-validate.stderr
+    sha256: 6b255f0545b280551c4913bb1be049b794c3e32c25618be244ba737881b53b24
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/full-validate.stdout
+    sha256: fd37e08e09b1535dc4c10ed0467da129233894cbc49bbe3544ce89610e169152
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/gates.json
+    sha256: 2d79aa71f104bec766f4d68e75041c3cd96b8f195019abc69a35551277c4c5a7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/history-attribution-correction-actions.json
+    sha256: d9fdda75cfda147051a8364dc0d88591ecb2d10d02df238b38eaacec8e5c33cf
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/history-direct-scaffold-actions.json
+    sha256: c1f2c7a0db7c00330ca97397ef80240281a6c25a76abb31d60560b0739424896
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/history-scaffold-actions.json
+    sha256: 6e4653f0b5fb1ad84ade5f077fcb7b405300b2132a7602f02d28f17d82ef22be
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/initial-staged-diff-check.json
+    sha256: a81573e9cde02b804b60383069ac3470919af245d351b93d6cb9f637d831960f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/initial-staged-diff-check.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/initial-staged-diff-check.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/maintained-page-preview-differences.json
+    sha256: 61e04beac28670ae41e3b0280287821cf121e70fc5634df0bfc6cbc2fab885fb
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/readme-metadata-update.json
+    sha256: 8012b498d6c6b28999119e758b99c16042202694f0867ee720cdf324e9afbcb2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/record-maintained-integration.json
+    sha256: f926e14a2a15f40252257d346e981f58330af66c30cc480e55973d1383e2f0aa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/render-pages-result.json
+    sha256: 4f62ff371aeb1ec6a3e17f663db6e19d485292c76e51eb12d13e829695172a8a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/render-pages.stderr
+    sha256: 1cb0f25fc5a6da332ec1dfca48566fb9941da6b05c978818803d9ed18b174f4b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/render-pages.stdout
+    sha256: c73d1e02f490de1b8726048f0c0add9cfa5450363686695b28a332355d58b692
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/run_full_gates.py.txt
+    sha256: 6bea5618abc5fd94710eb0227e2d050a699c2d0a416bbd3781f84d6db5c14f6d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/vendored-check-result.json
+    sha256: 5a54b41fe52c63086ecffae0aba18a7cae05c6712ad46d0ca3a77e611c630017
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/vendored-check.stderr
+    sha256: 7ef4ae39f582e45807f559daa3c028ed63da7db42c149b508bcdf48b19a17f95
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/final-verification/vendored-check.stdout
+    sha256: 3b073aa29da7dc3996edbe18c83d0d6593ba6d03238b663efc40286be4cf428e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-preparation/README.md
+    sha256: 8c973c9e754a07e21fced52ce3698fb9b35622f673e502fb8c0fa52d88713ea2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-preparation/actual-merged-baseline-rebind.tar.gz
+    sha256: a94b7e7e4ae8f220c58db2887f25feabac508de054034d10adca35d4fe345d75
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-preparation/inventory.json
+    sha256: 29ab813a9b5c6330f43a1f9889ffb233624097ed24fb861027b0baf01ec38680
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-preparation/native-authority-author.tar.gz
+    sha256: b0b4860c91f390bfc947fab1f9eda8ce68c54a8476073631193e252c7b73e5be
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-preparation/record-author-original.tar.gz
+    sha256: b2346cdb03e821db78c3922d06374a4b4c2ae3525720d25af52747748929de3d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-review/README.md
+    sha256: 55cd689015aa81e3d6f8f870be28476cc34a879cac3776b8b4f34db4bc3075e1
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-review/authority-integration-independent-review.tar.gz
+    sha256: b43a8b548cb8d2867430f511a1d62d40a84a0b7c91196776e10a553e44149751
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/integration-review/inventory.json
+    sha256: f13343a64332df9f54c4ed5dbe46feeccaf598906e534509a6b88b3d7e88ecfb
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/maintained-record-review/README.md
+    sha256: 4d6631932430ff69b93d5109a5f65fde2f3f677740f6a52376f90fa164639509
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/maintained-record-review/inventory.json
+    sha256: 9545df2286acf4801f11897452ce3fd2a43a47432ba9b3738a7512ce43b7f5e9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+    sha256: 5dcc98e0f0b16aef82e5c53644a9fb5e1203834ac225753d4409ab82bb0aa876
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/record-identifier-increment.json
+    sha256: 104ba45f36c9a6f55fac4407e76f5b2537247a3d5ba38a710975d0ba4ae1408a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/reference-original-retention.json
+    sha256: 19ed359b2ea8d89a2729fc92f74609ba7853b5a9b34deec221d4ee7a9b1e8569
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/review-preparation/README.md
+    sha256: 18fb255376b3eacef63e958b3879fab3fc45d25e869b165b6203a650679788e3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/review-preparation/inventory.json
+    sha256: 6c695d3adcc2707bea1214f967c36ab621e57c53b4f70ebbb1b324c35a164157
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/review-preparation/native-authority-independent-review.tar.gz
+    sha256: ebbb4434830fff224f4c05ec38f3126236cbf32c061d7ce5582a89a91412716d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz
+    sha256: 8c2ec2c2d9667f97c8ed31d6236e64251eded337f9d9d4b58398ce3461350ed4
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/review-preparation/reference-url-independent-acceptance.tar.gz
+    sha256: 8b1bc7f47f613a2d644e1a57ff4ab9445110314e5bcf0683470b84f06450c82b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/review-preparation/root-reference-url-correction.tar.gz
+    sha256: 4db8737178993a19c7b015e0ad1f215b9f4946cbd18aa75d3e9a6e2a451c5e1d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/supporting-integration-review/README.md
+    sha256: 0e8c9fbef3e4f6dc8019dea6ab75740a79c2d2b618a2ed9e7ff042a4ca37cedf
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/supporting-integration-review/inventory.json
+    sha256: 9f4d3c5b8458bc1d6dec7ddc735c27bc37639947eb3b5a1da7b75472f64f9a86
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-269/supporting-integration-review/root-integration-independent-review.tar.gz
+    sha256: 68dfd0c266dbe8926fb87b4294dd0226bf3b3ec0223f10ad13de7bd2eb817286
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 7a864991c27b94ff21d5c40993ce9160af6e48b04bc368860435942db1a71be4
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/biocyc_glutaryl.py
+    sha256: 3747168dee8f8f2692736bad0dcebbe040b9c62ff54c35d3a67a98660578e2d0
+    role: context
+  - path: src/pathwaymech/cli.py
+    sha256: 23ea9de9bd6f526f7020f369ee76729ffc76ef5a01e0c2cd1e34835fc168e0ac
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 48bf07c9ff14fe286e38f5f97e47470b3068c2a9c3f8c5575ccbb8e13dc972f0
+    role: context
+  - path: src/pathwaymech/identifiers.py
+    sha256: 14e6f5ea5c58f8dc49c64f82012de4f6e926ec10357e64a0fc21b5f2d3ab4460
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: d7f44be9ac077c8eb700876ead551095c53ff8728cf8afe60cbee6307ee7dca5
+    role: context
+  - path: src/pathwaymech/mechanism_view.py
+    sha256: 77b56e4111de82d9b6f044865131a134370ad1c700fe7e55bf98a9eb16dc6b4e
+    role: context
+  - path: src/pathwaymech/reaction_mechanisms.py
+    sha256: bb3b43f2ec8d7129f26faae8faeffd2311cda490ad380052c971323de12d26af
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 8eded58bb1e8d292079bf2dd66440f1d382243a3c35538dc65f360e1ef67ad2e
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: f08c07c84685fc718a7465292efbf1546c4a684948ea363ef7524a4fcf6cd112
+    role: context
+  - path: src/pathwaymech/site_display.py
+    sha256: f70d143af1d9be9c72e73c736ae4ce3e0b7abfbf24f82b814235f7a9670e9a73
+    role: context
+  - path: src/pathwaymech/strict.py
+    sha256: 2f6a7edf501952ee4aaa41be2f9512d20e1edb2dd87a22b6add6d26928c0dc84
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-ACETOACETYL-COA.xml.gz
+    sha256: f4acd2c5bb6d620fb4862e0549647399e5e4030dd9e7d1d288e2e2af23264fb3
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-ACETYL-COA-ACETYLTRANSFER-CPLX.xml.gz
+    sha256: be653c67bf885daee507e748be40732d61fdeab2f9aedf730089d57bb1ffc92a
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-ACETYL-COA-ACETYLTRANSFER-ENZRXN.xml.gz
+    sha256: fb921106243346ed58b828a7233baf1aa48b3b5e1d20248dda859a35ead8a05e
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-ACETYL-COA-ACETYLTRANSFER-MONOMER.xml.gz
+    sha256: 8e64f6feac368374b467c97d7fbe8984f571adc18b17320aece0e03ae1e5de6f
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-BUTYRYL-COA.xml.gz
+    sha256: 9ad48611b4f403abaf26982d6479a62ec4de8f9322c32add9666ccdac56869f0
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CARBON-DIOXIDE.xml.gz
+    sha256: d9a7d31edd28eb3b90028ef6f3e8ea11f44cc2196bfb9d648202a703d702d626
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CPLX-4041.xml.gz
+    sha256: 9366fd3070ee6f5702b9c8b27633224a0361c4acd8090f7359a2729615a24840
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CPLX-41.xml.gz
+    sha256: 7a91667b66cdeb45f982120e082f3ad593dd1e1dd2d3f40e1f7516a285550708
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CPLX-6989.xml.gz
+    sha256: 82b7394d7961b2fc919ac020d15319611513e388cca548ba89da33772c345e1d
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CPLX-7035.xml.gz
+    sha256: 7ad0c1687df1f6423bc4744f82a83a67928df7320c9e309f2984338e8b420f26
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CPLX-706.xml.gz
+    sha256: 9bee7ac051b41756d973c1b1d0628483d94234f0cda83a68871ca50cda23c1ab
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CPLX-7355.xml.gz
+    sha256: a4fd6ec7dea0c1eb5627ce8de0074be68943b5c5a84740ee9f8b6b509c74029e
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CPLX-7788.xml.gz
+    sha256: 9e3e63718f81168631bde5decce34d3e1dc465c36935e896969fb94e30fc779f
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CROTONYL-COA.xml.gz
+    sha256: 77ec4f275f27529e24db83ced276d8f3f7396f2aca5f0c42f743b3328c3bdb2a
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-CRTCLOS-MONOMER.xml.gz
+    sha256: e62251969234c5e58226c0597bf150939a16a7d391d9e08e713471c9604fa361
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-ENZRXN-22164.xml.gz
+    sha256: f96e977e6f2d79385120ff58e3f4f4639875fbf0687ea172ab8250b9ee767d52
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-ENZRXN-41.xml.gz
+    sha256: 043e232765afc8c199c51c57dc3896bab92b6ec8f3fdfee93e954e97e87a7a39
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-FAD.xml.gz
+    sha256: 6e4237caf1e5f6a86483af11e054449b5099ef9981b74cd4f53c37abf8595d5b
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-G1G01-166-MONOMER.xml.gz
+    sha256: 6af2e006d8f662bc33d44cf6272e7d39008bb35199ecf7dbec543adc15fb0cde
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-GLUTACONYL-COA-DECARBOXYLASE-RXN.xml.gz
+    sha256: db5f765432c355404c1bcbfb1b2ae03c1867105b24609e9d562c12460a7cc658
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-GLUTACONYL-COA.xml.gz
+    sha256: 6eb0f32982ae39443ca683d46fd25976660fa1be9720977e04ab4811ebb71abf
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-GLUTARYL-COA-DEHYDROG-RXN.xml.gz
+    sha256: 867b8645062e2da92793a45a9cfc65635577cf3b5ceffc3f30f008df06c1dccf
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-GLUTARYL-COA-DEHYDROGENASE-RXN.xml.gz
+    sha256: 43758505abf1666d02c9e425bcf4737040239a3bd5401612559d05f1d0d3c1a5
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-GLUTARYL-COA.xml.gz
+    sha256: b9e476e3494ba3065e3baaff99395068e05941ff4dab874638c2867bf1d2553d
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-IODOACETAMIDE.xml.gz
+    sha256: 826cc2887b8dfef1bbe71315eae256d1512ac5dce6064bde57ef35c136675815
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-10.xml.gz
+    sha256: 98603077c49cebe10c08a367033a4b0e8d31bb5356315829394102d0bf5c3562
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-11806.xml.gz
+    sha256: 24868f4c66d47add3ae5f7a4805bc9702f8894fa6bb482095a502ad9cb02ca12
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-11936.xml.gz
+    sha256: 863f3641c7ffe64335ca62b4a7463b16f26520fbc201c8e012d604eb16a8a6bf
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-12290.xml.gz
+    sha256: 9e5529a7ebd48db38d9fa135509476d16c5b5529dfd1a33ee887209fb1f73ee8
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-13086.xml.gz
+    sha256: b7622df2c958cc6c6a6cdfe6b56c0981cd1d48ec39411fabe561e5bd4268b71c
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-13469.xml.gz
+    sha256: 720c75d094df34dc240a7c8f1c3496cd5fc5ea6890e01fc3ad2a66afd0fc4510
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-13585.xml.gz
+    sha256: 253a3ce14a0aebbf4c58e83071c85428dd684db0ae22fa760bc18b8a55f8bb1a
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-13738.xml.gz
+    sha256: 39db7d7a3f6f04edcbb1fdb3c58f269a287c05596989cd21a19ea2a5a8952fdc
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-13740.xml.gz
+    sha256: 69aba3af3871963fabf6a624bb6d60eacb41e15b2b52afdff45ce2ec92be9547
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-14626.xml.gz
+    sha256: bca362aa50a1999942d2a99767d54a80f10d621a7ff24bd728c15c08d5f2def2
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-16803.xml.gz
+    sha256: fe4bb250ac49eeeeaf5b64e97a70c919ea5a995031f70d733f649ac414d4d698
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-18244.xml.gz
+    sha256: afdfecdad19767d5982c2ed6112542c5b959ab9cebda6012db7033596259fb1b
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-19851.xml.gz
+    sha256: 0d705719dfb70fc16fa4f805c602b102412ecceefddab9957d359738dc832b15
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-19852.xml.gz
+    sha256: 0063016093f0afe69619dcb33a2c5ef0f828b8cf3a06e9e7cf3187ca2bb6f953
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-20831.xml.gz
+    sha256: d5663036632a1dc173df9a464e21b43a54b6a1e53eb23b91b2af83160e48adf0
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-MONOMER-5381.xml.gz
+    sha256: 8c5aa75ffc085213cc744796ac79c7cea855596efcbe30e73f46dbf1d5bcb455
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-PWY-5177.xml.gz
+    sha256: ae74fe674384c468a323627c93afe6ea56a28d383747768bebccb9214d260b01
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-RXN-11662.xml.gz
+    sha256: 862baf8ea8682a8a7b8c08d57c9454ccc3fefc28f26c0dfe50f6abac312d5a23
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-RXN-11667.xml.gz
+    sha256: 3d55a23599a42171b16c0b82dddbc340dc71f82b9f0df6b26f06c1bf9538ed8c
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-S-3-HYDROXYBUTANOYL-COA.xml.gz
+    sha256: e8d1ade5de7cc5ff838082e45b486044c2cf5186e0129999823e897fe8665e10
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-THLCLOS-CPLX.xml.gz
+    sha256: eecdf3889c3b0d747640b1b4d199ad873315702e4d86691a776ffde1e2b7a0e5
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-THLCLOS-ENZRXN.xml.gz
+    sha256: 3327f842acb3b7c69d5fab9ad874ccbc83abfccea37fc909c2731d5920f254e3
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-THLCLOS-MONOMER.xml.gz
+    sha256: 3f6bc491964d5d4929b3744055817b5a133347ba39dd0d20a3b136d5d476c76a
+    role: context
+  - path: tests/fixtures/glutaryl_authority/META-YPL028W-MONOMER.xml.gz
+    sha256: 3b576cbb27cc305e0e383a63222cfab3e16cb79dddb5b932869a5d19357d696b
+    role: context
+  - path: tests/fixtures/glutaryl_authority/README.md
+    sha256: 11fb7c29dfa12a3ee37931f3f3a485df0bce7e0cc902fa34bde892d2b248b71a
+    role: context
+  - path: tests/fixtures/glutaryl_authority/manifest.json
+    sha256: ad49ec551c88c238db0050fa8afd4d7979418c5b69ce0d2eb8a77e11ceae1b8b
+    role: context
+  - path: tests/fixtures/glutaryl_authority/storage.json
+    sha256: d43b9286b61848c1d8ba91a8e119f8178af042475f6e99f058e3d3cc667b6105
+    role: context
+  - path: tests/test_glutaryl_authority.py
+    sha256: 2006d674ec02a037d8959566d80873b85ea53be1858366939be9832bead893d8
+    role: context
+scope:
+  description: Complete review of one actual maintained glutaryl-CoA degradation record,
+    its native graph/evidence, primary-context limits, exact source retention, generated
+    page/export and accepted authority integration.
+  selection: Exact requested new maintained target MetaCyc:PWY-5177; full selected-record
+    coverage, no sampling.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5177
+  exclusions:
+  - target: Other 265 maintained records
+    reason: Covered by deterministic whole-corpus gates only; no new scientific review
+      of those records.
+  - target: Unacquired 1993/2010 full mains and unread historical native-cited papers
+    reason: Do not manufacture primary results; source-only annotations and explicit
+      limitations remain.
+  - target: Global resource exhaustion, complete nested archive content and physiological
+      route flux
+    reason: Not established by bounded retained searches or native source assertions.
+  - target: Authority adapter independent self-review
+    reason: This reviewer authored it; separate peer acceptance is required and bound.
+  - target: Publication/merge and GitHub issue closure
+    reason: Not performed or certified by this record-review save.
+targets:
+- target_id: MetaCyc:PWY-5177
+  path: data/pathways/glutaryl-coa-degradation.yaml
+  label: glutaryl-CoA degradation
+  kind: maintained
+  record_class: PathwayRecord
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutaryl-coa-degradation.yaml
+    role: Maintained hand-curated scientific record and source-reference assertions.
+  ownership_note: Generated pages and KGX are derived from the YAML by src/pathwaymech/cli.py,
+    graph_view.py and kgx.py; native authority outputs derive from source originals,
+    conf/identifier_sources.json and the bounded source builder. Authority implementation
+    independently reviewed by a separate peer; this reviewer authored that adapter.
+checks:
+- check_id: retained-evidence
+  name: Maintained evidence and source retention replay
+  status: passed
+  required: true
+  summary: All 24 retained archives / 4,781 outer member occurrences and 59 reference
+    bindings verified; exact frozen maintained review of 117 members rebound in the
+    canonical stage.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - maintained-retention
+  - reference-replay
+  - maintained-science
+  scope_note: Nested archives not newly recursively replayed; full external taxonomy
+    cache not rehashed at this stage.
+- check_id: science
+  name: Complete scoped scientific record assessment
+  status: passed
+  required: true
+  summary: Full actual YAML read; all 80 edges/88 source assertions/59 references
+    assessed by exact-byte carryover of complete independent science and URL successor
+    evidence, with limitations preserved.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - record
+  - original-science
+  - native-replay
+  - url-acceptance
+  - maintained-science
+- check_id: projection
+  name: Fresh maintained schema, page and KGX reproduction
+  status: passed
+  required: true
+  summary: 1,185 final bounded checks pass; exact current page and corrected KGX reproduce.
+  target_ids:
+  - MetaCyc:PWY-5177
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-269-maintained-record-review/review_maintained_projection.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - maintained-projection
+  - probe-correction
+  scope_note: Fresh bounded import/reproduction checks, not a replacement for root-owned
+    full corpus gates. Initial reviewer unit-entity assumption failure preserved separately.
+- check_id: structured-adapter
+  name: Applicable existing iModulonDB adapter context check
+  status: passed
+  required: true
+  summary: Datasets query and six bounded applicable searches succeeded; no component
+    hit requiring summarize.
+  target_ids:
+  - MetaCyc:PWY-5177
+  command: Existing CLAW kg-microbe-sources imodulondb datasets; six search invocations
+    recorded in imodulondb-search-receipts.json
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - imodulon
+  - imodulon-applicability
+  scope_note: Initial sandbox DNS failure retained; successful existing-runner retry
+    required no installation. No broad search or absent-module claim.
+- check_id: gate-render
+  name: Terminal repository just render-pages
+  status: passed
+  required: true
+  command: just render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-render-stdout
+  scope_note: Root executed this full integration check; reviewer inspected terminal
+    receipt and hashed both raw logs without rerunning. Final canonical save and metadata-only
+    README update are separately assessed.
+- check_id: gate-validate
+  name: Terminal repository just validate
+  status: passed
+  required: true
+  command: just validate
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-validate-stdout
+  scope_note: Root executed this full integration check; reviewer inspected terminal
+    receipt and hashed both raw logs without rerunning. Final canonical save and metadata-only
+    README update are separately assessed.
+- check_id: gate-lint
+  name: Terminal repository just lint
+  status: passed
+  required: true
+  command: just lint
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-lint-stdout
+  scope_note: Root executed this full integration check; reviewer inspected terminal
+    receipt and hashed both raw logs without rerunning. Final canonical save and metadata-only
+    README update are separately assessed.
+- check_id: gate-test
+  name: Terminal repository just test
+  status: passed
+  required: true
+  command: just test
+  exit_code: 0
+  expected_exit_code: 0
+  summary: 6827 passed, 3 skipped, 7 warnings in 1287.86s (0:21:27)
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-test-stdout
+  scope_note: Root executed this full integration check; reviewer inspected terminal
+    receipt and hashed both raw logs without rerunning. Final canonical save and metadata-only
+    README update are separately assessed.
+- check_id: gate-diff
+  name: Terminal repository git diff --check
+  status: passed
+  required: true
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-diff-stdout
+  scope_note: Root executed this full integration check; reviewer inspected terminal
+    receipt and hashed both raw logs without rerunning. Final canonical save and metadata-only
+    README update are separately assessed.
+- check_id: gate-vendored
+  name: Terminal repository just vendored-check
+  status: passed
+  required: true
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-vendored-stdout
+  scope_note: Root executed this full integration check; reviewer inspected terminal
+    receipt and hashed both raw logs without rerunning. Final canonical save and metadata-only
+    README update are separately assessed.
+- check_id: gate-staged-diff
+  name: Terminal repository git diff --cached --check
+  status: passed
+  required: true
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-staged-diff-stdout
+  scope_note: Root executed this full integration check; reviewer inspected terminal
+    receipt and hashed both raw logs without rerunning. Final canonical save and metadata-only
+    README update are separately assessed.
+evidence:
+- evidence_id: record
+  kind: record_content
+  reference: data/pathways/glutaryl-coa-degradation.yaml
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Full actual maintained record read before assessment; exact accepted corrected
+    YAML, 60 native declarations, eight taxa, 80 edges, 88 structured assertions and
+    59 references.
+  snapshot_sha256: 3c2ac2ae8443a7bdac87bd8ca9e612eee869fb479f3625231fadf84658e16317
+- evidence_id: maintained-science
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Complete bounded maintained scientific and projection assessment, with
+    authorship disclosures, unchanged-byte carryover, primary limits and exact current
+    target. Full repository gates and canonical save were expressly excluded.
+  snapshot_sha256: 411920af0d068729daf79be55798f7693fcf91150b08fe00bf8743d8eba1318a
+- evidence_id: maintained-projection
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/projection-review.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: 'Fresh actual maintained imports: 1,185 final schema/HTML/SVG/KGX checks
+    pass. Exact generated page, no-JS qualifications, every arrow/evidence target
+    and all export descriptions/references retained.'
+  snapshot_sha256: 82258a3ffaf5bb394920a5081c7a647b1326b8ee35ca9fbf103c1ee08eb8e408
+- evidence_id: maintained-retention
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/retained-archive-replay.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: All 24 named retained archives and 4,781 outer member occurrences decoded/rehashed.
+    Nested archives are exact opaque bytes here, not a new recursive-interior replay.
+  snapshot_sha256: 9c137001425f180cc101250b6ea66911a361749ef048e75b52bb2dfa85269571
+- evidence_id: reference-replay
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/59-reference-retention-replay.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: All declared matches for 51 reference bodies rehashed; eight taxonomy references
+    explicitly bind the external pinned batch source and retained selected statements.
+  snapshot_sha256: 73db3447316ddb904710fe6492702c37387f603a5c3c346ca8024e78ceaea686
+- evidence_id: probe-correction
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/probe-correction.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Retained initial reviewer-probe mismatch concerned entity decoding of literal
+    source units, not an owner defect; corrected final probe passes.
+  snapshot_sha256: d4f9677d23f1718b7e243c0bf43cb7742d49e3eedb032ae9e712bca374de4113
+- evidence_id: original-science
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: 'Independent complete scratch-record science review: 2,095 final bounded
+    assertions, all 80 edges and 59 references; identified legacy R01 navigation defect.
+    Exact scientific content carried through URL-only successor.'
+  snapshot_sha256: 4f071cfd28ddbeea7bc26f657577789a0a4edafe9d395a6e3d0eaa776b5e6480
+- evidence_id: native-replay
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz
+  locator: results/all80-edge-source-replay.json; native-ne001 through native-ne080;
+    exact per-edge original slot selections
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Every native edge and all 88 source assertions compared with selected full
+    original XML slots; exact object ownership, coefficient, direction, activity and
+    component scope.
+  snapshot_sha256: 7eb146210676ef6972013f63980e84fa37d620a02d99353191bcc8d7ce08ebc9
+- evidence_id: native-context
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz
+  locator: results/all29-activities-and10-regulations.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: All native activity/regulatory contexts accounted for, including opposed
+    microbial condensation activities and excluded human/plant contexts.
+  snapshot_sha256: f34105bc92cd6ce4344d888159a8dcee4284744dd0d98d215c69f25e23c7f64d
+- evidence_id: primary-locators
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz
+  locator: results/primary-original-extracts.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Inspected original HTML source elements and exact retained source hashes
+    for the 2009 and 2018 claims; supporting extracts are carried at the previously
+    read scope.
+  snapshot_sha256: 63da8c3f34ce77d4a5a4ca24183f2e37d485bfb66007086cdc65502675daf3bd
+- evidence_id: primary2018-placement
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/record-independent-original-review.tar.gz
+  locator: results/all16-primary-claim-placement.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Each of 16 accepted corrected 2018 primary claims mapped to actual narrative
+    or retained unasserted context; no additional positive native graph claim inferred.
+  snapshot_sha256: 3d5a0be032e3d81691cef04a3397217f4f53743932bdbe41dcb7ab9a3f26212a
+- evidence_id: pwy-original
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-preparation.tar.gz
+  locator: originals/META-PWY-5177.xml; /ptools-xml/Pathway[@frameid='PWY-5177']/reaction-list;
+    reaction-ordering; reaction-layout; species
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Exact full native Pathway original; five members, ordering/layout and nine
+    direct organism associations. Source assertions are not paper quotations.
+  snapshot_sha256: 18ad29bd6fdc7cc1a11c942bc07a6280064cb221f49ae70f5f344b38916932d0
+- evidence_id: paper2009
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-preparation.tar.gz
+  locator: originals/PMC2698508.html; PMID:19395484; Abstract, Materials and Methods
+    enzyme preparations/activity assay, Results product analysis and Table 1; exact
+    element locators in primary-locators
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: 2009 full main supports distinct native/recombinant organisms and constructs,
+    ferrocenium assays, reported GDHDes kinetics and membrane-extract conversion scope.
+  snapshot_sha256: e0583c654b603e47848c1f97405022cce2e8bb0540afa84926472570eabfd70f
+- evidence_id: paper2018
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-source-completion.tar.gz
+  locator: originals/PMC5974017.html; PMID:29844506; Figure 4c, Figure 7, associated
+    Results/Methods; 16 corrected claim placements and retained supplementary insert/plate
+    evidence
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: 2018 main with retained supplement/peer-review evidence supports bounded
+    deletion/growth and separate CsiD/LhgO route context, not every native member
+    or physiological ETF.
+  snapshot_sha256: dd0ef9a45fb99fc7c1bc03c638d8e23f0f9aceb1fb6b3c4913ebd802b60af2d0
+- evidence_id: paper1993
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-source-completion.tar.gz
+  locator: originals/BF00250279.pdf; PMID:8439237; publisher abstract/preview
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: partial
+  summary: Authentic publisher HTML abstract/preview despite its .pdf filename. Supports
+    historical K172/KB740 FAD-containing homotetramers; full methods and exact modern
+    sequence remain unacquired.
+  snapshot_sha256: 49b97d75c6fb672c302c26fc49f73a01eef6028e1f0d93e99a21f3761ffd7ca9
+- evidence_id: paper2010-si
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/ip08-2010-primary-completion.tar.gz
+  locator: originals/Figshare-bi100317m_si_001.pdf; All four SI pages; exact citation
+    PMID:20486657 / DOI:10.1021/bi100317m
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: partial
+  summary: Authentic four-page 2010 supplement, DOI10.1021/bi100317m.s001, inspected
+    fully; primer/sequence material contains no kinetic reconciliation. Full main
+    was not acquired.
+  snapshot_sha256: 8bc6008d92909aefa8a960f2f13d5216fa0b116d57a9266494f85e147009c5f8
+- evidence_id: uniprot-kinetics
+  kind: authority
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/glutaryl-issuer-preparation.tar.gz
+  locator: originals/UniProt-C3UVB0.json; C3UVB0 kinetic annotation and publication
+    list
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: partial
+  summary: Exact retained issuer annotation has 25 µM and 11 mmol/min/mg without per-value
+    evidence, conflicting with the reported 2009 preparation values. Does not establish
+    the origin of those numbers.
+  snapshot_sha256: ef408bbf57a79099e8d89905ee342b6639b8a1e35ddfff717fdd739495488ecc
+- evidence_id: issuer-scope
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/independent-glutaryl-issuer-review.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Previously authored independent issuer review retained at its bounded chemistry,
+    taxon/protein/gene/sequence and five-reaction disposition scope; not represented
+    as a new independent self-review.
+  snapshot_sha256: 87d987a67bc858046dc99c4a36b7fd8520fe30a8cb58b50133bf7c41abdb220c
+- evidence_id: taxon-label-fix
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/direct-taxon-label-independent-acceptance.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Separate peer accepted all eight microbial associations, exact issuing
+    ranks/type-material scope and canonical reaction labels; source anomalies remain
+    in visible chemistry prose.
+  snapshot_sha256: 3177d758dc562db567f9dcc8017ab1a3bdccecfc1b8cc3607de6df60d6d116da
+- evidence_id: taxon-statements
+  kind: authority
+  reference: research/pathway_additions/2026-10-15-next-269/accepted-preparation/direct-taxon-completion.tar.gz
+  locator: results/nine-taxonomy-statement-sets.json; NCBITaxon:303,1076,316277,43774,43775,59405,44139,59406,9606
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Complete selected issuing statement sets for nine native direct associations,
+    including excluded human. Full source database identity/rank/lineage scope is
+    distinct from browser responses.
+  snapshot_sha256: d743b9cddd45e2b6d5c3b1654ef24016f386d01350e73d3407e7d49d67cb1f59
+- evidence_id: url-acceptance
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/reference-url-independent-acceptance.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Independent 461-check acceptance of exactly 46 native reference URL scalar
+    corrections. All scientific semantics, original XML/xml:base, locators and digests
+    unchanged; 13 other references unchanged.
+  snapshot_sha256: 4c620bda2468dbe00e1fd21e0da4ede3df76bae6480f92b408ed9d392b40e54c
+- evidence_id: url-diffs
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/reference-url-independent-acceptance.tar.gz
+  locator: results/exact-record-scalar-diffs.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Exact 46 acquired-HTTPS navigation replacements, supported by retained
+    HTTP200 acquisition receipts and matching original bodies. Only one representative
+    old/new URL pair was freshly network-tested in the predecessor.
+  snapshot_sha256: c8ce839862b6f513b74fafd46947d3b5098c1622fcc3bde66c12c0169c67c5be
+- evidence_id: authority-peer
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/review-preparation/native-authority-independent-review.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Separate peer accepted the 152-owner bounded implementation with 386 fresh
+    tests, coherent semantic mutation checks, exact original acquisitions, additive
+    snapshot reproduction and complete pinned-cache verification. This reviewer authored
+    the implementation and relies on this independent acceptance.
+  snapshot_sha256: 1c962889f7361a3a5b4fb42832dfea7bc3c38a273b97711902b31af67070bdaf
+- evidence_id: authority-integration-peer
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/integration-review/authority-integration-independent-review.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Separate peer verified exact maintained authority integration, documentation
+    append and XML preservation rule; current consumer imports pass. Excludes this
+    scientific record and full repository gates.
+  snapshot_sha256: d4385421d1581fd70c39c5c710530934e550465591635270d4c946ad81564b99
+- evidence_id: supporting-integration
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/supporting-integration-review/root-integration-independent-review.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: 'Separate peer verified supporting retention/ledgers/history and aggregate
+    integration with 1,831 checks: all 265 prior records/pages and 13,869 old KGX
+    edges remain exact; 52 nodes / 80 edges added and 16 shared nodes only gain new
+    source context. Earlier README version accepted; later gate/canonical metadata
+    excluded.'
+  snapshot_sha256: c70f03cbb6e2388dcdddf647aff3a7200eb1dc25c12c60328568a173fd64ceb9
+- evidence_id: authority-rebind
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/accepted-authority-owner-rebind.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: All 152 maintained owners freshly match the independent integration acceptance.
+    Byte rebind is not independent scientific or implementation self-acceptance.
+  snapshot_sha256: 1fed5e9b24ad4658bac55623e9c6c06e9f2eb71ba9e80e66a472cc41c4841a68
+- evidence_id: baseline
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-269/integration-preparation/actual-merged-baseline-rebind.tar.gz
+  locator: REVIEW.md
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Actual merged baseline7dcc has 265 records; complete candidate source was
+    already retained in next266; incomplete YeastPathways lead remains distinct. Bounded
+    hidden/ignored and compressed-text duplicate/provenance search retains all exclusions.
+  snapshot_sha256: c58867edfb33f623e6335d91be3e272034882df5194c595e1c6c3f24b58526c5
+- evidence_id: lineage
+  kind: search
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/canonical-lineage-search.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Current hidden/ignored-inclusive structured-review text search found no
+    target/slug/N269-D01/D02/R01 match; legacy issues are not fabricated canonical
+    predecessors.
+  snapshot_sha256: 57a909e2ec42d4d4c4652c19b9a0bcb24fb490dd215d4db11eb4ee93f0154a8e
+  search_scope: rg --no-ignore --hidden -n against current reviews/structured for
+    PWY-5177, glutaryl-coa-degradation and N269-D01/D02/R01. No binary, compressed
+    or global absence claim.
+- evidence_id: imodulon
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/imodulondb-search-receipts.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: context_only
+  summary: Six actual existing-adapter searches succeeded for applicable P. putida/E.
+    coli context. Dataset-local gene annotations are context only; no component hit
+    was returned by these bounded searches.
+  snapshot_sha256: b35b264c4c21d9a1ed8ea341b506f87bf02f0bb9d262c3e2e104cec8c67cf31b
+- evidence_id: imodulon-applicability
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/maintained-record-review/maintained-record-review.tar.gz
+  locator: results/imodulondb-applicability.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Existing local console available; initial sandbox DNS failure retained,
+    network-enabled datasets retry succeeded without installation. No returned component
+    hit requiring summarize; no absent-membership inference.
+  snapshot_sha256: 10f7dd0f6a1eec93ef09724f4185cc6dd360d723839b4089f5ff55c69d879d98
+- evidence_id: reference-retention
+  kind: record_content
+  reference: research/pathway_additions/2026-10-15-next-269/reference-original-retention.json
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: 'Maintained reference retention map binds all 59 source hashes: 51 complete
+    referenced bodies and eight explicit external pinned taxonomy batch references.'
+  snapshot_sha256: 19ed359b2ea8d89a2729fc92f74609ba7853b5a9b34deec221d4ee7a9b1e8569
+- evidence_id: page
+  kind: record_content
+  reference: pages/records/MetaCyc_PWY-5177.html
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Actual generated maintained page, source-YAML link and both append-only
+    record histories; all source-only/primary boundaries remain visible without JavaScript.
+  snapshot_sha256: cdc1f22bb645a92e09adf30a04b0d1bf637ff48e5529c005a1c26948e1fcf369
+- evidence_id: history1
+  kind: record_content
+  reference: history/records/glutaryl-coa-degradation/2026-10-16T010136Z-claude-code-cda9a1.yaml
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Read exact append-only record integration history and actor-attribution
+    successor; statements preserve integration-time pending gates and do not claim
+    a merged scientific pass.
+  snapshot_sha256: 11c884241fb468d20f5fa15c20a4cf810372f5f04bcc2dd575433bae0e9c58ad
+- evidence_id: history2
+  kind: record_content
+  reference: history/records/glutaryl-coa-degradation/2026-10-16T010214Z-codex-6cffaa.yaml
+  accessed_at: '2026-10-16T01:32:07.591981Z'
+  support: supports
+  summary: Read exact append-only record integration history and actor-attribution
+    successor; statements preserve integration-time pending gates and do not claim
+    a merged scientific pass.
+  snapshot_sha256: 98ddc7fb73ed0be390837a8b637f7adbf6bb45d28185359120efaf83c84bfb57
+- evidence_id: gate-terminal-receipt
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/gates.json
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Authoritative root terminal results for all seven required commands, exact
+    log hashes and post-run integrated-owner inventory; no invented pre-launch attestation.
+  snapshot_sha256: 2d79aa71f104bec766f4d68e75041c3cd96b8f195019abc69a35551277c4c5a7
+- evidence_id: gate-render-stdout
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/render-pages.stdout
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  snapshot_sha256: c73d1e02f490de1b8726048f0c0add9cfa5450363686695b28a332355d58b692
+- evidence_id: gate-validate-stdout
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/full-validate.stdout
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  snapshot_sha256: fd37e08e09b1535dc4c10ed0467da129233894cbc49bbe3544ce89610e169152
+- evidence_id: gate-lint-stdout
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/full-lint.stdout
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  snapshot_sha256: 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18
+- evidence_id: gate-test-stdout
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/full-test.stdout
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: 6827 passed, 3 skipped, 7 warnings in 1287.86s (0:21:27)
+  snapshot_sha256: 2d7cb173d673508a804f02141579f0a43ce7d96285cef9928a1b249a334a3bec
+- evidence_id: gate-diff-stdout
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/full-diff-check.stdout
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  snapshot_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- evidence_id: gate-vendored-stdout
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/vendored-check.stdout
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  snapshot_sha256: 3b073aa29da7dc3996edbe18c83d0d6593ba6d03238b663efc40286be4cf428e
+- evidence_id: gate-staged-diff-stdout
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/initial-staged-diff-check.stdout
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Root command completed with exit 0; exact retained stdout and stderr match
+    the terminal receipt.
+  snapshot_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- evidence_id: gate-readme-delta
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/final-verification/readme-metadata-update.json
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: Exactly one post-suite README metadata change independently reconstructed
+    against both hashes and the exact unified diff; 12 local links resolve. Previous
+    scientific prose remains unchanged.
+  snapshot_sha256: 8012b498d6c6b28999119e758b99c16042202694f0867ee720cdf324e9afbcb2
+- evidence_id: gate-final-readme
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-269/README.md
+  accessed_at: '2026-10-16T01:31:25.171404Z'
+  support: supports
+  summary: 'Full final research README read: accurate terminal results and retained
+    evidence links, with unchanged scientific limits and clear distinction between
+    preparation, canonical and merged-tree evidence.'
+  snapshot_sha256: 77ad69238d07a78a6edc12a0f9fa5301aea6b49daea53a48f16979d6dbaacb7a
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact native pathway and prior source reuse
+  outcome: supported
+  summary: The record denotes the five-member MetaCyc PWY-5177 glutaryl-CoA degradation
+    route; adjacent activation/hydroxylation routes and downstream metabolism remain
+    outside its boundary.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - record
+  - pwy-original
+  - baseline
+  - maintained-science
+  details: The complete native original already existed in next266 retained research
+    and is reused with exact identity. The incomplete source-specific YeastPathways
+    lead is not equivalent evidence. A generic shared thiolase and upstream routes
+    ending at glutaryl-CoA are not duplicate complete routes. The baseline search
+    includes ignored/hidden files but expressly excludes unread binary/nested interiors;
+    no global discovery absence is claimed.
+- assessment_id: native-equations
+  area: graph
+  topic: Five members, source direction and composite separation
+  outcome: supported
+  summary: All five native memberships, four ordering links, 20 member material occurrences
+    and six composite occurrences retain exact objects and coefficients. Selected
+    hydration/thiolysis do not overwrite source reversibility.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - native-replay
+  - pwy-original
+  - record
+  - maintained-projection
+  details: The composite has two input protons and two constituent reactions and remains
+    outside the five-member set. K172 and KT2440 catalysts attach only to that composite,
+    never the isolated halves. Source ordering does not establish channeling or measured
+    flux.
+  dimensions:
+  - name: source_object
+    value: PWY-5177 and six exact native Reaction originals
+    definition: Five members plus one separate composite context
+    evidence_ids:
+    - native-replay
+  - name: evidence_tier
+    value: Structured source assertion
+    definition: Every one of 88 graph evidence items is a native assertion, not a
+      purported primary quotation
+    evidence_ids:
+    - native-replay
+- assessment_id: reaction-label
+  area: nomenclature
+  topic: Legacy issue 624 canonical-label and hydration conflict
+  outcome: supported
+  summary: All six Reaction labels remain canonical. RXN-11667 retains its source
+    dehydrogenase label while the accurate hydration equation and naming conflict
+    are conspicuous before the graph and in exported incident-edge context.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - record
+  - taxon-label-fix
+  - page
+  - maintained-projection
+  - authority-peer
+  details: This is evidence of the applied legacy issue 624 correction, not a fabricated
+    structured resolved finding. No broad label-policy waiver, silent source rename
+    or unsupported NamedNode description field was introduced.
+- assessment_id: chemical-scope
+  area: grounding
+  topic: Encoded structures, ETF, FAD and sodium transport
+  outcome: supported
+  summary: 'Native identifiers preserve chemistry scope: generic oxidized/reduced
+    ETF Protein classes remain distinct from exact carrier sequences and FAD; the
+    Rhea sodium-transport equation is not adopted.'
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - record
+  - issuer-scope
+  - native-replay
+  - maintained-science
+  details: Twelve accepted ChEBI comparisons concern normalized encoded ionic structures;
+    nine KEGG microstates differ. CML stereo/tautomer detail is not blanket equivalence.
+    Generic ETF lacks complete formula/charge, so complete first-reaction or route
+    elemental balance and physiological ETF coupling remain unproven. No sodium pumping
+    stoichiometry is added.
+- assessment_id: catalysts
+  area: scope
+  topic: Native catalyst and component roles
+  outcome: supported
+  summary: Twenty-one source-only catalyst assertions preserve organism, direction
+    and native evidence code; nine complex-component edges retain explicit or unspecified
+    stoichiometry without independent subunit-catalysis claims.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - native-replay
+  - native-context
+  - record
+  details: All 29 native activities are accounted for. Four microbial activities with
+    opposing physiological condensation directions do not become route-thiolysis catalysts;
+    four human/plant activities remain excluded. THLCLOS retains its regulated exact
+    activity, enzyme and assembly context. Missing direction is not physiological
+    flux.
+  dimensions:
+  - name: component_role
+    value: Complex membership versus catalyst
+    definition: A component relation alone does not establish that the individual
+      subunit catalyzes the generic reaction
+    evidence_ids:
+    - native-replay
+- assessment_id: regulation
+  area: evidence
+  topic: Exact enzyme-specific targets and source units
+  outcome: supported
+  summary: Eight microbial inhibition assertions target four exact activity participants,
+    linked by four enables edges. They do not inhibit every enzyme of a generic Reaction.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - native-replay
+  - native-context
+  - record
+  - maintained-projection
+  - probe-correction
+  details: Two human ion-regulation contexts remain excluded. REG-14465 Ki 120 retains
+    literal &micro;mole without micromolar conversion. The selenium-source conflict
+    is retained without a selenium cofactor edge. Native source evidence is not relabelled
+    as an independently read historical assay.
+- assessment_id: taxa
+  area: scope
+  topic: Legacy issue 623 direct-taxon completion and issuing rank
+  outcome: supported
+  summary: All eight direct microbial pathway associations are present with exact
+    issuing scope; the ninth human association is explicitly excluded.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - taxon-statements
+  - taxon-label-fix
+  - pwy-original
+  - record
+  - maintained-projection
+  details: NCBITaxon:303, 1076, 316277, 43774, 43775, 59405, 44139 and 59406 are preserved.
+    Historical K172 binds the issuing strain 44139 separately from species 59405;
+    KB740 binds Aromatoleum evansii species/type material, not an invented strain/modern
+    sequence. Other enzyme organism contexts do not broaden whole-route taxa. These
+    accepted legacy issue 623 changes are assessed without inventing canonical finding
+    lineage.
+  dimensions:
+  - name: taxon_condition
+    value: Native pathway association only
+    definition: A direct source association is not independent proof of all five members,
+      flux or ETF coupling in the taxon
+    evidence_ids:
+    - pwy-original
+    - record
+  - name: taxon_rank
+    value: K172 strain; KB740 species/type material
+    definition: Native historical naming is reconciled only to accepted issuing rank
+      and type-material evidence
+    evidence_ids:
+    - taxon-statements
+    - taxon-label-fix
+- assessment_id: primary2009
+  area: evidence
+  topic: 2009 organism, construct and assay scope
+  outcome: supported
+  summary: The narrative keeps native GS15, tagged recombinant GS15 and tagged DSM2059
+    preparations separate and confines their results to the artificial-ferrocenium
+    assays.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - paper2009
+  - primary-locators
+  - original-science
+  - record
+  details: GS15 oxidative decarboxylation and DSM2059 dehydrogenation without detected
+    crotonyl-CoA are preparation-specific. Membrane extract plus 20 mM NaCl is not
+    a purified sodium pump or physiological ETF experiment. The 52±5 µM / 11±1 µmol
+    min−1 mg−1 values refer to the reported DSM2059 preparation at 30°C/pH 7.8. No
+    engineered construct is silently represented as an unqualified native enzyme endpoint.
+- assessment_id: primary2018
+  area: evidence
+  topic: 2018 growth, complements and alternative route
+  outcome: supported
+  summary: KT2440 deletion/growth, substrate-consumption and expression context is
+    qualified by exact experimental scope; the separate CsiD/LhgO route is not promoted
+    to the native graph.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - paper2018
+  - primary2018-placement
+  - primary-locators
+  - original-science
+  - record
+  details: Complement inserts include gdh+pp0159 and csiD+lhgO. Sampling occurred
+    after glutarate contact; plate observations distinguish 36 h Figure 4c from 12
+    h Supplementary Figure 9. Figure 7 is a network interpretation without 13C tracing.
+    Proposed CsiR/glutarate control is not a demonstrated edge. All 16 corrected accepted
+    claims have record/context dispositions.
+- assessment_id: historical-identities
+  area: consistency
+  topic: Historical protein, gene and sequence conflicts
+  outcome: supported
+  summary: The record preserves the 1993 abstract-only scope and unresolved historical/modern
+    sequence and strain bindings, without substituting convenient accessions.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - paper1993
+  - issuer-scope
+  - original-science
+  - record
+  details: K172/AE016774 conflicts with the issuing KT2440 record; KB740/MAY27 and
+    the current KT2440 gene identity remain unresolved. Sequence length, residue numbering
+    and accession/version coordinates remain explicit retained limitations. The 1993
+    abstract supports FAD homotetramers but not unacquired methods or a physiological
+    ETF partner.
+- assessment_id: ip08
+  area: quantity
+  topic: Unresolved 2009/issuer/2010 kinetic discrepancy
+  outcome: unknown
+  summary: The kinetic discrepancy remains evidence-limited and explicitly disclosed;
+    the record makes no global numerical correction or attribution of the database
+    values to the inaccessible 2010 main.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - paper2009
+  - uniprot-kinetics
+  - paper2010-si
+  - record
+  details: The verified 2010 citation and four-page supplement contain no kinetic
+    reconciliation or exact 2010 assay-preparation result. This uncertainty does not
+    invalidate the correctly scoped native source graph, but prevents an unqualified
+    pass on those kinetic values.
+- assessment_id: references
+  area: provenance
+  topic: Legacy issue 625 navigation correction and original-byte retention
+  outcome: supported
+  summary: All 46 native navigation URLs now use their exact acquired HTTPS bare-query
+    URLs. All original XML, embedded source bases, assertions, source versions and
+    digests remain unchanged.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - url-acceptance
+  - url-diffs
+  - reference-replay
+  - reference-retention
+  - record
+  details: 'Thirteen other references are unchanged. Existing successful acquisition
+    receipts bind all 46 replacements; only one representative pair was freshly live-tested
+    in the predecessor. This is applied legacy issue 625 fix evidence, not a fabricated
+    structured predecessor or GitHub closure. All 59 hashes are accounted for: 51
+    full referenced artifacts retained and eight external pinned taxonomy batch references.'
+- assessment_id: taxonomy-hash
+  area: provenance
+  topic: External batch digest semantics
+  outcome: supported
+  summary: Eight NCBITaxon source_sha256 values correctly identify the entire external
+    pinned 2026-07-12 SQLite source, not individual browser responses or selected-row
+    JSON.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - taxon-statements
+  - reference-retention
+  - reference-replay
+  - authority-peer
+  details: The database is 14,115,225,600 bytes with SHA 89998447813e3151d1116222a3ec4b74959ccfb492114db134acee753f63548d.
+    Complete selected statement sets and independently accepted cache/hash/query receipts
+    are retained. This canonical stage does not repeat the 14 GB hash or claim that
+    59 complete source bodies were committed.
+- assessment_id: authority-independence
+  area: ownership
+  topic: Separate authority acceptance and exact maintained owners
+  outcome: supported
+  summary: The 49 new native terms and three additive pinned taxa are supported by
+    separate peer implementation and maintained integration acceptances; all 152 actual
+    owners match those accepted bytes.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - authority-peer
+  - authority-integration-peer
+  - authority-rebind
+  details: This reviewer authored the adapter and does not self-accept it. Peer verification
+    preserves all prior owners/terms and ordering, genuine full source identity and
+    exact labels, four activity roles and 26 reference-only exclusions. The separate
+    profiles are unchanged. Authority identity alone is not experimental biological
+    support.
+- assessment_id: page-export
+  area: representation
+  topic: No-JS reading and graph/export fidelity
+  outcome: supported
+  summary: 'The actual page and corrected KGX reproduce exactly with maintained modules:
+    all 60 native SVG nodes, 80 directed evidence-linked edges and 68 KGX declarations
+    remain faithful.'
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - maintained-projection
+  - page
+  - record
+  details: Every root paragraph and the taxon/hydration qualifications remain ordinary
+    visible HTML before the graph. All local fragments resolve and IDs are unique.
+    KGX omits root description by contract; relevant incident-edge context, exact
+    evidence and reference metadata remain intact. Static review is bounded; no new
+    interactive browser or complete pixel-level label audit is claimed.
+- assessment_id: history
+  area: provenance
+  topic: Append-only integration and actor correction
+  outcome: supported
+  summary: The only maintained-page additions over the accepted corrected preview
+    are the source-YAML link and two transparent record history events.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - page
+  - history1
+  - history2
+  - maintained-projection
+  details: The initial integration event inherited actor name claude-code while agent_tool/model
+    already identified Codex/GPT-6. The visible append-only successor corrects attribution
+    to codex without rewriting the original or biological owners. The corresponding
+    infrastructure histories are also input-bound. Events truthfully preserve their
+    integration-time pending-gate statements.
+- assessment_id: supporting-integration
+  area: consistency
+  topic: Preservation of prior records and aggregate outputs
+  outcome: supported
+  summary: Separate independent integration evidence supports the candidate increment
+    without changing existing biological owners or prior graph assertions.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - supporting-integration
+  - reference-retention
+  - authority-rebind
+  details: The peer verified all 265 prior records and pages, all 13,869 old KGX edge
+    rows, 52 added node IDs and 80 edges. Sixteen shared nodes only gain new PWY-5177
+    source context; all prior attributes/contexts remain. This is bounded integration
+    acceptance, not a scientific review of those 265 records or acceptance of the
+    later final-gate README edits.
+- assessment_id: structured-context
+  area: scope
+  topic: iModulonDB applicability and bounded context
+  outcome: supported
+  summary: The existing structured adapter was available and its applicable P. putida/E.
+    coli queries succeeded. Returned gene annotations are contextual leads and add
+    no biochemical or regulatory assertion.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - imodulon
+  - imodulon-applicability
+  - record
+  details: Queries gdh/glutaryl/CsiR/csiD/lhgO in p_putida/precise321 and acetyl-CoA
+    acetyltransferase in e_coli/precise_mg1655 returned gene keys including PP_0158
+    (gcdH), PP_2908, PP_2909, PP_2910 and b2224 (atoB). gdh alone returned glutamate-dehydrogenase
+    near misses. No component hit was returned, so no summarize k applied; no absence
+    of membership is inferred. These dataset-local keys do not resolve the issuing
+    gene/sequence conflicts or prove CsiR control.
+  dimensions:
+  - name: evidence_tier
+    value: Structured expression-database context
+    definition: Annotation/module context is not direct catalysis, pathway membership,
+      flux or demonstrated regulation
+    evidence_ids:
+    - imodulon
+- assessment_id: full-gates
+  area: schema
+  topic: Terminal whole-repository checks
+  outcome: supported
+  summary: 'All seven root integration commands terminated with exit 0. Full test:
+    6,827 passed, 3 skipped, 7 warnings; validation covers 266 records, 21,035 evidence
+    blocks and 510 histories. Lint, rendering, 22-artifact vendored integrity and
+    both diff checks pass.'
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-terminal-receipt
+  - gate-render-stdout
+  - gate-validate-stdout
+  - gate-lint-stdout
+  - gate-test-stdout
+  - gate-diff-stdout
+  - gate-vendored-stdout
+  - gate-staged-diff-stdout
+  details: Root executed the documented full gates against the unchanged integrated
+    owners. This reviewer inspected terminal receipts and log hashes without duplicating
+    the expensive suite. Deterministic gates do not replace the scientific assessment.
+- assessment_id: final-metadata
+  area: provenance
+  topic: Post-suite documentation metadata successor
+  outcome: supported
+  summary: The final research README accurately reports terminal gates and links the
+    retained independent evidence and stable structured-review directory.
+  target_ids:
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - gate-readme-delta
+  - gate-final-readme
+  details: 'The gate receipt inventories 201 owners after the run; it is not an immutable
+    pre-launch attestation. Exactly 200 remain byte-identical. The README alone has
+    a documented later metadata update: both old/new hashes and the precise diff were
+    independently reconstructed, all preceding scientific text is unchanged, and all
+    12 local links resolve. The full suite preceded this metadata-only change; this
+    assessment does not falsely claim that the earlier suite tested the later README
+    or this new canonical bundle.'
+findings: []
+actions: []
+limitations:
+- 'IP08 remains evidence-limited: the authentic 2010 supplement does not reconcile
+  UniProt C3UVB0 kinetics against the 2009 preparation; full main was not acquired.'
+- Generic ETF lacks exact physiological carrier identity and complete formula/charge;
+  no complete route elemental balance, physiological ETF coupling, sodium pump or
+  whole-route flux claim.
+- Historical strain/protein/gene/sequence and selenium-source conflicts remain explicitly
+  unresolved at their retained source scope; native annotations are not independently
+  read primary assays.
+- Eight taxonomy reference hashes bind one external full pinned SQLite database, not
+  eight browser responses. Fifty-one other referenced body artifacts are retained;
+  no claim that 59 complete originals were committed.
+- This stage replays outer retained members and carries exact prior accepted evidence;
+  it does not rehash the 14 GB taxonomy database, re-read every historical paper or
+  perform global discovery.
+- Current KGX does not export root description; verified incident-edge qualifications
+  preserve required taxon/hydration scope. Broader primary narrative is not claimed
+  as experimental graph evidence.
+- Static no-JS/HTML/SVG checks and prior static image review do not constitute new
+  interactive-browser or exhaustive pixel-level readability testing.
+- The six applicable iModulonDB searches return source-local gene context and no component
+  hit; this is not negative evidence for module membership and does not resolve issuing-gene
+  or regulatory conflicts.
+- Legacy issues 623/624/625 are issue/research history, not fabricated canonical predecessors.
+  This clean current finding list does not itself close external issues or supersede
+  unlinked structured findings.
+notes:
+- Prescribed inspect ran before the maintained assessment, then explicit successor
+  inspections assessed released page/history/authority inputs; all previous inputs
+  remained byte-identical. Canonical stage reinspected the retained 117-member evidence
+  packet and actual target.
+- Initial reviewer entity-decoding probe failure and sandbox DNS failure are preserved
+  with successful bounded successors. No scientific/production owner was edited by
+  this reviewer.
+- Review saving changes only the immutable canonical review bundle; no history, native
+  scientific status, source record, Git or GitHub mutation is implied.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/623
+- https://github.com/CultureBotAI/PathwayMech/issues/624
+- https://github.com/CultureBotAI/PathwayMech/issues/625
+tags:
+- pathway
+- native-source
+- glutaryl-coa
+- scientific-review
+- graph
+- bounded-primary-evidence
+```

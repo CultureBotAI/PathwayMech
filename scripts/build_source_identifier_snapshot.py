@@ -83,6 +83,12 @@ from pathwaymech.biocyc_electron_transfer import (
     reaction_metadata,
     reaction_term,
 )
+from pathwaymech.biocyc_glutaryl import (
+    GLUTARYL_KINDS,
+    glutaryl_metadata,
+    glutaryl_term,
+    validate_glutaryl_assertions,
+)
 from pathwaymech.biocyc_p321 import (
     GENE_KIND as METACYC_GENE_KIND,
 )
@@ -1885,6 +1891,12 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for index, entry in enumerate(entries)
     }
     validate_phenylacetate_assertions(phenylacetate_sources, [])
+    glutaryl_sources = {
+        index: glutaryl_metadata(entry, cache_dir)
+        if entry["kind"] in GLUTARYL_KINDS else entry
+        for index, entry in enumerate(entries)
+    }
+    validate_glutaryl_assertions(glutaryl_sources, [])
     carrier_sources = {
         index: carrier_reaction_metadata(entry, cache_dir)
         if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND
@@ -1935,7 +1947,9 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
-        if entry["kind"] in ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS | {
+        if entry["kind"] in (
+            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS | GLUTARYL_KINDS
+        ) | {
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
             ELECTRON_TRANSFER_KIND,
@@ -1994,6 +2008,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     if "/" not in identifier
                 ],
             )
+        elif entry["kind"] in GLUTARYL_KINDS:
+            metadata = glutaryl_sources[entry_index]
+            identifier, typed_term = glutaryl_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in PHENYLACETATE_KINDS:
             metadata = phenylacetate_sources[entry_index]
             identifier, typed_term = phenylacetate_term(metadata, key)
@@ -2329,6 +2347,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = gene_term(metadata, key)[1]
             if entry["kind"] in PHENYLACETATE_KINDS:
                 terms[identifier] = phenylacetate_term(metadata, key)[1]
+            if entry["kind"] in GLUTARYL_KINDS:
+                terms[identifier] = glutaryl_term(metadata, key)[1]
             if entry["kind"] in P321_KINDS:
                 terms[identifier] = p321_term(metadata, key)[1]
             if entry["kind"] in BENZOYL_KINDS:
@@ -2372,6 +2392,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         all_aceto_claims,
     )
     validate_phenylacetate_assertions(all_aceto_sources, all_aceto_claims)
+    validate_glutaryl_assertions(all_aceto_sources, all_aceto_claims)
     validate_benzoyl_assertions(all_aceto_sources, all_aceto_claims)
     validate_aceto_assertions(all_aceto_sources, all_aceto_claims)
     validate_named_complex_graph(named_assemblies)

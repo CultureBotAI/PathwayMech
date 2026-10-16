@@ -44,6 +44,18 @@ from pathwaymech.biocyc_electron_transfer import (
     reaction_term,
     validate_reaction_metadata,
 )
+from pathwaymech.biocyc_glutaryl import (
+    FIELD as GLUTARYL_FIELD,
+)
+from pathwaymech.biocyc_glutaryl import (
+    GLUTARYL_KINDS,
+    glutaryl_term,
+    validate_glutaryl_assertions,
+    validate_glutaryl_metadata,
+)
+from pathwaymech.biocyc_glutaryl import (
+    NODE_ROLES as GLUTARYL_NODE_ROLES,
+)
 from pathwaymech.biocyc_p321 import (
     FIELDS as P321_FIELDS,
 )
@@ -196,6 +208,7 @@ def _native_assertion_kinds(
     }
     fields.update(P321_FIELDS)
     fields.update({kind: PHENYLACETATE_FIELD for kind in PHENYLACETATE_KINDS})
+    fields.update({kind: GLUTARYL_FIELD for kind in GLUTARYL_KINDS})
     fields.update({kind: BENZOYL_FIELD for kind in BENZOYL_KINDS})
     assertions = {}
     claims = []
@@ -260,6 +273,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 BENZOYL_FIELD,
                 "native_p321",
                 PHENYLACETATE_FIELD,
+                GLUTARYL_FIELD,
                 "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
@@ -287,6 +301,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 BENZOYL_FIELD,
                 "native_p321",
                 PHENYLACETATE_FIELD,
+                GLUTARYL_FIELD,
                 "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
@@ -304,7 +319,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
         if "kind" in metadata and metadata["kind"] not in (
-            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS | {
+            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS | GLUTARYL_KINDS | {
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
             PATHBANK_CONTEXT_KIND,
@@ -356,6 +371,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
             validate_phenylacetate_metadata(metadata)
         elif PHENYLACETATE_FIELD in metadata:
             raise ValueError("phenylacetate metadata requires its matching source kind")
+        if metadata.get("kind") in GLUTARYL_KINDS:
+            validate_glutaryl_metadata(metadata)
+        elif GLUTARYL_FIELD in metadata:
+            raise ValueError("glutaryl metadata requires its matching source kind")
         if metadata.get("kind") in P321_KINDS:
             validate_p321_metadata(metadata)
         elif "native_p321" in metadata or "native_metacyc_gene" in metadata:
@@ -421,6 +440,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
     validate_p321_assertions(data["sources"], [], allow_legacy_products=True)
     validate_phenylacetate_assertions(data["sources"], [])
+    validate_glutaryl_assertions(data["sources"], [])
     validate_benzoyl_assertions(data["sources"], [])
     validate_aceto_assertions(data["sources"], [])
     validate_gene_assertions(data["sources"])
@@ -507,7 +527,13 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 or "entity_type" in term
             ):
                 raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
-        if source_kind in PHENYLACETATE_KINDS:
+        if source_kind in GLUTARYL_KINDS:
+            expected_id, expected_term = glutaryl_term(
+                data["sources"][term["source"]], term["source"]
+            )
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid complete glutaryl projection")
+        elif source_kind in PHENYLACETATE_KINDS:
             expected_id, expected_term = phenylacetate_term(
                 data["sources"][term["source"]], term["source"]
             )
@@ -592,6 +618,9 @@ def _load_authority(path: Path) -> dict[str, Any]:
     validate_phenylacetate_assertions(
         data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
     )
+    validate_glutaryl_assertions(
+        data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
+    )
     return data["terms"]
 
 
@@ -666,8 +695,9 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     "resolve against the source before refreshing the snapshot"
                 )
                 continue
-            if term.get("entity_type") in PHENYLACETATE_NODE_ROLES:
-                required_section, categories = PHENYLACETATE_NODE_ROLES[term["entity_type"]]
+            native_roles = PHENYLACETATE_NODE_ROLES | GLUTARYL_NODE_ROLES
+            if term.get("entity_type") in native_roles:
+                required_section, categories = native_roles[term["entity_type"]]
                 if section != required_section or node.get("category") not in categories:
                     errors.append(
                         f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
