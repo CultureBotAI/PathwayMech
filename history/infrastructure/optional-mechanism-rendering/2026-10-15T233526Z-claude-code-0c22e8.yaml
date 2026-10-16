@@ -1,0 +1,29 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/mechanism_view.py
+  slug: optional-mechanism-rendering
+session:
+  id: 2026-10-15T233526Z-claude-code-0c22e8
+  timestamp: '2026-10-15T23:35:26Z'
+  actors:
+  - type: ai_agent
+    name: claude-code
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/618
+events:
+- type: EDIT
+  outcome: changed
+  summary: Restore optional mechanism compatibility and distinguish source/detail graph checks
+  details: The initial full suite finished with 3 failures, 6523 passes and 3 skips. Issues
+    618 and 619 identify eager optional-field access in empty page rendering and KGX record-like
+    inputs. Added empty-detail guards to mechanism_view.py and graph_view.py, and empty-list
+    defaults for KGX optional extensions. Issue 620 records the former single-SVG corpus-test
+    assumption; the test now identifies each source graph explicitly and checks each nested
+    detail graph separately, retaining direction, multiplicity, evidence targets and all-record
+    coverage. Added explicit-empty detail and source-isolate regression cases. Initial failed
+    logs and independent reproduction are preserved; final successor validation is recorded
+    separately after execution.

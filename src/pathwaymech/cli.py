@@ -31,6 +31,7 @@ from pathwaymech.hadeg import hadeg_seed_rows, load_hadeg_memberships
 from pathwaymech.identifiers import identifier_errors
 from pathwaymech.kegg import kgml_to_pathway_record, load_kgml
 from pathwaymech.kgx import render_kgx, write_kgx
+from pathwaymech.mechanism_view import mechanism_anchor, mechanism_views
 from pathwaymech.mibig import (
     load_mibig_json,
     mibig_cluster,
@@ -43,6 +44,7 @@ from pathwaymech.pathway_tools import (
     metacyc_pathway_records,
     pmn_pathway_records,
 )
+from pathwaymech.reaction_mechanisms import iter_mechanism_evidence
 from pathwaymech.rhea import load_rhea_tsv, rhea_seed_rows
 from pathwaymech.schema import ValidationError, validate_record
 from pathwaymech.seed_subsystems import load_seed_subsystem_bundle, seed_subsystem_rows
@@ -115,6 +117,9 @@ def check_provenance_main() -> int:
             len(qualifier["evidence"]) for qualifier in edge.get("endpoint_qualifiers", [])
         )
         for record in records for edge in record.mechanistic_edges
+    )
+    evidence_count += sum(
+        1 for record in records for _ in iter_mechanism_evidence(record.reaction_mechanisms)
     )
     print(f"checked {evidence_count} evidence blocks")
     return 0
@@ -1102,16 +1107,19 @@ def _record_page(record: object, source_path: str | None = None,
              for identifier, values in labels.items()}
     components = []
     component_anchors: dict[str, str] = {}
+    detail_only = set(getattr(record, "detail_only_participant_ids", []))
     for field in ("taxa", "participants", "reactions"):
         for node in getattr(record, field, []):
             component_anchor = f"component-{len(components) + 1}"
             component_anchors.setdefault(node["id"], component_anchor)
             kind = node.get("category") or {"taxa": "taxon"}.get(field, field.removesuffix("s"))
             direction = node.get("direction", "")
+            scope = ('<br><strong class="mechanism-status">Detail only</strong>'
+                     if node["id"] in detail_only else "")
             components.append(
                 f'<tr id="{component_anchor}"><td>{label_html(nodes[node["id"]])}<br>'
                 f"<code>{html.escape(node['id'])}</code></td>"
-                f"<td>{html.escape(kind.replace('_', ' '))}</td>"
+                f"<td>{html.escape(kind.replace('_', ' '))}{scope}</td>"
                 f"<td>{html.escape(direction.replace('_', ' '))}</td></tr>"
             )
     component_section = (
@@ -1161,6 +1169,13 @@ def _record_page(record: object, source_path: str | None = None,
     rows = []
     for edge_number, edge in enumerate(record.mechanistic_edges, 1):
         description = html.escape(edge.get("description", ""))
+        for mechanism in getattr(record, "reaction_mechanisms", []):
+            if (mechanism["relation_to_source"] == "alternative_interpretation"
+                    and mechanism["source_reaction_id"] in {edge["subject"], edge["object"]}):
+                target = mechanism_anchor(record.id, mechanism["key"], "section")
+                description += ('<br><strong>Source-reported assertion.</strong> '
+                                f'<a href="#{target}">See the alternative interpretation '
+                                'and its unresolved or revised differences.</a>')
         rows.append(f'<tr id="mechanism-edge-{edge_number}">'
                     f"<td>{endpoint(edge['subject'], edge, edge_number, 'subject')}</td>"
                     f"<td>{html.escape(edge['predicate'])}<p>{description}</p></td>"
@@ -1195,11 +1210,14 @@ def _record_page(record: object, source_path: str | None = None,
     identifier = html.escape(getattr(record, "id", ""))
     if getattr(record, "id", None):
         component_anchors.setdefault(record.id, "pathway-identity")
+    details = mechanism_views(record, nodes, component_anchors, citations_html)
     return _page(
         record.label,
         f'<p id="pathway-identity"><code>{identifier}</code></p>'
-        f"<p>{label_html(record.description)}</p>"
-        f"{record_metadata(record)}{provenance}{graph_html(record, nodes, component_anchors)}"
+        + "".join(f"<p>{label_html(paragraph)}</p>"
+                  for paragraph in re.split(r"\n\s*\n", record.description))
+        + f"{record_metadata(record)}{provenance}{graph_html(record, nodes, component_anchors)}"
+        f"{details}"
         f"{component_section}<h2 id=\"mechanistic-edges\">Mechanistic edges</h2>"
         f"{edges}{clusters}{reference_section}{history_html(record, sessions or [])}",
         stylesheet_href="../style.css",

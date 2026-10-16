@@ -34,7 +34,8 @@ class Element {
 }
 
 const maliciousLabel = '<img src=x onerror="alert(1)"> & <script>bad()</script>';
-function fixture({missingSection = false, missingSvg = false, width = 1000, qualified = false} = {}) {
+function fixture({missingSection = false, missingSvg = false, width = 1000, qualified = false,
+                  defer = false, namespace = ""} = {}) {
   const nodes = ['a', 'b', 'c', 'd'].map(id => new Element({
     dataset: {nodeId: id, nodeLabel: id === 'a' ? maliciousLabel : id.toUpperCase()},
     attributes: {href: '#component-' + id},
@@ -77,28 +78,28 @@ function fixture({missingSection = false, missingSvg = false, width = 1000, qual
     set() { throw new Error('Status must display labels as plain text, never HTML'); },
   });
   const nativeSize = new Element(), nativeLabel = new Element();
-  nativeSize.id = 'graph-native-size';
+  nativeSize.id = namespace + 'graph-native-size';
   nativeSize.checked = true;
   const elements = {
     '.graph-viewport': viewport,
     '.pathway-network-svg': missingSvg ? null : svg,
     '.graph-tools': tools,
-    '#graph-node-picker': picker,
+    '.graph-node-picker': picker,
     '.graph-status': status,
     '.graph-native-size': nativeSize,
-    'label[for="graph-native-size"]': nativeLabel,
+    ['label[for="' + nativeSize.id + '"]']: nativeLabel,
   };
   const section = new Element();
   section.querySelector = selector => elements[selector] ?? null;
   const document = {
-    querySelector(selector) {
+    querySelectorAll(selector) {
       assert.equal(selector, '.pathway-network');
-      return missingSection ? null : section;
+      return missingSection ? [] : [section];
     },
   };
   const window = new Element();
-  vm.runInNewContext(fs.readFileSync(process.argv[2], 'utf8'), {document, window});
-  return {nodes, edges, svg, viewport, buttons, tools, picker, status, nativeSize, nativeLabel, window};
+  if (!defer) vm.runInNewContext(fs.readFileSync(process.argv[2], 'utf8'), {document, window});
+  return {nodes, edges, svg, viewport, buttons, tools, picker, status, nativeSize, nativeLabel, window, section};
 }
 
 function close(actual, expected, message) {
@@ -125,6 +126,33 @@ function noSelection(f) {
 }
 
 const scenarios = {
+  multiple_graphs_are_independent() {
+    const first = fixture({defer: true, namespace: 'first-'});
+    const second = fixture({defer: true, namespace: 'second-'});
+    const invalid = fixture({defer: true, missingSvg: true});
+    const window = new Element();
+    const document = {querySelectorAll(selector) {
+      assert.equal(selector, '.pathway-network');
+      return [first.section, invalid.section, second.section];
+    }};
+    vm.runInNewContext(fs.readFileSync(process.argv[2], 'utf8'), {document, window});
+    size(first, 0.5); size(second, 0.5);
+    select(first, 'a');
+    assert.equal(selected(first).length, 1); noSelection(second);
+    const firstSize = first.svg.style.width;
+    second.buttons['zoom-in'].emit('click');
+    size(second, 0.7); assert.equal(first.svg.style.width, firstSize);
+    select(second, 'c');
+    assert.equal(selected(first)[0].dataset.nodeId, 'a');
+    assert.equal(selected(second)[0].dataset.nodeId, 'c');
+    first.viewport.emit('keydown', {key: 'Escape'});
+    noSelection(first); assert.equal(selected(second)[0].dataset.nodeId, 'c');
+    first.buttons.fit.emit('click'); second.buttons.fit.emit('click');
+    first.viewport.clientWidth = 300; second.viewport.clientWidth = 700;
+    window.emit('resize'); size(first, 0.3); size(second, 0.7);
+    assert.equal(first.nativeLabel.hidden, true); assert.equal(second.nativeLabel.hidden, true);
+    assert.equal(invalid.tools.hidden, true);
+  },
   qualified_endpoint_selection() {
     const f = fixture({qualified: true});
     select(f, 'b');

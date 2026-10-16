@@ -1,0 +1,3 @@
+# Rendering and export regression reviews
+
+The [inventory](inventory.json) binds two complete immutable independent reproduction packets for issues [618](https://github.com/CultureBotAI/PathwayMech/issues/618), [619](https://github.com/CultureBotAI/PathwayMech/issues/619) and [620](https://github.com/CultureBotAI/PathwayMech/issues/620). They preserve the original failures, baseline comparisons, captured owners and pre-correction output hashes. These observations do not accept the subsequent fixes. Every archive member was decoded and rehashed against its captured source. Extract standard `tar.gz` archives into fresh scratch directories; archived scripts need not be executed.

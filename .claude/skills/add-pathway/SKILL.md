@@ -6,7 +6,7 @@ metadata:
   category: curation
   requires_database: false
   requires_internet: true
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Add a PathwayMech Record
@@ -116,6 +116,25 @@ evidence codes and inference limits. A database's citation of a paper does not
 make generated database prose a quotation from that paper. Preserve conflicting
 directions, cofactor conditions, and biological scope in the record and review
 ledger instead of silently choosing a convenient source.
+
+When an issued reaction combines transformations that primary evidence resolves
+into smaller steps, use the optional `reaction_mechanisms` contract in
+`docs/CAUSAL_GRAPHS.md`. Its local keys identify evidence-bearing claims within
+one record; they are not CURIEs, authority terms, or top-level reaction nodes.
+Keep the issued reaction and source assertions intact. A decomposition must
+reconcile exact material identities and integer coefficients to the selected
+source equation. An alternative interpretation must explicitly account for each
+identity difference with evidence; equation reconciliation alone does not prove
+chemical identity or physiological flux. Keep unobserved intermediates in
+proposed hypotheses rather than inventing chemical identifiers.
+
+Use `detail_only_participant_ids` only for participants that belong solely to the
+nested interpretation. Check the complete source membership independently;
+an isolated source component must remain in the source graph. Verify that pages
+show both representations and all nested evidence, and that KGX preserves the
+complete detail in the parent reaction's record-specific context. Do not flatten
+local steps into public biological nodes or transfer their catalysts onto a
+source net reaction.
 
 ## Write and Verify
 

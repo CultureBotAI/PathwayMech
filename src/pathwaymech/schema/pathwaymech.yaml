@@ -66,6 +66,16 @@ classes:
         multivalued: true
         inlined_as_list: true
         range: MechanisticEdge
+      reaction_mechanisms:
+        range: ReactionMechanism
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 0
+      detail_only_participant_ids:
+        multivalued: true
+        pattern: \S
+        description: Explicitly exclude these declared participants from the source graph only. They must
+          be used in nested detail and absent from top-level assertions and source equation terms.
       gene_clusters:
         multivalued: true
         inlined_as_list: true
@@ -90,6 +100,210 @@ classes:
         multivalued: true
         inlined_as_list: true
         range: CurationEvent
+
+  ReactionMechanism:
+    description: A versioned local claim graph under an issued reaction. Step keys are not biological
+      identifiers.
+    attributes:
+      version:
+        required: true
+        range: integer
+        minimum_value: 1
+        maximum_value: 1
+      key:
+        required: true
+        pattern: ^[a-z][a-z0-9_-]{0,63}(?![\s\S])
+      source_reaction_id:
+        required: true
+        pattern: \S
+      relation_to_source:
+        required: true
+        range: MechanismRelationEnum
+      description:
+        required: true
+        pattern: \S
+      evidence:
+        required: true
+        range: EvidenceItem
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+      source_equation:
+        required: true
+        range: MechanismSourceEquation
+      steps:
+        required: true
+        range: MechanismStep
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+      edges:
+        required: true
+        range: MechanismEdge
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+      source_conflicts:
+        range: MechanismSourceConflict
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+  MechanismSourceEquation:
+    description: Original source equation; orientation selects as_reported or its inverse for comparison.
+      Coefficients are exact and positive.
+    attributes:
+      orientation:
+        required: true
+        range: MechanismOrientationEnum
+      inputs:
+        required: true
+        range: MechanismMaterialTerm
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+      outputs:
+        required: true
+        range: MechanismMaterialTerm
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+  MechanismMaterialTerm:
+    attributes:
+      participant_id:
+        required: true
+        pattern: \S
+      coefficient:
+        required: true
+        range: integer
+        minimum_value: 1
+  MechanismStep:
+    attributes:
+      key:
+        required: true
+        pattern: ^[a-z][a-z0-9_-]{0,63}(?![\s\S])
+      label:
+        required: true
+        pattern: \S
+      description:
+        required: true
+        pattern: \S
+      assertion_status:
+        required: true
+        range: MechanismAssertionEnum
+      evidence:
+        required: true
+        range: EvidenceItem
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+      hypotheses:
+        range: MechanisticHypothesis
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+  MechanisticHypothesis:
+    description: Proposed, unobserved chemistry in prose; does not declare a chemical entity.
+    attributes:
+      description:
+        required: true
+        pattern: \S
+      status:
+        required: true
+        pattern: ^proposed(?![\s\S])
+      evidence:
+        required: true
+        range: EvidenceItem
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+  MechanismEndpoint:
+    description: Exactly one authority-checked participant reference or mechanism-local claim key.
+    attributes:
+      node_id:
+        pattern: \S
+      step_key:
+        pattern: ^[a-z][a-z0-9_-]{0,63}(?![\s\S])
+    exactly_one_of:
+    - slot_conditions:
+        node_id:
+          required: true
+      none_of:
+      - slot_conditions:
+          step_key:
+            required: true
+    - slot_conditions:
+        step_key:
+          required: true
+      none_of:
+      - slot_conditions:
+          node_id:
+            required: true
+  MechanismEdge:
+    attributes:
+      key:
+        required: true
+        pattern: ^[a-z][a-z0-9_-]{0,63}(?![\s\S])
+      subject:
+        required: true
+        range: MechanismEndpoint
+      predicate:
+        required: true
+        range: MechanismPredicateEnum
+      object:
+        required: true
+        range: MechanismEndpoint
+      description:
+        pattern: \S
+      assertion_status:
+        required: true
+        range: MechanismAssertionEnum
+      evidence:
+        required: true
+        range: EvidenceItem
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
+      coefficient:
+        range: integer
+        minimum_value: 1
+      endpoint_qualifiers:
+        range: EndpointQualifier
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 0
+        maximum_cardinality: 2
+  MechanismSourceConflict:
+    description: A whole unmatched term substituted on the same equation side at the same exact quantity.
+      Does not assert chemical equivalence.
+    attributes:
+      source_participant_id:
+        required: true
+        pattern: \S
+      interpreted_participant_id:
+        required: true
+        pattern: \S
+      side:
+        required: true
+        range: MechanismSideEnum
+      coefficient:
+        required: true
+        range: integer
+        minimum_value: 1
+      kind:
+        required: true
+        range: MechanismConflictKindEnum
+      status:
+        required: true
+        range: MechanismConflictStatusEnum
+      rationale:
+        required: true
+        pattern: \S
+      evidence:
+        required: true
+        range: EvidenceItem
+        multivalued: true
+        inlined_as_list: true
+        minimum_cardinality: 1
 
   NamedNode:
     description: A taxon, participant or reaction, named by CURIE.
@@ -336,6 +550,42 @@ classes:
         range: boolean
 
 enums:
+  MechanismRelationEnum:
+    permissible_values:
+      decomposition: {}
+      alternative_interpretation: {}
+  MechanismOrientationEnum:
+    permissible_values:
+      as_reported: {}
+      reversed: {}
+  MechanismAssertionEnum:
+    permissible_values:
+      supported: {}
+      inferred: {}
+      proposed: {}
+  MechanismPredicateEnum:
+    permissible_values:
+      consumes: {}
+      produces: {}
+      catalyzes: {}
+      enables: {}
+      provides_input_for: {}
+      precedes: {}
+      occurs_in: {}
+  MechanismSideEnum:
+    permissible_values:
+      inputs: {}
+      outputs: {}
+  MechanismConflictKindEnum:
+    permissible_values:
+      stereo: {}
+      constitution: {}
+      microstate: {}
+  MechanismConflictStatusEnum:
+    permissible_values:
+      unresolved: {}
+      proposed_revision: {}
+      supported_revision: {}
   EndpointRoleEnum:
     permissible_values:
       subject:

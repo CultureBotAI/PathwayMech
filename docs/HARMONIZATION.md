@@ -8,8 +8,13 @@ NCBI Protein, TubercuList, and SGD records into a single pathway mechanism modul
 
 Prefer stable external identifiers. Preserve source-native instance identifiers
 when a source distinguishes physical states or has no exact external grounding;
-verify those instances against the source graph. Project-minted temporary
-identifiers must be documented in `curation/decisions.tsv`.
+verify those instances against the source graph. A curation decision does not
+authorize a project-minted biological CURIE or bypass the independent authority
+gate. When a supported mechanistic substep has no exact issuing reaction ID,
+the nested `reaction_mechanisms` contract can retain it as a local evidence-bearing
+claim beneath an issued reaction. Its step keys are not authority identifiers or
+SSSOM mapping endpoints; chemical and protein endpoints still require verified
+public identities. Source normalization decisions remain in `curation/decisions.tsv`.
 
 The blocking [identifier and label gate](IDENTIFIERS.md) checks named pathway,
 taxon, participant, and reaction IDs against independent authority snapshots.

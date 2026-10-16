@@ -8,6 +8,7 @@ import pytest
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node is needed to execute browser logic")
 @pytest.mark.parametrize("scenario", [
+    "multiple_graphs_are_independent",
     "zoom_and_fit",
     "zoom_limits",
     "directed_selection_preserves_graph",

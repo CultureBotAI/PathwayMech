@@ -112,6 +112,72 @@ the reproducible source projection, manifest, and review ledger.
 
 ## Record-page diagrams
 
+### Detailed mechanisms under an issued reaction
+
+An optional `reaction_mechanisms` list describes evidence-backed substeps under
+an existing reaction with `category: molecular_activity`. Each mechanism has
+`version: 1`, a record-local `key`, `source_reaction_id`, `relation_to_source`,
+description, evidence, a source equation, steps and edges. Local step keys are
+curatorial claim coordinates, not biological identifiers. All public endpoints
+must be uniquely declared, authority-checked participants. Do not relabel a net
+reaction accession as an isolated enzymatic step.
+
+A step has a key, label, description, evidence and `assertion_status` of
+`supported`, `inferred` or `proposed`. Nested edges have their own status and
+evidence. Their typed endpoints contain exactly one `node_id` or `step_key`.
+Material edges use `consumes` (chemical to step) or `produces` (step to chemical)
+with a positive integer coefficient. `catalyzes`/`enables` connect a declared
+protein or complex to a step; `provides_input_for`/`precedes` connect distinct
+steps; `occurs_in` connects a step to a cellular component. A local key cannot
+escape into a top-level biological edge or an identifier mapping. Construct
+qualifiers retain the existing protein/complex-only, endpoint-specific rules.
+
+The source equation contains `inputs` and `outputs`, each with exact
+`participant_id` and `coefficient`, and an `orientation` of `as_reported` or
+`reversed`. Store the original equation; orientation selects its inverse for
+comparison without rewriting the reaction's source direction. This first
+profile accepts net equations without the same material on both sides and
+exact positive integer coefficients. Each step must have inputs and outputs.
+Cancellation uses identical participant IDs only. A `decomposition` must sum
+exactly to the selected source equation. Formula or charge balance alone never
+establishes chemical identity or the truth of the source equation.
+
+Every step must either be unlocated, meaning location unspecified, or have one
+explicit `occurs_in` in the same component as every other step. Mixed,
+ambiguous or different step locations are rejected; transport is not inferred.
+Source-specific scientific review must still reject unrepresented transport
+and verify every source term, coefficient, material identity and assay scope.
+
+An `alternative_interpretation` preserves a distinct mechanistic equation and
+requires `source_conflicts`. Each conflict identifies a whole unmatched
+`source_participant_id` and `interpreted_participant_id`, the same `side`
+(`inputs` or `outputs`), their equal positive integer `coefficient`, `kind`
+(`stereo`, `constitution` or `microstate`), `status` (`unresolved`,
+`proposed_revision` or `supported_revision`), rationale and evidence. Compare
+input and output boundaries separately. Every difference must be covered
+exactly once. Shared-ID coefficient changes, additions, deletions, partial
+coverage and invented counterparts are rejected. This is a statement of
+disagreement, not chemical equivalence or an exact mapping. A supported
+revision still needs independent primary/issuer evidence, not just a valid enum.
+
+Unobserved states without verified identities belong in optional step
+`hypotheses`: description, `status: proposed` and evidence. These are visibly
+proposed prose callouts, not invented chemical nodes or material-flow edges.
+
+`detail_only_participant_ids` explicitly identifies declared participants used
+only in mechanistic detail. These must be used by nested endpoints and must not
+occur in top-level edges, source equations or source-side conflict terms. Only
+these explicit IDs are excluded from the first graph. Other isolated source
+components remain visible. Source coverage review must prove that no native
+source component was incorrectly marked detail-only. Component tables and KGX
+retain every declaration and show this scope; no implicit filtering by label,
+isolation or nested usage is permitted.
+
+The first graph and its source assertions remain available beside the detailed
+graphs. Each detail states its parent reaction, relation, statuses, equations,
+conflicts, hypotheses and complete evidence without JavaScript. Display keys
+only control navigation. Layout never asserts reaction order or channeling.
+
 The static record pages render every maintained mechanistic edge as a directed
 SVG link to its corresponding evidence-table row. Labels and arrowheads retain
 the declared subject, predicate and object; reaction `direction` remains node
@@ -170,3 +236,15 @@ deduplication, so a qualified claim cannot collapse into an unqualified edge.
 Consumers that cannot preserve this column must explicitly reject or omit the
 qualified claim. Empty or absent qualifiers retain previous edge IDs and field
 values; the added TSV column and header still change export bytes and checksums.
+
+KGX stores each complete versioned detail under the parent reaction's
+record-specific `source_contexts[].reaction_mechanisms`. Each entry has the
+unchanged `mechanism` object and `references` containing complete metadata for
+every cited source, including qualifier-, hypothesis- and conflict-only
+citations. Participant context marks `graph_scope: mechanism_detail_only` when
+declared. Local steps do not become biological KGX nodes, and their material or
+catalyst edges are never flattened onto the issued parent reaction. Consumers
+must parse this context to obtain the detailed graph; ordinary KGX endpoint
+rows alone do not contain it. Consumers unable to preserve the extension must
+explicitly reject or omit detailed claims. Existing records without mechanisms
+retain their KGX row values and edge identities.
