@@ -1,0 +1,71 @@
+"""Retain the finite root-check successor set after canonical review saving."""
+
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import json
+from pathlib import Path
+
+
+ROOT = Path('/private/tmp/pathwaymech-next-272-20261015')
+SOURCE = Path('/private/tmp/pathwaymech-next-272-ci')
+RESEARCH = ROOT / 'research/pathway_additions/2026-10-15-next-272'
+DEST = RESEARCH / 'publication-checks/post-save'
+
+
+def digest(data):
+    return {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def main():
+    assert not DEST.exists()
+    prior = json.loads((RESEARCH / 'integration-gates/gate-results.json').read_text())
+    names = {row['source_name'] for row in prior['retained_receipts']}
+    omitted = {'pr-body-draft.md', 'commit-message.txt'}
+    DEST.mkdir(parents=True)
+    rows = []
+    for path in sorted(SOURCE.iterdir()):
+        if not path.is_file() or path.name in names | omitted:
+            continue
+        raw = path.read_bytes()
+        name = path.name + ('.gz' if path.suffix in {'.stdout', '.stderr'}
+                            else '.txt' if path.suffix == '.py' else '')
+        stored = gzip.compress(raw, mtime=0) if name.endswith('.gz') else raw
+        (DEST / name).write_bytes(stored)
+        rows.append({'source_name': path.name, 'path': name,
+                     'original': digest(raw), 'stored': digest(stored)})
+    result = {'captured_utc': datetime.now(timezone.utc).isoformat(),
+              'scope': 'Finite root-check successor subset after the integration-gates capture; not a complete scratch-owner archive or evidence of publication/merge.',
+              'retained': rows,
+              'excluded': ['Already retained integration-gates sources',
+                           'Mutable publication-body draft and commit message',
+                           'Standalone KGX directory; already compared with published downloads'],
+              'later_checks': 'Final staging, commit, PR and merged-tree verification occur after this capture and are not claimed here.'}
+    (DEST / 'receipt-index.json').write_text(json.dumps(result, indent=2) + '\n')
+    (DEST / 'README.md').write_text(
+        '# Root checks after canonical save\n\n'
+        'This finite receipt set preserves the initial staged whitespace failure, issue637 and its passing successor, '
+        'independent review intakes, final portable archive verification, skip-reason inspection, unchanged product-input binding and final lint. '
+        'The earlier complete full-gate logs remain in `../../integration-gates/`. '
+        'The exact original and stored hashes are in `receipt-index.json`; stdout/stderr files use deterministic gzip.\n\n'
+        'The 1,747 captured product/config/test/page/history inputs are unchanged after the full tests and validation. '
+        'Later additions are reviewed research retention and the immutable canonical bundle. '
+        'The governed post-save check passed all 197 reviews. The narrow source-XML attribute change has its own independent acceptance. '
+        'Final staging, commit, remote CI and actual merged-tree verification remain separate later checks.\n'
+    )
+    files = [{'path': p.relative_to(DEST).as_posix(), **digest(p.read_bytes())}
+             for p in sorted(DEST.rglob('*')) if p.is_file()]
+    (DEST / 'artifact-manifest.json').write_text(json.dumps({
+        'scope': 'All physical files recursively, including hidden/ignored, except this manifest.',
+        'files': files}, indent=2) + '\n')
+    for row in rows:
+        stored = (DEST / row['path']).read_bytes()
+        assert digest(stored) == row['stored']
+        raw = gzip.decompress(stored) if row['path'].endswith('.gz') else stored
+        assert digest(raw) == row['original']
+    print(json.dumps({'output': str(DEST), 'retained_receipts': len(rows),
+                      'physical_files': len(files) + 1, 'all_copy_checks_passed': True}))
+
+
+if __name__ == '__main__':
+    main()

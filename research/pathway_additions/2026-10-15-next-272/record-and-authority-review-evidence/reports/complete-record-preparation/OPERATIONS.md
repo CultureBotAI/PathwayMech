@@ -1,0 +1,11 @@
+# Operational scope
+
+All writes were confined to this newly owned scratch directory. No source acquisition, install, network request, maintained curation, authority adoption, Git mutation or GitHub action was performed. Read-only `git show` bound actual unchanged structural modules to the merged baseline. All jobs are terminal before freeze.
+
+An initial intake assertion assumed all listed guidance still matched the baseline and stopped on `docs/IDENTIFIERS.md`, which the separately authorized adapter agent had revised. The intake was corrected to require exact baseline equality for structural validation modules and to bind the changed current guidance separately. No structural mismatch was bypassed, and no raw/frozen parent was edited. The final intake has explicit equality flags.
+
+Initial helper Ruff/format checks found formatting/import/line-length issues. The owned helpers were formatted and long strings split without changing their values; final Ruff plus BLE001 and format-check pass. The post-format initial style findings are preserved in `results/initial-style-check.json`; final commands and exit statuses, not an assumed pass, are saved in `results/final-quality-checks.json`.
+
+The record's accepted graph is unchanged. A regulation mapping was narrowed to exact regulator and target endpoints rather than all incident regulator edges. Bibliographic enrichment uses exact retained source metadata and filters to already selected primary references; unrelated metadata-query hits do not enter the record. The candidate and mappings were regenerated and verified after these changes. This is structural/reproducibility verification, not a second primary-science review or downstream publication acceptance.
+
+Before freeze, independent reviewer and root identified one EutT narrative precision defect: coefficient-two material slots were called multiple occurrences. The wording now distinguishes nine distinct slots from their native coefficients. `results/coefficient-wording-correction.json` preserves both paragraphs and the exact initial candidate hash; `results/pre-coefficient-wording-candidate.yaml` preserves that historical draft. It is not the recommended candidate. The accepted graph is unchanged. Final generation and structural checks were repeated after this correction.

@@ -1,0 +1,7 @@
+# Ontology proposal order-preserving successor
+
+The four new issuing-source term values are independently supported by the root source review, whose94 checks and exact SQL query scope are retained. The frozen author preparation remains unchanged. Its full proposed-ontology.json sorted all existing term keys and nested objects, violating the integration requirement to preserve prior owner insertion order. Semantic term values were unchanged; the defect was serialization/integration scope.
+
+This successor applies only accepted-four-term-delta.json to the exact current baseline with json.loads and terms.update, then serializes without sort_keys. Its serializer exactly reproduces the complete original baseline before addition. All2,211 existing terms, nested key order, source objects and source order remain unchanged; four issued additions yield2,215 terms. Full database hash metadata remains unchanged. No new database acquisition or scientific assertion is introduced. The earlier full sorted candidate must not be adopted directly.
+
+lineage.json binds exact baseline, parent manifest, delta, independent source review and corrected candidate. The separate technical reviewer must verify this corrective candidate before maintained adoption. No maintained record, authority, Git/GitHub state, runtime, installed tool or frozen parent was changed. All operations are terminal. This successor is immutable; future changes require another owner.
