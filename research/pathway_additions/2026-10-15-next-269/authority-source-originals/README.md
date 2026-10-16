@@ -1,0 +1,9 @@
+# PWY-5177 bounded original authority inputs
+
+`manifest.json` contains 49 exact source descriptors for the new `metacyc-glutaryl-xml` kind. The `path` fields are cache staging paths, not paths relative to this research owner: copy each unmodified `originals/META-FRAME.xml` to `CACHE/glutaryl269/META-FRAME.xml` before using the normal source builder. `source-bindings.json` maps every term to its original hash, actual acquisition URL, successful receipt file/array index, complete native type/slot profile and frozen design input. Every selected source was acquired with the retained bare `getxml?META:FRAME` request.
+
+`reference-context-originals/` retains 26 further complete native objects used only as evidence references. `reference-context-bindings.json` maps them to exact successful acquisition receipts. They are intentionally absent from the source manifest/profile and authority terms. Their assertions do not become graph declarations or generic activities. The remaining native graph owners and contextual originals are retained in the frozen design preparation packet.
+
+`acquisition/` preserves 13 original receipt/manifest/freeze artifacts from the two immutable source acquisition packets, including earlier failed attempts. `acquisition-bindings.json` records their whole-file hashes. The earlier failures do not certify successful acquisition; per-object source bindings identify the successful 200 response whose body hash matches each retained original.
+
+The adapter provides identity/name provenance and literal source-context preservation. It does not independently validate every historical comment, synonym's biological interchangeability, native-to-ChEBI microstate equality, source taxon/strain conflict, regulation assay, kinetic annotation or source-to-primary disagreement. The separate scientific preparation and review packets retain those limitations. Public-release licensing review remains deferred as instructed.
