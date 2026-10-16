@@ -86,7 +86,9 @@ document.addEventListener('DOMContentLoaded', function () {
   if (themeBtn && document.documentElement) {
     try {
       const saved = localStorage.getItem('mech-theme');
-      if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+      if (saved === 'dark' || saved === 'light') {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
     } catch (e) {}
     themeBtn.addEventListener('click', function () {
       const cur = document.documentElement.getAttribute('data-theme');
@@ -104,11 +106,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const sortVal = sortSelect ? sortSelect.value : 'label-asc';
     let count = 0;
     rows.forEach(row => {
-      const searchText = row.dataset.search + (row.dataset.taxa ? ' ' + row.dataset.taxa : '');
+      const extraTaxa = row.dataset.taxa ? ' ' + row.dataset.taxa : '';
+      const searchText = row.dataset.search + extraTaxa;
       const matchesTerm = searchText.toLowerCase().includes(term);
       const matchesType = !typeVal || (row.dataset.type || '') === typeVal;
-      const matchesTaxon = !taxonVal || (row.dataset.taxa || '').split('|').includes(taxonVal);
-      const matchesGrounding = !groundingVal || (row.dataset.grounding || '').split('|').includes(groundingVal);
+      const rTaxa = (row.dataset.taxa || '').split('|');
+      const matchesTaxon = !taxonVal || rTaxa.includes(taxonVal);
+      const rGround = (row.dataset.grounding || '').split('|');
+      const matchesGrounding = !groundingVal || rGround.includes(groundingVal);
       row.hidden = !(matchesTerm && matchesType && matchesTaxon && matchesGrounding);
       if (!row.hidden) count += 1;
     });
@@ -138,10 +143,26 @@ document.addEventListener('DOMContentLoaded', function () {
   function remember() {
     const url = new URL(window.location.href);
     if (query.value) url.searchParams.set('q', query.value); else url.searchParams.delete('q');
-    if (typeFilter && typeFilter.value) url.searchParams.set('type', typeFilter.value); else url.searchParams.delete('type');
-    if (taxonFilter && taxonFilter.value) url.searchParams.set('taxon', taxonFilter.value); else url.searchParams.delete('taxon');
-    if (groundingFilter && groundingFilter.value) url.searchParams.set('grounding', groundingFilter.value); else url.searchParams.delete('grounding');
-    if (sortSelect && sortSelect.value && sortSelect.value !== 'label-asc') url.searchParams.set('sort', sortSelect.value); else url.searchParams.delete('sort');
+    if (typeFilter && typeFilter.value) {
+      url.searchParams.set('type', typeFilter.value);
+    } else {
+      url.searchParams.delete('type');
+    }
+    if (taxonFilter && taxonFilter.value) {
+      url.searchParams.set('taxon', taxonFilter.value);
+    } else {
+      url.searchParams.delete('taxon');
+    }
+    if (groundingFilter && groundingFilter.value) {
+      url.searchParams.set('grounding', groundingFilter.value);
+    } else {
+      url.searchParams.delete('grounding');
+    }
+    if (sortSelect && sortSelect.value && sortSelect.value !== 'label-asc') {
+      url.searchParams.set('sort', sortSelect.value);
+    } else {
+      url.searchParams.delete('sort');
+    }
     history.replaceState(null, '', url);
     filter();
   }

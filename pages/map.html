@@ -88,7 +88,9 @@
       if (themeBtn) {
         try {
           const saved = localStorage.getItem('mech-theme');
-          if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+          if (saved === 'dark' || saved === 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+          }
         } catch (e) {}
         themeBtn.addEventListener('click', function () {
           const cur = document.documentElement.getAttribute('data-theme');
@@ -111,8 +113,12 @@
       const statusEl = document.getElementById('map-status');
       const legendEl = document.getElementById('map-legend');
       const formEl = document.getElementById('map-filter-form');
-      const PALETTE = ['#0f766e', '#2563eb', '#d97706', '#9333ea', '#dc2626', '#059669', '#4f46e5', '#db2777', '#0284c7', '#65a30d', '#64748b'];
-      let scale = 1, panX = 0, panY = 0, dragging = false, lastX = 0, lastY = 0, hovered = null;
+      const PALETTE = [
+        '#0f766e', '#2563eb', '#d97706', '#9333ea', '#dc2626',
+        '#059669', '#4f46e5', '#db2777', '#0284c7', '#65a30d', '#64748b'
+      ];
+      let scale = 1, panX = 0, panY = 0;
+      let dragging = false, lastX = 0, lastY = 0, hovered = null;
       let colorMap = new Map();
 
       function esc(s) {
@@ -121,14 +127,22 @@
           .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
       }
 
+      function pointFieldVal(p, field) {
+        if (field === 'has_proteins') {
+          return p.has_proteins ? 'Protein-grounded' : 'Other';
+        }
+        return String(p[field] || 'Other');
+      }
+
       function buildLegend() {
         const field = colorEl.value;
         const counts = new Map();
         points.forEach(p => {
-          const val = field === 'has_proteins' ? (p.has_proteins ? 'Protein-grounded' : 'Other') : String(p[field] || 'Other');
+          const val = pointFieldVal(p, field);
           counts.set(val, (counts.get(val) || 0) + 1);
         });
-        const top = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        const entries = Array.from(counts.entries());
+        const top = entries.sort((a, b) => b[1] - a[1]).slice(0, 10);
         colorMap = new Map();
         legendEl.innerHTML = '';
         top.forEach(([val, cnt], idx) => {
@@ -186,7 +200,7 @@
           if (!p._active) return;
           const pos = project(p);
           p._cx = pos.cx; p._cy = pos.cy;
-          const val = field === 'has_proteins' ? (p.has_proteins ? 'Protein-grounded' : 'Other') : String(p[field] || 'Other');
+          const val = pointFieldVal(p, field);
           const col = colorMap.get(val) || '#64748b';
           ctx.beginPath();
           ctx.arc(pos.cx, pos.cy, p === hovered ? 8 : 5.5, 0, Math.PI * 2);
@@ -201,16 +215,26 @@
 
       function syncUrl() {
         const url = new URL(window.location.href);
-        if (queryEl.value) url.searchParams.set('q', queryEl.value); else url.searchParams.delete('q');
-        if (colorEl.value && colorEl.value !== 'pathway_type') url.searchParams.set('color', colorEl.value); else url.searchParams.delete('color');
-        if (typeEl.value) url.searchParams.set('type', typeEl.value); else url.searchParams.delete('type');
-        if (taxonEl.value) url.searchParams.set('taxon', taxonEl.value); else url.searchParams.delete('taxon');
-        if (groundEl.value) url.searchParams.set('grounding', groundEl.value); else url.searchParams.delete('grounding');
+        if (queryEl.value) url.searchParams.set('q', queryEl.value);
+        else url.searchParams.delete('q');
+        if (colorEl.value && colorEl.value !== 'pathway_type') {
+          url.searchParams.set('color', colorEl.value);
+        } else {
+          url.searchParams.delete('color');
+        }
+        if (typeEl.value) url.searchParams.set('type', typeEl.value);
+        else url.searchParams.delete('type');
+        if (taxonEl.value) url.searchParams.set('taxon', taxonEl.value);
+        else url.searchParams.delete('taxon');
+        if (groundEl.value) url.searchParams.set('grounding', groundEl.value);
+        else url.searchParams.delete('grounding');
         history.replaceState(null, '', url);
         draw();
       }
 
-      canvas.addEventListener('mousedown', e => { dragging = true; lastX = e.clientX; lastY = e.clientY; });
+      canvas.addEventListener('mousedown', e => {
+        dragging = true; lastX = e.clientX; lastY = e.clientY;
+      });
       window.addEventListener('mouseup', () => { dragging = false; });
       canvas.addEventListener('mousemove', e => {
         const rect = canvas.getBoundingClientRect();
@@ -236,11 +260,15 @@
         }
         if (best) {
           tooltip.hidden = false;
-          tooltip.style.left = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14)) + 'px';
+          const tx = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14));
+          tooltip.style.left = tx + 'px';
           tooltip.style.top = Math.max(8, e.clientY - rect.top - 10) + 'px';
-          tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br><code>' + esc(best.id) + '</code><br>' +
+          tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br>' +
+            '<code>' + esc(best.id) + '</code><br>' +
             '<span>' + esc(best.pathway_type) + ' · ' + esc(best.top_taxon) + '</span><br>' +
-            '<span>' + esc(best.edge_count) + ' edges · ' + esc(best.reaction_count) + ' reactions · ' + esc(best.protein_count) + ' proteins</span>';
+            '<span>' + esc(best.edge_count) + ' edges · ' +
+            esc(best.reaction_count) + ' reactions · ' +
+            esc(best.protein_count) + ' proteins</span>';
         } else {
           tooltip.hidden = true;
         }
@@ -261,7 +289,8 @@
       formEl.addEventListener('submit', e => { e.preventDefault(); syncUrl(); });
       formEl.addEventListener('reset', e => {
         e.preventDefault();
-        queryEl.value = ''; colorEl.value = 'pathway_type'; typeEl.value = ''; taxonEl.value = ''; groundEl.value = '';
+        queryEl.value = ''; colorEl.value = 'pathway_type';
+        typeEl.value = ''; taxonEl.value = ''; groundEl.value = '';
         scale = 1; panX = 0; panY = 0;
         buildLegend();
         syncUrl();

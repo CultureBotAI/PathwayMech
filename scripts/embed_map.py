@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""2-D map of the PathwayMech corpus from record text embeddings -> data/embeddings/corpus_map.json."""
+"""2-D map of the PathwayMech corpus from text embeddings -> data/embeddings/corpus_map.json."""
 
 from __future__ import annotations
 

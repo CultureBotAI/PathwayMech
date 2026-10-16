@@ -94,13 +94,16 @@
     (function () {
       try {
         var saved = localStorage.getItem('mech-theme');
-        if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+        if (saved === 'dark' || saved === 'light') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
       } catch (e) {}
       var btn = document.getElementById('theme-toggle');
       if (btn) {
         btn.addEventListener('click', function () {
           var cur = document.documentElement.getAttribute('data-theme');
-          var isDark = cur ? cur === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var mq = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = cur ? cur === 'dark' : mq;
           var next = isDark ? 'light' : 'dark';
           document.documentElement.setAttribute('data-theme', next);
           try { localStorage.setItem('mech-theme', next); } catch (e) {}

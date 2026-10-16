@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""2-D map of PathwayMech-grounded proteins from ESM-2 sequence embeddings -> data/embeddings/sequence_map.json."""
+"""2-D map of PathwayMech-grounded proteins from ESM-2 embeddings -> sequence_map.json."""
 
 from __future__ import annotations
 
@@ -111,7 +111,8 @@ def embed_missing(
         "bfloat16": torch.bfloat16,
     }[dtype_name]
     print(
-        f"loading {model_name}@{revision[:8]} ({dtype_name}) on {device} for {len(todo_seqs)} sequences",
+        f"loading {model_name}@{revision[:8]} ({dtype_name}) "
+        f"on {device} for {len(todo_seqs)} sequences",
         file=sys.stderr,
     )
     tok = AutoTokenizer.from_pretrained(model_name, revision=revision)
@@ -626,9 +627,11 @@ def main() -> int:
     if explained:
         payload["explained"] = [round(e, 4) for e in explained]
     OUT.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
+    rel_out = OUT.relative_to(REPO_ROOT)
+    kb = OUT.stat().st_size / 1024
     print(
         f"{len(points):,} proteins across {payload['n_pathways_covered']:,} pathways "
-        f"({args.method}) -> {OUT.relative_to(REPO_ROOT)} ({OUT.stat().st_size / 1024:.1f} KB)"
+        f"({args.method}) -> {rel_out} ({kb:.1f} KB)"
     )
     return 0
 

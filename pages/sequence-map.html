@@ -86,7 +86,9 @@
       if (themeBtn) {
         try {
           const saved = localStorage.getItem('mech-theme');
-          if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+          if (saved === 'dark' || saved === 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+          }
         } catch (e) {}
         themeBtn.addEventListener('click', function () {
           const cur = document.documentElement.getAttribute('data-theme');
@@ -108,8 +110,12 @@
       const statusEl = document.getElementById('seq-status');
       const legendEl = document.getElementById('seq-legend');
       const formEl = document.getElementById('seq-filter-form');
-      const PALETTE = ['#0f766e', '#2563eb', '#d97706', '#9333ea', '#dc2626', '#059669', '#4f46e5', '#db2777', '#0284c7', '#65a30d', '#64748b'];
-      let scale = 1, panX = 0, panY = 0, dragging = false, lastX = 0, lastY = 0, hovered = null;
+      const PALETTE = [
+        '#0f766e', '#2563eb', '#d97706', '#9333ea', '#dc2626',
+        '#059669', '#4f46e5', '#db2777', '#0284c7', '#65a30d', '#64748b'
+      ];
+      let scale = 1, panX = 0, panY = 0;
+      let dragging = false, lastX = 0, lastY = 0, hovered = null;
       let colorMap = new Map();
 
       function esc(s) {
@@ -119,7 +125,9 @@
       }
 
       function activePoints() {
-        return modeEl.value === 'proteins' ? (payload.proteins || []) : (payload.pathways || []);
+        return modeEl.value === 'proteins'
+          ? (payload.proteins || [])
+          : (payload.pathways || []);
       }
 
       function pointGroup(p) {
@@ -136,7 +144,8 @@
           const g = pointGroup(p);
           counts.set(g, (counts.get(g) || 0) + 1);
         });
-        const top = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        const entries = Array.from(counts.entries());
+        const top = entries.sort((a, b) => b[1] - a[1]).slice(0, 10);
         colorMap = new Map();
         legendEl.innerHTML = '';
         top.forEach(([val, cnt], idx) => {
@@ -153,7 +162,9 @@
       function matches(p) {
         const q = queryEl.value.trim().toLowerCase();
         if (q) {
-          const extra = (p.pathway_labels || []).join(' ') + ' ' + (p.proteins || []).join(' ') + ' ' + (p.gene_symbol || '') + ' ' + (p.taxon || '');
+          const extra = (p.pathway_labels || []).join(' ') + ' ' +
+            (p.proteins || []).join(' ') + ' ' +
+            (p.gene_symbol || '') + ' ' + (p.taxon || '');
           const hay = (p.label + ' ' + p.id + ' ' + extra).toLowerCase();
           if (!hay.includes(q)) return false;
         }
@@ -211,16 +222,29 @@
 
       function syncSeqUrl() {
         const url = new URL(window.location.href);
-        if (queryEl.value) url.searchParams.set('q', queryEl.value); else url.searchParams.delete('q');
-        if (modeEl.value && modeEl.value !== 'pathways') url.searchParams.set('mode', modeEl.value); else url.searchParams.delete('mode');
-        if (colorEl.value && colorEl.value !== 'pathway_type') url.searchParams.set('color', colorEl.value); else url.searchParams.delete('color');
-        if (typeEl.value) url.searchParams.set('type', typeEl.value); else url.searchParams.delete('type');
-        if (taxonEl.value) url.searchParams.set('taxon', taxonEl.value); else url.searchParams.delete('taxon');
+        if (queryEl.value) url.searchParams.set('q', queryEl.value);
+        else url.searchParams.delete('q');
+        if (modeEl.value && modeEl.value !== 'pathways') {
+          url.searchParams.set('mode', modeEl.value);
+        } else {
+          url.searchParams.delete('mode');
+        }
+        if (colorEl.value && colorEl.value !== 'pathway_type') {
+          url.searchParams.set('color', colorEl.value);
+        } else {
+          url.searchParams.delete('color');
+        }
+        if (typeEl.value) url.searchParams.set('type', typeEl.value);
+        else url.searchParams.delete('type');
+        if (taxonEl.value) url.searchParams.set('taxon', taxonEl.value);
+        else url.searchParams.delete('taxon');
         history.replaceState(null, '', url);
         draw();
       }
 
-      canvas.addEventListener('mousedown', e => { dragging = true; lastX = e.clientX; lastY = e.clientY; });
+      canvas.addEventListener('mousedown', e => {
+        dragging = true; lastX = e.clientX; lastY = e.clientY;
+      });
       window.addEventListener('mouseup', () => { dragging = false; });
       canvas.addEventListener('mousemove', e => {
         const rect = canvas.getBoundingClientRect();
@@ -244,14 +268,18 @@
         if (best !== hovered) { hovered = best; draw(); }
         if (best) {
           tooltip.hidden = false;
-          tooltip.style.left = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14)) + 'px';
+          const tx = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14));
+          tooltip.style.left = tx + 'px';
           tooltip.style.top = Math.max(8, e.clientY - rect.top - 10) + 'px';
           if (modeEl.value === 'proteins') {
-            tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br><code>' + esc(best.id) + '</code><br>' +
-              '<span>' + esc(best.taxon || 'Unspecified') + ' · ' + esc(best.length || 0) + ' aa</span><br>' +
+            tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br>' +
+              '<code>' + esc(best.id) + '</code><br>' +
+              '<span>' + esc(best.taxon || 'Unspecified') + ' · ' +
+              esc(best.length || 0) + ' aa</span><br>' +
               '<span>Pathways: ' + esc((best.pathway_labels || []).join(', ')) + '</span>';
           } else {
-            tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br><code>' + esc(best.id) + '</code><br>' +
+            tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br>' +
+              '<code>' + esc(best.id) + '</code><br>' +
               '<span>' + esc(best.pathway_type) + ' · ' + esc(best.top_taxon) + '</span><br>' +
               '<span>' + esc(best.protein_count) + ' ESM-2 grounded protein(s)</span>';
           }
@@ -271,14 +299,17 @@
         draw();
       }, { passive: false });
 
-      modeEl.addEventListener('change', () => { hovered = null; buildLegend(); syncSeqUrl(); });
+      modeEl.addEventListener('change', () => {
+        hovered = null; buildLegend(); syncSeqUrl();
+      });
       colorEl.addEventListener('change', () => { buildLegend(); syncSeqUrl(); });
       queryEl.addEventListener('input', syncSeqUrl);
       [typeEl, taxonEl].forEach(el => el.addEventListener('change', syncSeqUrl));
       formEl.addEventListener('submit', e => { e.preventDefault(); syncSeqUrl(); });
       formEl.addEventListener('reset', e => {
         e.preventDefault();
-        queryEl.value = ''; modeEl.value = 'pathways'; colorEl.value = 'pathway_type'; typeEl.value = ''; taxonEl.value = '';
+        queryEl.value = ''; modeEl.value = 'pathways'; colorEl.value = 'pathway_type';
+        typeEl.value = ''; taxonEl.value = '';
         scale = 1; panX = 0; panY = 0;
         buildLegend(); syncSeqUrl();
       });
