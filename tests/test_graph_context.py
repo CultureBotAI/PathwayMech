@@ -132,6 +132,120 @@ def test_has_input_direction_and_aggregate_pathway_products(record):
     validate_record(record)
 
 
+@pytest.mark.parametrize("predicate, exported_predicate", [
+    ("has_input", "RO:0002233"), ("has_output", "RO:0002234"),
+])
+def test_typed_participant_activity_material_edges_survive_page_and_export(
+    record, checker, predicate, exported_predicate,
+):
+    activity = "gomodel:test/source-activity"
+    record["participants"].append({
+        "id": activity, "label": "Source activity", "category": "molecular_activity",
+    })
+    evidence = [{
+        "reference_id": "gomodel:test",
+        "source_assertion": "The source activity names this material in a conditional assay.",
+        "source_locator": "model.json /conditional-materials/0",
+    }]
+    description = "Conditional activity association; not a canonical reaction equation term."
+    record["mechanistic_edges"][0].update(
+        subject=activity, predicate=predicate, object="CHEBI:15377",
+        description=description, evidence=evidence,
+    )
+
+    assert not checker.validate(record, TARGET_CLASS).results
+    checked = validate_record(record)
+    document = html.fromstring(_record_page(checked))
+    graphic, = document.xpath("//*[@data-subject=$subject]", subject=activity)
+    assert graphic.get("data-object") == "CHEBI:15377"
+    assert graphic.get("data-predicate") == predicate
+    evidence_row, = document.xpath("//*[@id=$anchor]", anchor=graphic.get("href")[1:])
+    assert description in evidence_row.text_content()
+    assert evidence[0]["source_assertion"] in evidence_row.text_content()
+    assert evidence[0]["source_locator"] in evidence_row.text_content()
+    nodes = {node.id: node for node in kgx_nodes([checked])}
+    assert nodes[activity].category == "biolink:MolecularActivity"
+    assert nodes[activity].source_category == "molecular_activity"
+    exported, = kgx_edges([checked])
+    assert (exported.subject, exported.predicate, exported.object) == (
+        activity, exported_predicate, "CHEBI:15377",
+    )
+    assert exported.description == description
+    assert json.loads(exported.evidence) == evidence
+    assert checked.reactions == record["reactions"]
+
+
+@pytest.mark.parametrize("predicate", ["has_input", "has_output"])
+@pytest.mark.parametrize("category", [
+    None, "chemical_entity", "small_molecule", "lipid", "polymer", "protein", "gene",
+    "dna", "rna", "cofactor", "complex", "cellular_component", "biological_process", "pathway",
+])
+def test_material_edges_do_not_admit_other_participant_kinds(record, predicate, category):
+    subject = {"id": "gomodel:test/source-activity", "label": "Not a typed activity"}
+    if category is not None:
+        subject["category"] = category
+    record["participants"].append(subject)
+    record["mechanistic_edges"][0].update(
+        subject=subject["id"], predicate=predicate, object="CHEBI:15377",
+    )
+    with pytest.raises(ValidationError, match="activity or pathway"):
+        validate_record(record)
+
+
+@pytest.mark.parametrize("predicate", ["has_input", "has_output"])
+@pytest.mark.parametrize("conflicting_category", [None, "protein"])
+@pytest.mark.parametrize("reverse", [False, True])
+def test_ambiguous_participant_activity_cannot_gain_material_edges(
+    record, predicate, conflicting_category, reverse,
+):
+    activity = "gomodel:test/source-activity"
+    declarations = [
+        {"id": activity, "label": "Source activity", "category": "molecular_activity"},
+        {"id": activity, "label": "Conflicting declaration"},
+    ]
+    if conflicting_category is not None:
+        declarations[1]["category"] = conflicting_category
+    record["participants"].extend(reversed(declarations) if reverse else declarations)
+    record["mechanistic_edges"][0].update(
+        subject=activity, predicate=predicate, object="CHEBI:15377",
+    )
+    with pytest.raises(ValidationError, match="activity or pathway"):
+        validate_record(record)
+
+
+@pytest.mark.parametrize("predicate", ["has_input", "has_output"])
+def test_taxon_collision_cannot_gain_activity_material_edges(record, predicate):
+    activity = "NCBITaxon:562"
+    record["taxa"].append({"id": activity, "label": "Escherichia coli"})
+    record["participants"].append({
+        "id": activity, "label": "Conflicting activity", "category": "molecular_activity",
+    })
+    record["mechanistic_edges"][0].update(
+        subject=activity, predicate=predicate, object="CHEBI:15377",
+    )
+    with pytest.raises(ValidationError, match="activity or pathway"):
+        validate_record(record)
+
+
+@pytest.mark.parametrize("predicate, subject, obj", [
+    ("consumes", "CHEBI:15377", "gomodel:test/source-activity"),
+    ("produces", "gomodel:test/source-activity", "CHEBI:15377"),
+    ("provides_input_for", "gomodel:test/source-activity", "gomodel:test/r1"),
+    ("causally_upstream_of", "gomodel:test/source-activity", "gomodel:test/r1"),
+    ("occurs_in", "gomodel:test/source-activity", "GO:0005737"),
+    ("located_in", "gomodel:test/source-activity", "GO:0005737"),
+])
+def test_activity_material_support_does_not_relax_other_predicates(
+    record, predicate, subject, obj,
+):
+    record["participants"].append({
+        "id": "gomodel:test/source-activity", "label": "Activity", "category": "molecular_activity",
+    })
+    record["mechanistic_edges"][0].update(subject=subject, predicate=predicate, object=obj)
+    with pytest.raises(ValidationError):
+        validate_record(record)
+
+
 @pytest.mark.parametrize("kind", ["cellular_component", "biological_process", "molecular_activity"])
 @pytest.mark.parametrize("predicate", ["consumes", "produces"])
 def test_context_nodes_cannot_be_consumed_as_metabolites(record, kind, predicate):

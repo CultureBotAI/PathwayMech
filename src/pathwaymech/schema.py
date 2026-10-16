@@ -200,6 +200,15 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
                 if isinstance(node, dict) and node.get("id") == identifier
             )
         },
+        activity_participants={
+            identifier
+            for identifier in participants - reactions - taxa - {record.get("id")}
+            if all(
+                node.get("category") == "molecular_activity"
+                for node in record["participants"]
+                if isinstance(node, dict) and node.get("id") == identifier
+            )
+        },
     )
     if "curation_history" in record:
         _validate_curation_history(record["curation_history"], errors)
@@ -476,6 +485,7 @@ def _validate_edges(
     record_id: str | None = None,
     categories: dict[str, str | None] | None = None,
     qualified_participants: set[str] | None = None,
+    activity_participants: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     if not isinstance(value, list):
         errors.append("mechanistic_edges must be a list")
@@ -511,6 +521,7 @@ def _validate_edges(
                 errors,
                 record_id=record_id,
                 categories=categories or {},
+                activity_participants=activity_participants or set(),
             )
         _validate_evidence(item.get("evidence"), reference_ids, f"{path}.evidence", errors)
         if "endpoint_qualifiers" in item:
@@ -573,6 +584,7 @@ def _validate_edge_endpoint_types(
     *,
     record_id: str | None,
     categories: dict[str, str | None],
+    activity_participants: set[str] | None = None,
 ) -> None:
     processes = reaction_ids | {record_id}
     context_categories = {
@@ -596,7 +608,7 @@ def _validate_edge_endpoint_types(
             f"{path} {predicate} cannot treat an activity or context node as a metabolite"
         )
     if predicate in {"has_input", "has_output"} and (
-        subject not in processes or obj not in participant_ids
+        subject not in processes | (activity_participants or set()) or obj not in participant_ids
     ):
         errors.append(f"{path} {predicate} must point from an activity or pathway to a participant")
     if predicate in {"causally_upstream_of", "provides_input_for"} and (
