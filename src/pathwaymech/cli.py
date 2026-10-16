@@ -1562,6 +1562,12 @@ def _map_page(records: list, *, root: Path = ROOT) -> str:
       let scale = 1, panX = 0, panY = 0, dragging = false, lastX = 0, lastY = 0, hovered = null;
       let colorMap = new Map();
 
+      function esc(s) {{
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }}
+
       function buildLegend() {{
         const field = colorEl.value;
         const counts = new Map();
@@ -1578,7 +1584,7 @@ def _map_page(records: list, *, root: Path = ROOT) -> str:
           const item = document.createElement('div');
           item.className = 'legend-item';
           item.innerHTML = '<span class="legend-swatch" style="background:' + col + '"></span>' +
-            '<span class="legend-label">' + val + ' (' + cnt + ')</span>';
+            '<span class="legend-label">' + esc(val) + ' (' + cnt + ')</span>';
           legendEl.appendChild(item);
         }});
       }}
@@ -1679,9 +1685,9 @@ def _map_page(records: list, *, root: Path = ROOT) -> str:
           tooltip.hidden = false;
           tooltip.style.left = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14)) + 'px';
           tooltip.style.top = Math.max(8, e.clientY - rect.top - 10) + 'px';
-          tooltip.innerHTML = '<strong>' + best.label + '</strong><br><code>' + best.id + '</code><br>' +
-            '<span>' + best.pathway_type + ' · ' + best.top_taxon + '</span><br>' +
-            '<span>' + best.edge_count + ' edges · ' + best.reaction_count + ' reactions · ' + best.protein_count + ' proteins</span>';
+          tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br><code>' + esc(best.id) + '</code><br>' +
+            '<span>' + esc(best.pathway_type) + ' · ' + esc(best.top_taxon) + '</span><br>' +
+            '<span>' + esc(best.edge_count) + ' edges · ' + esc(best.reaction_count) + ' reactions · ' + esc(best.protein_count) + ' proteins</span>';
         }} else {{
           tooltip.hidden = true;
         }}
@@ -1835,6 +1841,12 @@ def _sequence_map_page(records: list, *, root: Path = ROOT) -> str:
       let scale = 1, panX = 0, panY = 0, dragging = false, lastX = 0, lastY = 0, hovered = null;
       let colorMap = new Map();
 
+      function esc(s) {{
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }}
+
       function activePoints() {{
         return modeEl.value === 'proteins' ? (payload.proteins || []) : (payload.pathways || []);
       }}
@@ -1862,7 +1874,7 @@ def _sequence_map_page(records: list, *, root: Path = ROOT) -> str:
           const item = document.createElement('div');
           item.className = 'legend-item';
           item.innerHTML = '<span class="legend-swatch" style="background:' + col + '"></span>' +
-            '<span class="legend-label">' + val + ' (' + cnt + ')</span>';
+            '<span class="legend-label">' + esc(val) + ' (' + cnt + ')</span>';
           legendEl.appendChild(item);
         }});
       }}
@@ -1964,13 +1976,13 @@ def _sequence_map_page(records: list, *, root: Path = ROOT) -> str:
           tooltip.style.left = Math.min(rect.width - 260, Math.max(8, e.clientX - rect.left + 14)) + 'px';
           tooltip.style.top = Math.max(8, e.clientY - rect.top - 10) + 'px';
           if (modeEl.value === 'proteins') {{
-            tooltip.innerHTML = '<strong>' + best.label + '</strong><br><code>' + best.id + '</code><br>' +
-              '<span>' + (best.taxon || 'Unspecified') + ' · ' + (best.length || 0) + ' aa</span><br>' +
-              '<span>Pathways: ' + (best.pathway_labels || []).join(', ') + '</span>';
+            tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br><code>' + esc(best.id) + '</code><br>' +
+              '<span>' + esc(best.taxon || 'Unspecified') + ' · ' + esc(best.length || 0) + ' aa</span><br>' +
+              '<span>Pathways: ' + esc((best.pathway_labels || []).join(', ')) + '</span>';
           }} else {{
-            tooltip.innerHTML = '<strong>' + best.label + '</strong><br><code>' + best.id + '</code><br>' +
-              '<span>' + best.pathway_type + ' · ' + best.top_taxon + '</span><br>' +
-              '<span>' + best.protein_count + ' ESM-2 grounded protein(s)</span>';
+            tooltip.innerHTML = '<strong>' + esc(best.label) + '</strong><br><code>' + esc(best.id) + '</code><br>' +
+              '<span>' + esc(best.pathway_type) + ' · ' + esc(best.top_taxon) + '</span><br>' +
+              '<span>' + esc(best.protein_count) + ' ESM-2 grounded protein(s)</span>';
           }}
         }} else {{
           tooltip.hidden = true;
