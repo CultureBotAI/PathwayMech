@@ -1,6 +1,24 @@
 /* Progressive enhancement: the complete SVG and evidence links work without JS. */
 (function () {
   'use strict';
+  (function () {
+    try {
+      var saved = typeof localStorage !== 'undefined' && localStorage.getItem('mech-theme');
+      if ((saved === 'dark' || saved === 'light') && document.documentElement) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    } catch (e) {}
+    var btn = typeof document.getElementById === 'function' ? document.getElementById('theme-toggle') : null;
+    if (btn && document.documentElement) {
+      btn.addEventListener('click', function () {
+        var cur = document.documentElement.getAttribute('data-theme');
+        var isDark = cur ? cur === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('mech-theme', next); } catch (e) {}
+      });
+    }
+  }());
   document.querySelectorAll('.pathway-network').forEach(function (section) {
     const viewport = section.querySelector('.graph-viewport');
     const svg = section.querySelector('.pathway-network-svg');
