@@ -3,8 +3,10 @@
 Pathway records are YAML documents stored under `data/pathways/`.
 
 Use one file per pathway and keep generated artifacts out of the curated YAML
-files. Mechanistic assertions belong in `mechanistic_edges`; source-specific
-normalization notes belong in `curation/decisions.tsv`.
+files. Mechanistic assertions belong in `mechanistic_edges`; evidence-backed
+detail beneath an issued reaction may use `reaction_mechanisms` under the
+contract in [causal graph review](CAUSAL_GRAPHS.md). Source-specific normalization
+notes belong in `curation/decisions.tsv`.
 
 See [causal graph review](CAUSAL_GRAPHS.md) for evidence-backed molecular
 components, cofactors, compartments, directionality, and structured provenance.

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from pathwaymech.edge_identity import endpoint_qualifier_key
+from pathwaymech.reaction_mechanisms import iter_mechanism_evidence
 from pathwaymech.schema import PathwayRecord
 
 KNOWLEDGE_SOURCE = "infores:pathwaymech"
@@ -135,12 +136,16 @@ def kgx_nodes(records: list[PathwayRecord]) -> list[KgxNode]:
 
     nodes: dict[str, KgxNode] = {}
     for record in records:
+        references = {ref["id"]: ref for ref in record.references}
         _add_node(nodes, record.id, record.label, "biolink:Pathway",
                   context={"record_id": record.id, "collection": "pathway", "label": record.label})
         for node in record.taxa:
             _add_node(nodes, node["id"], node["label"], _category(node["id"]),
                       context={"record_id": record.id, "collection": "taxa", **node})
         for node in record.participants:
+            context = {"record_id": record.id, "collection": "participants", **node}
+            if node["id"] in getattr(record, "detail_only_participant_ids", []):
+                context["graph_scope"] = "mechanism_detail_only"
             category = _category(node["id"])
             # Native graph namespaces contain physical instances as well as
             # reactions. An unresolved participant must not acquire a process
@@ -150,13 +155,24 @@ def kgx_nodes(records: list[PathwayRecord]) -> list[KgxNode]:
             _add_node(nodes, node["id"], node["label"],
                       EXPLICIT_CATEGORIES.get(node.get("category"), category),
                       source_category=node.get("category", ""),
-                      context={"record_id": record.id, "collection": "participants", **node})
+                      context=context)
         for node in record.reactions:
+            context = {"record_id": record.id, "collection": "reactions", **node}
+            mechanisms = [m for m in getattr(record, "reaction_mechanisms", [])
+                          if m["source_reaction_id"] == node["id"]]
+            if mechanisms:
+                context["reaction_mechanisms"] = [
+                    {"mechanism": mechanism,
+                     "references": [references[identifier] for identifier in sorted({
+                         e["reference_id"] for e in iter_mechanism_evidence(mechanism)
+                     })]}
+                    for mechanism in mechanisms
+                ]
             _add_node(nodes, node["id"], node["label"],
                       EXPLICIT_CATEGORIES.get(node.get("category"), _category(node["id"])),
                       source_category=node.get("category", ""),
                       direction=node.get("direction", ""),
-                      context={"record_id": record.id, "collection": "reactions", **node})
+                      context=context)
         for cluster in record.gene_clusters:
             _add_node(nodes, cluster["id"], cluster["label"], "biolink:GenomicEntity",
                       context={"record_id": record.id, "collection": "gene_clusters", **cluster})

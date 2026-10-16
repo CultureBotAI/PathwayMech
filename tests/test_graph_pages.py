@@ -1,6 +1,7 @@
 """Integration checks for faithful, navigable record-page networks."""
 from __future__ import annotations
 
+import json
 import re
 from collections import Counter
 from html.parser import HTMLParser
@@ -11,6 +12,7 @@ import pytest
 import yaml
 
 from pathwaymech.cli import _record_page, render_pages_main, render_site
+from pathwaymech.mechanism_view import mechanism_anchor
 from pathwaymech.schema import validate_record
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,12 +44,18 @@ class Page(HTMLParser):
             self.rows[self.current_row].append(data)
 
 
-def svg_elements(page: str, class_name: str) -> list[ElementTree.Element]:
-    matches = re.findall(r"<svg\b.*?</svg>", page, flags=re.DOTALL)
+def svg_elements(page: str, class_name: str,
+                 section_id: str = "pathway-network") -> list[ElementTree.Element]:
+    sections = re.findall(
+        rf'<section\b[^>]*\bid="{re.escape(section_id)}"[^>]*>(.*?)</section>',
+        page, flags=re.DOTALL,
+    )
+    assert len(sections) == 1, f"Expected one graph section: {section_id}"
+    matches = re.findall(r"<svg\b.*?</svg>", sections[0], flags=re.DOTALL)
     assert matches, "A record with mechanistic edges must render an SVG network"
     svgs = [ElementTree.fromstring(source) for source in matches]
     svgs = [svg for svg in svgs if "pathway-network-svg" in svg.get("class", "").split()]
-    assert len(svgs) == 1, "The page must contain one complete pathway network"
+    assert len(svgs) == 1, "Each graph section must contain one complete network"
     return [element for svg in svgs for element in svg.iter()
             if class_name in element.get("class", "").split()]
 
@@ -133,6 +141,29 @@ def test_every_published_graph_preserves_directed_edges_and_evidence_targets(rec
                     assert evidence["source_locator"] in row, (name, row_id)
         ids = [attrs["id"] for _, attrs in parsed.elements if attrs.get("id")]
         assert len(ids) == len(set(ids)), name
+        graphs = [attrs for tag, attrs in parsed.elements
+                  if tag == "svg" and "pathway-network-svg" in attrs.get("class", "").split()]
+        assert len(graphs) == 1 + len(record.reaction_mechanisms), name
+        for mechanism in record.reaction_mechanisms:
+            section = mechanism_anchor(record.id, mechanism["key"], "graph") + "-pathway-network"
+            detailed = svg_elements(page, "graph-edge", section)
+            by_target = {edge.get("href"): edge for edge in detailed}
+            assert len(by_target) == len(detailed) == len(mechanism["edges"]), name
+            for edge in mechanism["edges"]:
+                row_id = mechanism_anchor(record.id, mechanism["key"], "edge", edge["key"])
+                diagram_edge = by_target[f"#{row_id}"]
+                endpoints = [endpoint["node_id"] if "node_id" in endpoint else
+                             json.dumps(["step", endpoint["step_key"]], separators=(",", ":"))
+                             for endpoint in (edge["subject"], edge["object"])]
+                assert native_triple(diagram_edge) == (
+                    endpoints[0], edge["predicate"], endpoints[1]
+                ), (name, row_id)
+                row = " ".join(parsed.rows[row_id])
+                for evidence in edge["evidence"]:
+                    assert evidence["reference_id"] in row, (name, row_id)
+                    for field in ("source_assertion", "source_locator", "quote"):
+                        if field in evidence:
+                            assert evidence[field] in row, (name, row_id, field)
 
 
 @pytest.mark.parametrize("name", [

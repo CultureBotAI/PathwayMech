@@ -51,12 +51,15 @@ def test_page_escapes_title() -> None:
     assert "<title>&lt;Pathway&gt;</title>" in page
 
 
-def test_record_page_uses_parent_stylesheet() -> None:
+@pytest.mark.parametrize("details", [None, []])
+def test_record_page_uses_parent_stylesheet(details) -> None:
     record = SimpleNamespace(
         label="<Pathway>",
         description="ok",
         mechanistic_edges=[],
     )
+    if details is not None:
+        record.reaction_mechanisms = details
 
     page = _record_page(record)
 

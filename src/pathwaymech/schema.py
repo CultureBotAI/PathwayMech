@@ -8,6 +8,8 @@ from typing import Any
 
 from jsonschema import FormatChecker
 
+from pathwaymech.reaction_mechanisms import validate_reaction_mechanisms
+
 # The fleet's deterministic curation-timestamp year guard (CurationEvent.timestamp
 # in the schema): rejects the 2206-for-2026 class of typo without a wall clock.
 CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
@@ -125,6 +127,8 @@ class PathwayRecord:
     gene_clusters: list[dict[str, Any]] = dataclass_field(default_factory=list)
     source_mappings: list[dict[str, Any]] = dataclass_field(default_factory=list)
     curation_history: list[dict[str, Any]] = dataclass_field(default_factory=list)
+    reaction_mechanisms: list[dict[str, Any]] = dataclass_field(default_factory=list)
+    detail_only_participant_ids: list[str] = dataclass_field(default_factory=list)
 
 
 def validate_records(records: list[dict[str, Any]]) -> list[PathwayRecord]:
@@ -199,6 +203,10 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
     )
     if "curation_history" in record:
         _validate_curation_history(record["curation_history"], errors)
+    mechanisms = validate_reaction_mechanisms(
+        record.get("reaction_mechanisms", []), record, references, errors,
+        validate_evidence=_validate_evidence, validate_qualifiers=_validate_endpoint_qualifiers,
+    )
 
     if errors:
         raise ValidationError(errors)
@@ -216,6 +224,8 @@ def validate_record(record: dict[str, Any]) -> PathwayRecord:
         mechanistic_edges=edges,
         references=record["references"],
         curation_history=record.get("curation_history", []),
+        reaction_mechanisms=mechanisms,
+        detail_only_participant_ids=record.get("detail_only_participant_ids", []),
     )
 
 

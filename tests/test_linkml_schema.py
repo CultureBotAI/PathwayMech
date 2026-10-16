@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import json
 import re
 from pathlib import Path
 
@@ -211,6 +212,24 @@ def _endpoint_qualifier(r: dict) -> dict:
     return r["mechanistic_edges"][0]["endpoint_qualifiers"][0]
 
 
+def _reaction_mechanism(r: dict) -> dict:
+    r.clear()
+    r.update(json.loads((ROOT / "tests/fixtures/reaction_mechanism.json").read_text()))
+    m = r["reaction_mechanisms"][0]
+    evidence = [{"reference_id": "DOI:fixture", "quote": "Synthetic evidence."}]
+    m["relation_to_source"] = "alternative_interpretation"
+    m["edges"][0]["subject"] = {"node_id": "CHEBI:4"}
+    m["steps"][0]["hypotheses"] = [{
+        "description": "Unobserved state", "status": "proposed", "evidence": evidence,
+    }]
+    m["source_conflicts"] = [{
+        "source_participant_id": "CHEBI:1", "interpreted_participant_id": "CHEBI:4",
+        "side": "inputs", "coefficient": 1, "kind": "stereo", "status": "unresolved",
+        "rationale": "Unresolved synthetic isomer conflict", "evidence": evidence,
+    }]
+    return m
+
+
 _WHERE = {
     "PathwayRecord": lambda r: r,
     "NamedNode": lambda r: r["participants"][0],
@@ -223,6 +242,14 @@ _WHERE = {
     "EvidenceItem": lambda r: r["mechanistic_edges"][0]["evidence"][0],
     "Reference": lambda r: r["references"][0],
     "CurationEvent": lambda r: r.setdefault("curation_history", [dict(_CURATION_EVENT)])[0],
+    "ReactionMechanism": _reaction_mechanism,
+    "MechanismSourceEquation": lambda r: _reaction_mechanism(r)["source_equation"],
+    "MechanismMaterialTerm": lambda r: _reaction_mechanism(r)["source_equation"]["inputs"][0],
+    "MechanismStep": lambda r: _reaction_mechanism(r)["steps"][0],
+    "MechanisticHypothesis": lambda r: _reaction_mechanism(r)["steps"][0]["hypotheses"][0],
+    "MechanismEndpoint": lambda r: _reaction_mechanism(r)["edges"][0]["subject"],
+    "MechanismEdge": lambda r: _reaction_mechanism(r)["edges"][0],
+    "MechanismSourceConflict": lambda r: _reaction_mechanism(r)["source_conflicts"][0],
 }
 _VIEW = SchemaView(str(SCHEMA_PATH))
 _REQUIRED = [
@@ -274,10 +301,32 @@ EXPECTED_REQUIRED = (
     | {("NamedNode", "id"), ("NamedNode", "label"), ("Reference", "id"),
        ("EvidenceItem", "reference_id"),
        ("CurationEvent", "timestamp")}
+    | {("ReactionMechanism", s) for s in (
+        "version", "key", "source_reaction_id", "relation_to_source", "description",
+        "evidence", "source_equation", "steps", "edges")}
+    | {("MechanismSourceEquation", s) for s in ("orientation", "inputs", "outputs")}
+    | {("MechanismMaterialTerm", s) for s in ("participant_id", "coefficient")}
+    | {("MechanismStep", s) for s in (
+        "key", "label", "description", "assertion_status", "evidence")}
+    | {("MechanisticHypothesis", s) for s in ("description", "status", "evidence")}
+    | {("MechanismEdge", s) for s in (
+        "key", "subject", "predicate", "object", "assertion_status", "evidence")}
+    | {("MechanismSourceConflict", s) for s in (
+        "source_participant_id", "interpreted_participant_id", "side", "coefficient",
+        "kind", "status", "rationale", "evidence")}
 )
 EXPECTED_NON_BLANK = (
     {("PathwayRecord", slot) for slot in ("id", "label", "description", "pathway_type")}
     | {("EndpointQualifier", "description")}
+    | {("PathwayRecord", "detail_only_participant_ids")}
+    | {("ReactionMechanism", s) for s in ("key", "source_reaction_id", "description")}
+    | {("MechanismMaterialTerm", "participant_id")}
+    | {("MechanismStep", s) for s in ("key", "label", "description")}
+    | {("MechanisticHypothesis", s) for s in ("description", "status")}
+    | {("MechanismEndpoint", s) for s in ("node_id", "step_key")}
+    | {("MechanismEdge", s) for s in ("key", "description")}
+    | {("MechanismSourceConflict", s) for s in (
+        "source_participant_id", "interpreted_participant_id", "rationale")}
     | {("NamedNode", "id"), ("NamedNode", "label"), ("MechanisticEdge", "id"),
        ("EvidenceItem", "quote"), ("Reference", "id"), ("Reference", "title"),
        ("EvidenceItem", "source_assertion"), ("EvidenceItem", "source_locator"),

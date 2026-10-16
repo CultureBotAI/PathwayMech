@@ -1,0 +1,208 @@
+{
+  "id": "MetaCyc:FIXTURE",
+  "label": "Fixture",
+  "description": "Synthetic test",
+  "pathway_type": "test",
+  "taxa": [],
+  "participants": [
+    {
+      "id": "CHEBI:1",
+      "label": "A",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:2",
+      "label": "B",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:3",
+      "label": "X",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:4",
+      "label": "Z",
+      "category": "small_molecule"
+    },
+    {
+      "id": "UniProtKB:FIXTURE",
+      "label": "Enzyme",
+      "category": "protein"
+    },
+    {
+      "id": "GO:1",
+      "label": "Location A",
+      "category": "cellular_component"
+    },
+    {
+      "id": "GO:2",
+      "label": "Location B",
+      "category": "cellular_component"
+    }
+  ],
+  "reactions": [
+    {
+      "id": "RHEA:1",
+      "label": "Net",
+      "category": "molecular_activity"
+    }
+  ],
+  "mechanistic_edges": [],
+  "references": [
+    {
+      "id": "DOI:fixture",
+      "title": "Fixture"
+    }
+  ],
+  "detail_only_participant_ids": [
+    "CHEBI:3"
+  ],
+  "reaction_mechanisms": [
+    {
+      "version": 1,
+      "key": "two_steps",
+      "source_reaction_id": "RHEA:1",
+      "relation_to_source": "decomposition",
+      "description": "A to X to B",
+      "evidence": [
+        {
+          "reference_id": "DOI:fixture",
+          "quote": "Synthetic test evidence."
+        }
+      ],
+      "source_equation": {
+        "orientation": "as_reported",
+        "inputs": [
+          {
+            "participant_id": "CHEBI:1",
+            "coefficient": 1
+          }
+        ],
+        "outputs": [
+          {
+            "participant_id": "CHEBI:2",
+            "coefficient": 1
+          }
+        ]
+      },
+      "steps": [
+        {
+          "key": "first",
+          "label": "First change",
+          "description": "First change",
+          "assertion_status": "supported",
+          "evidence": [
+            {
+              "reference_id": "DOI:fixture",
+              "quote": "Synthetic test evidence."
+            }
+          ]
+        },
+        {
+          "key": "second",
+          "label": "Second change",
+          "description": "Second change",
+          "assertion_status": "supported",
+          "evidence": [
+            {
+              "reference_id": "DOI:fixture",
+              "quote": "Synthetic test evidence."
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "key": "a_in",
+          "subject": {
+            "node_id": "CHEBI:1"
+          },
+          "predicate": "consumes",
+          "object": {
+            "step_key": "first"
+          },
+          "assertion_status": "supported",
+          "evidence": [
+            {
+              "reference_id": "DOI:fixture",
+              "quote": "Synthetic test evidence."
+            }
+          ],
+          "coefficient": 1
+        },
+        {
+          "key": "x_out",
+          "subject": {
+            "step_key": "first"
+          },
+          "predicate": "produces",
+          "object": {
+            "node_id": "CHEBI:3"
+          },
+          "assertion_status": "supported",
+          "evidence": [
+            {
+              "reference_id": "DOI:fixture",
+              "quote": "Synthetic test evidence."
+            }
+          ],
+          "coefficient": 1
+        },
+        {
+          "key": "x_in",
+          "subject": {
+            "node_id": "CHEBI:3"
+          },
+          "predicate": "consumes",
+          "object": {
+            "step_key": "second"
+          },
+          "assertion_status": "supported",
+          "evidence": [
+            {
+              "reference_id": "DOI:fixture",
+              "quote": "Synthetic test evidence."
+            }
+          ],
+          "coefficient": 1
+        },
+        {
+          "key": "b_out",
+          "subject": {
+            "step_key": "second"
+          },
+          "predicate": "produces",
+          "object": {
+            "node_id": "CHEBI:2"
+          },
+          "assertion_status": "supported",
+          "evidence": [
+            {
+              "reference_id": "DOI:fixture",
+              "quote": "Synthetic test evidence."
+            }
+          ],
+          "coefficient": 1
+        },
+        {
+          "key": "cat",
+          "subject": {
+            "node_id": "UniProtKB:FIXTURE"
+          },
+          "predicate": "catalyzes",
+          "object": {
+            "step_key": "first"
+          },
+          "assertion_status": "supported",
+          "evidence": [
+            {
+              "reference_id": "DOI:fixture",
+              "quote": "Synthetic test evidence."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

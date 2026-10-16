@@ -51,6 +51,15 @@ that defines them, rather than treated as externally resolvable ontology terms.
 
 ## Authority snapshots
 
+Nested `reaction_mechanisms` do not introduce an identifier namespace. Their
+`key` and `step_key` fields identify local evidence-bearing statements and
+cannot serve as NamedNode IDs, top-level biological endpoints, authority terms
+or SSSOM mappings. The parent reaction and every nested public participant
+remain existing declarations checked by this gate. An unresolved source
+conflict does not grant a synonym, exact-match mapping or label override.
+See [the graph contract](CAUSAL_GRAPHS.md) for exact decomposition and scoped
+alternative-interpretation rules.
+
 `data/identifier_authorities/` holds small JSON projections of independent
 ontology or primary-source artifacts. These are offline resolver data, not an
 allowlist produced from pathway labels. The corpus may select which IDs to
@@ -933,3 +942,61 @@ without normalizing source XML. DTDs and entities are rejected. The test fixture
 uses separately hashed, deterministic gzip storage and recovers exactly the
 issuing originals before parsing. These are identity/integrity checks, not an
 upstream signature, scientific activity proof or redistribution-license decision.
+
+## Complete phenylacetate native authority originals
+
+The bounded `metacyc-phenylacetate-xml` and `ecocyc-phenylacetate-xml` source kinds
+cover the independently inspected PWY0-321 native identities and explicitly
+reviewed Paa chemistry/regulation context. They do not widen the P321-PWY profile.
+The profile contains reviewed frame identities, native object types and direct
+slot multiplicities; labels and synonyms are read from the issuing original XML,
+never from curated record labels or a preferred-name table.
+
+Both producer and consumer verify the entire response body's SHA-256, the exact
+request/frame/PGDB/release envelope, one complete instance object, direct slot
+inventory, every embedded native frame/resource identity, and exact original to
+projection correspondence. Original bytes remain in `original_base64`; source
+metadata and all native direct slot XML remain in the projection. META and ECOLI
+cannot be interchanged. The ECOLI envelope names E. coli K-12 MG1655 and its taxon;
+that catalog scope does not establish an E. coli W experimental construct sequence.
+
+Native compounds, monomeric proteins, complexes, molecular activities, DNA
+promoters/transcription units, reactions and pathway identity are distinct types.
+Their required node section/category and source labels are enforced even if a
+namespace permits other contextual labels. A source lacking a direct common name
+uses its exact native frame ID with `label_kind: source_context`; this is not
+permission to replace the label with a guessed biological name. Labels such as
+AMP that equal the frame are valid when supplied by the source common-name slot.
+
+Reaction sides and direction, activity enzyme/reaction links, complete pathway
+membership, and complex component rows are projected separately. Omitted source
+coefficients remain omitted (`null` in the projection); only explicit integers
+are emitted. Complete source scope includes the nine PWY0-321 native reactions;
+the separately reviewed salvage/lower-chemistry objects are context, not added
+native pathway members. Authority identity does not assign an isolated catalyst
+to a source net equation, reconcile chemical alternatives, or settle physiological
+flux. In particular, the native C8-to-trans-2,3-C6 net reaction remains distinct
+from the requested isolated PaaJ C8-to-cis-3,4-C6 thiolysis.
+
+Originals and acquisition receipts for this increment are retained in
+`research/pathway_additions/2026-10-15-next-268/authority-source-originals/`.
+`source-provenance.json` maps all 65 identities to the exact retained body,
+acquisition receipt, canonical authority request and pinned body hash. A separate
+compressed fixture copy is checksum-verified before test decompression. Wrong
+frames, wrong requests/releases/native types, missing or surplus slots, altered
+body/projection/labels, source-owner substitution and unselected typed-source
+downgrades fail closed before selection or at consumer load.
+
+The increment preserves every existing authority term and owner, including the
+six pre-existing MetaCyc terms used by the native draft. Three required taxa and
+CHEBI:63252 were extracted with the existing ontology builder from read-only
+semantic SQL caches that exactly match the already-pinned source hashes and
+versions (NCBI Taxonomy 2026-07-12 and ChEBI 255). No source pin or release changed.
+The former 264-record corpus and an isolated complete native-draft copy pass the
+identifier gate; intermediate reaction nodes require explicit
+`category: molecular_activity`.
+
+This is an additive source replay. All 65 new bodies reproduce through the normal
+source builder. Existing snapshot terms/metadata are reused unchanged and passed
+through the full consumer; this does not claim that all historical source bodies
+were newly downloaded or regenerated.

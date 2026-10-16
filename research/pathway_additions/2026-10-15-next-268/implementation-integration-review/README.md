@@ -1,0 +1,5 @@
+# Implementation integration review
+
+The [inventory](inventory.json) binds the complete independent peer implementation review. All 52 packet files were retained and replayed, and all 326 members of its nested baseline replay archive were independently decoded and rehashed. All 23 maintained owner hashes still match the reviewed code. Standard tar readers can inspect the packet in a fresh scratch directory; archived scripts need not be executed.
+
+Qualified acceptance covers core validation, closed nested schema, graph transport and controls, and KGX preservation. It explicitly excludes the reviewer-authored primary curation, design motivation and authority corrections. The review found no actionable integration defect. It preserves the unsuccessful over-broad tooltip-equality oracle and the exact successful substitution checks. The integrated record has 80 top-level edges and 62 nested edges across eleven detail graphs; 68 is the number of synthetic closed-object locations probed, not the nested-edge count. Full corpus gates and canonical scientific review are separate.

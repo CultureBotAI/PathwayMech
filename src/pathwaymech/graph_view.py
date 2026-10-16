@@ -36,6 +36,9 @@ def _declared_nodes(record: object, labels: dict[str, str]) -> dict[str, dict]:
     for field in ("participants", "reactions", "taxa"):
         for item in getattr(record, field, []):
             identifier = item["id"]
+            if (field == "participants"
+                    and identifier in getattr(record, "detail_only_participant_ids", [])):
+                continue
             if field == "taxa" and identifier not in endpoints:
                 continue
             category = item.get("category")
@@ -143,7 +146,7 @@ def _qualified_endpoints(nodes: dict, edges: list[dict]) -> list[dict]:
             nodes[key] = {
                 **base, "label": label, "type_label": kind, "identifier": identifier,
                 "detail": base["detail"] + "; " + _qualifier_detail(qualifier),
-                "anchor": f"mechanism-edge-{number}-qualifier-{role}",
+                "anchor": edge.get("anchor", f"mechanism-edge-{number}") + f"-qualifier-{role}",
             }
             view[role] = key
             view["_native_" + role] = identifier
@@ -164,7 +167,7 @@ def _shape(kind: str, x: float, y: float, width: float, height: float) -> str:
     if kind in {"context", "taxon", "pathway"}:
         return (f'<rect {attrs} x="{x}" y="{y}" width="{width}" height="{height}" '
                 'rx="3" stroke-dasharray="5 3"/>')
-    radius = 8 if kind == "reaction" else 0
+    radius = 8 if kind in {"reaction", "step"} else 0
     return (f'<rect {attrs} x="{x}" y="{y}" width="{width}" height="{height}" '
             f'rx="{radius}"/>')
 
@@ -239,7 +242,9 @@ def _edge_routes(edges: list[dict], positions: dict, heights: dict,
     return routes
 
 
-def _edge_label_positions(routes: list[tuple]) -> list[tuple[float, float]]:
+def _edge_label_positions(
+    routes: list[tuple], line_counts: list[int] | None = None,
+) -> list[tuple[float, float]]:
     """Reserve nonoverlapping text boxes in each gutter, nearest the original label.
 
     All supported predicate labels fit inside the 212 px gutter. Reserve its full
@@ -249,36 +254,73 @@ def _edge_label_positions(routes: list[tuple]) -> list[tuple[float, float]]:
     """
     occupied = defaultdict(list)
     positions = []
-    for _, x, preferred, _, _ in routes:
+    for index, (_, x, preferred, _, _) in enumerate(routes):
+        below = _LABEL_BELOW + _LABEL_SPACING * ((line_counts[index] if line_counts else 1) - 1)
         lower = _LABEL_ABOVE + 12
         candidates = []
-        for baseline in occupied[x]:
-            upper = baseline - _LABEL_SPACING
+        for start, end in occupied[x]:
+            upper = start - 4 - below
             if lower <= upper:
                 candidates.append(max(lower, min(preferred, upper)))
-            lower = baseline + _LABEL_SPACING
+            lower = end + 4 + _LABEL_ABOVE
         candidates.append(max(lower, preferred))
         y = min(candidates, key=lambda candidate: (abs(candidate - preferred), candidate))
-        insort(occupied[x], y)
+        insort(occupied[x], (y - _LABEL_ABOVE, y + below))
         positions.append((x, y))
     return positions
 
 
 def graph_html(record: object, labels: dict[str, str], component_anchors: dict[str, str]) -> str:
-    """Render the complete asserted graph without collapsing labels or inventing edges."""
-    start = ('<section id="pathway-network" class="pathway-network" '
-             'aria-labelledby="pathway-network-title"><h2 id="pathway-network-title">'
-             'Pathway network</h2>')
-    edges = record.mechanistic_edges
-    if not edges:
+    """Render source assertions, excluding only explicitly detail-only declarations."""
+    if not record.mechanistic_edges and not getattr(record, "reaction_mechanisms", []):
+        return display_graph_html({}, [], title="Pathway network", identity="")
+    alternatives = {m["source_reaction_id"] for m in getattr(record, "reaction_mechanisms", [])
+                    if m["relation_to_source"] == "alternative_interpretation"}
+    edges = [{**edge, **({"source_reported": True} if
+              edge["subject"] in alternatives or edge["object"] in alternatives else {})}
+             for edge in record.mechanistic_edges]
+    title = ("Source pathway representation" if getattr(record, "reaction_mechanisms", [])
+             else "Pathway network")
+    description = ("Source-reported assertions are preserved. Alternative interpretations "
+                   "and their evidence appear below." if alternatives else "")
+    return display_graph_html(
+        _declared_nodes(record, labels), edges, title=title, identity=record.id,
+        component_anchors=component_anchors, description=description,
+        render_isolated=bool(getattr(record, "reaction_mechanisms", [])),
+    )
+
+
+def display_graph_html(
+    declared_nodes: dict[str, dict], declared_edges: list[dict], *, title: str,
+    identity: str, namespace: str = "", component_anchors: dict[str, str] | None = None,
+    description: str = "", render_isolated: bool = False,
+) -> str:
+    """Render an explicit display graph; local claim keys are never biological IDs.
+
+    The caller supplies already validated endpoints and explicit evidence anchors.
+    No input node, edge or record is mutated. Namespace is a safe navigation token.
+    """
+    def anchor(suffix: str) -> str:
+        return f"{namespace}-{suffix}" if namespace else suffix
+
+    component_anchors = component_anchors or {}
+    section_id, title_id = anchor("pathway-network"), anchor("pathway-network-title")
+    start = (f'<section id="{_escape(section_id)}" class="pathway-network" '
+             f'aria-labelledby="{_escape(title_id)}"><h2 id="{_escape(title_id)}">'
+             f'{_escape(title)}</h2>')
+    if description:
+        start += f'<p class="graph-scope">{_escape(description)}</p>'
+    if not declared_edges and not (render_isolated and declared_nodes):
         return (start + '<p>No supported network is recorded: this record has no curated '
                 'mechanistic edges. Component or cluster membership alone does not establish '
                 'a mechanistic connection.</p></section>')
-    nodes = _declared_nodes(record, labels)
-    edges = _qualified_endpoints(nodes, edges)
+    nodes = {key: dict(value) for key, value in declared_nodes.items()}
+    edges = _qualified_endpoints(nodes, declared_edges)
+    if any(edge[role] not in nodes for edge in edges for role in ("subject", "object")):
+        raise ValueError("Display graph endpoints must resolve to explicit display nodes")
     levels = _levels(nodes, edges)
     uid = "pathway-graph-" + hashlib.sha256(json.dumps(
-        [record.id, nodes, edges], sort_keys=True, default=str,
+        [identity, nodes, edges], sort_keys=True, default=str,
     ).encode()).hexdigest()[:16]
     wrapped = {key: textwrap.wrap(node["label"], 28) or [key] for key, node in nodes.items()}
     heights = {key: max(78, 43 + len(lines) * 17) for key, lines in wrapped.items()}
@@ -295,8 +337,23 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
     width = int(max(x for x, _ in positions.values()) + _WIDTH + _GAP)
     height = int(max(y + heights[key] for key, (_, y) in positions.items()) + _MARGIN)
     routes = _edge_routes(edges, positions, heights, lanes)
-    label_positions = _edge_label_positions(routes)
-    height = max(height, int(max(y for _, y in label_positions) + _LABEL_BELOW + _MARGIN))
+    edge_labels = []
+    for edge in edges:
+        label = edge["predicate"].replace("_", " ")
+        if "coefficient" in edge:
+            label += f" × {edge['coefficient']}"
+        lines = (textwrap.wrap(label, 20) if "coefficient" in edge else [label])
+        if edge.get("assertion_status"):
+            lines.append(edge["assertion_status"])
+        if edge.get("source_reported"):
+            lines.append("source-reported")
+        edge_labels.append(lines)
+    label_positions = _edge_label_positions(routes, [len(lines) for lines in edge_labels])
+    if label_positions:
+        height = max(height, int(max(
+            y + _LABEL_SPACING * (len(lines) - 1)
+            for (_, y), lines in zip(label_positions, edge_labels, strict=True)
+        ) + _LABEL_BELOW + _MARGIN))
     count = (f'{len(nodes)} node{"" if len(nodes) == 1 else "s"} · '
              f'{len(edges)} asserted directed edge{"" if len(edges) == 1 else "s"}')
     out = [start, f'<p class="graph-status" role="status" aria-live="polite">{count}</p>',
@@ -308,13 +365,16 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
            '<button type="button" data-graph-action="zoom-out" '
            'aria-label="Zoom out of pathway network">Zoom out</button>'
            '<button type="button" data-graph-action="fit">Fit width</button>'
-           '<label for="graph-node-picker">Find a node</label>'
-           '<select id="graph-node-picker"><option value="">Find a node…</option>']
+           f'<label for="{_escape(anchor("graph-node-picker"))}">Find a node</label>'
+           f'<select class="graph-node-picker" id="{_escape(anchor("graph-node-picker"))}">'
+           '<option value="">Find a node…</option>']
     for key, node in nodes.items():
+        identifier = node.get("display_identifier", node.get("identifier", key))
         out.append(f'<option value="{_escape(key)}">{_escape(node["label"])} '
-                   f'— {_escape(node.get("identifier", key))}</option>')
+                   f'— {_escape(identifier)}</option>')
     out += ['</select></div><ul class="graph-legend" aria-label="Network legend">']
-    legend = {"reaction": "Reaction / activity", "chemical": "Chemical / cofactor",
+    legend = {"reaction": "Reaction / activity", "step": "Record-local mechanistic claim",
+              "chemical": "Chemical / cofactor",
               "protein": "Protein / complex", "participant": "Other participant",
               "context": "Cell / process context", "taxon": "Taxon", "pathway": "Pathway"}
     present = {node["kind"] for node in nodes.values()}
@@ -327,15 +387,17 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
                        f'</svg> {_escape(description)}</li>')
     out += ['<li>Solid arrow: mechanistic relation</li><li>Dashed arrow: membership, location '
             'or cofactor relation</li></ul>',
-            '<input type="checkbox" class="graph-native-size" id="graph-native-size"/>'
-            '<label for="graph-native-size">Show at full size (scroll to explore)</label>',
-            '<div class="graph-viewport" id="graph-viewport" tabindex="0" role="region" '
+            '<input type="checkbox" class="graph-native-size" '
+            f'id="{_escape(anchor("graph-native-size"))}"/>'
+            f'<label for="{_escape(anchor("graph-native-size"))}">'
+            'Show at full size (scroll to explore)</label>',
+            f'<div class="graph-viewport" id="{_escape(anchor("graph-viewport"))}" '
+            'tabindex="0" role="region" '
             'aria-label="Scrollable pathway network">',
             f'<svg xmlns="http://www.w3.org/2000/svg" class="pathway-network-svg" '
             f'width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
             f'role="group" aria-labelledby="{uid}-title {uid}-description">',
-            f'<title id="{uid}-title">Pathway network: '
-            f'{_escape(plain_label(record.label))}</title>',
+            f'<title id="{uid}-title">{_escape(title)}</title>',
             f'<desc id="{uid}-description">{count}. Every arrow links to its evidence table row; '
             'nodes link to their component details. '
             'Isolated declared components are retained.</desc>',
@@ -351,8 +413,8 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
             # Conservatively allow 10 px per lowercase glyph at 11 px font size,
             # 4 px per space and 8 px for the text halo. A side rail keeps long
             # callouts away from all labels, including the stationary collision.
-            text_width = 8 + sum(4 if char == " " else 10
-                                 for char in edge["predicate"].replace("_", " "))
+            text_width = 8 + max(sum(4 if char == " " else 10 for char in line)
+                                 for line in edge_labels[index])
             left = lx - text_width / 2
             rail = lx - _GAP / 2 + 2
             leader = (f'<path class="graph-label-leader" '
@@ -360,10 +422,11 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
                       'fill="none" stroke="#64748b" stroke-width="1" '
                       'stroke-dasharray="2 3" aria-hidden="true"/>')
         predicate = edge["predicate"]
+        predicate_label = " · ".join(edge_labels[index])
         kind = "context" if predicate in _CONTEXT else "mechanism"
         native_subject = edge.get("_native_subject", subject)
         native_object = edge.get("_native_object", obj)
-        detail = f'{native_subject} — {predicate} → {native_object}'
+        detail = f'{nodes[subject]["label"]} — {predicate_label} → {nodes[obj]["label"]}'
         for qualifier in edge.get("endpoint_qualifiers", []):
             detail += "; " + qualifier["endpoint"] + " " + _qualifier_detail(qualifier)
         if edge.get("description"):
@@ -377,20 +440,24 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
             f'data-object-id="{_escape(native_object)}"'
             if edge.get("endpoint_qualifiers") else ""
         )
+        label_svg = "".join(
+            f'<text class="graph-edge-label" x="{lx}" y="{ly + line * _LABEL_SPACING}" '
+            f'text-anchor="middle" font-size="11" fill="#475569">{_escape(text)}</text>'
+            for line, text in enumerate(edge_labels[index])
+        )
         out.append(
             f'<a class="graph-edge graph-edge-{kind}" data-subject="{_escape(subject)}" '
             f'data-object="{_escape(obj)}" data-predicate="{_escape(predicate)}"{native_attrs} '
-            f'href="#mechanism-edge-{index + 1}" tabindex="0" aria-label="{_escape(detail)}">'
+            f'href="#{_escape(edge.get("anchor", f"mechanism-edge-{index + 1}"))}" '
+            f'tabindex="0" aria-label="{_escape(detail)}">'
             f'<title>{_escape(detail)}</title><path class="graph-edge-line" d="{path}" '
             f'fill="none" stroke="#64748b" stroke-width="1.5"{dashed} '
-            f'marker-end="url(#{uid}-arrow)"/>{leader}'
-            f'<text class="graph-edge-label" x="{lx}" y="{ly}" text-anchor="middle" '
-            f'font-size="11" fill="#475569">{_escape(predicate.replace("_", " "))}</text></a>'
+            f'marker-end="url(#{uid}-arrow)"/>{leader}{label_svg}</a>'
         )
     for number, (key, node) in enumerate(nodes.items(), 1):
         x, y = positions[key]
         title_id = f"{uid}-node-{number}"
-        anchor = node.get("anchor") or component_anchors.get(key) or title_id
+        target = node.get("anchor") or component_anchors.get(key) or title_id
         native_attrs = (
             f' data-base-node-id="{_escape(node["identifier"])}" data-qualified="true"'
             if "identifier" in node else ""
@@ -398,7 +465,7 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
         out.append(f'<a class="graph-node" data-node-id="{_escape(key)}" '
                    f'data-node-label="{_escape(node["label"])}" '
                    f'data-kind="{node["kind"]}"{native_attrs} '
-                   f'href="#{_escape(anchor)}" tabindex="0" aria-label="{_escape(node["detail"])}">'
+                   f'href="#{_escape(target)}" tabindex="0" aria-label="{_escape(node["detail"])}">'
                    f'<title id="{title_id}">{_escape(node["detail"])}</title>'
                    + _shape(node["kind"], x, y, _WIDTH, heights[key]))
         out.append(f'<text class="graph-node-type" x="{x + _WIDTH / 2}" y="{y + 19}" '

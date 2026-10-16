@@ -11,6 +11,7 @@ metacyc-ferredoxin-class-xml, metacyc-hydrolytic-composite-xml
 (separate constituent_sources originals), metacyc-named-reaction-xml,
 metacyc-etf-reaction-xml, metacyc-etf-class-xml, metacyc-singleton-activity-xml,
 metacyc-gene-xml (separate product_source original),
+metacyc-phenylacetate-xml, ecocyc-phenylacetate-xml (complete bounded originals),
 ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, rhea-polymer-rdf,
@@ -92,6 +93,12 @@ from pathwaymech.biocyc_p321 import (
     validate_p321_assertions,
 )
 from pathwaymech.biocyc_pathway import PATHWAY_KIND, pathway_metadata, pathway_term
+from pathwaymech.biocyc_phenylacetate import (
+    PHENYLACETATE_KINDS,
+    phenylacetate_metadata,
+    phenylacetate_term,
+    validate_phenylacetate_assertions,
+)
 from pathwaymech.biocyc_protein_carrier_reaction import (
     PROTEIN_CARRIER_REACTION_KIND,
     carrier_reaction_metadata,
@@ -1872,6 +1879,12 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for index, entry in enumerate(entries)
     }
     validate_p321_assertions(p321_sources, [])
+    phenylacetate_sources = {
+        index: phenylacetate_metadata(entry, cache_dir)
+        if entry["kind"] in PHENYLACETATE_KINDS else entry
+        for index, entry in enumerate(entries)
+    }
+    validate_phenylacetate_assertions(phenylacetate_sources, [])
     carrier_sources = {
         index: carrier_reaction_metadata(entry, cache_dir)
         if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND
@@ -1922,7 +1935,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
-        if entry["kind"] in ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | {
+        if entry["kind"] in ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS | {
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
             ELECTRON_TRANSFER_KIND,
@@ -1981,6 +1994,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     if "/" not in identifier
                 ],
             )
+        elif entry["kind"] in PHENYLACETATE_KINDS:
+            metadata = phenylacetate_sources[entry_index]
+            identifier, typed_term = phenylacetate_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in P321_KINDS:
             metadata = p321_sources[entry_index]
             identifier, typed_term = p321_term(metadata, key)
@@ -2245,6 +2262,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 and entry["kind"] not in ECOCYC_SOURCE_TYPES
                 and entry["kind"]
                 not in {ECOCYC_COMPLEX_KIND, ECOCYC_STATE_KIND, NAMED_COMPLEX_KIND, NESTED_KIND}
+                and entry["kind"] not in PHENYLACETATE_KINDS
             ):
                 raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
@@ -2309,6 +2327,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = context_term(identifier, context_projections[entry_index], key)
             if entry["kind"] in GENE_KINDS:
                 terms[identifier] = gene_term(metadata, key)[1]
+            if entry["kind"] in PHENYLACETATE_KINDS:
+                terms[identifier] = phenylacetate_term(metadata, key)[1]
             if entry["kind"] in P321_KINDS:
                 terms[identifier] = p321_term(metadata, key)[1]
             if entry["kind"] in BENZOYL_KINDS:
@@ -2351,6 +2371,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         },
         all_aceto_claims,
     )
+    validate_phenylacetate_assertions(all_aceto_sources, all_aceto_claims)
     validate_benzoyl_assertions(all_aceto_sources, all_aceto_claims)
     validate_aceto_assertions(all_aceto_sources, all_aceto_claims)
     validate_named_complex_graph(named_assemblies)
