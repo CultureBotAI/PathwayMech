@@ -1,0 +1,155 @@
+"""Retain terminal checks and their exact raw bytes; never relabel pending checks."""
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-270-20261015')
+CI = Path('/private/tmp/pathwaymech-next-270-ci')
+REL = Path('research/pathway_additions/2026-10-15-next-270/final-verification')
+OUT = ROOT / REL
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def main():
+    live = json.loads((CI / 'full-gates-live.json').read_text())
+    assert live.get('all_checks_passed') is True
+    assert all(r['status'] == 'terminal' and r['exit_code'] == 0
+               for r in live['checks'].values())
+    render = json.loads((CI / 'render-pages-result.json').read_text())
+    vendor = json.loads((CI / 'vendored-check-result.json').read_text())
+    stage = json.loads((CI / 'source-preserving-staged-diff-check.json').read_text())
+    failed_stage = json.loads((CI / 'initial-staged-diff-check.json').read_text())
+    assert failed_stage['exit_code'] == 2
+    assert render['returncode'] == vendor['exit_code'] == stage['exit_code'] == 0
+    assert sha((ROOT / 'data/pathways/methanogenesis-from-h2-and-co2.yaml').read_bytes()) == (
+        '553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e')
+    assert sha((ROOT / 'pages/records/MetaCyc_METHANOGENESIS-PWY.html').read_bytes()) == (
+        '9e78b48afb06c2d2a5bbfb50e745eda6995b1857ce6c93d5d159a7bb9b02e30d')
+    snapshot = json.loads((CI / 'candidate-owner-snapshot-during-gates.json').read_text())
+    for row in snapshot['files']:
+        data = (ROOT / row['path']).read_bytes()
+        assert len(data) == row['bytes'] and sha(data) == row['sha256'], row['path']
+    attribute = ROOT / stage['fix']['path']
+    assert sha(attribute.read_bytes()) == stage['fix']['sha256']
+    owners = snapshot['files'] + [{'path': stage['fix']['path'],
+                                  'bytes': attribute.stat().st_size,
+                                  'sha256': stage['fix']['sha256']}]
+    summaries = [s for s in (CI / 'full-test.stdout').read_text().splitlines()
+                 if re.search(r'\b\d+ passed\b', s)]
+    assert len(summaries) == 1
+    summary = summaries[0].strip('= ').strip()
+    specs = [('just render-pages', 'render-pages', render)]
+    specs += [(' '.join(r['command']), name, r) for name, r in live['checks'].items()]
+    specs += [('just vendored-check', 'vendored-check', vendor),
+              ('git diff --cached --check', 'source-preserving-staged-diff-check', stage)]
+    # Check complete inputs before any maintained retention write.
+    prepared = []
+    for command, stem, receipt in specs:
+        logs = []
+        for stream in ('stdout', 'stderr'):
+            data = (CI / (stem + '.' + stream)).read_bytes()
+            old = receipt.get('logs', {}).get(stream)
+            if old:
+                assert len(data) == old['bytes'] and sha(data) == old['sha256']
+            logs.append((stream, data))
+        prepared.append((command, stem, receipt, logs))
+    base = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    assert base == 'e8ae5e445d3288717c31d3012611e226fd5cca34'
+    OUT.mkdir(exist_ok=False)
+    checks = []
+    for command, stem, receipt, raw_logs in prepared:
+        logs = {}
+        for stream, data in raw_logs:
+            path = OUT / (stem + '.' + stream + '.gz')
+            compressed = gzip.compress(data, mtime=0)
+            path.write_bytes(compressed)
+            assert gzip.decompress(path.read_bytes()) == data
+            logs[stream] = {'path': str(REL / path.name), 'encoding': 'gzip',
+                            'bytes': len(compressed), 'sha256': sha(compressed),
+                            'decoded_bytes': len(data), 'decoded_sha256': sha(data)}
+        checks.append({'command': command, 'exit_code': 0, 'required': True,
+                       'started_utc': receipt.get('started_utc'),
+                       'finished_utc': receipt.get('finished_utc'), 'logs': logs})
+    failed_logs = {}
+    for stream in ('stdout', 'stderr'):
+        data = (CI / ('initial-staged-diff-check.' + stream)).read_bytes()
+        target = OUT / ('initial-staged-diff-check.' + stream + '.gz')
+        compressed = gzip.compress(data, mtime=0)
+        target.write_bytes(compressed)
+        assert gzip.decompress(target.read_bytes()) == data
+        failed_logs[stream] = {'path': str(REL / target.name), 'encoding': 'gzip',
+                               'bytes': len(compressed), 'sha256': sha(compressed),
+                               'decoded_bytes': len(data), 'decoded_sha256': sha(data)}
+    copied = []
+    support_names = ['full-gates-live.json', 'run_full_gates.py', 'retain_final_gates.py',
+                 'render-pages-result.json', 'vendored-check-result.json',
+                 'initial-staged-diff-check.json', 'candidate-owner-snapshot-during-gates.json',
+                 'source-preserving-staged-diff-check.json',
+                 'source-preserving-staging-actions.json', 'N270-R02-reproduction.json',
+                 'N270-R02-issue-create.json', 'N270-R02-issue-body.md',
+                 'record-integration.json', 'initial-authority-retention-integration.json',
+                 'record-history-actions.json', 'record-history.stdout', 'record-history.stderr',
+                 'infrastructure-history-actions.json', 'infrastructure-history.stdout',
+                 'infrastructure-history.stderr', 'integration-retention-actions.json',
+                 'record-retention-actions.json', 'retain_frozen_packets.py',
+                 'integration-retention-selection.json', 'record-retention-selection.json',
+                 'maintained-review-retention-selection.json',
+                 'maintained-review-retention-actions.json',
+                 'initial-staging-actions.json']
+    support_names += sorted(p.name for p in CI.glob('root-intake-*.json'))
+    for name in support_names:
+        data = (CI / name).read_bytes()
+        target = OUT / (name + '.txt' if name.endswith('.py') else name)
+        target.write_bytes(data)
+        copied.append({'path': str(REL / target.name), 'bytes': len(data), 'sha256': sha(data)})
+    result = {'observed_utc': datetime.now(timezone.utc).isoformat(),
+              'baseline_commit': base, 'all_required_checks_passed': True,
+              'test_summary': summary, 'checks': checks,
+              'integrated_owners': owners, 'supporting_receipts': copied,
+              'resolved_attempts': [{'command': 'git diff --cached --check',
+                                    'exit_code': 2, 'finding_key': 'N270-R02',
+                                    'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/628',
+                                    'logs': failed_logs,
+                                    'disposition': 'Native XML bytes preserved; narrowly scoped '
+                                                   'Git attributes added, then complete staged '
+                                                   'check passed. All earlier owners unchanged.'}],
+              'scope': 'Full corpus checks after maintained record, authority, history and '
+                       'pages integration. Every listed owner was hashed during the run and '
+                       'rebound unchanged after all gates finished; the one added Git attribute '
+                       'is listed separately in its successor receipt. This is not a pre-launch '
+                       'tree attestation. Canonical review and publication are separate.',
+              'limitations': ['No interactive-browser or pixel-level QA claim.',
+                              'Passing checks do not remove scientific or source-access limits.',
+                              'All gate log bytes are losslessly retained as gzip files with '
+                              'decoded and compressed hashes; no whitespace filtering occurred.']}
+    (OUT / 'gates.json').write_text(json.dumps(result, indent=2) + '\n')
+    (CI / 'final-gates.json').write_text(json.dumps(result, indent=2) + '\n')
+    (OUT / 'README.md').write_text(
+        '# Maintained integration checks\n\n'
+        f'Full suite: `{summary}`.\n\n'
+        '`just render-pages`, `just validate`, `just test`, `just lint`, '
+        '`just vendored-check`, `git diff --check` and the corrected complete staged '
+        '`git diff --cached --check` passed. [gates.json](gates.json) binds exact '
+        'commands, timestamps, logs, baseline and unchanged integrated owner bytes. '
+        'Final canonical review, later metadata staging and publication are separate.\n\n'
+        'Raw command logs are stored as deterministic gzip files. Each was decoded '
+        'and compared byte-for-byte to the original, including trailing whitespace; '
+        'the receipt records both compressed and decoded hashes. No check result '
+        'or log was filtered. The initial staged check failed on 137 native XML '
+        'trailing-space lines in 72 originals. Issue628 records the scoped Git-attribute '
+        'fix; every source byte and all previous proposed owners remain unchanged. '
+        'Both the original failure and passing successor are retained. The record '
+        'and infrastructure history calls and integration receipts are also retained.\n')
+    print(json.dumps({'path': str(OUT), 'test_summary': summary,
+                      'checks': len(checks), 'owners': len(owners)}))
+
+
+if __name__ == '__main__':
+    main()

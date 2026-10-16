@@ -89,6 +89,12 @@ from pathwaymech.biocyc_glutaryl import (
     glutaryl_term,
     validate_glutaryl_assertions,
 )
+from pathwaymech.biocyc_methanogenesis import (
+    METHANOGENESIS_KINDS,
+    methanogenesis_metadata,
+    methanogenesis_term,
+    validate_methanogenesis_assertions,
+)
 from pathwaymech.biocyc_p321 import (
     GENE_KIND as METACYC_GENE_KIND,
 )
@@ -1897,6 +1903,12 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for index, entry in enumerate(entries)
     }
     validate_glutaryl_assertions(glutaryl_sources, [])
+    methanogenesis_sources = {
+        index: methanogenesis_metadata(entry, cache_dir)
+        if entry["kind"] in METHANOGENESIS_KINDS else entry
+        for index, entry in enumerate(entries)
+    }
+    validate_methanogenesis_assertions(methanogenesis_sources, [])
     carrier_sources = {
         index: carrier_reaction_metadata(entry, cache_dir)
         if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND
@@ -1948,7 +1960,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
         if entry["kind"] in (
-            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS | GLUTARYL_KINDS
+            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS
+            | GLUTARYL_KINDS | METHANOGENESIS_KINDS
         ) | {
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
@@ -2011,6 +2024,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         elif entry["kind"] in GLUTARYL_KINDS:
             metadata = glutaryl_sources[entry_index]
             identifier, typed_term = glutaryl_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
+        elif entry["kind"] in METHANOGENESIS_KINDS:
+            metadata = methanogenesis_sources[entry_index]
+            identifier, typed_term = methanogenesis_term(metadata, key)
             parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in PHENYLACETATE_KINDS:
             metadata = phenylacetate_sources[entry_index]
@@ -2349,6 +2366,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = phenylacetate_term(metadata, key)[1]
             if entry["kind"] in GLUTARYL_KINDS:
                 terms[identifier] = glutaryl_term(metadata, key)[1]
+            if entry["kind"] in METHANOGENESIS_KINDS:
+                terms[identifier] = methanogenesis_term(metadata, key)[1]
             if entry["kind"] in P321_KINDS:
                 terms[identifier] = p321_term(metadata, key)[1]
             if entry["kind"] in BENZOYL_KINDS:
@@ -2393,6 +2412,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     )
     validate_phenylacetate_assertions(all_aceto_sources, all_aceto_claims)
     validate_glutaryl_assertions(all_aceto_sources, all_aceto_claims)
+    validate_methanogenesis_assertions(all_aceto_sources, all_aceto_claims)
     validate_benzoyl_assertions(all_aceto_sources, all_aceto_claims)
     validate_aceto_assertions(all_aceto_sources, all_aceto_claims)
     validate_named_complex_graph(named_assemblies)

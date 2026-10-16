@@ -56,6 +56,18 @@ from pathwaymech.biocyc_glutaryl import (
 from pathwaymech.biocyc_glutaryl import (
     NODE_ROLES as GLUTARYL_NODE_ROLES,
 )
+from pathwaymech.biocyc_methanogenesis import (
+    FIELD as METHANOGENESIS_FIELD,
+)
+from pathwaymech.biocyc_methanogenesis import (
+    METHANOGENESIS_KINDS,
+    methanogenesis_term,
+    validate_methanogenesis_assertions,
+    validate_methanogenesis_metadata,
+)
+from pathwaymech.biocyc_methanogenesis import (
+    NODE_ROLES as METHANOGENESIS_NODE_ROLES,
+)
 from pathwaymech.biocyc_p321 import (
     FIELDS as P321_FIELDS,
 )
@@ -209,6 +221,7 @@ def _native_assertion_kinds(
     fields.update(P321_FIELDS)
     fields.update({kind: PHENYLACETATE_FIELD for kind in PHENYLACETATE_KINDS})
     fields.update({kind: GLUTARYL_FIELD for kind in GLUTARYL_KINDS})
+    fields.update({kind: METHANOGENESIS_FIELD for kind in METHANOGENESIS_KINDS})
     fields.update({kind: BENZOYL_FIELD for kind in BENZOYL_KINDS})
     assertions = {}
     claims = []
@@ -274,6 +287,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_p321",
                 PHENYLACETATE_FIELD,
                 GLUTARYL_FIELD,
+                METHANOGENESIS_FIELD,
                 "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
@@ -302,6 +316,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_p321",
                 PHENYLACETATE_FIELD,
                 GLUTARYL_FIELD,
+                METHANOGENESIS_FIELD,
                 "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
@@ -319,7 +334,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
         if "kind" in metadata and metadata["kind"] not in (
-            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS | GLUTARYL_KINDS | {
+            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS
+            | GLUTARYL_KINDS | METHANOGENESIS_KINDS | {
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
             PATHBANK_CONTEXT_KIND,
@@ -375,6 +391,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
             validate_glutaryl_metadata(metadata)
         elif GLUTARYL_FIELD in metadata:
             raise ValueError("glutaryl metadata requires its matching source kind")
+        if metadata.get("kind") in METHANOGENESIS_KINDS:
+            validate_methanogenesis_metadata(metadata)
+        elif METHANOGENESIS_FIELD in metadata:
+            raise ValueError("methanogenesis metadata requires its matching source kind")
         if metadata.get("kind") in P321_KINDS:
             validate_p321_metadata(metadata)
         elif "native_p321" in metadata or "native_metacyc_gene" in metadata:
@@ -441,6 +461,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
     validate_p321_assertions(data["sources"], [], allow_legacy_products=True)
     validate_phenylacetate_assertions(data["sources"], [])
     validate_glutaryl_assertions(data["sources"], [])
+    validate_methanogenesis_assertions(data["sources"], [])
     validate_benzoyl_assertions(data["sources"], [])
     validate_aceto_assertions(data["sources"], [])
     validate_gene_assertions(data["sources"])
@@ -533,6 +554,12 @@ def _load_authority(path: Path) -> dict[str, Any]:
             )
             if identifier != expected_id or term != expected_term:
                 raise ValueError(f"{identifier}: invalid complete glutaryl projection")
+        elif source_kind in METHANOGENESIS_KINDS:
+            expected_id, expected_term = methanogenesis_term(
+                data["sources"][term["source"]], term["source"]
+            )
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid complete methanogenesis projection")
         elif source_kind in PHENYLACETATE_KINDS:
             expected_id, expected_term = phenylacetate_term(
                 data["sources"][term["source"]], term["source"]
@@ -621,6 +648,9 @@ def _load_authority(path: Path) -> dict[str, Any]:
     validate_glutaryl_assertions(
         data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
     )
+    validate_methanogenesis_assertions(
+        data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
+    )
     return data["terms"]
 
 
@@ -695,7 +725,9 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     "resolve against the source before refreshing the snapshot"
                 )
                 continue
-            native_roles = PHENYLACETATE_NODE_ROLES | GLUTARYL_NODE_ROLES
+            native_roles = (
+                PHENYLACETATE_NODE_ROLES | GLUTARYL_NODE_ROLES | METHANOGENESIS_NODE_ROLES
+            )
             if term.get("entity_type") in native_roles:
                 required_section, categories = native_roles[term["entity_type"]]
                 if section != required_section or node.get("category") not in categories:
