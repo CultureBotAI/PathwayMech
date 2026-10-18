@@ -110,6 +110,11 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
 @pytest.mark.parametrize(
     ("source_id", "status"),
     [
+        ("puldb", "deferred"),
+        ("microscope-microcyc", "deferred"),
+        ("jgi-img-abc", "license-gated"),
+        ("ecmdb", "deferred"),
+        ("algaepath", "deferred"),
         ("envipath", "license-gated"),
         ("diting", "deferred"),
         ("metabolic", "license-gated"),
@@ -124,6 +129,36 @@ def test_discovery_candidates_are_not_enabled(source_id: str, status: str) -> No
 
     assert sources[source_id].enabled is False
     assert sources[source_id].ingest_status == status
+
+
+def test_source_enablement_status_invariants() -> None:
+    config = yaml.safe_load(Path("conf/sources.yaml").read_text(encoding="utf-8"))
+    sources = validate_source_inventory(config)
+
+    disabled_ids = {source.id for source in sources if not source.enabled}
+    assert disabled_ids == {
+        "puldb",
+        "microscope-microcyc",
+        "jgi-img-abc",
+        "ecmdb",
+        "algaepath",
+        "envipath",
+        "diting",
+        "metabolic",
+        "gutsmash",
+        "m-csa",
+        "vmh-agora2",
+    }
+    for source in sources:
+        if source.ingest_status in {"deferred", "next"}:
+            assert source.enabled is False
+        if source.enabled:
+            assert source.ingest_status in {
+                "active",
+                "support",
+                "fixture",
+                "license-gated",
+            }
 
 
 def test_duplicate_source_priority_fails() -> None:

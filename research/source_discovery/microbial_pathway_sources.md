@@ -15,8 +15,8 @@ records the support adapter, one new maintained cluster, and their evidence limi
 The subsequent [local data ingestion batch](2026-10-08-local-data-ingestion.md)
 acquires and parses PathBank and dbCAN-PUL source data, with public-release
 licensing tracked separately from local processing.
-The October 17 landscape refresh reconciles this note with the 268 maintained
-records in `data/pathways/` (`MetaCyc`: 139, `gomodel`: 86, `WikiPathways`: 12,
+The October 17 landscape refresh reconciles this note with the 269 maintained
+records in `data/pathways/` (`MetaCyc`: 140, `gomodel`: 86, `WikiPathways`: 12,
 `GO`: 10, `PathBank`: 9, `Reactome`: 6, `MIBiG`: 3, `KEGG`: 3), the 21 live
 identifier authority namespaces in `conf/identifier_policy.yaml`, October 2026
 upstream release baselines (including the `20261010` WikiPathways GPML release,
@@ -34,7 +34,7 @@ stored in curated YAML.
 
 | Tier | Source | Best import target | Access | Reuse risk |
 | --- | --- | --- | --- | --- |
-| 0 | MetaCyc / BioCyc | Curated metabolic pathway definitions with reaction order, reactions, compounds, enzymes, taxa, and review text (139 maintained records) | BioCyc flat files, bounded `getxml` endpoints, or web services after license registration | Medium: BioCyc Limited Databases can be used and modified but not redistributed |
+| 0 | MetaCyc / BioCyc | Curated metabolic pathway definitions with reaction order, reactions, compounds, enzymes, taxa, and review text (140 maintained records) | BioCyc flat files, bounded `getxml` endpoints, or web services after license registration | Medium: BioCyc Limited Databases can be used and modified but not redistributed |
 | 0 | KEGG PATHWAY / MODULE | High-coverage maps and KO/module signatures for microbial metabolism (3 maintained module records) | Academic REST flatfiles or KGML; full weekly FTP requires a subscription | High: not public; non-academic use requires a license |
 | 0 | Rhea | Canonical ChEBI-grounded biochemical reactions and EC/UniProt/GO cross-references | Free FTP in RDF, BioPAX 3, RXN/RD, and TSV; SPARQL endpoint | Low: CC BY 4.0 |
 | 0 | GO and GO-CAM | GO process grounding (10 `GO:*` records) and causal activity models (`gomodel:*`, 86 records including YeastPathways and SYN_GO) | OBO/OWL/JSON ontology releases and GO-CAM JSON downloads/API | Low: GO data products are CC BY 4.0 |
@@ -51,7 +51,7 @@ stored in curated YAML.
 | 2 | UniPathway | Legacy `UPA`/`UCR`/`UER` pathway and reaction hierarchy cross-referenced to Rhea, MetaCyc, KEGG, GO, EC, and ChEBI | GO-hosted `upa.obo` archive | Low: CC-BY 4.0 in `src/metadata/upa.md`, but retired upstream |
 | 2 | dbCAN-PUL | Experimentally characterized prokaryotic polysaccharide utilization loci (`PUL####`) with substrate and CAZyme/EC metadata | Local workbook (`dbcan-pul`) support adapter | Medium: website exposes no explicit open redistribution license for bulk derivatives |
 | 2 | SEED / PubSEED Subsystems | Curated subsystem functional roles, positional role tables, and genome variant calls | PubSEED network API JSON/TSV bundles | Medium: legacy API without explicit open data license header |
-| 2 | BRENDA | Enzyme-catalyzed reaction-role and organism-scoped pathway context assertions | Official RDF/TTL download (`CC BY 4.0`) and web reaction-role support adapter | Low to medium: official download is CC BY 4.0, but rows are reaction-centric rather than causal pathway graphs |
+| 2 | BRENDA | Enzyme-catalyzed reaction-role and organism-scoped pathway context assertions | Official text/JSON download and SPARQL JSON bundles (`CC BY 4.0`) plus web reaction-role support adapter | Low to medium: official download is CC BY 4.0, but rows are reaction-centric rather than causal pathway graphs |
 | 2 | HADEG | Hydrocarbon aerobic and anaerobic microbial degradation pathway-gene membership rules | GitHub CSV tables and local membership adapter | Medium: GPL-3.0 repository; lexical gene/pathway rows without reaction stoichiometry |
 | 2 | DRAM | Distilled and Refined Annotation of Metabolism module-step rules and KO/EC path coordinates | GitHub TSV tables (`DRAM1`) and local module-step adapter | Medium: GPL-3.0 code with KEGG-derived module coordinates |
 
@@ -103,11 +103,13 @@ compounds, EC numbers, enzymes, taxa, citations, and minireviews. Pathway Tools
 exports every BioCyc Pathway/Genome Database as flat files such as
 `pathways.dat`, `reactions.dat`, `compounds.dat`, `enzrxns.dat`, `proteins.dat`,
 and `pubs.dat`, and the same page points to BioCyc web services as an alternate
-access path. In PathwayMech's current corpus, `MetaCyc` anchors 139 maintained
+access path. In PathwayMech's current corpus, `MetaCyc` anchors 140 maintained
 bacterial, fungal, and archaeal pathway records (including hydrogenotrophic and
 aceticlastic methanogenesis `METHANOGENESIS-PWY` and `METH-ACETATE-PWY`), with
-authority validation backed by bounded Pathway Tools XML endpoints
-(`metacyc-artsymbiocyc-xml` and `metacyc-sgd-pathway-xml`).
+authority validation backed by bounded Pathway Tools XML endpoints on the
+ArtSymbioCyc mirror (`metacyc-pathway-xml`, `metacyc-reaction-xml`,
+`metacyc-protein-xml`, `metacyc-compound-xml`, and related Pathway Tools XML
+kinds, plus `metacyc-sgd-pathway-xml`).
 
 The catch is licensing. The 2026 BioCyc flat-file agreement classifies only
 EcoCyc and the *Faecalibacterium prausnitzii* A2-165 PGDB as "Open Databases";
@@ -121,12 +123,12 @@ that mechanically copies pathway membership, descriptions, or comments.
 KEGG remains an essential external reference because it covers microbial
 metabolic maps, module completeness rules, reactions, compounds, orthology
 groups, and organism-specific gene calls. The REST API can return KGML for
-pathway entries and flatfiles for module/reaction/compound entries
-(`kegg-pathway-rest`, `kegg-module-rest`, `kegg-reaction-rest`,
-`kegg-compound-rest`). KEGG MODULE definitions currently anchor 3 maintained
-records in `data/pathways/` (`KEGG:M00008` Entner-Doudoroff, `KEGG:M00373`
-ethylmalonyl-CoA, and `KEGG:M00374` archaeal dicarboxylate-hydroxybutyrate
-cycle).
+pathway entries and flatfiles for module/reaction/compound/gene entries
+(`kegg-module-flatfile`, `kegg-reaction-flatfile`, `kegg-compound-flatfile`,
+`kegg-gene-flatfile`, and `kegg-pseudogene-flatfile`). KEGG MODULE definitions
+currently anchor 3 maintained records in `data/pathways/` (`KEGG:M00008`
+Entner-Doudoroff, `KEGG:M00373` ethylmalonyl-CoA, and `KEGG:M00374` archaeal
+dicarboxylate-hydroxybutyrate cycle).
 
 The import should be ID-first and license-aware. KEGG's REST service is made
 available only for academic users, the full FTP is a paid academic subscription,
@@ -218,11 +220,12 @@ SBML, PWML, and SBGN archives along with metabolite (ChEBI/KEGG) and protein
 (UniProt) CSV mappings. In `conf/sources.yaml`, `pathbank` (`priority: 60`) is
 enabled as an `active` source with 9 maintained *Escherichia coli* `PathBank:SMP*`
 records (`SMP0002038`, `SMP0002051`, `SMP0002067`, `SMP0002077`, `SMP0002083`,
-`SMP0002089`, `SMP0002097`, `SMP0002123`, and `SMP0002406`) validated through the
-`pathbank-biopax` and `pathbank-biopax-zip` authority profiles.
+`SMP0002089`, `SMP0002097`, `SMP0002123`, and `SMP0002406`) validated from
+`pathbank_primary_biopax.zip` through the `pathbank-biopax`, `pathbank-biopax-zip`,
+and `pathbank-context-biopax` authority profiles.
 
 PathBank's downloads page specifies CC BY-NC 4.0 while its About page combines
-Open Database License language with commercial redistribution restrictions.
+Open Database License (`ODbL`) language with commercial redistribution restrictions.
 Local BioPAX parsing and hand-reviewed literature-backed curation proceed under
 explicit provenance tracking, while bulk public redistribution of raw PathBank
 archives remains gated on license review.
@@ -298,7 +301,7 @@ The pathway layer is a support source, not a primary import. VEuPathDB
 metabolic pathway tables are useful for checking whether fungal or protist
 genes support a KEGG, MetaCyc, or Reactome candidate, but the maps are loaded
 from those upstream resources and inherit their topology and licensing
-questions. The local WDK TSV importer (`pathwaymech-import-veupathdb-pathways`)
+questions. The local WDK TSV importer (`pathwaymech-import-veupathdb`)
 consumes the `MetabolicPathways` gene table exported from component sites and
 keeps component-site gene IDs as seed row evidence rather than minting
 `VEuPathDB` CURIEs.
@@ -311,7 +314,7 @@ PaperBLAST `master` stores amino-acid rules in `gaps/aa/*.steps`, carbon-source
 rules in `gaps/carbon/*.steps`, and TSV index files that assign local slugs
 such as `arg`, `thr`, `pyruvate`, and `xylose` to pathway labels.
 
-The `.steps` files are valuable for variant triage and enzyme support (`pathwaymech-import-gapmind-steps`)
+The `.steps` files are valuable for variant triage and enzyme support (`pathwaymech-import-gapmind`)
 but are not a direct pathway-graph import. They define local steps and
 alternatives over EC numbers, UniProt exemplars, PaperBLAST curation tags, HMM
 accessions, and local imports rather than stable GapMind CURIEs or chemical
@@ -323,7 +326,7 @@ Six additional specialist sources now have enabled `support` adapters in
 `conf/sources.yaml`:
 
 - **UniPathway (`unipathway`, priority 160):** Retired GO-hosted `upa.obo`
-  crosswalk (`pathwaymech-import-unipathway-obo`) connecting legacy `UPa:*`
+  crosswalk (`pathwaymech-import-unipathway`) connecting legacy `UPa:*`
   pathway/reaction terms to `RHEA`, `MetaCyc`, `KEGG`, `GO`, `EC`, and `CHEBI`.
 - **dbCAN-PUL (`dbcan-pul`, priority 170):** Local February 2025 workbook
   support adapter (`pathwaymech-import-dbcan-pul`) preserving all 633
@@ -334,16 +337,16 @@ Six additional specialist sources now have enabled `support` adapters in
   subsystem API bundle importer (`pathwaymech-import-seed-subsystems`)
   preserving ordered functional roles, genome variant codes, and feature cells
   with hash provenance.
-- **BRENDA (`brenda`, priority 250):** Official RDF/TTL (`CC BY 4.0`) and
-  audited web role-query support adapter (`pathwaymech-import-brenda-context`)
-  preserving reaction-component assertions (`participates_in`, `substrate`,
-  `product`, `inhibitor`, `activator`) and organism/literature context without
-  minting standalone pathway graphs.
+- **BRENDA (`brenda`, priority 250):** Official text/JSON download (`CC BY 4.0`),
+  pinned local SPARQL JSON role-query bundles (`pathwaymech-import-brenda`), and
+  audited web role rows preserving reaction-component assertions
+  (`participates_in`, `substrate`, `product`, `inhibitor`, `activator`) and
+  organism/literature context without minting standalone pathway graphs.
 - **HADEG (`hadeg`, priority 260):** Local CSV membership adapter
   (`pathwaymech-import-hadeg`) indexing 629 hydrocarbon/xenobiotic degradation
   gene-to-pathway rows under upstream GPL-3.0 terms.
 - **DRAM (`dram`, priority 280):** Local DRAM1 module-step support adapter
-  (`pathwaymech-import-dram-modules`) preserving KO/EC step coordinates and
+  (`pathwaymech-import-dram`) preserving KO/EC step coordinates and
   module coverage rules while tracking KEGG lineage caveats.
 
 ## Defer or use only as crosswalks
@@ -383,10 +386,11 @@ Six additional specialist sources now have enabled `support` adapters in
    reaction and catalytic-mechanism references, organism membership calls, and
    crosswalks.
 3. Treat PMN/ChlamyCyc like MetaCyc and KEGG: implemented, license-gated, and
-   limited to local extracts. Keep `dbcan-pul`, `seed-pubseed`, `brenda`,
-   `hadeg`, `dram`, `veupathdb`, `gapmind`, and `unipathway` as provenance-pinned
-   support layers that enrich or audit candidate pathways without auto-emitting
-   unreviewed YAML graphs.
+   limited to local extracts. Keep all 12 enabled `support` sources (`rhea`,
+   `modelseed`, `bigg`, `bv-brc`, `veupathdb`, `gapmind`, `unipathway`,
+   `dbcan-pul`, `seed-pubseed`, `brenda`, `hadeg`, and `dram`) as
+   provenance-pinned support layers that enrich or audit candidate pathways
+   without auto-emitting unreviewed YAML graphs.
 4. Normalize every elementary reaction through Rhea when possible; if a
    candidate source names only an EC number or a KEGG reaction, attach the
    source ID but leave the Rhea edge unmapped until an explicit equivalence is
@@ -400,9 +404,10 @@ Six additional specialist sources now have enabled `support` adapters in
 1. **Prioritize the active and enabled support queue before building new bulk
    importers.** Expanding hand-reviewed records from `go-cam` (including PomBase
    *S. pombe* and non-duplicate fungal GO-CAMs), `wikipathways` (`20261010`
-   release), `mibig`, `reactome`, and `pathbank` — cross-checked against enabled
-   support adapters (`brenda`, `dbcan-pul`, `hadeg`, `dram`, `seed-pubseed`,
-   `gapmind`, `veupathdb`) — delivers higher immediate curation yield than
+   release), `mibig`, `reactome`, `pathbank`, and `go` — cross-checked against all
+   12 enabled `support` adapters (`rhea`, `modelseed`, `bigg`, `bv-brc`,
+   `veupathdb`, `gapmind`, `unipathway`, `dbcan-pul`, `seed-pubseed`, `brenda`,
+   `hadeg`, and `dram`) — delivers higher immediate curation yield than
    activating new unimplemented sources.
 2. **Top two next sources to implement (`m-csa` and `gutsmash`) once the active
    queue is ready for new adapters:**
