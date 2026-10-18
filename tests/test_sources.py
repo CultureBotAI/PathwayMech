@@ -48,6 +48,9 @@ def test_configured_sources_have_ingest_priorities() -> None:
         "dram",
         "diting",
         "metabolic",
+        "gutsmash",
+        "m-csa",
+        "vmh-agora2",
     ]
     assert [source.priority for source in sources] == sorted(
         source.priority for source in sources
@@ -90,14 +93,34 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
     assert (
         "190\tpuldb\tdeferred\tfalse\tglycan-locus-reference\tPULDB"
     ) in rows
+    assert (
+        "310\tgutsmash\tdeferred\tfalse\tprimary-metabolic-gene-cluster-reference\t"
+        "gutSMASH Metabolic Gene Clusters"
+    ) in rows
+    assert (
+        "320\tm-csa\tdeferred\tfalse\treaction-mechanism-reference\t"
+        "Mechanism and Catalytic Site Atlas"
+    ) in rows
+    assert (
+        "330\tvmh-agora2\tdeferred\tfalse\torganism-model-reference\t"
+        "Virtual Metabolic Human / AGORA2"
+    ) in rows
 
 
 @pytest.mark.parametrize(
     ("source_id", "status"),
     [
+        ("puldb", "deferred"),
+        ("microscope-microcyc", "deferred"),
+        ("jgi-img-abc", "license-gated"),
+        ("ecmdb", "deferred"),
+        ("algaepath", "deferred"),
         ("envipath", "license-gated"),
         ("diting", "deferred"),
         ("metabolic", "license-gated"),
+        ("gutsmash", "deferred"),
+        ("m-csa", "deferred"),
+        ("vmh-agora2", "deferred"),
     ],
 )
 def test_discovery_candidates_are_not_enabled(source_id: str, status: str) -> None:
@@ -106,6 +129,36 @@ def test_discovery_candidates_are_not_enabled(source_id: str, status: str) -> No
 
     assert sources[source_id].enabled is False
     assert sources[source_id].ingest_status == status
+
+
+def test_source_enablement_status_invariants() -> None:
+    config = yaml.safe_load(Path("conf/sources.yaml").read_text(encoding="utf-8"))
+    sources = validate_source_inventory(config)
+
+    disabled_ids = {source.id for source in sources if not source.enabled}
+    assert disabled_ids == {
+        "puldb",
+        "microscope-microcyc",
+        "jgi-img-abc",
+        "ecmdb",
+        "algaepath",
+        "envipath",
+        "diting",
+        "metabolic",
+        "gutsmash",
+        "m-csa",
+        "vmh-agora2",
+    }
+    for source in sources:
+        if source.ingest_status in {"deferred", "next"}:
+            assert source.enabled is False
+        if source.enabled:
+            assert source.ingest_status in {
+                "active",
+                "support",
+                "fixture",
+                "license-gated",
+            }
 
 
 def test_duplicate_source_priority_fails() -> None:
