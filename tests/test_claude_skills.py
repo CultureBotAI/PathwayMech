@@ -27,3 +27,21 @@ def test_cross_mech_assessment_is_a_registered_review_route() -> None:
     root = SKILLS_DIR.parent.parent
     profile = yaml.safe_load((root / "conf/record_review.yaml").read_text())
     assert ".claude/skills/cross-mech-protein-links/SKILL.md" in profile["skills"]
+
+
+def test_agents_skills_symlink_exposes_claude_skills_including_review_open_issues() -> None:
+    root = SKILLS_DIR.parent.parent
+    agents_md = root / "AGENTS.md"
+    assert agents_md.is_file()
+    assert "CLAUDE.md" in agents_md.read_text(encoding="utf-8")
+    assert ".agents/skills" in agents_md.read_text(encoding="utf-8")
+
+    agents_skills = root / ".agents" / "skills"
+    assert agents_skills.is_symlink()
+    assert str(agents_skills.readlink()) == "../.claude/skills"
+    assert agents_skills.resolve() == SKILLS_DIR.resolve()
+    review_skill = agents_skills / "review-open-issues" / "SKILL.md"
+    assert review_skill.resolve() == (SKILLS_DIR / "review-open-issues" / "SKILL.md").resolve()
+    review_text = review_skill.read_text(encoding="utf-8")
+    assert "PathwayMech" in review_text
+    assert "read-only" in review_text.lower()
