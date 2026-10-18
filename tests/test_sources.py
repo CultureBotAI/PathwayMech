@@ -48,6 +48,9 @@ def test_configured_sources_have_ingest_priorities() -> None:
         "dram",
         "diting",
         "metabolic",
+        "gutsmash",
+        "m-csa",
+        "vmh-agora2",
     ]
     assert [source.priority for source in sources] == sorted(
         source.priority for source in sources
@@ -90,6 +93,18 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
     assert (
         "190\tpuldb\tdeferred\tfalse\tglycan-locus-reference\tPULDB"
     ) in rows
+    assert (
+        "310\tgutsmash\tdeferred\tfalse\tprimary-metabolic-gene-cluster-reference\t"
+        "gutSMASH Metabolic Gene Clusters"
+    ) in rows
+    assert (
+        "320\tm-csa\tdeferred\tfalse\treaction-mechanism-reference\t"
+        "Mechanism and Catalytic Site Atlas"
+    ) in rows
+    assert (
+        "330\tvmh-agora2\tdeferred\tfalse\torganism-model-reference\t"
+        "Virtual Metabolic Human / AGORA2"
+    ) in rows
 
 
 @pytest.mark.parametrize(
@@ -98,6 +113,9 @@ def test_source_seed_rows_include_disabled_candidates() -> None:
         ("envipath", "license-gated"),
         ("diting", "deferred"),
         ("metabolic", "license-gated"),
+        ("gutsmash", "deferred"),
+        ("m-csa", "deferred"),
+        ("vmh-agora2", "deferred"),
     ],
 )
 def test_discovery_candidates_are_not_enabled(source_id: str, status: str) -> None:

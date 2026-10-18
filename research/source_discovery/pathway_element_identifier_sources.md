@@ -1,6 +1,6 @@
 # Pathway element identifier source discovery
 
-Updated: 2026-10-03
+Updated: 2026-10-17
 
 This follow-up ranks pathway sources by a narrower question than the broader
 microbial source survey: does each pathway definition carry stable biological
@@ -21,11 +21,12 @@ without a second pathway-topology source.
 | 0 | GO-CAM JSON | GO molecular activities, RO causal predicates, UniProtKB/GO enablers, CHEBI/UniProtKB molecules, NCBITaxon taxa, ECO/PMID evidence | Open causal activity graphs; strongest shape match for PathwayMech edges |
 | 1 | Reactome BioPAX/SBML | Reactome stable IDs for events and entities plus ChEBI, UniProt, Ensembl, NCBI, GO, KEGG, PubMed mappings | Rich BioPAX reaction graphs, but microbial scope is narrow |
 | 1 | WikiPathways GPML/RDF | WikiPathways IDs and BridgeDb-backed Xrefs on GPML data nodes; RDF exports direct and harmonized pathway content | Open parser fixture and curated small microbial set |
-| 1 | PathBank BioPAX/SBML/PWML | PathBank IDs plus ChEBI/KEGG metabolite CSV links and UniProt protein CSV links | Model-organism BioPAX/SBML fixture, especially E. coli and yeast |
+| 1 | PathBank BioPAX/SBML/PWML | PathBank `SMP*` IDs plus ChEBI/KEGG metabolite links, UniProt protein links, and BioPAX reaction/entity IDs | Active model-organism BioPAX source (9 maintained *E. coli* records), with public-release licensing tracked separately |
 | 2 | MIBiG JSON/GBK | BGC accessions, GenBank regions, genes/protein translations, products, publications | Secondary-metabolite/BGC records, not elementary reaction chains |
-| 2 | Rhea | Rhea reaction IDs, ChEBI participants, EC, UniProtKB, GO xrefs | Normalize reactions after a pathway source proposes them |
+| 2 | Rhea | Rhea reaction IDs, ChEBI participants (`RHEA-COMP` polymers), EC, UniProtKB, GO xrefs | Normalize reactions after a pathway source proposes them |
 | 3 | ModelSEED / BiGG / BV-BRC | Reaction, compound, gene, genome, model, or KEGG-pathway membership IDs | Crosswalks and organism membership evidence, not canonical pathway definitions |
-| 3 | GapMind | Local enzyme-step rules with EC, UniProtKB, MetaCyc, and HMM clues | Variant and enzyme triage, not stable pathway definitions |
+| 3 | GapMind / DRAM / HADEG / SEED | Enzyme-step rules, KO/EC module coordinates, degradation gene rows, and subsystem role variants | Variant, module, and enzyme triage (`support`), not standalone pathway graphs |
+| 3 | BRENDA / dbCAN-PUL | Reaction-component role assertions (`CC BY 4.0` RDF) and characterized `PUL####` glycan loci | Reaction-context and glycan-locus support layers (`support`) |
 | 3 | UniPathway | Legacy UPA pathway, subpathway, enzymatic-reaction, reaction, and compound terms with Rhea, MetaCyc, KEGG, GO, EC, and ChEBI xrefs | Crosswalk source for retired UniProt pathway annotation terms |
 
 ## Identifier coverage by source
@@ -43,7 +44,8 @@ gene, and non-PubMed reference layers. Evidence codes can appear in `CITATIONS`
 slots, including experimental and computational evidence-code families.
 
 **Formats and endpoints:** flat files, BioPAX, SBML, FASTA, mol files, Ocelot,
-and Pathway Tools web services.
+and Pathway Tools web services (including bounded `getxml` endpoints validated
+through `metacyc-artsymbiocyc-xml` and `metacyc-sgd-pathway-xml`).
 
 **Curation stance:** best source for curated microbial metabolism. Native
 MetaCyc frame IDs are stable enough to store as source IDs, and DBLINKS can
@@ -59,9 +61,10 @@ KEGG IDs, and `reaction` elements identify KEGG `rn:` reactions with
 Reference maps can be projected through `ko`, `rn`, or `ec` maps, and
 organism-specific maps replace the reference boxes with KEGG gene IDs.
 
-**Formats and endpoints:** KGML from the KEGG API for individual maps; full
-weekly FTP for academic subscribers; REST `link` and `conv` calls for selected
-outside identifiers.
+**Formats and endpoints:** KGML and flatfiles from the KEGG REST API for
+individual maps and modules (`kegg-pathway-rest`, `kegg-module-rest`,
+`kegg-reaction-rest`, `kegg-compound-rest`); full weekly FTP for academic
+subscribers; REST `link` and `conv` calls for selected outside identifiers.
 
 **Curation stance:** keep as an enabled grounding source, but do not build a
 redistributable bulk importer without a license. KGML has pathway element IDs,
@@ -81,24 +84,24 @@ taxa, RO causal predicates between activities, and ECO/publication evidence.
 GO API routes for model ID, taxon, and PMID lookup; the `gocam-py` package
 validates the same LinkML-defined JSON representation.
 
-**Curation stance:** first open importer to build. GO-CAM already represents
-causal activity edges with CURIE-bearing nodes and predicates, and GO data
-products are CC BY 4.0. The limitation is coverage, not shape: microbial
-metabolic pathways may be absent or shallower than in MetaCyc/KEGG.
+**Curation stance:** primary open causal-activity importer (86 maintained
+`gomodel:*` records including SGD `YeastPathways_*` and `SYN_GO_*` models). GO
+data products are CC BY 4.0, and PomBase *S. pombe* GO-CAMs normalize under the
+same `go-cam` source.
 
 ### Reactome
 
 **Element IDs:** excellent inside its scope. Reactome assigns stable IDs to
 pathways, reactions, and physical entities, and its downloads include
-BioPAX level 3, all-species SBML, the GraphDB dump, stable-id tables, reaction
-to PMID mappings, and ChEBI/UniProt/NCBI/Ensembl mappings down to reaction
-or pathway levels.
+BioPAX level 3 (BioPAX level 2 and Protégé 2.0 were retired in V94), all-species
+SBML, the GraphDB dump, stable-id tables, reaction to PMID mappings, and
+ChEBI/UniProt/NCBI/Ensembl mappings down to reaction or pathway levels.
 
-**Formats and endpoints:** BioPAX, SBML, GraphDB, MySQL dumps, Content Service
+**Formats and endpoints:** BioPAX 3, SBML, GraphDB, MySQL dumps, Content Service
 API, and tabular mapping files from the current download directory.
 
-**Curation stance:** valuable for BioPAX/SBML parser work and for the few
-microbial or microbe-adjacent organisms Reactome curates or infers, but not a
+**Curation stance:** valuable for BioPAX/SBML parser work and for the microbial
+species Reactome curates (6 maintained *M. tuberculosis* records), but not a
 broad bacterial source.
 
 ### WikiPathways
@@ -108,16 +111,16 @@ GPML DataNodes and Interactions have graph IDs, and DataNodes carry Xrefs with
 database names and identifiers that BridgeDb can map. The RDF release is split
 into a direct GPML RDF translation and a harmonized WikiPathways RDF graph.
 
-**Formats and endpoints:** monthly GPML, GMT, RDF, and SVG archives. The
-September 2026 GPML release already contains organism-specific bundles for
-Acetobacterium woodii, Bacillus subtilis, Escherichia coli, Mycobacterium
-tuberculosis, Saccharomyces cerevisiae, and a few other microbial or fungal
-species.
+**Formats and endpoints:** monthly GPML, GMT, RDF, and SVG archives. Both the
+September 2026 (`20260910`) and October 2026 (`20261010`) GPML releases contain
+organism-specific bundles for *Acetobacterium woodii*, *Bacillus subtilis*,
+*Escherichia coli*, *Mycobacterium tuberculosis*, *Saccharomyces cerevisiae*,
+and other microbial or fungal species.
 
-**Curation stance:** best permissive pathway-diagram test source. The official
-data-release repository is CC0, and GPML/RDF can seed participants and
-interactions. Expect to reject or patch records with unlabeled visual elements
-or weakly typed interactions.
+**Curation stance:** best permissive pathway-diagram source (12 maintained
+`WikiPathways:WP*` records). The official data-release repository is CC0, and
+GPML/RDF can seed participants and interactions. Expect to reject or patch
+records with unlabeled visual elements or weakly typed interactions.
 
 ### PathBank
 
@@ -126,15 +129,16 @@ pathways CSV, metabolite-to-pathway CSV with KEGG and ChEBI IDs, protein-to-
 pathway CSV with UniProt IDs, and full pathway archives in BioPAX, SBGN, SBML,
 PWML, RXN, and structure/sequence files.
 
-**Formats and endpoints:** bulk downloads from PathBank. The visible archive is
-useful but older: many downloadable files were generated in 2019 or 2020.
+**Formats and endpoints:** bulk downloads from PathBank (`pathbank_all_biopax.zip`
+validated via `pathbank-biopax` and `pathbank-biopax-zip` authority profiles).
 
-**Curation stance:** add as disabled. PathBank covers model organisms such as
-E. coli and yeast and could exercise BioPAX/SBML importers with pathway-element
-IDs, but its model-organism focus overlaps Reactome/WikiPathways and the About
-page needs a legal read before redistribution because it states both Open
-Database License availability and an explicit-permission requirement for
-commercial redistribution.
+**Curation stance:** enabled as `active` in `conf/sources.yaml` with 9
+maintained *Escherichia coli* `PathBank:SMP*` records (`SMP0002038`, `SMP0002051`,
+`SMP0002067`, `SMP0002077`, `SMP0002083`, `SMP0002089`, `SMP0002097`,
+`SMP0002123`, `SMP0002406`), each backed by primary literature and verified
+native BioPAX identifiers. Public-release redistribution terms (CC BY-NC 4.0 on
+the downloads page; ODC-By plus commercial-permission language on the About
+page) remain tracked for release review.
 
 ### MIBiG
 
@@ -145,10 +149,10 @@ and JSON schema files.
 
 **Formats and endpoints:** versioned JSON, GBK, and protein FASTA downloads.
 
-**Curation stance:** use for secondary-metabolite records when PathwayMech gets
-BGC-shaped fields. MIBiG records are experimentally anchored and CC BY 4.0, but
-they usually do not enumerate every elementary Rhea-like transformation in a
-biosynthetic route.
+**Curation stance:** active source for secondary-metabolite records (3
+maintained records: `BGC0002072`, `BGC0000852`, `BGC0000829`). MIBiG records are
+experimentally anchored and CC BY 4.0, using `gene_clusters` when elementary
+Rhea reactions are not enumerated.
 
 ### ModelSEED, BiGG, and BV-BRC
 
@@ -160,8 +164,9 @@ Biochemistry README says the `Pathways` directory was intended for subsystems
 and external sources and was not maintained.
 
 BiGG exposes model, reaction, metabolite, and gene IDs through JSON/SBML/MAT
-downloads and API routes, with database links out to resources such as KEGG,
-MetaCyc, NCBI Entrez Gene, and SGD on element detail responses. Its
+downloads and API routes (`bigg-universal-metabolite-json` and
+`bigg-universal-reaction-json`), with database links out to resources such as
+KEGG, MetaCyc, NCBI Entrez Gene, and SGD on element detail responses. Its
 model-specific reactions have gene-reaction rules and compartments, not curated
 pathway definitions.
 
@@ -203,56 +208,63 @@ UPA pathways to first-class YAML record IDs.
 
 ## Additional candidates checked
 
-The post-ingestion sweep found no additional source that should outrank the
-current active, support, fixture, or license-gated rows.
+Five specialist sources (`dbcan-pul`, `seed-pubseed`, `brenda`, `hadeg`, and
+`dram`) now have implemented `support` adapters in `conf/sources.yaml`:
 
-`dbCAN-PUL` and `PULDB` are the strongest new microbial candidates by identifier
-quality. They identify polysaccharide-utilization loci and CAZyme-containing
-gene clusters, connect those loci to substrates and component proteins, and
-dbCAN-PUL exposes EC numbers plus dbCAN annotations for CAZymes and other
-proteins. PathwayMech can now consume local dbCAN-PUL metadata for support
-triage, but both sources should stay out of first-class YAML records until
-PathwayMech intentionally models glycan-utilization loci as BGC-like records
-and their bulk reuse terms are clear.
+- `dbCAN-PUL` (`priority: 170`) and `PULDB` (`priority: 190`, `deferred`)
+  identify polysaccharide-utilization loci (`PUL####`) and CAZyme-containing
+  gene clusters connected to substrates, EC numbers, and protein accessions.
+  PathwayMech parses local dbCAN-PUL workbook metadata for support triage, while
+  keeping PUL records out of first-class YAML until bulk reuse terms are clear.
+- `SEED / PubSEED Subsystems` (`priority: 200`), `BRENDA` (`priority: 250`,
+  official RDF `CC BY 4.0`), `HADEG` (`priority: 260`), and `DRAM`
+  (`priority: 280`) provide provenance-pinned subsystem role variants,
+  reaction-component assertions, hydrocarbon degradation gene memberships, and
+  KEGG-derived module step coordinates as `support` layers.
+- `enviPath` (`priority: 270`, `license-gated`), `DiTing` (`priority: 290`,
+  `deferred`), and `METABOLIC` (`priority: 300`, `license-gated`) remain
+  disabled due to extraction/redistribution restrictions or KO-formula-only
+  granularity.
+- The October 17 refresh adds three deferred candidates with strong element
+  identifiers:
+  1. `gutSMASH` (`gutsmash`, `priority: 310`, `deferred`): primary anaerobic
+     bacterial metabolic gene clusters (SCFA, Stickland fermentation, TMA,
+     microcompartments, Rnf/Ech respiratory complexes; AGPL-3.0) with GenBank
+     loci and domain rules complementing `mibig`.
+  2. `Mechanism and Catalytic Site Atlas (M-CSA)` (`m-csa`, `priority: 320`,
+     `deferred`): EMBL-EBI `CC BY 4.0` enzyme reaction mechanisms grounded in
+     `EC`, `RHEA`, `CHEBI`, `UniProtKB`, and `PDB` catalytic residues, directly
+     aligned with PathwayMech's `reaction_mechanisms` schema.
+  3. `Virtual Metabolic Human / AGORA2` (`vmh-agora2`, `priority: 330`,
+     `deferred`): >7,300 strain-level gut bacterial, archaeal, and fungal SBML
+     reconstructions (`MIT` license) with VMH reaction/metabolite cross-references
+     to `BiGG`, `KEGG`, `MetaCyc`, and `CHEBI`.
 
-Native `SEED` subsystem spreadsheets, MicroCyc PGDB exports, IMG/IMG-ABC, and
-AlgaePath all preserve useful microbial pathway or membership signals, but
-they are generated from MetaCyc, KEGG, SEED, or antiSMASH-style layers already
-represented in PathwayMech. Use BV-BRC for SEED-derived subsystem membership,
-PMN/ChlamyCyc for Pathway Tools algal PGDBs, MIBiG for experimentally
-characterized BGCs, and MetaCyc/KEGG local exports for licensed topology.
-
-PANTHER Pathway and ECMDB are technically parseable pathway resources with
-component identifiers, but neither fills an uncovered microbial curation gap:
-PANTHER's downloadable BioPAX/SBML set is mostly generic and eukaryotic, while
-ECMDB's E. coli pathway cards overlap EcoCyc and KEGG.
+PANTHER Pathway (`priority: 180`, `fixture`) and ECMDB (`priority: 230`,
+`deferred`) are technically parseable pathway resources with component
+identifiers, but neither fills an uncovered microbial curation gap.
 
 ## Deferred aggregators
 
 | Resource | Decision |
 | --- | --- |
 | Pathway Commons | Useful BioPAX integration and API across Reactome, WikiPathways, BioCyc, and other sources, but not canonical for curation because source licensing and source-specific semantics need to be handled before import. |
-| MetaNetX / MNXref | Excellent reaction and metabolite reconciliation layer, but not a pathway-topology source. |
+| MetaNetX / MNXref | Excellent reaction and metabolite reconciliation layer (`metanetx.chemical`), but not a pathway-topology source. |
 | BioModels | Rich SBML archive with identifiers, but publication-scale kinetic or constraint models are not normalized pathway definitions. |
 
 ## Immediate recommendations
 
-1. **Prototype GO-CAM first.** It has the cleanest open causal graph:
-   `Activity` nodes, RO causal predicates, GO molecular functions, NCBITaxon
-   taxa, CHEBI or UniProtKB molecule nodes, and evidence items are already
-   explicit in JSON.
-2. **Prototype WikiPathways next.** It exercises visual GPML/RDF parsing and
-   Xref mapping under a permissive source, using small microbial species
-   bundles before touching mammalian bulk.
-3. **Build a Rhea lookup in parallel.** Rhea is not a pathway source, but it is
-   the open reaction normalization target for ChEBI-grounded biochemical
-   reactions.
-4. **Keep MetaCyc and KEGG as licensed importers.** Both are stronger than the
-   open sources for microbial metabolism but need license-gated local extractors
-   and review of what can be committed.
-5. **Use Reactome, PathBank, and PANTHER as BioPAX/SBML fixtures.** They have
-   excellent per-element IDs, but their microbial coverage is narrower than
-   BioCyc or KEGG.
+1. **Prioritize active causal and pathway sources (`go-cam`, `wikipathways`,
+   `mibig`, `reactome`, `pathbank`)** enriched by the enabled `support`
+   adapters (`rhea`, `brenda`, `dbcan-pul`, `hadeg`, `dram`, `seed-pubseed`,
+   `gapmind`, `veupathdb`).
+2. **Prototype `m-csa` and `gutsmash` next when adding new adapters:** `m-csa`
+   (`CC BY 4.0`) provides step-by-step catalytic mechanisms grounded in `RHEA`,
+   `EC`, `CHEBI`, and `UniProtKB` for `reaction_mechanisms`, while `gutsmash`
+   (`AGPL-3.0`) covers primary anaerobic metabolic gene clusters missing from
+   `mibig`.
+3. **Keep MetaCyc, KEGG, and PMN/ChlamyCyc behind licensed/bounded local
+   extractors** with explicit provenance and license tracking.
 
 ## Source pages checked
 
@@ -279,3 +291,12 @@ ECMDB's E. coli pathway cards overlap EcoCyc and KEGG.
 | PANTHER Pathway | https://archive.pantherdb.org/downloads/index.jsp | https://pantherdb.org/ |
 | E. coli Metabolome Database | https://ecmdb.ca/pathways | https://ecmdb.ca/downloads |
 | AlgaePath | https://algaepath.itps.ncku.edu.tw/ | https://algaepath.itps.ncku.edu.tw/ |
+| BRENDA | https://www.brenda-enzymes.org/download.php | https://www.brenda-enzymes.org/download.php |
+| HADEG | https://github.com/jarojasva/HADEG | https://github.com/jarojasva/HADEG/blob/master/LICENSE |
+| enviPath | https://envipath.org/ | https://envipath.org/ |
+| DRAM | https://github.com/BortonWrightonLabs/DRAM | https://github.com/BortonWrightonLabs/DRAM/blob/master/LICENSE |
+| DiTing | https://github.com/SilentGene/DiTing | https://github.com/SilentGene/DiTing/blob/master/LICENSE |
+| METABOLIC | https://github.com/AnantharamanLab/METABOLIC | https://github.com/AnantharamanLab/METABOLIC/blob/master/LICENSE |
+| gutSMASH | https://gutsmash.bioinformatics.nl/ | https://github.com/victoriapascal/gutsmash/blob/master/LICENSE |
+| M-CSA | https://www.ebi.ac.uk/thornton-srv/m-csa/download/ | https://www.ebi.ac.uk/thornton-srv/m-csa/about/ |
+| VMH / AGORA2 | https://www.vmh.life/ | https://github.com/ThieleLab/modelCreation/blob/main/LICENSE |
