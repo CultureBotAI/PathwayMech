@@ -170,7 +170,7 @@ question, stating what was checked and what evidence would resolve it.
 
 ### 5. Write back
 
-PathwayMech uses **direct guarded writes** to `data/pathways/*.yaml` paired with mandatory revision history tracking (`just validate-history`). Never edit `pages/` directly; regenerate rendered pages via `just render` and verify with:
+PathwayMech uses **direct guarded writes** to `data/pathways/*.yaml` paired with mandatory revision history tracking (`just validate-history`). Never edit `pages/` directly; regenerate rendered pages via `just render-pages` and verify with:
 
 ```bash
 just validate
