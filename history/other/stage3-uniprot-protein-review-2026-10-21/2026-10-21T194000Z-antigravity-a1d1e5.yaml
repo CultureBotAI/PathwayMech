@@ -1,0 +1,26 @@
+history_version: 1
+target:
+  kind: other
+  path: docs/CAUSAL_GRAPHS.md
+  slug: stage3-uniprot-protein-review-2026-10-21
+session:
+  id: 2026-10-21T194000Z-antigravity-a1d1e5
+  timestamp: '2026-10-21T19:40:00Z'
+  actors:
+  - type: ai_agent
+    name: antigravity
+    model: gemini-2.5-pro
+    agent_tool: antigravity
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/661
+  - https://github.com/CultureBotAI/PathwayMech/issues/662
+  - https://github.com/CultureBotAI/PathwayMech/issues/663
+  - https://github.com/CultureBotAI/PathwayMech/issues/664
+  prs:
+  - https://github.com/CultureBotAI/PathwayMech/pull/660
+events:
+- type: REVIEW
+  outcome: changed
+  summary: 'Complete Stage 3 whole-corpus UniProt protein example and source-mapping review across all 270 pathway records'
+  details: 'Reviewed all 270 YAML records in data/pathways/*.yaml against add-uniprot-protein-examples and curate-yaml-record rules (changed: 9, evidence-limited: 9, blocked: 95, checked: 157). Updated 9 Escherichia coli pathway records: added e046 (UniProtKB:P0AA25 enables MetaCyc:THIOREDOXIN-RXN with subject molecular_state EndpointQualifier) and 5 EcoCyc/MetaCyc -> UniProtKB protein unification mappings in thioredoxin-pathway.yaml (MetaCyc:THIOREDOX-PWY); added ascorbate-056 (UniProtKB:P08839 has_cofactor CHEBI:18420) and 7 MetaCyc -> UniProtKB protein unification mappings in l-ascorbate-degradation-i.yaml (MetaCyc:PWY0-301); and added 49 verified EcoCyc/MetaCyc/UniProt -> UniProtKB protein unification mappings across adenine-and-adenosine-salvage-i.yaml (2), adenine-and-adenosine-salvage-i-escherichia-coli.yaml (8), adenine-and-adenosine-salvage-ii.yaml (6), adenine-and-adenosine-salvage-iii.yaml (4), nitrate-reduction-viii.yaml (19), acetoacetate-degradation.yaml (5), and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml (5), for 61 new protein unification mappings total across the 9 records. Documented 9 MetaCyc records without protein participants in retained source cache as evidence-limited/not_applicable, 95 Saccharomyces cerevisiae SGD records (85 gomodel:YeastPathways_* + 10 WikiPathways:WP*) whose located_in and has_cofactor edges are already grounded in reviewed UniProtKB references but whose SGD -> UniProtKB source_mappings are blocked by src/pathwaymech/sssom.py CURIE_MAP, and recorded pathwaymech-infra-0004 in INFRA_TASKS.md.'
