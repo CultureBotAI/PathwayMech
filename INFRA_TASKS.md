@@ -43,6 +43,9 @@ tasks:
   - task_id: pathwaymech-infra-0003
     summary: Add optional MechanisticEdge stoichiometry, EdgePredicateEnum gene-expression predicate, and EvidenceItem ECO/taxon slots in src/pathwaymech/schema/pathwaymech.yaml
     status: note
+  - task_id: pathwaymech-infra-0004
+    summary: Add SGD, NCBIProtein, Reactome, gomodel, and Entrez prefix declarations to CURIE_MAP in src/pathwaymech/sssom.py for protein and gene source_mappings export
+    status: note
 ```
 <!-- mech-infra-tasks:end -->
 
@@ -75,6 +78,16 @@ tasks:
 - **Desired outcome**: Evaluate and add optional backward-compatible LinkML slots/predicates in `src/pathwaymech/schema/pathwaymech.yaml` and `src/pathwaymech/schema.py` (with corresponding KGX/page rendering support) during Stage 6 infrastructure implementation.
 - **Evidence paths**: `src/pathwaymech/schema/pathwaymech.yaml`, `src/pathwaymech/schema.py`, `docs/CAUSAL_GRAPHS.md`, `history/other/stage2-causal-graph-review-2026-10-20/2026-10-20T090200Z-antigravity-a1d1e5.yaml`
 - **Priority**: low
+- **Dependencies**: None
+- **Status**: `note` (pending Stage 6 issue intake)
+
+### `pathwaymech-infra-0004` — Expand `CURIE_MAP` in `src/pathwaymech/sssom.py` to support `SGD`, `NCBIProtein`, `Reactome`, `gomodel`, and `Entrez` prefixes in `source_mappings`
+
+- **Originating run / cycle / stage**: `mech-goal-sequence-20261019` / cycle `1` / stage `3` (`protein_examples`)
+- **Observation**: During the Stage 3 (`protein_examples`) review of all 270 pathway records in `data/pathways/*.yaml`, `_validate_row` in `src/pathwaymech/sssom.py` (`lines 122–136`) validates `subject_id` and `object_id` in `source_mappings` against `CURIE_MAP` (`src/pathwaymech/sssom.py:13–32`), which currently declares only `CAS`, `CHEBI`, `ChemSpider`, `EcoCyc`, `HMDB`, `infores`, `KEGG`, `MetaCyc`, `PathBank`, `PubChem`, `semapv`, `skos`, `UniProt`, and `UniProtKB`. Consequently, `EcoCyc:`, `MetaCyc:`, and `UniProt:` protein unification links to `UniProtKB:` are accepted in `source_mappings`, whereas the 95 `Saccharomyces cerevisiae` records with native `SGD:S000...` protein participants (`85` `gomodel:YeastPathways_*` + `10` `WikiPathways:WP*`), the 5 records with `NCBIProtein:` participants (`biotin-biosynthesis-from-8-amino-7-oxononanoate-ii.yaml`, `d-galactonate-degradation.yaml`, `etheno-dna-adduct-alkb-dioxygenase-direct-reversal-repair.yaml`, `factor-420-biosynthesis-ii-mycobacterial.yaml`, `intra-aerobic-nitrite-reduction.yaml`), the `Reactome:R-MTU-*` record (`defective-mmp-1-causes-epidermolysis-bullosa-dystrophica-recessive.yaml`), and `Entrez:` gene records (`adenine-and-adenosine-salvage-i-escherichia-coli.yaml`, `adenine-and-adenosine-salvage-ii.yaml`) cannot record `SGD:`/`NCBIProtein:`/`Reactome:`/`gomodel:`/`Entrez:` → `UniProtKB:` rows in `source_mappings` without raising `ValueError: subject_id prefix '<PREFIX>' is not declared in the SSSOM curie_map` during `pathwaymech-render-pages` (`write_sssom_exports`).
+- **Desired outcome**: Add `SGD`, `NCBIProtein`, `Reactome`, `gomodel`, and `Entrez` URI expansions to `CURIE_MAP` in `src/pathwaymech/sssom.py` (with corresponding unit tests in `tests/`) during Stage 6 infrastructure implementation so non-`EcoCyc`/`MetaCyc`/`UniProt` protein and gene cross-references can also be exported to `pages/downloads/mappings.sssom.tsv`.
+- **Evidence paths**: `src/pathwaymech/sssom.py`, `src/pathwaymech/pages.py`, `data/pathways/*.yaml`, `history/other/stage3-uniprot-protein-review-2026-10-21/2026-10-21T194000Z-antigravity-a1d1e5.yaml`
+- **Priority**: medium
 - **Dependencies**: None
 - **Status**: `note` (pending Stage 6 issue intake)
 
