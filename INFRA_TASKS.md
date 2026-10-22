@@ -36,9 +36,9 @@ schema_version: '1.0.0'
 tasks:
   - task_id: pathwaymech-infra-0001
     summary: Register UniProtKB, RHEA, and PMID authority entries in conf/identifier_sources.json and data/identifier_authorities/sources.json for remaining Escherichia coli PathBank primary BioPAX pathways in pathbank_primary_biopax.zip
-    status: deferred
+    status: open
     issue_url: https://github.com/CultureBotAI/PathwayMech/issues/673
-    disposition: Deferred to Cycle 2 Stage 1 (add_records); authority entries in conf/identifier_sources.json and data/identifier_authorities/sources.json are verified incrementally per pathway slice as new E. coli PathBank primary BioPAX records are curated against upstream UniProtKB, Rhea 142 RDF, and PubMed authority snapshots.
+    disposition: Updated in Cycle 2 Stage 1 (add_records) by registering pathbank-primary-2019-PW000976-SMP0000992 and adding PathBank:SMP0000992 (data/pathways/threonine-biosynthesis-from-aspartate-escherichia-coli.yaml); 39 remaining non-duplicate Escherichia coli PathBank primary BioPAX .owl entries in pathbank_primary_biopax.zip still require upstream UniProtKB, RHEA, CHEBI, and/or PMID authority registration before admission under pathwaymech-check-identifiers.
   - task_id: pathwaymech-infra-0002
     summary: Preserve YAML anchor aliases and existing line-wrap widths during guarded causal-graph publication in src/pathwaymech/curation.py
     status: resolved
@@ -72,9 +72,10 @@ tasks:
 - **Desired outcome**: Batch-register verified `UniProtKB`, `RHEA`, `PMID`, and `pathbank-primary-2019-PW*` authority entries in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json` so the remaining non-duplicate *E. coli* PathBank pathways in `reports/local_source_ingestion/2026-10-08-pathbank-dbcan/pathbank/pathbank_primary_biopax.zip` can be admitted under `pathwaymech-check-identifiers`.
 - **Evidence paths**: `conf/identifier_sources.json`, `data/identifier_authorities/sources.json`, `reports/local_source_ingestion/2026-10-08-pathbank-dbcan/pathbank/pathbank_primary_biopax.zip`, `src/pathwaymech/identifiers.py`
 - **Priority**: medium
-- **Dependencies**: Upstream UniProtKB, Rhea 142 RDF, and PubMed authority verification per bounded pathway slice during Stage 1 (`add_records`)
-- **Status**: `deferred`
+- **Dependencies**: Upstream UniProtKB, Rhea (releases 139/142), and PubMed authority verification per bounded pathway slice during Stage 1 (`add_records`)
+- **Status**: `open`
 - **Stage 6 disposition**: Explicitly deferred and carried forward under [#673](https://github.com/CultureBotAI/PathwayMech/issues/673) to Cycle 2 Stage 1 (`add_records`). Under `CLAUDE.md` and `conf/identifier_policy.yaml`, authority entries in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json` must be verified against inspected upstream sources (`UniProtKB`, `Rhea`, `PubMed`) as each bounded pathway slice is curated rather than bulk-seeded without record-level curation.
+- **Cycle 2 Stage 1 update**: Exhaustively re-scanned all 313 *Escherichia coli* (`NCBITaxon:562`) BioPAX Level 3 `.owl` entries in `reports/local_source_ingestion/2026-10-08-pathbank-dbcan/pathbank/pathbank_primary_biopax.zip`. Registered `pathbank-primary-2019-PW000976-SMP0000992` (`PW000976.owl`, 77,037 bytes, SHA-256 `bc865a7442449d67da572682d67f2d3132a40fe1c49d742c374974ecfd072680`) in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json` and curated `PathBank:SMP0000992` (*Secondary Metabolites: Threonine Biosynthesis from Aspartate*) in `data/pathways/threonine-biosynthesis-from-aspartate-escherichia-coli.yaml` against Rhea release 139 (`RHEA:23776`, `RHEA:23777`, `RHEA:24284`, `RHEA:24286`, `RHEA:15761`, `RHEA:15763`, `RHEA:13985`, `RHEA:13986`, `RHEA:10840`, `RHEA:10841`, `RHEA:34171`, `RHEA:34172`), reviewed *E. coli* K-12 `UniProtKB` entries (`P00561`, `P08660`, `P00562`, `P0A9Q9`, `P00547`, `P00934`, `P0A6L2`), and primary literature (`PMID:2241177`, `PMID:8973190`) (bringing total `PathBank:*` records in `data/pathways/` to 11, including 9 *E. coli* `PathBank:*` records, and total `pathbank-primary-2019-*` authority source entries to 18). Across the 313 *E. coli* `.owl` files in the archive, 9 are now ingested as *E. coli* `PathBank:*` records (`PW000976`, `PW001919`, `PW002026`, `PW002027`, `PW002030`, `PW002065`, `PW002069`, `PW002071`, `PW002077`), 265 duplicate existing `MetaCyc:*`, `KEGG:*`, or `BioCyc:*` records in `data/pathways/`, and the remaining 39 non-duplicate *E. coli* `.owl` entries remain blocked on registering unindexed `UniProtKB`, `RHEA`, `CHEBI`, and/or `PMID` authority entries in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json`.
 
 ### `pathwaymech-infra-0002` — Preserve YAML anchor aliases and line-wrap widths in `pathwaymech.curation.publish_curation`
 
