@@ -1,0 +1,857 @@
+schema_version: 1.0.0
+review_id: 20261022T033000Z-stage5-resolve-review-findings
+kind: batch
+repository: CultureBotAI/PathwayMech
+title: Cycle 1 Stage 5 Successor Review Resolving F-STAGE4-001 and F-STAGE4-002 Across
+  12 Maintained MetaCyc Pathway Records
+started_at: '2026-10-22T03:10:00Z'
+finished_at: '2026-10-22T03:30:00Z'
+reviewer:
+  identity: Antigravity (pathwaymech-resolve-reviews + review-yaml-category)
+  kind: agent
+  model: Claude Opus 4.6 (Thinking)
+  independence: self_review
+  independence_basis: 'Same agent session (a1d1e545-faee-4294-8a87-4c2d031a6538) implemented
+    the Stage 5 curation fixes for GitHub issue #670 and verified post-remediation
+    records and KGX exports.'
+skill: pathwaymech-resolve-reviews
+completion: completed
+verdict: pass
+native_verdict: coherent
+scientific_review: true
+summary: 'Re-inspected and verified all 12 maintained MetaCyc pathway YAML records
+  affected by Cycle 1 Stage 4 findings F-STAGE4-001 (amino-sugar-superpathway-bigg-reaction-missing-category)
+  and F-STAGE4-002 (mixed-reaction-category-typing-in-maintained-pathways) after adding
+  explicit category: molecular_activity to all 33 previously untyped catalytic reaction
+  entries (30 RHEA:*, 2 MetaCyc:RXN-*, and 1 BiGG:ACMANAptspp) under GitHub issue
+  #670. Confirmed that BiGG:ACMANAptspp in MetaCyc:GLCMANNANAUT-PWY now exports in
+  pages/downloads/nodes.tsv as biolink:MolecularActivity with source_category=molecular_activity,
+  that zero maintained records in data/pathways/*.yaml mix explicit and omitted reaction
+  category values, and that all 270 pathway records, 549 history records, 22,085 evidence
+  blocks, and 198 structured review bundles pass closed LinkML schema, authority snapshot,
+  and pytest validation.'
+source:
+  git_revision: 12a62259e1fa38b8a4094dd23df00d7edc41659f
+  state: working_tree
+  inputs:
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    sha256: dc082d3edc6391cd6d85a503e3fbf3e77b96d34f0ee93eecad51f6e6272b1025
+    role: target
+  - path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+    sha256: ee0c344a18b4b981b244ee8fcd00e651258990a3323d973fb0d978f47e26efef
+    role: target
+  - path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+    sha256: bf7b150b5b6d0647a1f2b7f4d90c8b3e5ff3c6e73c36f00acc1fe542ba1f034c
+    role: target
+  - path: data/pathways/amino-sugar-superpathway.yaml
+    sha256: 1c93e912f2e349fbfab5458f309f526fcfc9d381560ac04ba35b7c442f2295f8
+    role: target
+  - path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    sha256: 1f5d025ef0b00ff3a1bdbaa90bff4f7e38068ba608d9b5e179604c705e0de8f7
+    role: target
+  - path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    sha256: 9bc02c7a8f188c099343f47d6ad7c3f2a33b999209dda2ff93f2bc6356883b70
+    role: target
+  - path: data/pathways/cyanate-degradation.yaml
+    sha256: bc0ac1b2ce20a5c3e0eeb98d220e6dc55513ed5eb4fcd9aaadcace5ec1899d84
+    role: target
+  - path: data/pathways/ergothioneine-biosynthesis-i.yaml
+    sha256: 6d2fb20f5a664a6b7e43e9efb48ac1b65fd59a3e5c5daa1aa95b6bae35184dec
+    role: target
+  - path: data/pathways/glyoxylate-assimilation.yaml
+    sha256: 462022906e961f49ceb92c32fcc7d6f834b6e55f89ead1b1f786a91d11258969
+    role: target
+  - path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    sha256: 254d42b0e04165e9b84f95692e1f4cd482f259fe28b2fd1fbd45485bbf3536fa
+    role: target
+  - path: data/pathways/nicotine-degradation-ii.yaml
+    sha256: 462730b0c0b3679197226dc89dfbf04cac932cf004cea194a8fc3db89be82b0c
+    role: target
+  - path: data/pathways/uracil-degradation-iii.yaml
+    sha256: 2c155041e378508c99a430e72bd5fad82bde8bfc3c2b7b72569589a24c14f1c6
+    role: target
+  - path: pages/downloads/nodes.tsv
+    sha256: 2cdc35a083b668ef3fdf21bac8c649f04e296fffaafb8b693e0804ce972a9d3b
+    role: context
+  - path: reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml
+    sha256: ad033e8724d2b065a2a132fb15c571f5b6961bde6f56f298d3731735ea2d7ec3
+    role: context
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-04/revision-0001/evidence.yaml
+    sha256: 4f8d1af7488189d8a0de7fe11e5ab21003e67af0380b66654f1fe3334b8c43c7
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: d7f44be9ac077c8eb700876ead551095c53ff8728cf8afe60cbee6307ee7dca5
+    role: context
+scope:
+  description: Complete post-remediation reassessment of the 12 maintained MetaCyc
+    pathway records in data/pathways/*.yaml that had open findings (F-STAGE4-001 and
+    F-STAGE4-002) in Stage 4 review 20261022T013600Z-stage4-frozen-corpus-cohort-review.
+  selection: All 12 maintained pathway records in CultureBotAI/PathwayMech carrying
+    open findings in reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml
+    (100% of open Stage 4 maintained-record findings).
+  coverage: full
+  population_size: 12
+  reviewed_target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  exclusions:
+  - target: Remaining 258 maintained pathway records in data/pathways/*.yaml
+    reason: Assessed with zero open findings in Stage 4 review 20261022T013600Z-stage4-frozen-corpus-cohort-review
+      and unchanged in Stage 5.
+  - target: research/pathway_additions/*.yaml (6 withheld staging drafts)
+    reason: Non-maintained research staging drafts outside data/pathways/*.yaml; their
+      2 historical open findings (F01 in 20261010T090124Z-siroheme-pathway-addition-blocked-review
+      and F1 in 20261010T100956Z-ecoli-14dhna-octaprenyl-draft-review) remain untouched.
+targets:
+- target_id: MetaCyc:SALVADEHYPOX-PWY
+  path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+  label: adenosine nucleotides degradation II (MetaCyc:SALVADEHYPOX-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: dc082d3edc6391cd6d85a503e3fbf3e77b96d34f0ee93eecad51f6e6272b1025
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/adenosine-nucleotides-degradation-ii.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7971
+  path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+  label: adenosylcobinamide-GDP salvage from cobinamide I (MetaCyc:PWY-7971)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ee0c344a18b4b981b244ee8fcd00e651258990a3323d973fb0d978f47e26efef
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-41
+  path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+  label: allantoin degradation IV (anaerobic) (MetaCyc:PWY0-41)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bf7b150b5b6d0647a1f2b7f4d90c8b3e5ff3c6e73c36f00acc1fe542ba1f034c
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/allantoin-degradation-iv-anaerobic.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLCMANNANAUT-PWY
+  path: data/pathways/amino-sugar-superpathway.yaml
+  label: superpathway of N-acetylglucosamine, N-acetylmannosamine and N-acetylneuraminate
+    degradation (MetaCyc:GLCMANNANAUT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1c93e912f2e349fbfab5458f309f526fcfc9d381560ac04ba35b7c442f2295f8
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/amino-sugar-superpathway.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/amino-sugar-superpathway.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-2503
+  path: data/pathways/benzoate-degradation-i-aerobic.yaml
+  label: benzoate degradation I (aerobic) (MetaCyc:PWY-2503)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1f5d025ef0b00ff3a1bdbaa90bff4f7e38068ba608d9b5e179604c705e0de8f7
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/benzoate-degradation-i-aerobic.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-1361
+  path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+  label: benzoyl-CoA degradation I (aerobic) (MetaCyc:PWY-1361)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 9bc02c7a8f188c099343f47d6ad7c3f2a33b999209dda2ff93f2bc6356883b70
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CYANCAT-PWY
+  path: data/pathways/cyanate-degradation.yaml
+  label: cyanate degradation (MetaCyc:CYANCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bc0ac1b2ce20a5c3e0eeb98d220e6dc55513ed5eb4fcd9aaadcace5ec1899d84
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/cyanate-degradation.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cyanate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7255
+  path: data/pathways/ergothioneine-biosynthesis-i.yaml
+  label: ergothioneine biosynthesis I (bacteria) (MetaCyc:PWY-7255)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6d2fb20f5a664a6b7e43e9efb48ac1b65fd59a3e5c5daa1aa95b6bae35184dec
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/ergothioneine-biosynthesis-i.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ergothioneine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5744
+  path: data/pathways/glyoxylate-assimilation.yaml
+  label: glyoxylate assimilation (MetaCyc:PWY-5744)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 462022906e961f49ceb92c32fcc7d6f834b6e55f89ead1b1f786a91d11258969
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/glyoxylate-assimilation.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glyoxylate-assimilation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5789
+  path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+  label: 3-hydroxypropanoate/4-hydroxybutanate cycle (MetaCyc:PWY-5789)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 254d42b0e04165e9b84f95692e1f4cd482f259fe28b2fd1fbd45485bbf3536fa
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6993
+  path: data/pathways/nicotine-degradation-ii.yaml
+  label: nicotine degradation II (pyrrolidine pathway) (MetaCyc:PWY-6993)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 462730b0c0b3679197226dc89dfbf04cac932cf004cea194a8fc3db89be82b0c
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/nicotine-degradation-ii.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nicotine-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1471
+  path: data/pathways/uracil-degradation-iii.yaml
+  label: uracil degradation III (MetaCyc:PWY0-1471)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2c155041e378508c99a430e72bd5fad82bde8bfc3c2b7b72569589a24c14f1c6
+    description: 'Raw SHA-256 file digest of post-remediation data/pathways/uracil-degradation-iii.yaml
+      in Stage 5 (issue #670).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/uracil-degradation-iii.yaml
+    role: maintained pathway YAML
+checks:
+- check_id: validate
+  name: Repository QC and closed-schema validation (just validate)
+  status: passed
+  required: true
+  summary: Validated all 270 maintained pathway records (including the 12 remediated
+    MetaCyc records) against the closed LinkML schema, local identifier/label authority
+    snapshots, 549 history records, 22,085 evidence blocks, 33 source records, and
+    pages/ synchrony.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  command: .venv/bin/pathwaymech-run-qc
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-STAGE5-QC
+  scope_note: 'Full-repository QC gate after applying issue #670 fixes and regenerating
+    pages/.'
+- check_id: test
+  name: Pytest unit and integration test suite (just test)
+  status: passed
+  required: true
+  summary: All 8,045 passed (3 skipped) in pytest across schema, KGX export, SSSOM,
+    and record-review checks.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  command: .venv/bin/pytest -q
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-STAGE5-PYTEST
+  scope_note: Full pytest test suite.
+- check_id: lint
+  name: Ruff lint check (just lint)
+  status: passed
+  required: true
+  summary: Ruff check passed with 0 errors.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  command: .venv/bin/ruff check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-STAGE5-RUFF
+  scope_note: Repository-wide Python lint check.
+- check_id: git-diff-check
+  name: Git whitespace and conflict marker check
+  status: passed
+  required: true
+  summary: git diff --check exited 0 with no whitespace or conflict marker issues.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-STAGE5-GIT-DIFF
+  scope_note: Worktree diff check across all Stage 5 edits.
+- check_id: review-check
+  name: Structured review bundle contract check (just review-check)
+  status: passed
+  required: true
+  summary: All retained structured review bundles in reviews/structured/ passed schema
+    and append-only checks against main.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  command: .venv/bin/python scripts/record_review.py check --base main
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-STAGE5-REVIEW-CHECK
+  scope_note: Verifies append-only immutability of prior 198 bundles and validity
+    of current bundle.
+evidence:
+- evidence_id: EV-STAGE4-PREDECESSOR
+  kind: prior_review
+  reference: reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml
+  locator: findings[0] (F-STAGE4-001) and findings[1] (F-STAGE4-002)
+  accessed_at: '2026-10-22T03:10:00Z'
+  support: supports
+  summary: 'Predecessor Stage 4 cohort review recorded two minor open findings across
+    12 maintained MetaCyc pathway records: F-STAGE4-001 (amino-sugar-superpathway-bigg-reaction-missing-category
+    on MetaCyc:GLCMANNANAUT-PWY) and F-STAGE4-002 (mixed-reaction-category-typing-in-maintained-pathways
+    across 12 MetaCyc records and 33 catalytic reaction entries).'
+  snapshot_sha256: ad033e8724d2b065a2a132fb15c571f5b6961bde6f56f298d3731735ea2d7ec3
+- evidence_id: EV-STAGE4-WORKFLOW-EVIDENCE
+  kind: prior_review
+  reference: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-04/revision-0001/evidence.yaml
+  locator: findings[0..1] (F-STAGE4-001, F-STAGE4-002)
+  accessed_at: '2026-10-22T03:10:00Z'
+  support: supports
+  summary: Stage 4 workflow evidence manifest carried forward F-STAGE4-001 and F-STAGE4-002
+    as open findings for Stage 5 grouped remediation.
+  snapshot_sha256: 4f8d1af7488189d8a0de7fe11e5ab21003e67af0380b66654f1fe3334b8c43c7
+- evidence_id: EV-STAGE5-GLCMANNANAUT-FIXED
+  kind: record_content
+  reference: data/pathways/amino-sugar-superpathway.yaml
+  locator: lines 211-266 (reactions[3..13] in MetaCyc:GLCMANNANAUT-PWY)
+  accessed_at: '2026-10-22T03:26:00Z'
+  support: supports
+  summary: 'In data/pathways/amino-sugar-superpathway.yaml (MetaCyc:GLCMANNANAUT-PWY),
+    all 10 RHEA:* reactions (reactions[3..12]) and BiGG:ACMANAptspp (reactions[13])
+    now explicitly declare category: molecular_activity alongside the 3 subpathway
+    entries (reactions[0..2]) declaring category: pathway.'
+  quote: "- id: BiGG:ACMANAptspp\n  label: N-acetyl-D-mannosamine transport via PTS\
+    \  (periplasm)\n  direction: left_to_right\n  category: molecular_activity"
+  snapshot_sha256: 1c93e912f2e349fbfab5458f309f526fcfc9d381560ac04ba35b7c442f2295f8
+- evidence_id: EV-STAGE5-NODES-TSV-FIXED
+  kind: record_content
+  reference: pages/downloads/nodes.tsv
+  locator: line 635 (row BiGG:ACMANAptspp) and 25 remediated unique reaction CURIEs
+  accessed_at: '2026-10-22T03:27:00Z'
+  support: supports
+  summary: After running .venv/bin/pathwaymech-render-pages, BiGG:ACMANAptspp and
+    all 33 remediated catalytic reaction entries across the 12 MetaCyc records export
+    in pages/downloads/nodes.tsv with category biolink:MolecularActivity and source_category=molecular_activity.
+  quote: "BiGG:ACMANAptspp\tN-acetyl-D-mannosamine transport via PTS  (periplasm)\t\
+    biolink:MolecularActivity\tinfores:pathwaymech\tmolecular_activity\tleft_to_right\t\
+    \"[{\"\"category\"\": \"\"molecular_activity\"\", \"\"collection\"\": \"\"reactions\"\
+    \", \"\"direction\"\": \"\"left_to_right\"\", \"\"id\"\": \"\"BiGG:ACMANAptspp\"\
+    \", \"\"label\"\": \"\"N-acetyl-D-mannosamine transport via PTS  (periplasm)\"\
+    \", \"\"record_id\"\": \"\"MetaCyc:GLCMANNANAUT-PWY\"\"}]\""
+  snapshot_sha256: 2cdc35a083b668ef3fdf21bac8c649f04e296fffaafb8b693e0804ce972a9d3b
+- evidence_id: EV-STAGE5-12-RECORDS-FIXED
+  kind: record_content
+  reference: data/pathways/
+  locator: '12 remediated MetaCyc records: adenosine-nucleotides-degradation-ii.yaml,
+    adenosylcobinamide-gdp-salvage-i.yaml, allantoin-degradation-iv-anaerobic.yaml,
+    amino-sugar-superpathway.yaml, benzoate-degradation-i-aerobic.yaml, benzoyl-coa-degradation-i-aerobic.yaml,
+    cyanate-degradation.yaml, ergothioneine-biosynthesis-i.yaml, glyoxylate-assimilation.yaml,
+    hydroxypropionate-hydroxybutyrate-cycle.yaml, nicotine-degradation-ii.yaml, uracil-degradation-iii.yaml'
+  accessed_at: '2026-10-22T03:27:00Z'
+  support: supports
+  summary: 'Added explicit category: molecular_activity to all 33 catalytic reaction
+    entries (30 RHEA:*, 2 MetaCyc:RXN-*, 1 BiGG:ACMANAptspp) that previously omitted
+    category across the 12 mixed-typing MetaCyc records. Verified across all 270 maintained
+    pathway records in data/pathways/*.yaml that 0 records now mix explicit and omitted
+    reaction category values.'
+- evidence_id: EV-STAGE5-KGX-EXPORTER
+  kind: record_content
+  reference: src/pathwaymech/kgx.py
+  locator: lines 74-149 (_PARTICIPANT_CATEGORIES, _PREFIX_CATEGORIES, _node_category)
+  accessed_at: '2026-10-22T03:27:00Z'
+  support: supports
+  summary: When reaction.category is explicitly set to 'molecular_activity', _node_category
+    in src/pathwaymech/kgx.py maps it via _PARTICIPANT_CATEGORIES['molecular_activity']
+    to 'biolink:MolecularActivity' with source_category='molecular_activity'.
+  snapshot_sha256: d7f44be9ac077c8eb700876ead551095c53ff8728cf8afe60cbee6307ee7dca5
+- evidence_id: EV-STAGE5-QC
+  kind: validation
+  reference: .venv/bin/pathwaymech-run-qc
+  locator: stdout summary (270 pathway records, 549 history records, 22,085 evidence
+    blocks, 33 source records)
+  accessed_at: '2026-10-22T03:28:00Z'
+  support: supports
+  summary: 'Executed .venv/bin/pathwaymech-run-qc: validated 270 pathway records against
+    the closed LinkML schema, verified all identifiers and labels against local authority
+    snapshots, validated 549 history records (including 12 new Stage 5 record history
+    entries referencing issue #670) and 22,085 evidence blocks, and confirmed pages/
+    synchrony.'
+- evidence_id: EV-STAGE5-PYTEST
+  kind: validation
+  reference: .venv/bin/pytest -q
+  locator: pytest suite execution across tests/
+  accessed_at: '2026-10-22T03:29:00Z'
+  support: supports
+  summary: Executed .venv/bin/pytest -q with 8,045 passed and 3 skipped.
+- evidence_id: EV-STAGE5-RUFF
+  kind: validation
+  reference: .venv/bin/ruff check --no-cache .
+  locator: ruff check output
+  accessed_at: '2026-10-22T03:29:00Z'
+  support: supports
+  summary: Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks
+    passed).
+- evidence_id: EV-STAGE5-GIT-DIFF
+  kind: validation
+  reference: git diff --check
+  locator: git worktree on feat/stage5-resolve-review-findings
+  accessed_at: '2026-10-22T03:29:00Z'
+  support: supports
+  summary: Executed git diff --check with exit code 0; no whitespace errors or conflict
+    markers.
+- evidence_id: EV-STAGE5-REVIEW-CHECK
+  kind: validation
+  reference: .venv/bin/python scripts/record_review.py check --base main
+  locator: reviews/structured/
+  accessed_at: '2026-10-22T03:29:30Z'
+  support: supports
+  summary: Validated all retained structured review bundles in reviews/structured/
+    against schema/record_review.yaml and verified byte-for-byte append-only preservation
+    against main.
+assessments:
+- assessment_id: ASSESS-STAGE5-REACTION-CATEGORY-RESOLVED-12
+  area: consistency
+  topic: Post-remediation within-record reaction category typing consistency and KGX
+    node category export across the 12 affected MetaCyc pathway records
+  outcome: supported
+  summary: 'All 33 previously untyped catalytic reaction entries (30 RHEA:*, 2 MetaCyc:RXN-*,
+    and 1 BiGG:ACMANAptspp) across the 12 affected MetaCyc pathway records now explicitly
+    declare category: molecular_activity. Every reaction entry across all 12 records
+    (120 reaction entries total: 109 molecular_activity and 11 subpathway entries
+    with category: pathway) carries an explicit category value, BiGG:ACMANAptspp exports
+    as biolink:MolecularActivity with source_category=molecular_activity in pages/downloads/nodes.tsv,
+    and 0 of 270 maintained records mix explicit and omitted reaction categories.'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  evidence_ids:
+  - EV-STAGE4-PREDECESSOR
+  - EV-STAGE5-GLCMANNANAUT-FIXED
+  - EV-STAGE5-NODES-TSV-FIXED
+  - EV-STAGE5-12-RECORDS-FIXED
+  - EV-STAGE5-KGX-EXPORTER
+  - EV-STAGE5-QC
+  - EV-STAGE5-PYTEST
+  metrics:
+  - name: records_with_mixed_reaction_category_typing
+    value: 0.0
+    unit: records
+    definition: Count of maintained pathway records where reactions[] mixes entries
+      with explicit category and entries with category omitted after Stage 5 remediation.
+    denominator: 270
+    minimum: 0.0
+    maximum: 270.0
+  - name: reactions_missing_explicit_category_in_remediated_records
+    value: 0.0
+    unit: reactions
+    definition: 'Count of catalytic reaction entries omitting category: molecular_activity
+      across the 12 remediated MetaCyc records (120 total reaction entries: 109 molecular_activity,
+      11 pathway).'
+    denominator: 120
+    minimum: 0.0
+    maximum: 120.0
+  dimensions:
+  - name: kgx_export_verification
+    value: BiGG:ACMANAptspp and all 30 RHEA:* + 2 MetaCyc:RXN-* entries -> biolink:MolecularActivity
+      (source_category=molecular_activity)
+    definition: Verified post-remediation KGX node category and source_category in
+      pages/downloads/nodes.tsv.
+    evidence_ids:
+    - EV-STAGE5-NODES-TSV-FIXED
+    - EV-STAGE5-KGX-EXPORTER
+- assessment_id: ASSESS-STAGE5-SCIENTIFIC-INTEGRITY-12
+  area: evidence
+  topic: Preservation of pathway identity, taxon grounding, reaction directionality,
+    stoichiometry, and edge-level evidence across the 12 remediated MetaCyc records
+  outcome: supported
+  summary: 'Structural diff verification across all 12 remediated YAML files confirms
+    that only the 33 category: molecular_activity lines were added; all pathway IDs,
+    NCBITaxon groundings, participant CURIEs, reaction directions, step definitions,
+    mechanistic_edges, endpoint_qualifiers, and structured evidence blocks remain
+    100% intact and pass closed LinkML and authority snapshot checks.'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  evidence_ids:
+  - EV-STAGE5-12-RECORDS-FIXED
+  - EV-STAGE5-QC
+  - EV-STAGE5-PYTEST
+  - EV-STAGE5-GIT-DIFF
+findings:
+- finding_id: F-STAGE4-001
+  issue_key: amino-sugar-superpathway-bigg-reaction-missing-category
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: 'BiGG:ACMANAptspp reaction in MetaCyc:GLCMANNANAUT-PWY now declares category:
+    molecular_activity and exports as biolink:MolecularActivity'
+  description: 'In data/pathways/amino-sugar-superpathway.yaml (MetaCyc:GLCMANNANAUT-PWY),
+    reactions[13] (BiGG:ACMANAptspp, N-acetyl-D-mannosamine transport via PTS  (periplasm))
+    previously omitted category: molecular_activity and fell back to biolink:NamedThing
+    in pages/downloads/nodes.tsv. Added explicit category: molecular_activity to reactions[13]
+    (along with reactions[3..12]), recorded history/records/amino-sugar-superpathway/2026-10-22T032500Z-antigravity-a1d1e5.yaml,
+    and regenerated pages/.'
+  target_ids:
+  - MetaCyc:GLCMANNANAUT-PWY
+  field_paths:
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[13].category (BiGG:ACMANAptspp)
+  evidence_ids:
+  - EV-STAGE4-PREDECESSOR
+  - EV-STAGE5-GLCMANNANAUT-FIXED
+  - EV-STAGE5-NODES-TSV-FIXED
+  - EV-STAGE5-KGX-EXPORTER
+  - EV-STAGE5-QC
+  rule_id: CAUSAL_GRAPHS:reaction-category-typing
+  native_severity: minor
+  normalization_reason: 'Native minor representation defect maps directly to minor
+    severity: pathway identity, stoichiometry, and edge evidence are valid, while
+    adding category: molecular_activity to reactions[13] restores accurate biolink:MolecularActivity
+    typing in KGX export.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/amino-sugar-superpathway.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #670 by adding category: molecular_activity
+    to reactions[13] (BiGG:ACMANAptspp) in data/pathways/amino-sugar-superpathway.yaml
+    (post-fix SHA-256 1c93e912f2e349fbfab5458f309f526fcfc9d381560ac04ba35b7c442f2295f8)
+    and regenerating pages/. Verified in pages/downloads/nodes.tsv (SHA-256 2cdc35a083b668ef3fdf21bac8c649f04e296fffaafb8b693e0804ce972a9d3b)
+    that BiGG:ACMANAptspp now exports as biolink:MolecularActivity with source_category=molecular_activity,
+    and all repository QC and pytest gates pass.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261022T013600Z-stage4-frozen-corpus-cohort-review
+    finding_id: F-STAGE4-001
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/670
+  tags:
+  - stage5-resolve-review-findings
+  - reaction-category
+  - kgx-export
+- finding_id: F-STAGE4-002
+  issue_key: mixed-reaction-category-typing-in-maintained-pathways
+  category: consistency
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: 'All 33 previously untyped catalytic reaction entries across 12 mixed-typing
+    MetaCyc pathway records now explicitly declare category: molecular_activity'
+  description: 'Across the 12 maintained MetaCyc pathway records (MetaCyc:SALVADEHYPOX-PWY,
+    MetaCyc:PWY-7971, MetaCyc:PWY0-41, MetaCyc:GLCMANNANAUT-PWY, MetaCyc:PWY-2503,
+    MetaCyc:PWY-1361, MetaCyc:CYANCAT-PWY, MetaCyc:PWY-7255, MetaCyc:PWY-5744, MetaCyc:PWY-5789,
+    MetaCyc:PWY-6993, and MetaCyc:PWY0-1471), added explicit category: molecular_activity
+    to all 33 catalytic reaction entries (30 RHEA:*, 2 MetaCyc:RXN-*, and 1 BiGG:ACMANAptspp)
+    that previously omitted category while sibling reactions[] entries declared category.
+    Recorded 12 curation history files and regenerated pages/.'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  field_paths:
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#reactions[1].category
+    (RHEA:29376)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#reactions[2].category
+    (RHEA:24409)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#reactions[3].category
+    (RHEA:27647)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#reactions[4].category
+    (RHEA:24671)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#reactions[5].category
+    (RHEA:16670)
+  - data/pathways/adenosylcobinamide-gdp-salvage-i.yaml#reactions[1].category (RHEA:57693)
+  - data/pathways/allantoin-degradation-iv-anaerobic.yaml#reactions[6].category (RHEA:15650)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[3].category (RHEA:67737)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[4].category (RHEA:67741)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[5].category (RHEA:23297)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[6].category (RHEA:25254)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[7].category (RHEA:25259)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[8].category (RHEA:22937)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[9].category (RHEA:12173)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[10].category (RHEA:28989)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[11].category (RHEA:49241)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[12].category (RHEA:23881)
+  - data/pathways/amino-sugar-superpathway.yaml#reactions[13].category (BiGG:ACMANAptspp)
+  - data/pathways/benzoate-degradation-i-aerobic.yaml#reactions[5].category (RHEA:12634)
+  - data/pathways/benzoate-degradation-i-aerobic.yaml#reactions[6].category (RHEA:11561)
+  - data/pathways/benzoyl-coa-degradation-i-aerobic.yaml#reactions[0].category (RHEA:48313)
+  - data/pathways/benzoyl-coa-degradation-i-aerobic.yaml#reactions[1].category (RHEA:48309)
+  - data/pathways/benzoyl-coa-degradation-i-aerobic.yaml#reactions[2].category (RHEA:25392)
+  - data/pathways/benzoyl-coa-degradation-i-aerobic.yaml#reactions[4].category (RHEA:76649)
+  - data/pathways/benzoyl-coa-degradation-i-aerobic.yaml#reactions[5].category (RHEA:34852)
+  - data/pathways/benzoyl-coa-degradation-i-aerobic.yaml#reactions[6].category (RHEA:19483)
+  - data/pathways/cyanate-degradation.yaml#reactions[1].category (RHEA:15650)
+  - data/pathways/ergothioneine-biosynthesis-i.yaml#reactions[5].category (MetaCyc:RXN-18089)
+  - data/pathways/ergothioneine-biosynthesis-i.yaml#reactions[6].category (MetaCyc:RXN-15804)
+  - data/pathways/glyoxylate-assimilation.yaml#reactions[0].category (RHEA:10750)
+  - data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml#reactions[0].category
+    (RHEA:10750)
+  - data/pathways/nicotine-degradation-ii.yaml#reactions[1].category (RHEA:75416)
+  - data/pathways/uracil-degradation-iii.yaml#reactions[3].category (RHEA:15650)
+  evidence_ids:
+  - EV-STAGE4-PREDECESSOR
+  - EV-STAGE5-12-RECORDS-FIXED
+  - EV-STAGE5-GLCMANNANAUT-FIXED
+  - EV-STAGE5-NODES-TSV-FIXED
+  - EV-STAGE5-QC
+  - EV-STAGE5-PYTEST
+  rule_id: CAUSAL_GRAPHS:within-record-reaction-category-consistency
+  native_severity: minor
+  normalization_reason: 'Native minor consistency defect maps directly to minor severity:
+    RHEA:* and MetaCyc:RXN-* reactions remain valid under prefix fallback in kgx.py,
+    but standardizing explicit category: molecular_activity across all 33 omitted
+    catalytic reaction entries in these 12 records makes within-record reaction typing
+    and KGX node export uniform.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/amino-sugar-superpathway.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cyanate-degradation.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ergothioneine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glyoxylate-assimilation.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nicotine-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/uracil-degradation-iii.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #670 by adding explicit category:
+    molecular_activity to all 33 catalytic reaction entries across the 12 affected
+    MetaCyc pathway YAML files, recording 12 history/records/<slug>/2026-10-22T032500Z-antigravity-a1d1e5.yaml
+    provenance entries, and regenerating pages/. Verified across all 270 maintained
+    records in data/pathways/*.yaml that zero records mix explicit and omitted reaction
+    category values, that all 25 unique remediated reaction CURIEs export in pages/downloads/nodes.tsv
+    as biolink:MolecularActivity with source_category=molecular_activity, and that
+    all repository QC and pytest gates pass.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261022T013600Z-stage4-frozen-corpus-cohort-review
+    finding_id: F-STAGE4-002
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/670
+  tags:
+  - stage5-resolve-review-findings
+  - reaction-category
+  - consistency
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-41
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY0-1471
+  rationale: Retain all 12 remediated MetaCyc:* pathway records as distinct, non-duplicate
+    source-scoped pathway definitions with uniform explicit reaction category typing.
+  evidence_ids:
+  - EV-STAGE5-12-RECORDS-FIXED
+  - EV-STAGE5-QC
+limitations:
+- This Stage 5 successor review is scoped to verifying the remediation of Stage 4
+  findings F-STAGE4-001 and F-STAGE4-002 across the 12 affected maintained MetaCyc
+  pathway records; the remaining 258 maintained records had zero findings in Stage
+  4 and were verified via repository-wide QC and pytest gates.
+- Automatic fallback typing for future BiGG:* reactions without explicit category
+  in src/pathwaymech/kgx.py and automated schema-level within-record reaction category
+  consistency enforcement in src/pathwaymech/schema.py remain tracked as infrastructure
+  note pathwaymech-infra-0005 in INFRA_TASKS.md for Stage 6.
+notes:
+- CLAW aggregator CLI (kg_microbe_reviews) is not installed in the local culturebotai-claw
+  environment; finding lineage (predecessor review_id 20261022T013600Z-stage4-frozen-corpus-cohort-review,
+  finding_ids F-STAGE4-001 and F-STAGE4-002, exact issue_keys, 100% target_ids retention,
+  and absence of competing heads) was explicitly verified against reviews/structured/.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261022T013600Z-stage4-frozen-corpus-cohort-review
+  relationship: resolves_findings_from
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/670
+tags:
+- mech-goal-sequence-20261019
+- cycle-1
+- stage-5
+- resolve-review-findings
