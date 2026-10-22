@@ -1,0 +1,75 @@
+schema_version: 1.0.0
+repository_key: pathwaymech
+github_repository: CultureBotAI/PathwayMech
+run_id: mech-goal-sequence-20261019
+cycle: 2
+stage: 5
+revision: 1
+outcome: completed
+summary: 'Completed Cycle 2 Stage 5 grouped remediation of all carried-forward Cycle 2 Stage 4 findings
+  (F-C2S4-001, F-C2S4-002) under root-cause group G-C2S5-001 and GitHub issue #692 across all 56 affected
+  MetaCyc pathway records (279 catalytic reaction entries across 254 unique reaction CURIEs), recorded
+  56 curation history files, updated INFRA_TASKS.md (pathwaymech-infra-0005), regenerated rendered pages
+  and KGX exports (bringing 100% of the 271-record corpus to explicit reaction category typing), and saved
+  successor structured review bundle 20261022T152000Z-cycle2-stage5-resolve-review-findings confirming
+  0 remaining findings.'
+source_revision: 141d6b29ac5b00faa5d939dc6aaceea97af819b3
+scope_frozen_at: '2026-10-22T15:04:42Z'
+previous_evidence:
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-04/revision-0001/evidence.yaml
+  sha256: a44e8e553d0925c250c332fcc6efc08e5af7055150728de97c65fc4073fe83a9
+artifacts:
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/issue_map.md
+  sha256: 2bf1baac96eb0fe11b4597d9b53d298a5d0e49380bb0e9901ecd7135c5b2caa3
+  kind: issue_map
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/validation.md
+  sha256: f3a0d4e7c08e3388d3f1d5feef78c8c958da1c0794f093bf92b3bb3f550be2e8
+  kind: validation
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/coverage.json
+  sha256: 6efa19888febc24d32a059860391046c4814aa5f8ec0381c9132aa27aebf2409
+  kind: supporting
+findings:
+- finding_id: F-C2S4-001
+  status: resolved
+  summary: 'Sixteen maintained MetaCyc pathway records omit category: molecular_activity on 28 catalytic
+    reaction entries (23 unique reaction CURIEs: 22 RHEA:* and 1 MetaCyc:RXN-14325) that are explicitly
+    typed in 14 sibling pathway records, producing mixed source_contexts in pages/downloads/nodes.tsv.'
+  group_id: G-C2S5-001
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/692
+  disposition: 'Added explicit category: molecular_activity to all 28 shared catalytic reaction occurrences
+    across the 16 affected MetaCyc pathway records via pathwaymech.curation.publish_curation, regenerated
+    pages/downloads/nodes.tsv (verifying uniform source_contexts with category: molecular_activity), recorded
+    16 curation history files, and verified resolution in structured review 20261022T152000Z-cycle2-stage5-resolve-review-findings.'
+  carried_from: F-C2S4-001
+- finding_id: F-C2S4-002
+  status: resolved
+  summary: 'Fifty-six maintained MetaCyc pathway records omit category: molecular_activity across all
+    279 of their catalytic reaction entries (263 RHEA:* and 16 MetaCyc:*, spanning 254 unique reaction
+    CURIEs), causing 231 unique reaction nodes in pages/downloads/nodes.tsv to export as biolink:BiochemicalReaction
+    with empty source_category instead of biolink:MolecularActivity.'
+  group_id: G-C2S5-001
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/692
+  disposition: 'Added explicit category: molecular_activity to all 279 untyped catalytic reaction entries
+    across all 56 affected MetaCyc pathway records via pathwaymech.curation.publish_curation, regenerated
+    pages/downloads/nodes.tsv (verifying all 254 unique reaction CURIEs export as biolink:MolecularActivity
+    with source_category=molecular_activity), recorded 56 curation history files, and verified resolution
+    in structured review 20261022T152000Z-cycle2-stage5-resolve-review-findings.'
+  carried_from: F-C2S4-002
+groups:
+- group_id: G-C2S5-001
+  finding_ids:
+  - F-C2S4-001
+  - F-C2S4-002
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/692
+  status: resolved
+  summary: 'Omitted category: molecular_activity declarations on 279 catalytic reactions[] entries (263
+    RHEA:* and 16 MetaCyc:*) across 56 untyped MetaCyc pathway YAML records.'
+  resolution_evidence:
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/issue_map.md
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/validation.md
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/coverage.json
+  disposition: Resolved in data/pathways/*.yaml (56 files, 279 reaction entries), pages/downloads/nodes.tsv,
+    history/records/*/2026-10-22T151500Z-antigravity-a1d1e5.yaml (56 files), INFRA_TASKS.md (pathwaymech-infra-0005),
+    and reviews/structured/20261022T152000Z-cycle2-stage5-resolve-review-findings/review.yaml.
+carry_forward_ids: []
+infra_tasks: []
