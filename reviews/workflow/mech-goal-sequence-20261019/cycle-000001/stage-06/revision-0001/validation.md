@@ -9,7 +9,7 @@
   - Size: `14811` bytes
   - Exact match with `status.json` `infra_scope`: verified (`True`).
 - **Updated `INFRA_TASKS.md` notebook validation**:
-  - Validated with `kg_microbe_workflows.infra.validate_infra_notebook`: `0` errors.
+  - Validated with `kg_microbe_workflows.validate_infra_notebook`: `0` errors.
   - Task statuses:
     - `pathwaymech-infra-0001` ([#673](https://github.com/CultureBotAI/PathwayMech/issues/673)): `deferred` (carried forward to Cycle 2 Stage 1 `add_records`)
     - `pathwaymech-infra-0002` ([#674](https://github.com/CultureBotAI/PathwayMech/issues/674)): `resolved`
