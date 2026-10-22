@@ -19,6 +19,8 @@ CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
 _DATE_TIME = FormatChecker(formats=["date-time"])
 _SOURCE_XML_QUOTE = re.compile(r"^\s*<\s*/?\s*([A-Za-z_:][\w:.-]*)")
 _CONFIDENCE = re.compile(r"^(0(\.[0-9]+)?|1(\.0+)?)(?![\s\S])")
+_ASSAY_TAXON = re.compile(r"^NCBITaxon:[0-9]+(?![\s\S])")
+_ECO_CODE = re.compile(r"^ECO:[0-9]{7}(?![\s\S])")
 # Reference-only Handle subset: numeric dot-separated prefix and a simple ASCII
 # suffix. This deliberately does not cover every syntax the Handle system allows.
 _HANDLE_REFERENCE = re.compile(r"hdl:[0-9]+(?:\.[0-9]+)*/[A-Za-z0-9][A-Za-z0-9._-]*")
@@ -94,6 +96,7 @@ ALLOWED_EDGE_PREDICATES = {
     "has_part",
     "provides_input_for",
     "has_cofactor",
+    "encodes",
 }
 
 NODE_CATEGORIES = {
@@ -268,6 +271,14 @@ def _validate_named_nodes(value: Any, field: str, errors: list[str]) -> set[str]
             or item["direction"] not in {"left_to_right", "right_to_left", "reversible"}
         ):
             errors.append(f"{path}.direction must describe a reaction direction")
+    if field == "reactions":
+        dict_items = [item for item in value if isinstance(item, dict)]
+        if any("category" in item for item in dict_items) and any(
+            "category" not in item for item in dict_items
+        ):
+            errors.append(
+                "reactions must not mix entries with explicit category and entries without category"
+            )
     return ids
 
 
@@ -510,6 +521,10 @@ def _validate_edges(
             errors.append(f"{path}.object does not resolve locally: {obj!r}")
         if predicate not in ALLOWED_EDGE_PREDICATES:
             errors.append(f"{path}.predicate is not supported: {predicate!r}")
+        if "coefficient" in item and (
+            type(item["coefficient"]) is not int or item["coefficient"] < 1
+        ):
+            errors.append(f"{path}.coefficient must be a positive integer")
         if subject_resolves and object_resolves:
             _validate_edge_endpoint_types(
                 path,
@@ -629,6 +644,18 @@ def _validate_edge_endpoint_types(
             kind is None and subject.split(":", 1)[0] in known_nonenzymes
         ):
             errors.append(f"{path} has_cofactor subject must be an enzyme protein or complex")
+    if predicate == "encodes":
+        if subject not in participant_ids or obj not in participant_ids:
+            errors.append(
+                f"{path} encodes must connect a gene or nucleic-acid participant to a gene-product participant"
+            )
+        else:
+            subject_kind = categories.get(subject)
+            object_kind = categories.get(obj)
+            if subject_kind is not None and subject_kind not in {"gene", "dna", "rna"}:
+                errors.append(f"{path} encodes subject must be a gene, dna, or rna participant")
+            if object_kind is not None and object_kind not in {"protein", "rna", "complex"}:
+                errors.append(f"{path} encodes object must be a protein, rna, or complex participant")
     if predicate in {"occurs_in", "located_in"}:
         if obj not in participant_ids or categories.get(obj) != "cellular_component":
             errors.append(f"{path} {predicate} object must be a cellular_component participant")
@@ -679,6 +706,16 @@ def _validate_evidence(
             locator = item.get("source_locator")
             if not isinstance(locator, str) or not locator.strip():
                 errors.append(f"{item_path}.source_locator must identify the source statement")
+        if "assay_taxon" in item and (
+            not isinstance(item["assay_taxon"], str)
+            or not _ASSAY_TAXON.match(item["assay_taxon"])
+        ):
+            errors.append(f"{item_path}.assay_taxon must be an NCBITaxon CURIE")
+        if "eco_code" in item and (
+            not isinstance(item["eco_code"], str)
+            or not _ECO_CODE.match(item["eco_code"])
+        ):
+            errors.append(f"{item_path}.eco_code must be a 7-digit ECO CURIE")
 
 
 def _validate_curie(value: Any, path: str, errors: list[str]) -> None:

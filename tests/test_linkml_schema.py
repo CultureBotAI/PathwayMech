@@ -330,6 +330,7 @@ EXPECTED_NON_BLANK = (
     | {("NamedNode", "id"), ("NamedNode", "label"), ("MechanisticEdge", "id"),
        ("EvidenceItem", "quote"), ("Reference", "id"), ("Reference", "title"),
        ("EvidenceItem", "source_assertion"), ("EvidenceItem", "source_locator"),
+       ("EvidenceItem", "assay_taxon"), ("EvidenceItem", "eco_code"),
        ("Reference", "url"), ("Reference", "source_version"), ("Reference", "source_sha256"),
        ("Reference", "citation"), ("CurationEvent", "timestamp")}
     | {("GeneCluster", slot) for slot in ("id", "label", "products",
@@ -569,4 +570,110 @@ def test_an_event_that_is_not_a_mapping_is_rejected_by_both(checker, record) -> 
     changed = _with_history(record, "EDITED")
     assert checker.validate(changed, TARGET_CLASS).results
     with pytest.raises(ValidationError, match=r"curation_history\[0\] must be a mapping"):
+        validate_record(changed)
+
+
+# --------------------------------------------------------------------------
+# Stage 6 schema extensions (#675, #677): edge coefficient, encodes, assay_taxon, eco_code,
+# and consistent reaction typing
+# --------------------------------------------------------------------------
+
+
+def test_mechanistic_edge_coefficient_and_evidence_annotations_validate_in_both(
+    checker, record
+) -> None:
+    changed = copy.deepcopy(record)
+    _edge(changed)["coefficient"] = 2
+    _evidence(changed)["assay_taxon"] = "NCBITaxon:511145"
+    _evidence(changed)["eco_code"] = "ECO:0000269"
+    assert not checker.validate(changed, TARGET_CLASS).results
+    validated = validate_record(changed)
+    assert validated.mechanistic_edges[0]["coefficient"] == 2
+    assert validated.mechanistic_edges[0]["evidence"][0]["assay_taxon"] == "NCBITaxon:511145"
+    assert validated.mechanistic_edges[0]["evidence"][0]["eco_code"] == "ECO:0000269"
+
+
+@pytest.mark.parametrize("coeff", [0, -1, True, "2", None])
+def test_mechanistic_edge_coefficient_must_be_a_positive_int_in_both(
+    checker, record, coeff
+) -> None:
+    changed = copy.deepcopy(record)
+    _edge(changed)["coefficient"] = coeff
+    assert checker.validate(changed, TARGET_CLASS).results
+    with pytest.raises(ValidationError, match=r"mechanistic_edges\[0\]\.coefficient must be a positive integer"):
+        validate_record(changed)
+
+
+@pytest.mark.parametrize("taxon", ["NCBITaxon:abc", "511145", "NCBITaxon:511145\n", None])
+def test_evidence_assay_taxon_must_be_an_ncbitaxon_curie_in_both(
+    checker, record, taxon
+) -> None:
+    changed = copy.deepcopy(record)
+    _evidence(changed)["assay_taxon"] = taxon
+    assert checker.validate(changed, TARGET_CLASS).results
+    with pytest.raises(ValidationError, match="assay_taxon must be an NCBITaxon CURIE"):
+        validate_record(changed)
+
+
+@pytest.mark.parametrize("eco", ["ECO:123", "ECO:ABCDEFG", "ECO:0000269\n", None])
+def test_evidence_eco_code_must_be_a_7_digit_eco_curie_in_both(
+    checker, record, eco
+) -> None:
+    changed = copy.deepcopy(record)
+    _evidence(changed)["eco_code"] = eco
+    assert checker.validate(changed, TARGET_CLASS).results
+    with pytest.raises(ValidationError, match="eco_code must be a 7-digit ECO CURIE"):
+        validate_record(changed)
+
+
+def test_encodes_predicate_accepts_gene_to_protein_in_both_and_rejects_bad_endpoints(
+    checker, record
+) -> None:
+    changed = copy.deepcopy(record)
+    changed["participants"].extend([
+        {"id": "EcoCyc:EG10001", "label": "test gene", "category": "gene"},
+        {"id": "UniProtKB:P00001", "label": "test protein", "category": "protein"},
+    ])
+    changed["mechanistic_edges"].append({
+        "id": "edge-encodes",
+        "subject": "EcoCyc:EG10001",
+        "predicate": "encodes",
+        "object": "UniProtKB:P00001",
+        "evidence": [{
+            "reference_id": changed["references"][0]["id"],
+            "quote": "The test gene encodes the test protein.",
+        }],
+    })
+    assert not checker.validate(changed, TARGET_CLASS).results
+    validate_record(changed)
+
+    bad_subject = copy.deepcopy(changed)
+    bad_subject["participants"][-2]["category"] = "small_molecule"
+    with pytest.raises(ValidationError, match="encodes subject must be a gene, dna, or rna participant"):
+        validate_record(bad_subject)
+
+    bad_object = copy.deepcopy(changed)
+    bad_object["participants"][-1]["category"] = "small_molecule"
+    with pytest.raises(ValidationError, match="encodes object must be a protein, rna, or complex participant"):
+        validate_record(bad_object)
+
+    bad_reaction = copy.deepcopy(changed)
+    bad_reaction["mechanistic_edges"][-1]["object"] = bad_reaction["reactions"][0]["id"]
+    with pytest.raises(
+        ValidationError,
+        match="encodes must connect a gene or nucleic-acid participant to a gene-product participant",
+    ):
+        validate_record(bad_reaction)
+
+
+def test_reactions_mixing_explicit_and_omitted_categories_are_rejected(record) -> None:
+    changed = copy.deepcopy(record)
+    changed["reactions"] = [
+        {"id": "RHEA:10000", "label": "typed reaction", "category": "molecular_activity"},
+        {"id": "RHEA:10001", "label": "untyped reaction"},
+    ]
+    with pytest.raises(
+        ValidationError,
+        match="reactions must not mix entries with explicit category and entries without category",
+    ):
         validate_record(changed)

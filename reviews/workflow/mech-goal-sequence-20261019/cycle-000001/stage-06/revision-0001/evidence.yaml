@@ -1,0 +1,103 @@
+schema_version: 1.0.0
+repository_key: pathwaymech
+github_repository: CultureBotAI/PathwayMech
+run_id: mech-goal-sequence-20261019
+cycle: 1
+stage: 6
+revision: 1
+outcome: completed
+summary: >-
+  Froze PathwayMech INFRA_TASKS.md at 2026-10-22T04:59:06Z (SHA-256
+  842d392d3e6a1dcec5507c958d4add01b8a1f270943c5d0788f88d151dd08c94, 5 tasks),
+  converted the bounded intake into a dependency-aware implementation plan,
+  grouped tasks into real GitHub issues (#673-#677), implemented and validated
+  the 4 selected repository-local code/schema/export upgrades
+  (pathwaymech-infra-0002 through pathwaymech-infra-0005), and explicitly
+  carried forward pathwaymech-infra-0001 (#673) to Cycle 2 Stage 1
+  (add_records).
+source_revision: e8f3fcc82ab9de3aa8d47f5e41b07c07a09159a9
+scope_frozen_at: '2026-10-22T04:59:06Z'
+previous_evidence:
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/evidence.yaml
+  sha256: fb55df66a410b6d110e8ca94e8797538e5332d3b1457d26bc3efca71249d3995
+artifacts:
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/infra_snapshot.md
+    sha256: 842d392d3e6a1dcec5507c958d4add01b8a1f270943c5d0788f88d151dd08c94
+    kind: infra_snapshot
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/implementation_plan.md
+    sha256: 2ee7679f3e77d31a5ce35e6e43c6f45ed354bf9ca672a9894f6c56cf17eaed6d
+    kind: implementation_plan
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/validation.md
+    sha256: 734fa066611ef8e3eaeba23e7fe16fb7f8042978ffb4adcaf210eb04c61dfa72
+    kind: validation
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/coverage.json
+    sha256: b2f4f2a4a4b532cf1237bad7be8d765197e42e50d255dc0cd2b2a22c77db358c
+    kind: supporting
+findings: []
+groups: []
+carry_forward_ids: []
+infra_tasks:
+  - task_id: pathwaymech-infra-0001
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/673
+    status: deferred
+    summary: PathBank BioPAX OWL ingestion and authority-indexing helper for primary pathway records
+    resolution_evidence:
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/implementation_plan.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/validation.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/coverage.json
+    disposition: >-
+      Deferred and carried forward to Cycle 2 Stage 1 (add_records) via
+      https://github.com/CultureBotAI/PathwayMech/issues/673 because no bulk
+      PathBank record additions are scheduled during Stage 6 and prioritized
+      schema/writer/export tasks (0002-0005) took precedence.
+  - task_id: pathwaymech-infra-0002
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/674
+    status: resolved
+    summary: Preserve original YAML line width and YAML anchor/alias structure in apply_curation_change
+    resolution_evidence:
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/implementation_plan.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/validation.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/coverage.json
+    disposition: >-
+      Resolved in src/pathwaymech/curation.py (_detect_yaml_width,
+      _collect_anchored_subtrees, _restore_yaml_anchors, _serialize_record) and
+      validated in tests/test_curation_publication.py (issue #674).
+  - task_id: pathwaymech-infra-0003
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/675
+    status: resolved
+    summary: Evaluate LinkML schema support for stoichiometric coefficients, gene-encodes-protein edges, and assay-taxon/ECO fields
+    resolution_evidence:
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/implementation_plan.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/validation.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/coverage.json
+    disposition: >-
+      Resolved in src/pathwaymech/schema/pathwaymech.yaml,
+      src/pathwaymech/schema.py, and src/pathwaymech/kgx.py (optional
+      MechanisticEdge.coefficient, EdgePredicateEnum.encodes,
+      EvidenceItem.assay_taxon, and EvidenceItem.eco_code) and validated in
+      tests/test_linkml_schema.py (issue #675).
+  - task_id: pathwaymech-infra-0004
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/676
+    status: resolved
+    summary: Expand CURIE_MAP in src/pathwaymech/sssom.py for Entrez, gomodel, NCBIProtein, Reactome, and SGD prefixes
+    resolution_evidence:
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/implementation_plan.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/validation.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/coverage.json
+    disposition: >-
+      Resolved in src/pathwaymech/sssom.py, regenerated
+      output/sssom/source_mappings.sssom.tsv with all 15 CURIE prefixes sorted
+      in header curie_map, and validated in tests/test_sssom_export.py (issue #676).
+  - task_id: pathwaymech-infra-0005
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/677
+    status: resolved
+    summary: Add BiGG prefix category mapping in KGX export and reaction-category consistency lint in schema validation
+    resolution_evidence:
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/implementation_plan.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/validation.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-06/revision-0001/coverage.json
+    disposition: >-
+      Resolved in src/pathwaymech/kgx.py (_PREFIX_CATEGORIES["BiGG"] =
+      "biolink:BiochemicalReaction") and src/pathwaymech/schema.py (within-record
+      reactions category consistency lint), and validated in
+      tests/test_kgx_export.py and tests/test_linkml_schema.py (issue #677).

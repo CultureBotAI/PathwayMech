@@ -1,0 +1,72 @@
+{
+  "run_id": "mech-goal-sequence-20261019",
+  "cycle": 1,
+  "stage": 6,
+  "stage_key": "infrastructure",
+  "revision": 1,
+  "source_revision": "e8f3fcc82ab9de3aa8d47f5e41b07c07a09159a9",
+  "scope_frozen_at": "2026-10-22T04:59:06Z",
+  "frozen_snapshot_sha256": "842d392d3e6a1dcec5507c958d4add01b8a1f270943c5d0788f88d151dd08c94",
+  "frozen_tasks_total": 5,
+  "tasks_resolved": 4,
+  "tasks_deferred": 1,
+  "tasks_open": 0,
+  "tasks": [
+    {
+      "task_id": "pathwaymech-infra-0001",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/673",
+      "status": "deferred",
+      "originating_stage": 1,
+      "disposition": "Deferred to Cycle 2 Stage 1 (add_records); authority entries in conf/identifier_sources.json and data/identifier_authorities/sources.json are verified incrementally per pathway slice as new E. coli PathBank primary BioPAX records are curated against upstream UniProtKB, Rhea 142 RDF, and PubMed authority snapshots."
+    },
+    {
+      "task_id": "pathwaymech-infra-0002",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/674",
+      "status": "resolved",
+      "originating_stage": 2,
+      "modified_files": [
+        "src/pathwaymech/curation.py",
+        "tests/test_curation_publication.py"
+      ],
+      "disposition": "Resolved in Stage 6 by enhancing _serialize_record in src/pathwaymech/curation.py with _detect_yaml_width, _collect_anchored_subtrees, and _restore_yaml_anchors so guarded publication preserves per-file line-wrap widths (80, 88, 100, 120, 4096) and YAML anchor/alias structure (&id001/*id001) across deep copies; verified by unit tests in tests/test_curation_publication.py."
+    },
+    {
+      "task_id": "pathwaymech-infra-0003",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/675",
+      "status": "resolved",
+      "originating_stage": 2,
+      "modified_files": [
+        "src/pathwaymech/schema/pathwaymech.yaml",
+        "src/pathwaymech/schema.py",
+        "src/pathwaymech/kgx.py",
+        "tests/test_linkml_schema.py"
+      ],
+      "disposition": "Resolved in Stage 6 by adding optional MechanisticEdge.coefficient, EdgePredicateEnum.encodes, EvidenceItem.assay_taxon, and EvidenceItem.eco_code in src/pathwaymech/schema/pathwaymech.yaml, src/pathwaymech/schema.py, and src/pathwaymech/kgx.py; verified in both open and closed LinkML validators by tests/test_linkml_schema.py."
+    },
+    {
+      "task_id": "pathwaymech-infra-0004",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/676",
+      "status": "resolved",
+      "originating_stage": 3,
+      "modified_files": [
+        "src/pathwaymech/sssom.py",
+        "output/sssom/source_mappings.sssom.tsv",
+        "tests/test_sssom_export.py"
+      ],
+      "disposition": "Resolved in Stage 6 by adding Entrez, gomodel, NCBIProtein, Reactome, and SGD URI prefix mappings to CURIE_MAP in src/pathwaymech/sssom.py and updating output/sssom/source_mappings.sssom.tsv; verified by tests/test_sssom_export.py."
+    },
+    {
+      "task_id": "pathwaymech-infra-0005",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/677",
+      "status": "resolved",
+      "originating_stage": 4,
+      "modified_files": [
+        "src/pathwaymech/kgx.py",
+        "src/pathwaymech/schema.py",
+        "tests/test_kgx_export.py",
+        "tests/test_linkml_schema.py"
+      ],
+      "disposition": "Resolved in Stage 6 by adding BiGG -> biolink:BiochemicalReaction to _PREFIX_CATEGORIES in src/pathwaymech/kgx.py and rejecting mixed explicit/omitted reaction category lists in _validate_named_nodes in src/pathwaymech/schema.py; verified by tests/test_kgx_export.py and tests/test_linkml_schema.py."
+    }
+  ]
+}

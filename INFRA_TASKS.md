@@ -36,19 +36,29 @@ schema_version: '1.0.0'
 tasks:
   - task_id: pathwaymech-infra-0001
     summary: Register UniProtKB, RHEA, and PMID authority entries in conf/identifier_sources.json and data/identifier_authorities/sources.json for remaining Escherichia coli PathBank primary BioPAX pathways in pathbank_primary_biopax.zip
-    status: note
+    status: deferred
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/673
+    disposition: Deferred to Cycle 2 Stage 1 (add_records); authority entries in conf/identifier_sources.json and data/identifier_authorities/sources.json are verified incrementally per pathway slice as new E. coli PathBank primary BioPAX records are curated against upstream UniProtKB, Rhea 142 RDF, and PubMed authority snapshots.
   - task_id: pathwaymech-infra-0002
     summary: Preserve YAML anchor aliases and existing line-wrap widths during guarded causal-graph publication in src/pathwaymech/curation.py
-    status: note
+    status: resolved
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/674
+    disposition: Resolved in Stage 6 by enhancing _serialize_record in src/pathwaymech/curation.py with _detect_yaml_width, _collect_anchored_subtrees, and _restore_yaml_anchors so guarded publication preserves per-file line-wrap widths (80, 88, 100, 120, 4096) and YAML anchor/alias structure (&id001/*id001) across deep copies; verified by unit tests in tests/test_curation_publication.py.
   - task_id: pathwaymech-infra-0003
     summary: Add optional MechanisticEdge stoichiometry, EdgePredicateEnum gene-expression predicate, and EvidenceItem ECO/taxon slots in src/pathwaymech/schema/pathwaymech.yaml
-    status: note
+    status: resolved
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/675
+    disposition: Resolved in Stage 6 by adding optional MechanisticEdge.coefficient, EdgePredicateEnum.encodes, EvidenceItem.assay_taxon, and EvidenceItem.eco_code in src/pathwaymech/schema/pathwaymech.yaml, src/pathwaymech/schema.py, and src/pathwaymech/kgx.py; verified in both open and closed LinkML validators by tests/test_linkml_schema.py.
   - task_id: pathwaymech-infra-0004
     summary: Add SGD, NCBIProtein, Reactome, gomodel, and Entrez prefix declarations to CURIE_MAP in src/pathwaymech/sssom.py for protein and gene source_mappings export
-    status: note
+    status: resolved
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/676
+    disposition: Resolved in Stage 6 by adding Entrez, gomodel, NCBIProtein, Reactome, and SGD URI prefix mappings to CURIE_MAP in src/pathwaymech/sssom.py and updating output/sssom/source_mappings.sssom.tsv; verified by tests/test_sssom_export.py.
   - task_id: pathwaymech-infra-0005
     summary: Add BiGG reaction prefix mapping to _PREFIX_CATEGORIES in src/pathwaymech/kgx.py and validate within-record reaction category consistency in src/pathwaymech/schema.py
-    status: note
+    status: resolved
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/677
+    disposition: Resolved in Stage 6 by adding BiGG -> biolink:BiochemicalReaction to _PREFIX_CATEGORIES in src/pathwaymech/kgx.py and rejecting mixed explicit/omitted reaction category lists in _validate_named_nodes in src/pathwaymech/schema.py; verified by tests/test_kgx_export.py and tests/test_linkml_schema.py.
 ```
 <!-- mech-infra-tasks:end -->
 
@@ -57,50 +67,60 @@ tasks:
 ### `pathwaymech-infra-0001` — Offline authority coverage for remaining *E. coli* PathBank primary BioPAX pathways
 
 - **Originating run / cycle / stage**: `mech-goal-sequence-20261019` / cycle `1` / stage `1` (`add_records`)
+- **Issue**: https://github.com/CultureBotAI/PathwayMech/issues/673
 - **Observation**: `reports/local_source_ingestion/2026-10-08-pathbank-dbcan/pathbank/pathbank_primary_biopax.zip` contains 2,687 BioPAX Level 3 `.owl` files total, including 313 *Escherichia coli* (`NCBITaxon:562`) entries. Currently 10 `PathBank:*` primary records are in `data/pathways/` (including `PathBank:SMP0002081` from `PW002069.owl` in `data/pathways/adenine-and-adenosine-salvage-i-escherichia-coli.yaml`) and 17 `pathbank-primary-2019-*` source keys are registered in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json`. In the Stage 1 bounded slice (`PW002057`–`PW002078`, 21 *E. coli* metabolic `.owl` entries present in the archive), 4 are now represented as `PathBank:*` primary records (`PW002065` → `SMP0002077`, `PW002069` → `SMP0002081`, `PW002071` → `SMP0002083`, `PW002077` → `SMP0002089`), 6 duplicate existing `MetaCyc:*` or `KEGG:*` *E. coli* records (`PW002058`, `PW002061`, `PW002074`, `PW002075`, `PW002076`, `PW002078`), and the remaining 11 (`PW002057`, `PW002059`, `PW002060`, `PW002062`, `PW002063`, `PW002064`, `PW002066`, `PW002067`, `PW002068`, `PW002072`, `PW002073`)—along with uningested *E. coli* `.owl` entries in the 313-file archive—cannot yet pass `pathwaymech-check-identifiers` because their referenced `UniProtKB` protein accessions, `RHEA` reaction IDs, and `PMID` literature citations are not yet registered in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json`.
 - **Desired outcome**: Batch-register verified `UniProtKB`, `RHEA`, `PMID`, and `pathbank-primary-2019-PW*` authority entries in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json` so the remaining non-duplicate *E. coli* PathBank pathways in `reports/local_source_ingestion/2026-10-08-pathbank-dbcan/pathbank/pathbank_primary_biopax.zip` can be admitted under `pathwaymech-check-identifiers`.
 - **Evidence paths**: `conf/identifier_sources.json`, `data/identifier_authorities/sources.json`, `reports/local_source_ingestion/2026-10-08-pathbank-dbcan/pathbank/pathbank_primary_biopax.zip`, `src/pathwaymech/identifiers.py`
 - **Priority**: medium
-- **Dependencies**: None
-- **Status**: `note` (pending Stage 6 issue intake)
+- **Dependencies**: Upstream UniProtKB, Rhea 142 RDF, and PubMed authority verification per bounded pathway slice during Stage 1 (`add_records`)
+- **Status**: `deferred`
+- **Stage 6 disposition**: Explicitly deferred and carried forward under [#673](https://github.com/CultureBotAI/PathwayMech/issues/673) to Cycle 2 Stage 1 (`add_records`). Under `CLAUDE.md` and `conf/identifier_policy.yaml`, authority entries in `conf/identifier_sources.json` and `data/identifier_authorities/sources.json` must be verified against inspected upstream sources (`UniProtKB`, `Rhea`, `PubMed`) as each bounded pathway slice is curated rather than bulk-seeded without record-level curation.
 
 ### `pathwaymech-infra-0002` — Preserve YAML anchor aliases and line-wrap widths in `pathwaymech.curation.publish_curation`
 
 - **Originating run / cycle / stage**: `mech-goal-sequence-20261019` / cycle `1` / stage `2` (`causal_graphs`)
+- **Issue**: https://github.com/CultureBotAI/PathwayMech/issues/674
 - **Observation**: `pathwaymech.curation.publish_curation` (`src/pathwaymech/curation.py`) serializes updated records by default with `yaml.safe_dump(value, sort_keys=False, allow_unicode=True, width=100)` (while custom `serialize=` lambdas in `scripts/curate_uniprot_cofactors.py` and `scripts/curate_gocam_chemical_identities.py` use `width=88`). In `data/pathways/entner-doudoroff-pathway.yaml` (`KEGG:M00008`), `mechanistic_edges` evidence lists use YAML anchor definitions (`&id001`..`&id011`) on edges `ed-edge-007`, `ed-edge-012`, `ed-edge-015`, `ed-edge-018`, `ed-edge-020`, `ed-edge-024` and aliases (`*id001`..`*id011`) across edges `ed-edge-034`..`ed-edge-037`, which `yaml.safe_dump` expands rather than preserving. In addition, records originally formatted at different line-wrap widths (such as `data/pathways/adenine-and-adenosine-salvage-ii.yaml` and `data/pathways/ethylmalonyl-coa-pathway.yaml`) experience multi-hundred-line wrapping churn when rewritten via full-document `yaml.safe_dump`.
 - **Desired outcome**: Enhance `src/pathwaymech/curation.py` so guarded publication preserves existing YAML anchor aliases and per-file line-wrap formatting (or supports round-trip/surgical AST updates after open + closed LinkML validation).
-- **Evidence paths**: `src/pathwaymech/curation.py`, `data/pathways/entner-doudoroff-pathway.yaml`, `data/pathways/adenine-and-adenosine-salvage-ii.yaml`, `data/pathways/ethylmalonyl-coa-pathway.yaml`, `history/other/stage2-causal-graph-review-2026-10-20/2026-10-20T090200Z-antigravity-a1d1e5.yaml`
+- **Evidence paths**: `src/pathwaymech/curation.py`, `tests/test_curation_publication.py`, `data/pathways/entner-doudoroff-pathway.yaml`, `data/pathways/adenine-and-adenosine-salvage-ii.yaml`, `data/pathways/ethylmalonyl-coa-pathway.yaml`, `history/other/stage2-causal-graph-review-2026-10-20/2026-10-20T090200Z-antigravity-a1d1e5.yaml`
 - **Priority**: medium
 - **Dependencies**: None
-- **Status**: `note` (pending Stage 6 issue intake)
+- **Status**: `resolved`
+- **Stage 6 disposition**: Resolved in Stage 6 ([#674](https://github.com/CultureBotAI/PathwayMech/issues/674)) by updating `_serialize_record` in `src/pathwaymech/curation.py` to detect existing per-file YAML line-wrap widths (`80`, `88`, `100`, `120`, `4096`) via `_detect_yaml_width` and to restore Python object identity across anchored subtrees (`&id001`/`*id001`) via `_collect_anchored_subtrees` and `_restore_yaml_anchors` even when callers mutate a deep-copied or JSON-round-tripped record. Validated by `test_publish_curation_preserves_existing_line_wrap_width` and `test_publish_curation_preserves_yaml_anchor_aliases_across_deep_copies` in `tests/test_curation_publication.py`.
 
 ### `pathwaymech-infra-0003` — Optional LinkML slots for `MechanisticEdge` stoichiometry, `EdgePredicateEnum` gene-to-protein expression edges, and `EvidenceItem` ECO/taxon qualifiers
 
 - **Originating run / cycle / stage**: `mech-goal-sequence-20261019` / cycle `1` / stage `2` (`causal_graphs`)
+- **Issue**: https://github.com/CultureBotAI/PathwayMech/issues/675
 - **Observation**: While `MechanismEdge` (`src/pathwaymech/schema/pathwaymech.yaml:266-274`) defines `coefficient: integer` and `MechanisticEdge` (`src/pathwaymech/schema/pathwaymech.yaml:425-461`) defines structured `endpoint_qualifiers` (`EndpointQualifier` with `kind: experimental_construct | molecular_state`) to capture construct context and molecular states, three schema-level representation constraints in `src/pathwaymech/schema/pathwaymech.yaml` were identified during whole-corpus Stage 2 causal-graph review of all 270 records in `data/pathways/*.yaml`: (1) `MechanisticEdge` has no typed numeric `coefficient` / `stoichiometric_coefficient` slot, requiring reaction and complex subunit stoichiometries on top-level `consumes`, `produces`, `has_input`, `has_output`, `part_of`, and `has_part` edges in `mechanistic_edges` to be recorded in prose `description` or `evidence[].source_assertion` fields; (2) `EdgePredicateEnum` (`src/pathwaymech/schema/pathwaymech.yaml:621-662`) has no gene-expression predicate (`encodes` / `transcribed_to`), preventing `Entrez:*` gene participants regulated in `PathBank:SMP0002081` (`data/pathways/adenine-and-adenosine-salvage-i-escherichia-coli.yaml`) and `PathBank:SMP0002083` (`data/pathways/adenine-and-adenosine-salvage-ii.yaml`) from being linked directly to their encoded `UniProtKB:*` protein participants by a formal `mechanistic_edges` edge; and (3) `EvidenceItem` lacks structured `assay_taxon` and `eco_code` slots, requiring strain and ECO evidence-code qualifiers to be embedded in `source_assertion` or edge `description`.
 - **Desired outcome**: Evaluate and add optional backward-compatible LinkML slots/predicates in `src/pathwaymech/schema/pathwaymech.yaml` and `src/pathwaymech/schema.py` (with corresponding KGX/page rendering support) during Stage 6 infrastructure implementation.
-- **Evidence paths**: `src/pathwaymech/schema/pathwaymech.yaml`, `src/pathwaymech/schema.py`, `docs/CAUSAL_GRAPHS.md`, `history/other/stage2-causal-graph-review-2026-10-20/2026-10-20T090200Z-antigravity-a1d1e5.yaml`
+- **Evidence paths**: `src/pathwaymech/schema/pathwaymech.yaml`, `src/pathwaymech/schema.py`, `src/pathwaymech/kgx.py`, `tests/test_linkml_schema.py`, `docs/CAUSAL_GRAPHS.md`, `history/other/stage2-causal-graph-review-2026-10-20/2026-10-20T090200Z-antigravity-a1d1e5.yaml`
 - **Priority**: low
 - **Dependencies**: None
-- **Status**: `note` (pending Stage 6 issue intake)
+- **Status**: `resolved`
+- **Stage 6 disposition**: Resolved in Stage 6 ([#675](https://github.com/CultureBotAI/PathwayMech/issues/675)) by adding optional `MechanisticEdge.coefficient` (`integer >= 1`), `EdgePredicateEnum.encodes` (mapped to `pathwaymech:encodes` in `src/pathwaymech/kgx.py` with gene/nucleic-acid to protein/RNA/complex endpoint validation in `src/pathwaymech/schema.py`), `EvidenceItem.assay_taxon` (`^NCBITaxon:[0-9]+(?![\s\S])`), and `EvidenceItem.eco_code` (`^ECO:[0-9]{7}(?![\s\S])`) across `src/pathwaymech/schema/pathwaymech.yaml` and `src/pathwaymech/schema.py`. Validated in both open and closed LinkML validators by `tests/test_linkml_schema.py`.
 
 ### `pathwaymech-infra-0004` — Expand `CURIE_MAP` in `src/pathwaymech/sssom.py` to support `SGD`, `NCBIProtein`, `Reactome`, `gomodel`, and `Entrez` prefixes in `source_mappings`
 
 - **Originating run / cycle / stage**: `mech-goal-sequence-20261019` / cycle `1` / stage `3` (`protein_examples`)
+- **Issue**: https://github.com/CultureBotAI/PathwayMech/issues/676
 - **Observation**: During the Stage 3 (`protein_examples`) review of all 270 pathway records in `data/pathways/*.yaml`, `_validate_row` in `src/pathwaymech/sssom.py` (`lines 122–136`) validates `subject_id` and `object_id` in `source_mappings` against `CURIE_MAP` (`src/pathwaymech/sssom.py:13–32`), which currently declares only `CAS`, `CHEBI`, `ChemSpider`, `EcoCyc`, `HMDB`, `infores`, `KEGG`, `MetaCyc`, `PathBank`, `PubChem`, `semapv`, `skos`, `UniProt`, and `UniProtKB`. Consequently, `EcoCyc:`, `MetaCyc:`, and `UniProt:` protein unification links to `UniProtKB:` are accepted in `source_mappings`, whereas the 95 `Saccharomyces cerevisiae` records with native `SGD:S000...` protein participants (`85` `gomodel:YeastPathways_*` + `10` `WikiPathways:WP*`), the 5 records with `NCBIProtein:` participants (`biotin-biosynthesis-from-8-amino-7-oxononanoate-ii.yaml`, `d-galactonate-degradation.yaml`, `etheno-dna-adduct-alkb-dioxygenase-direct-reversal-repair.yaml`, `factor-420-biosynthesis-ii-mycobacterial.yaml`, `intra-aerobic-nitrite-reduction.yaml`), the `Reactome:R-MTU-*` record (`defective-mmp-1-causes-epidermolysis-bullosa-dystrophica-recessive.yaml`), and `Entrez:` gene records (`adenine-and-adenosine-salvage-i-escherichia-coli.yaml`, `adenine-and-adenosine-salvage-ii.yaml`) cannot record `SGD:`/`NCBIProtein:`/`Reactome:`/`gomodel:`/`Entrez:` → `UniProtKB:` rows in `source_mappings` without raising `ValueError: subject_id prefix '<PREFIX>' is not declared in the SSSOM curie_map` during `pathwaymech-render-pages` (`write_sssom_exports`).
 - **Desired outcome**: Add `SGD`, `NCBIProtein`, `Reactome`, `gomodel`, and `Entrez` URI expansions to `CURIE_MAP` in `src/pathwaymech/sssom.py` (with corresponding unit tests in `tests/`) during Stage 6 infrastructure implementation so non-`EcoCyc`/`MetaCyc`/`UniProt` protein and gene cross-references can also be exported to `pages/downloads/mappings.sssom.tsv`.
-- **Evidence paths**: `src/pathwaymech/sssom.py`, `src/pathwaymech/pages.py`, `data/pathways/*.yaml`, `history/other/stage3-uniprot-protein-review-2026-10-21/2026-10-21T194000Z-antigravity-a1d1e5.yaml`
+- **Evidence paths**: `src/pathwaymech/sssom.py`, `output/sssom/source_mappings.sssom.tsv`, `tests/test_sssom_export.py`, `data/pathways/*.yaml`, `history/other/stage3-uniprot-protein-review-2026-10-21/2026-10-21T194000Z-antigravity-a1d1e5.yaml`
 - **Priority**: medium
 - **Dependencies**: None
-- **Status**: `note` (pending Stage 6 issue intake)
+- **Status**: `resolved`
+- **Stage 6 disposition**: Resolved in Stage 6 ([#676](https://github.com/CultureBotAI/PathwayMech/issues/676)) by adding `Entrez` (`https://identifiers.org/ncbigene:`), `gomodel` (`http://model.geneontology.org/`), `NCBIProtein` (`https://identifiers.org/ncbiprotein:`), `Reactome` (`https://identifiers.org/reactome:`), and `SGD` (`https://identifiers.org/sgd:`) prefix mappings to `CURIE_MAP` in `src/pathwaymech/sssom.py`, updating `output/sssom/source_mappings.sssom.tsv`, and verifying expansion and YAML-safe header round-tripping in `tests/test_sssom_export.py`.
 
 ### `pathwaymech-infra-0005` — Add `BiGG` reaction prefix mapping in `src/pathwaymech/kgx.py` and validate reaction `category` consistency in `src/pathwaymech/schema.py`
 
 - **Originating run / cycle / stage**: `mech-goal-sequence-20261019` / cycle `1` / stage `4` (`record_review`)
+- **Issue**: https://github.com/CultureBotAI/PathwayMech/issues/677
 - **Observation**: During the Stage 4 (`record_review`) cohort and record review of all 270 pathway records in `data/pathways/*.yaml` at frozen commit `556074d91f600aa9e5ca97e0b4baef6d99513930` (`reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml`), two schema/exporter typing gaps were identified: (1) `_PREFIX_CATEGORIES` in `src/pathwaymech/kgx.py` (`lines 74–101`) maps `"RHEA"` and `"MetaCyc"` to `"biolink:BiochemicalReaction"` and `"EC"` to `"biolink:MolecularActivity"`, but omits `"BiGG"`, so when `_record_to_kgx` (`src/pathwaymech/kgx.py`, `lines 123–149`) exports a `BiGG:*` reaction entry lacking an explicit `category: molecular_activity` (such as `BiGG:ACMANAptspp` at `reactions[13]` of `data/pathways/amino-sugar-superpathway.yaml` / `MetaCyc:GLCMANNANAUT-PWY`, tracked as `F-STAGE4-001`), its KGX node falls back to `DEFAULT_CATEGORY` (`"biolink:NamedThing"`) with an empty `source_category` in `pages/downloads/nodes.tsv`; and (2) `src/pathwaymech/schema.py` does not warn or fail when a single pathway record mixes `reactions[]` entries with explicit `category` values (`molecular_activity` or `pathway`) and `reactions[]` entries without `category` (tracked across 12 `MetaCyc:*` records and 33 reaction nodes as `F-STAGE4-002`).
 - **Desired outcome**: While Stage 5 (`remediate_reviews`) resolves `F-STAGE4-001` and `F-STAGE4-002` directly in the affected `data/pathways/*.yaml` records, update `_PREFIX_CATEGORIES` in `src/pathwaymech/kgx.py` and reaction-category consistency validation in `src/pathwaymech/schema.py` during Stage 6 infrastructure implementation so future `BiGG:*` reaction nodes and mixed-category `reactions[]` lists are caught automatically.
-- **Evidence paths**: `src/pathwaymech/kgx.py`, `src/pathwaymech/schema.py`, `data/pathways/amino-sugar-superpathway.yaml`, `reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml`, `reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-04/revision-0001/evidence.yaml`
+- **Evidence paths**: `src/pathwaymech/kgx.py`, `src/pathwaymech/schema.py`, `tests/test_kgx_export.py`, `tests/test_linkml_schema.py`, `data/pathways/amino-sugar-superpathway.yaml`, `reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml`, `reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-04/revision-0001/evidence.yaml`
 - **Priority**: medium
 - **Dependencies**: None
-- **Status**: `note` (pending Stage 6 issue intake)
+- **Status**: `resolved`
+- **Stage 6 disposition**: Resolved in Stage 6 ([#677](https://github.com/CultureBotAI/PathwayMech/issues/677)) by adding `"BiGG": "biolink:BiochemicalReaction"` to `_PREFIX_CATEGORIES` in `src/pathwaymech/kgx.py` and enforcing within-record `reactions` category consistency in `_validate_named_nodes` in `src/pathwaymech/schema.py`. Validated by `test_native_participant_fallback_retains_reaction_defaults[BiGG]` in `tests/test_kgx_export.py` and `test_reactions_mixing_explicit_and_omitted_categories_are_rejected` in `tests/test_linkml_schema.py`.
 

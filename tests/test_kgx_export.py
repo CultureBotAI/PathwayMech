@@ -158,7 +158,7 @@ def test_unresolved_corpus_participants_are_not_exported_as_reactions(path, iden
     assert any(n["id"] == identifier for n in checked.participants)
 
 
-@pytest.mark.parametrize("prefix", ["gomodel", "WikiPathways", "Reactome"])
+@pytest.mark.parametrize("prefix", ["gomodel", "WikiPathways", "Reactome", "BiGG"])
 def test_native_participant_fallback_retains_reaction_defaults(prefix):
     participant = f"{prefix}:test/entity"
     reaction = f"{prefix}:test/reaction"

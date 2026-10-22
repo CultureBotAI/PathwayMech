@@ -52,6 +52,7 @@ LOCAL_PREDICATE_CURIES = {
     "part_of": "BFO:0000050",
     "has_part": "BFO:0000051",
     "has_cofactor": "pathwaymech:has_cofactor",
+    "encodes": "pathwaymech:encodes",
 }
 
 EXPLICIT_CATEGORIES = {
@@ -72,6 +73,7 @@ EXPLICIT_CATEGORIES = {
 }
 
 _PREFIX_CATEGORIES = {
+    "BiGG": "biolink:BiochemicalReaction",
     "CAS": "biolink:SmallMolecule",
     "CHEBI": "biolink:SmallMolecule",
     "ChemSpider": "biolink:SmallMolecule",

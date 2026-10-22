@@ -15,16 +15,21 @@ CURIE_MAP = (
     ("CHEBI", "http://purl.obolibrary.org/obo/CHEBI_"),
     ("ChemSpider", "https://identifiers.org/chemspider:"),
     ("EcoCyc", "https://ecocyc.org/gene?id="),
+    ("Entrez", "https://identifiers.org/ncbigene:"),
+    ("gomodel", "http://model.geneontology.org/"),
     ("HMDB", "https://identifiers.org/hmdb:"),
     ("infores", "https://w3id.org/biolink/vocab/"),
     ("KEGG", "https://identifiers.org/kegg.compound:"),
     # The generic frame endpoint includes compounds and protein monomers alike.
     ("MetaCyc", "https://metacyc.org/META/NEW-IMAGE?object="),
+    ("NCBIProtein", "https://identifiers.org/ncbiprotein:"),
     # Repository-scoped BioPAX instances are not registered PathBank accessions.
     # This identifies their exported scope; it does not promise a live resolver.
     ("PathBank", "https://w3id.org/culturebotai/pathwaymech/pathbank/"),
     ("PubChem", "https://identifiers.org/pubchem.compound:"),
+    ("Reactome", "https://identifiers.org/reactome:"),
     ("semapv", "https://w3id.org/semapv/vocab/"),
+    ("SGD", "https://identifiers.org/sgd:"),
     ("skos", "http://www.w3.org/2004/02/skos/core#"),
     ("UniProt", "https://identifiers.org/uniprot:"),
     ("UniProtKB", "http://purl.uniprot.org/uniprot/"),
