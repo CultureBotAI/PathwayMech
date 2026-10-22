@@ -600,7 +600,9 @@ def test_mechanistic_edge_coefficient_must_be_a_positive_int_in_both(
     changed = copy.deepcopy(record)
     _edge(changed)["coefficient"] = coeff
     assert checker.validate(changed, TARGET_CLASS).results
-    with pytest.raises(ValidationError, match=r"mechanistic_edges\[0\]\.coefficient must be a positive integer"):
+    with pytest.raises(
+        ValidationError, match=r"mechanistic_edges\[0\]\.coefficient must be a positive integer"
+    ):
         validate_record(changed)
 
 
@@ -649,19 +651,26 @@ def test_encodes_predicate_accepts_gene_to_protein_in_both_and_rejects_bad_endpo
 
     bad_subject = copy.deepcopy(changed)
     bad_subject["participants"][-2]["category"] = "small_molecule"
-    with pytest.raises(ValidationError, match="encodes subject must be a gene, dna, or rna participant"):
+    with pytest.raises(
+        ValidationError, match="encodes subject must be a gene, dna, or rna participant"
+    ):
         validate_record(bad_subject)
 
     bad_object = copy.deepcopy(changed)
     bad_object["participants"][-1]["category"] = "small_molecule"
-    with pytest.raises(ValidationError, match="encodes object must be a protein, rna, or complex participant"):
+    with pytest.raises(
+        ValidationError, match="encodes object must be a protein, rna, or complex participant"
+    ):
         validate_record(bad_object)
 
     bad_reaction = copy.deepcopy(changed)
     bad_reaction["mechanistic_edges"][-1]["object"] = bad_reaction["reactions"][0]["id"]
     with pytest.raises(
         ValidationError,
-        match="encodes must connect a gene or nucleic-acid participant to a gene-product participant",
+        match=(
+            "encodes must connect a gene or nucleic-acid participant "
+            "to a gene-product participant"
+        ),
     ):
         validate_record(bad_reaction)
 

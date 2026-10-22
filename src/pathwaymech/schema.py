@@ -647,7 +647,8 @@ def _validate_edge_endpoint_types(
     if predicate == "encodes":
         if subject not in participant_ids or obj not in participant_ids:
             errors.append(
-                f"{path} encodes must connect a gene or nucleic-acid participant to a gene-product participant"
+                f"{path} encodes must connect a gene or nucleic-acid participant "
+                "to a gene-product participant"
             )
         else:
             subject_kind = categories.get(subject)
@@ -655,7 +656,9 @@ def _validate_edge_endpoint_types(
             if subject_kind is not None and subject_kind not in {"gene", "dna", "rna"}:
                 errors.append(f"{path} encodes subject must be a gene, dna, or rna participant")
             if object_kind is not None and object_kind not in {"protein", "rna", "complex"}:
-                errors.append(f"{path} encodes object must be a protein, rna, or complex participant")
+                errors.append(
+                    f"{path} encodes object must be a protein, rna, or complex participant"
+                )
     if predicate in {"occurs_in", "located_in"}:
         if obj not in participant_ids or categories.get(obj) != "cellular_component":
             errors.append(f"{path} {predicate} object must be a cellular_component participant")

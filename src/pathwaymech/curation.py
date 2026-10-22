@@ -87,7 +87,9 @@ def _detect_yaml_width(existing_text: str, existing_value: Any) -> int:
             return width
         dumped_lines = dumped.splitlines()
         overlap = sum(
-            1 for left, right in zip(existing_lines, dumped_lines) if left == right
+            1
+            for left, right in zip(existing_lines, dumped_lines, strict=False)
+            if left == right
         )
         score = overlap * 2 - abs(len(existing_lines) - len(dumped_lines))
         if score > best_score:
