@@ -11,7 +11,7 @@
 
 ## Summary
 
-Completed a full-coverage frozen-inventory scientific record and cohort review of all 270 maintained pathway YAML records in data/pathways/*.yaml at Git commit 556074d91f600aa9e5ca97e0b4baef6d99513930 across all 8 identifier namespaces (MetaCyc: 140, gomodel: 86, WikiPathways: 12, GO: 10, PathBank: 10, Reactome: 6, KEGG: 3, MIBiG: 3). All 270 records pass closed LinkML schema validation, authority snapshot identifier/label checks, history validation (537 records), and edge-level evidence verification (17,676 mechanistic edges, 22,085 evidence blocks). Identified 2 minor open findings (F-STAGE4-001 on MetaCyc:GLCMANNANAUT-PWY and F-STAGE4-002 across 12 MetaCyc records) concerning omitted category: molecular_activity on 33 catalytic reactions inside mixed-typing reactions[] lists, preserved unedited for Stage 5 grouped remediation.
+Completed a full-coverage frozen-inventory scientific record and cohort review of all 270 maintained pathway YAML records in data/pathways/*.yaml at Git commit 556074d91f600aa9e5ca97e0b4baef6d99513930 across all 8 identifier namespaces (MetaCyc: 140, gomodel: 86, WikiPathways: 12, GO: 10, PathBank: 10, Reactome: 6, KEGG: 3, MIBiG: 3; 7,652 participants, 1,591 reactions including 693 RHEA:* reactions). All 270 records pass closed LinkML schema validation, authority snapshot identifier/label checks, history validation (537 records), and edge-level evidence verification (14,322 mechanistic edges, 20,959 edge-level evidence items, 22,085 total evidence blocks). Identified 2 minor open findings (F-STAGE4-001 on MetaCyc:GLCMANNANAUT-PWY and F-STAGE4-002 across 12 MetaCyc records) concerning omitted category: molecular_activity on 33 catalytic reactions inside mixed-typing reactions[] lists, preserved unedited for Stage 5 grouped remediation.
 
 ## Scope And Provenance
 
@@ -19,7 +19,7 @@ Full frozen-inventory record and category review of all 270 maintained pathway r
 
 Selection: All files matching data/pathways/*.yaml in CultureBotAI/PathwayMech.
 Coverage: full; 270 reviewed / 270 in the declared population.
-Source: working_tree at Git base 556074d91f600aa9e5ca97e0b4baef6d99513930.
+Source: git_commit at Git base 556074d91f600aa9e5ca97e0b4baef6d99513930.
 Working-tree hashes do not imply those bytes were committed.
 
 | Target | Path / selector | Kind | Label |
@@ -317,7 +317,7 @@ All 270 maintained pathway records in data/pathways/*.yaml denote coherent micro
 
 graph: supported. Targets: MetaCyc:PWY-5901, MetaCyc:PWY0-42, WikiPathways:WP5587, MetaCyc:PWY-2361, MetaCyc:PWY-6543, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-8130, MetaCyc:PWY-8131, gomodel:YeastPathways_PWY-6147, GO:0097288, MetaCyc:PWY0-1312, MetaCyc:ACETOACETATE-DEG-PWY, WikiPathways:WP5019, PathBank:SMP0002081, MetaCyc:P121-PWY, PathBank:SMP0002083, MetaCyc:PWY-6609, gomodel:YeastPathways_PWY-7220-1, MetaCyc:SALVADEHYPOX-PWY, gomodel:YeastPathways_PWY-7219, MetaCyc:PWY-5509, MetaCyc:PWY-7971, MetaCyc:PWY0-1241, GO:0019270, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, MetaCyc:PWY0-41, gomodel:YeastPathways_PWY-5694, MetaCyc:PWY-5705, gomodel:YeastPathways_PWY-5697, MetaCyc:GLCMANNANAUT-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, MetaCyc:PWY-5903, PathBank:SMP0002123, MetaCyc:PWY-2503, MetaCyc:PWY-1361, MetaCyc:CENTBENZCOA-PWY, MetaCyc:P321-PWY, gomodel:YeastPathways_PWY-5760-1, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, GO:0043427, gomodel:YeastPathways_PWY3O-4, MetaCyc:PWY-5415, MetaCyc:PWY-5420, MetaCyc:PWY-5417, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, gomodel:YeastPathways_PWY3O-15, MetaCyc:ARO-PWY, MIBiG:BGC0000829, MetaCyc:P2-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, MetaCyc:COA-PWY, GO:0036040, MetaCyc:CYANCAT-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:PWY-6376, KEGG:M00374, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-123, GO:0019305, MetaCyc:P101-PWY, KEGG:M00008, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-6075-1, MetaCyc:PWY-7255, gomodel:YeastPathways_PWY3O-4300, MetaCyc:PWY0-1477, MetaCyc:PWY0-1280, KEGG:M00373, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, MetaCyc:RIBOSYN2-PWY, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, MetaCyc:PWY0-521, GO:1901281, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:PWY-6223, gomodel:YeastPathways_GLUCONEO-PWY-1, WikiPathways:WP556, MetaCyc:PWY-5177, MetaCyc:GLUTATHIONESYN-PWY, gomodel:YeastPathways_PWYQT-4432, WikiPathways:WP392, gomodel:YeastPathways_PWY3O-48, MetaCyc:GLYCEROLMETAB-PWY, gomodel:YeastPathways_GLYCLEAV-PWY, WikiPathways:WP478, gomodel:YeastPathways_GLYCOLYSIS, MetaCyc:PWY-5744, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, GO:1902000, MetaCyc:PWY-5789, MetaCyc:PWY-6123, MetaCyc:PWY-6124, gomodel:YeastPathways_PWY3O-402, WikiPathways:WP178, MetaCyc:PWY0-1338, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:PWY0-301, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, PathBank:SMP0002051, MetaCyc:CYSTSYN-PWY, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, gomodel:YeastPathways_PWY-5344, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, MetaCyc:LYXMET-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, gomodel:YeastPathways_PROUT-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRPSYN-PWY, gomodel:YeastPathways_PWY-5651, MetaCyc:TYRSYN, gomodel:YeastPathways_PWY3O-4108, MetaCyc:VALSYN-PWY, gomodel:YeastPathways_PWY3O-4112, MIBiG:BGC0002072, gomodel:6882d2b800000609, MetaCyc:PWY0-501, gomodel:YeastPathways_PWY3O-1743, MetaCyc:PWY0-1300, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, gomodel:YeastPathways_PWY3O-64, MetaCyc:NONMEVIPP-PWY, gomodel:YeastPathways_PWY-901, MetaCyc:PWY-5386, MetaCyc:PWY-5453, PathBank:SMP0002077, MetaCyc:PWY-6048, gomodel:YeastPathways_IPPSYN-PWY, MetaCyc:PWY-6823, Reactome:R-MTU-936721, Reactome:R-MTU-936654, Reactome:R-MTU-936635, Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, gomodel:YeastPathways_PWY-2301, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, gomodel:YeastPathways_PWY-5653, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:PYRIDNUCSAL-PWY, gomodel:YeastPathways_PWY3O-4106, WikiPathways:WP171, MetaCyc:PWY-6993, MetaCyc:DENITRIFICATION-PWY, MetaCyc:PWY0-1352, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-1801, MetaCyc:NONOXIPENT-PWY, MetaCyc:PWY-8178, MetaCyc:OXIDATIVEPENT-PWY, WikiPathways:WP5060, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, MetaCyc:PWY-6289, MetaCyc:PWY0-321, gomodel:YeastPathways_PWY3O-4153, MetaCyc:2PHENDEG-PWY, MetaCyc:PWY-6534, MetaCyc:PWY0-1277, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, WikiPathways:WP71, MetaCyc:PANTO-PWY, MetaCyc:PWY1-3, MetaCyc:PPGPPMET-PWY, MetaCyc:P184-PWY, GO:0019618, MetaCyc:PWY-6336, MetaCyc:PWY-6019, PathBank:SMP0002089, PathBank:SMP0002067, GO:0042864, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-7181, GO:0010139, PathBank:SMP0002038, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_PWY3O-440, MetaCyc:PWY-7545, MetaCyc:QUINATEDEG-PWY, MetaCyc:PWY-6416, PathBank:SMP0002406, MetaCyc:RIBOKIN-PWY, MetaCyc:PWY-6151, gomodel:YeastPathways_PWY-5041, MetaCyc:PWY-8132, gomodel:YeastPathways_YEAST-RNT-SALV, MetaCyc:PWY0-1517, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:PWY-6419, gomodel:YeastPathways_PWY-5194-1, PathBank:SMP0002097, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, MIBiG:BGC0000852, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY0-43, gomodel:YeastPathways_PWY-5340, MetaCyc:PWY-7446, MetaCyc:PWY-7722, gomodel:YeastPathways_DETOX1-PWY, MetaCyc:PWY-5838, WikiPathways:WP296, gomodel:YeastPathways_PWY-6614, MetaCyc:PWY0-1433, gomodel:YeastPathways_PWY3O-50, gomodel:YeastPathways_PWY3O-17, MetaCyc:THISYN-PWY, MetaCyc:THIOREDOX-PWY, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY-5123, MetaCyc:TRESYN-PWY, WikiPathways:WP266, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-4120, WikiPathways:WP287, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, MetaCyc:PWY-5686, MetaCyc:PWY0-1471, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWY-6074-1.
 
-All 270 maintained records contain connected participant-reaction-edge causal graphs (2,650 participants, 3,281 reactions, 17,676 mechanistic_edges) with 100% edge-level evidence coverage (22,085 evidence blocks), explicit direction on 100% of RHEA:* reaction nodes, and zero cross-record RHEA direction conflicts.
+All 270 maintained records contain connected participant-reaction-edge causal graphs (7,652 participants, 1,591 reactions including 693 RHEA:* reactions, 14,322 mechanistic_edges) with 100% edge-level evidence coverage (20,959 edge-level evidence items; 22,085 total evidence blocks across records, steps, and edges), explicit direction on 100% of 693 RHEA:* reaction nodes, and zero cross-record RHEA direction conflicts.
 
 ### Within-record reaction category typing consistency and KGX node category export in 12 MetaCyc records
 
@@ -378,7 +378,7 @@ Add explicit category: molecular_activity to all 33 catalytic reaction entries (
 | EV-RUFF | .venv/bin/ruff check --no-cache .; ruff check output | supports | Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks passed). |
 | EV-GIT-DIFF | git diff --check; git worktree at 556074d91f600aa9e5ca97e0b4baef6d99513930 | supports | Executed git diff --check with exit code 0; no whitespace errors or conflict markers. |
 | EV-REVIEW-CHECK | reviews/structured/; 197 retained structured review bundles | supports | Validated all 197 previously retained structured review bundles under reviews/structured/ via scripts/record_review.py check; confirmed all prior findings on maintained data/pathways/*.yaml records were resolved and the only 2 open finding heads in historical bundles target withheld research/pathway_additions/ drafts. |
-| EV-CORPUS-INSPECTION | data/pathways/; 270 maintained pathway YAML files (2,650 participants, 3,281 reactions, 17,676 mechanistic_edges) | supports | Inspected all 270 maintained pathway records in data/pathways/*.yaml: 100% declare valid pathway_type, 100% of 17,676 mechanistic_edges carry structured evidence blocks (22,085 total evidence items), 100% of RHEA:* reaction nodes declare explicit direction with zero cross-record direction conflicts, and zero duplicate xrefs exist across records. |
+| EV-CORPUS-INSPECTION | data/pathways/; 270 maintained pathway YAML files (7,652 participants, 1,591 reactions including 693 RHEA:* reactions, 14,322 mechanistic_edges) | supports | Inspected all 270 maintained pathway records in data/pathways/*.yaml: 100% declare valid pathway_type, 100% of 14,322 mechanistic_edges carry structured evidence blocks (20,959 edge-level evidence items; 22,085 total evidence blocks across records, steps, and edges), 100% of 693 RHEA:* reaction nodes declare explicit direction with zero cross-record direction conflicts, and zero duplicate xrefs exist across records. |
 | EV-GLCMANNANAUT-PWY | data/pathways/amino-sugar-superpathway.yaml; lines 211-255 (reactions list in MetaCyc:GLCMANNANAUT-PWY) | supports | In data/pathways/amino-sugar-superpathway.yaml (MetaCyc:GLCMANNANAUT-PWY), reactions[13] (BiGG:ACMANAptspp, N-acetyl-D-mannosamine transport via PTS  (periplasm)) and 10 RHEA:* reactions (reactions[3..12]) omit category: molecular_activity while 3 subpathway entries (MetaCyc:PWY0-1324, MetaCyc:GLUAMCAT-PWY, MetaCyc:GLYCOLYSIS at reactions[0..2]) explicitly declare category: pathway. |
 | EV-KGX-EXPORT | src/pathwaymech/kgx.py; lines 74-101 (_PREFIX_CATEGORIES and _node_category) | supports | In src/pathwaymech/kgx.py, _PREFIX_CATEGORIES maps RHEA to biolink:BiochemicalReaction when reaction.category is None, whereas explicit category: molecular_activity maps via _PARTICIPANT_CATEGORIES to biolink:MolecularActivity; BiGG is absent from _PREFIX_CATEGORIES, so a BiGG reaction without category: molecular_activity falls back to DEFAULT_CATEGORY (biolink:NamedThing) with empty source_category. |
 | EV-NODES-TSV | pages/downloads/nodes.tsv; row BiGG:ACMANAptspp | supports | In pages/downloads/nodes.tsv, BiGG:ACMANAptspp is exported with category biolink:NamedThing and empty source_category because reactions[13] in data/pathways/amino-sugar-superpathway.yaml omits category: molecular_activity. |
@@ -420,16 +420,17 @@ summary: 'Completed a full-coverage frozen-inventory scientific record and cohor
   review of all 270 maintained pathway YAML records in data/pathways/*.yaml at Git
   commit 556074d91f600aa9e5ca97e0b4baef6d99513930 across all 8 identifier namespaces
   (MetaCyc: 140, gomodel: 86, WikiPathways: 12, GO: 10, PathBank: 10, Reactome: 6,
-  KEGG: 3, MIBiG: 3). All 270 records pass closed LinkML schema validation, authority
-  snapshot identifier/label checks, history validation (537 records), and edge-level
-  evidence verification (17,676 mechanistic edges, 22,085 evidence blocks). Identified
-  2 minor open findings (F-STAGE4-001 on MetaCyc:GLCMANNANAUT-PWY and F-STAGE4-002
+  KEGG: 3, MIBiG: 3; 7,652 participants, 1,591 reactions including 693 RHEA:* reactions).
+  All 270 records pass closed LinkML schema validation, authority snapshot identifier/label
+  checks, history validation (537 records), and edge-level evidence verification (14,322
+  mechanistic edges, 20,959 edge-level evidence items, 22,085 total evidence blocks).
+  Identified 2 minor open findings (F-STAGE4-001 on MetaCyc:GLCMANNANAUT-PWY and F-STAGE4-002
   across 12 MetaCyc records) concerning omitted category: molecular_activity on 33
   catalytic reactions inside mixed-typing reactions[] lists, preserved unedited for
   Stage 5 grouped remediation.'
 source:
   git_revision: 556074d91f600aa9e5ca97e0b4baef6d99513930
-  state: working_tree
+  state: git_commit
   inputs:
   - path: .claude/skills/add-pathway/SKILL.md
     sha256: 4836f2ecdec689c8ddec07e848b77dc120096b62dae6119e2a3948348adae4b8
@@ -6814,15 +6815,16 @@ evidence:
 - evidence_id: EV-CORPUS-INSPECTION
   kind: record_content
   reference: data/pathways/
-  locator: 270 maintained pathway YAML files (2,650 participants, 3,281 reactions,
-    17,676 mechanistic_edges)
+  locator: 270 maintained pathway YAML files (7,652 participants, 1,591 reactions
+    including 693 RHEA:* reactions, 14,322 mechanistic_edges)
   accessed_at: '2026-10-22T01:20:00Z'
   support: supports
   summary: 'Inspected all 270 maintained pathway records in data/pathways/*.yaml:
-    100% declare valid pathway_type, 100% of 17,676 mechanistic_edges carry structured
-    evidence blocks (22,085 total evidence items), 100% of RHEA:* reaction nodes declare
-    explicit direction with zero cross-record direction conflicts, and zero duplicate
-    xrefs exist across records.'
+    100% declare valid pathway_type, 100% of 14,322 mechanistic_edges carry structured
+    evidence blocks (20,959 edge-level evidence items; 22,085 total evidence blocks
+    across records, steps, and edges), 100% of 693 RHEA:* reaction nodes declare explicit
+    direction with zero cross-record direction conflicts, and zero duplicate xrefs
+    exist across records.'
 - evidence_id: EV-GLCMANNANAUT-PWY
   kind: record_content
   reference: data/pathways/amino-sugar-superpathway.yaml
@@ -7197,9 +7199,11 @@ assessments:
     across all 270 maintained records
   outcome: supported
   summary: All 270 maintained records contain connected participant-reaction-edge
-    causal graphs (2,650 participants, 3,281 reactions, 17,676 mechanistic_edges)
-    with 100% edge-level evidence coverage (22,085 evidence blocks), explicit direction
-    on 100% of RHEA:* reaction nodes, and zero cross-record RHEA direction conflicts.
+    causal graphs (7,652 participants, 1,591 reactions including 693 RHEA:* reactions,
+    14,322 mechanistic_edges) with 100% edge-level evidence coverage (20,959 edge-level
+    evidence items; 22,085 total evidence blocks across records, steps, and edges),
+    explicit direction on 100% of 693 RHEA:* reaction nodes, and zero cross-record
+    RHEA direction conflicts.
   target_ids:
   - MetaCyc:PWY-5901
   - MetaCyc:PWY0-42
@@ -7479,17 +7483,17 @@ assessments:
   - name: mechanistic_edge_evidence_coverage
     value: 100.0
     unit: percent
-    definition: Percentage of mechanistic_edges (17,676 / 17,676) carrying at least
+    definition: Percentage of mechanistic_edges (14,322 / 14,322) carrying at least
       one valid structured evidence block.
-    denominator: 17676
+    denominator: 14322
     minimum: 0.0
     maximum: 100.0
   - name: rhea_reaction_direction_coverage
     value: 100.0
     unit: percent
-    definition: Percentage of RHEA:* reaction nodes declaring an explicit direction
-      enum value.
-    denominator: 3281
+    definition: Percentage of RHEA:* reaction nodes (693 / 693) declaring an explicit
+      direction enum value.
+    denominator: 693
     minimum: 0.0
     maximum: 100.0
   dimensions:
@@ -7543,10 +7547,11 @@ assessments:
     value: 33.0
     unit: reactions
     definition: 'Count of catalytic reaction entries omitting category: molecular_activity
-      inside the 12 mixed-typing records.'
-    denominator: 3281
+      inside the 12 mixed-typing records (out of 1,591 total reactions across all
+      270 records).'
+    denominator: 1591
     minimum: 0.0
-    maximum: 3281.0
+    maximum: 1591.0
   dimensions:
   - name: kgx_export_impact
     value: BiGG:ACMANAptspp->biolink:NamedThing; 30 RHEA:* and 2 MetaCyc:RXN-*->biolink:BiochemicalReaction
