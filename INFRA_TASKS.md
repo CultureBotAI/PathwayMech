@@ -46,6 +46,9 @@ tasks:
   - task_id: pathwaymech-infra-0004
     summary: Add SGD, NCBIProtein, Reactome, gomodel, and Entrez prefix declarations to CURIE_MAP in src/pathwaymech/sssom.py for protein and gene source_mappings export
     status: note
+  - task_id: pathwaymech-infra-0005
+    summary: Add BiGG reaction prefix mapping to _PREFIX_CATEGORIES in src/pathwaymech/kgx.py and validate within-record reaction category consistency in src/pathwaymech/schema.py
+    status: note
 ```
 <!-- mech-infra-tasks:end -->
 
@@ -87,6 +90,16 @@ tasks:
 - **Observation**: During the Stage 3 (`protein_examples`) review of all 270 pathway records in `data/pathways/*.yaml`, `_validate_row` in `src/pathwaymech/sssom.py` (`lines 122–136`) validates `subject_id` and `object_id` in `source_mappings` against `CURIE_MAP` (`src/pathwaymech/sssom.py:13–32`), which currently declares only `CAS`, `CHEBI`, `ChemSpider`, `EcoCyc`, `HMDB`, `infores`, `KEGG`, `MetaCyc`, `PathBank`, `PubChem`, `semapv`, `skos`, `UniProt`, and `UniProtKB`. Consequently, `EcoCyc:`, `MetaCyc:`, and `UniProt:` protein unification links to `UniProtKB:` are accepted in `source_mappings`, whereas the 95 `Saccharomyces cerevisiae` records with native `SGD:S000...` protein participants (`85` `gomodel:YeastPathways_*` + `10` `WikiPathways:WP*`), the 5 records with `NCBIProtein:` participants (`biotin-biosynthesis-from-8-amino-7-oxononanoate-ii.yaml`, `d-galactonate-degradation.yaml`, `etheno-dna-adduct-alkb-dioxygenase-direct-reversal-repair.yaml`, `factor-420-biosynthesis-ii-mycobacterial.yaml`, `intra-aerobic-nitrite-reduction.yaml`), the `Reactome:R-MTU-*` record (`defective-mmp-1-causes-epidermolysis-bullosa-dystrophica-recessive.yaml`), and `Entrez:` gene records (`adenine-and-adenosine-salvage-i-escherichia-coli.yaml`, `adenine-and-adenosine-salvage-ii.yaml`) cannot record `SGD:`/`NCBIProtein:`/`Reactome:`/`gomodel:`/`Entrez:` → `UniProtKB:` rows in `source_mappings` without raising `ValueError: subject_id prefix '<PREFIX>' is not declared in the SSSOM curie_map` during `pathwaymech-render-pages` (`write_sssom_exports`).
 - **Desired outcome**: Add `SGD`, `NCBIProtein`, `Reactome`, `gomodel`, and `Entrez` URI expansions to `CURIE_MAP` in `src/pathwaymech/sssom.py` (with corresponding unit tests in `tests/`) during Stage 6 infrastructure implementation so non-`EcoCyc`/`MetaCyc`/`UniProt` protein and gene cross-references can also be exported to `pages/downloads/mappings.sssom.tsv`.
 - **Evidence paths**: `src/pathwaymech/sssom.py`, `src/pathwaymech/pages.py`, `data/pathways/*.yaml`, `history/other/stage3-uniprot-protein-review-2026-10-21/2026-10-21T194000Z-antigravity-a1d1e5.yaml`
+- **Priority**: medium
+- **Dependencies**: None
+- **Status**: `note` (pending Stage 6 issue intake)
+
+### `pathwaymech-infra-0005` — Add `BiGG` reaction prefix mapping in `src/pathwaymech/kgx.py` and validate reaction `category` consistency in `src/pathwaymech/schema.py`
+
+- **Originating run / cycle / stage**: `mech-goal-sequence-20261019` / cycle `1` / stage `4` (`record_review`)
+- **Observation**: During the Stage 4 (`record_review`) cohort and record review of all 270 pathway records in `data/pathways/*.yaml` at frozen commit `556074d91f600aa9e5ca97e0b4baef6d99513930` (`reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml`), two schema/exporter typing gaps were identified: (1) `_PREFIX_CATEGORIES` in `src/pathwaymech/kgx.py` (`lines 125–153`) maps `RHEA` and `EC` to `biolink:MolecularActivity` and `MetaCyc` to `biolink:Pathway`, but omits `BiGG`, so any `BiGG:*` reaction entry lacking an explicit `category: molecular_activity` (such as `BiGG:ACMANAptspp` at `reactions[13]` of `data/pathways/amino-sugar-superpathway.yaml` / `MetaCyc:GLCMANNANAUT-PWY`, tracked as `F-STAGE4-001`) falls back to `biolink:NamedThing` with an empty `source_category` in `pages/downloads/nodes.tsv`; and (2) `src/pathwaymech/schema.py` does not warn or fail when a single pathway record mixes `reactions[]` entries with explicit `category` values (`molecular_activity` or `pathway`) and `reactions[]` entries without `category` (tracked across 12 `MetaCyc:*` records and 33 reaction nodes as `F-STAGE4-002`).
+- **Desired outcome**: While Stage 5 (`remediate_reviews`) resolves `F-STAGE4-001` and `F-STAGE4-002` directly in the affected `data/pathways/*.yaml` records, update `_PREFIX_CATEGORIES` in `src/pathwaymech/kgx.py` and reaction-category consistency validation in `src/pathwaymech/schema.py` during Stage 6 infrastructure implementation so future `BiGG:*` reaction nodes and mixed-category `reactions[]` lists are caught automatically.
+- **Evidence paths**: `src/pathwaymech/kgx.py`, `src/pathwaymech/schema.py`, `data/pathways/amino-sugar-superpathway.yaml`, `reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml`, `reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-04/revision-0001/evidence.yaml`
 - **Priority**: medium
 - **Dependencies**: None
 - **Status**: `note` (pending Stage 6 issue intake)
