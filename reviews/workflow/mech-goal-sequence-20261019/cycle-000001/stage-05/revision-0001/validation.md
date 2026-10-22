@@ -4,7 +4,7 @@
 - **Run / Cycle / Stage / Revision**: `mech-goal-sequence-20261019` / Cycle `1` / Stage `5` (`resolve_review_findings`) / Revision `1`
 - **Source Git Base (`main`)**: `12a62259e1fa38b8a4094dd23df00d7edc41659f`
 - **GitHub Issue**: [CultureBotAI/PathwayMech#670](https://github.com/CultureBotAI/PathwayMech/issues/670)
-- **Successor Structured Review Bundle**: `reviews/structured/20261022T033000Z-stage5-resolve-review-findings/review.yaml` (`sha256: 5be86eb8e95c884760ab207bd72954b497aabc34fb3d2c45e2c64066b5e48bc7`)
+- **Successor Structured Review Bundle**: `reviews/structured/20261022T033000Z-stage5-resolve-review-findings/review.yaml` (`sha256: 1bfce8600667fac6006bfa93058051ab08ab1a8e3ad4825e0f02472cd33b5f89`)
 
 ## 1. Focused Acceptance Verification for `F-STAGE4-001` & `F-STAGE4-002`
 
@@ -12,7 +12,7 @@
    - Verified `data/pathways/amino-sugar-superpathway.yaml` (`sha256: 1c93e912f2e349fbfab5458f309f526fcfc9d381560ac04ba35b7c442f2295f8`): `reactions[13]` (`BiGG:ACMANAptspp`, `N-acetyl-D-mannosamine transport via PTS  (periplasm)`) and `reactions[3..12]` (`10` `RHEA:*` reactions) now explicitly declare `category: molecular_activity`.
    - Verified `pages/downloads/nodes.tsv` (`sha256: 2cdc35a083b668ef3fdf21bac8c649f04e296fffaafb8b693e0804ce972a9d3b`): `BiGG:ACMANAptspp` now exports with `category=biolink:MolecularActivity` and `source_category=molecular_activity`:
      ```tsv
-     BiGG:ACMANAptspp	biolink:MolecularActivity	N-acetyl-D-mannosamine transport via PTS  (periplasm)	molecular_activity		MetaCyc:GLCMANNANAUT-PWY	PathwayMech
+     BiGG:ACMANAptspp	N-acetyl-D-mannosamine transport via PTS  (periplasm)	biolink:MolecularActivity	infores:pathwaymech	molecular_activity	left_to_right	"[{""category"": ""molecular_activity"", ""collection"": ""reactions"", ""direction"": ""left_to_right"", ""id"": ""BiGG:ACMANAptspp"", ""label"": ""N-acetyl-D-mannosamine transport via PTS  (periplasm)"", ""record_id"": ""MetaCyc:GLCMANNANAUT-PWY""}]"
      ```
 2. **`F-STAGE4-002` (`mixed-reaction-category-typing-in-maintained-pathways`, 12 `MetaCyc:*` records)**:
    - Verified across all 270 maintained pathway records in `data/pathways/*.yaml` that **0 records** mix explicit and omitted `reactions[].category` fields (`188` records declare `category` on 100% of their `reactions[]` entries; `82` records omit `category` on 100% of their `reactions[]` entries).

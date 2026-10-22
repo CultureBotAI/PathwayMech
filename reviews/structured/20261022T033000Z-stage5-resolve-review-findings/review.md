@@ -92,7 +92,7 @@ Disposition: Resolved under GitHub issue #670 by adding explicit category: molec
 | EV-STAGE4-PREDECESSOR | reviews/structured/20261022T013600Z-stage4-frozen-corpus-cohort-review/review.yaml; findings[0] (F-STAGE4-001) and findings[1] (F-STAGE4-002) | supports | Predecessor Stage 4 cohort review recorded two minor open findings across 12 maintained MetaCyc pathway records: F-STAGE4-001 (amino-sugar-superpathway-bigg-reaction-missing-category on MetaCyc:GLCMANNANAUT-PWY) and F-STAGE4-002 (mixed-reaction-category-typing-in-maintained-pathways across 12 MetaCyc records and 33 catalytic reaction entries). |
 | EV-STAGE4-WORKFLOW-EVIDENCE | reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-04/revision-0001/evidence.yaml; findings[0..1] (F-STAGE4-001, F-STAGE4-002) | supports | Stage 4 workflow evidence manifest carried forward F-STAGE4-001 and F-STAGE4-002 as open findings for Stage 5 grouped remediation. |
 | EV-STAGE5-GLCMANNANAUT-FIXED | data/pathways/amino-sugar-superpathway.yaml; lines 211-266 (reactions[3..13] in MetaCyc:GLCMANNANAUT-PWY) | supports | In data/pathways/amino-sugar-superpathway.yaml (MetaCyc:GLCMANNANAUT-PWY), all 10 RHEA:* reactions (reactions[3..12]) and BiGG:ACMANAptspp (reactions[13]) now explicitly declare category: molecular_activity alongside the 3 subpathway entries (reactions[0..2]) declaring category: pathway. |
-| EV-STAGE5-NODES-TSV-FIXED | pages/downloads/nodes.tsv; row BiGG:ACMANAptspp and 25 remediated unique reaction CURIEs | supports | After running .venv/bin/pathwaymech-render-pages, BiGG:ACMANAptspp and all 33 remediated catalytic reaction entries across the 12 MetaCyc records export in pages/downloads/nodes.tsv with category biolink:MolecularActivity and source_category=molecular_activity. |
+| EV-STAGE5-NODES-TSV-FIXED | pages/downloads/nodes.tsv; line 635 (row BiGG:ACMANAptspp) and 25 remediated unique reaction CURIEs | supports | After running .venv/bin/pathwaymech-render-pages, BiGG:ACMANAptspp and all 33 remediated catalytic reaction entries across the 12 MetaCyc records export in pages/downloads/nodes.tsv with category biolink:MolecularActivity and source_category=molecular_activity. |
 | EV-STAGE5-12-RECORDS-FIXED | data/pathways/; 12 remediated MetaCyc records: adenosine-nucleotides-degradation-ii.yaml, adenosylcobinamide-gdp-salvage-i.yaml, allantoin-degradation-iv-anaerobic.yaml, amino-sugar-superpathway.yaml, benzoate-degradation-i-aerobic.yaml, benzoyl-coa-degradation-i-aerobic.yaml, cyanate-degradation.yaml, ergothioneine-biosynthesis-i.yaml, glyoxylate-assimilation.yaml, hydroxypropionate-hydroxybutyrate-cycle.yaml, nicotine-degradation-ii.yaml, uracil-degradation-iii.yaml | supports | Added explicit category: molecular_activity to all 33 catalytic reaction entries (30 RHEA:*, 2 MetaCyc:RXN-*, 1 BiGG:ACMANAptspp) that previously omitted category across the 12 mixed-typing MetaCyc records. Verified across all 270 maintained pathway records in data/pathways/*.yaml that 0 records now mix explicit and omitted reaction category values. |
 | EV-STAGE5-KGX-EXPORTER | src/pathwaymech/kgx.py; lines 74-149 (_PARTICIPANT_CATEGORIES, _PREFIX_CATEGORIES, _node_category) | supports | When reaction.category is explicitly set to 'molecular_activity', _node_category in src/pathwaymech/kgx.py maps it via _PARTICIPANT_CATEGORIES['molecular_activity'] to 'biolink:MolecularActivity' with source_category='molecular_activity'. |
 | EV-STAGE5-QC | .venv/bin/pathwaymech-run-qc; stdout summary (270 pathway records, 549 history records, 22,085 evidence blocks, 33 source records) | supports | Executed .venv/bin/pathwaymech-run-qc: validated 270 pathway records against the closed LinkML schema, verified all identifiers and labels against local authority snapshots, validated 549 history records (including 12 new Stage 5 record history entries referencing issue #670) and 22,085 evidence blocks, and confirmed pages/ synchrony. |
@@ -559,19 +559,23 @@ evidence:
     now explicitly declare category: molecular_activity alongside the 3 subpathway
     entries (reactions[0..2]) declaring category: pathway.'
   quote: "- id: BiGG:ACMANAptspp\n  label: N-acetyl-D-mannosamine transport via PTS\
-    \  (periplasm)\n  category: molecular_activity\n  direction: left_to_right"
+    \  (periplasm)\n  direction: left_to_right\n  category: molecular_activity"
   snapshot_sha256: 1c93e912f2e349fbfab5458f309f526fcfc9d381560ac04ba35b7c442f2295f8
 - evidence_id: EV-STAGE5-NODES-TSV-FIXED
   kind: record_content
   reference: pages/downloads/nodes.tsv
-  locator: row BiGG:ACMANAptspp and 25 remediated unique reaction CURIEs
+  locator: line 635 (row BiGG:ACMANAptspp) and 25 remediated unique reaction CURIEs
   accessed_at: '2026-10-22T03:27:00Z'
   support: supports
   summary: After running .venv/bin/pathwaymech-render-pages, BiGG:ACMANAptspp and
     all 33 remediated catalytic reaction entries across the 12 MetaCyc records export
     in pages/downloads/nodes.tsv with category biolink:MolecularActivity and source_category=molecular_activity.
-  quote: "BiGG:ACMANAptspp\tbiolink:MolecularActivity\tN-acetyl-D-mannosamine transport\
-    \ via PTS  (periplasm)\tmolecular_activity\t\tMetaCyc:GLCMANNANAUT-PWY\tPathwayMech"
+  quote: "BiGG:ACMANAptspp\tN-acetyl-D-mannosamine transport via PTS  (periplasm)\t\
+    biolink:MolecularActivity\tinfores:pathwaymech\tmolecular_activity\tleft_to_right\t\
+    \"[{\"\"category\"\": \"\"molecular_activity\"\", \"\"collection\"\": \"\"reactions\"\
+    \", \"\"direction\"\": \"\"left_to_right\"\", \"\"id\"\": \"\"BiGG:ACMANAptspp\"\
+    \", \"\"label\"\": \"\"N-acetyl-D-mannosamine transport via PTS  (periplasm)\"\
+    \", \"\"record_id\"\": \"\"MetaCyc:GLCMANNANAUT-PWY\"\"}]\""
   snapshot_sha256: 2cdc35a083b668ef3fdf21bac8c649f04e296fffaafb8b693e0804ce972a9d3b
 - evidence_id: EV-STAGE5-12-RECORDS-FIXED
   kind: record_content
