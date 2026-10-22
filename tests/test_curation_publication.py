@@ -253,3 +253,72 @@ def test_report_staging_failure_leaves_records_and_report_unchanged(tmp_path, mo
         curation.publish_curation([(path, changed)], report, {}, apply=True)
     assert (path.read_bytes(), report.read_bytes()) == before
     assert not list(tmp_path.glob(".*.tmp"))
+
+
+def test_publish_curation_preserves_existing_line_wrap_width(tmp_path):
+    from pathwaymech.curation import publish_curation
+
+    path = tmp_path / "record.yaml"
+    report = tmp_path / "report.json"
+    initial = record()
+    initial["description"] = (
+        "This long pathway description spans well over eighty-eight characters so that "
+        "wrapping differs visibly between width=88 and width=100 during guarded publication."
+    )
+    path.write_text(
+        yaml.safe_dump(initial, sort_keys=False, allow_unicode=True, width=88),
+        encoding="utf-8",
+    )
+    updated = deepcopy(initial)
+    updated["pathway_type"] = "updated-test"
+    assert publish_curation([(path, updated)], report, {"records": []}, apply=True) == 1
+    expected = yaml.safe_dump(updated, sort_keys=False, allow_unicode=True, width=88)
+    assert path.read_text(encoding="utf-8") == expected
+    assert path.read_text(encoding="utf-8") != yaml.safe_dump(
+        updated, sort_keys=False, allow_unicode=True, width=100
+    )
+
+
+def test_publish_curation_preserves_yaml_anchor_aliases_across_deep_copies(tmp_path):
+    from pathwaymech.curation import publish_curation
+
+    path = tmp_path / "anchored.yaml"
+    report = tmp_path / "report.json"
+    initial = record()
+    initial["participants"] = [
+        {"id": "CHEBI:15377", "label": "water"},
+        {"id": "CHEBI:15378", "label": "hydron"},
+    ]
+    initial["reactions"] = [{"id": "RHEA:10000", "label": "test reaction"}]
+    shared_evidence = [
+        {"reference_id": initial["id"], "quote": "Shared verbatim evidence across edges."}
+    ]
+    initial["mechanistic_edges"] = [
+        {
+            "id": "edge-1",
+            "subject": "CHEBI:15377",
+            "predicate": "consumes",
+            "object": "RHEA:10000",
+            "evidence": shared_evidence,
+        },
+        {
+            "id": "edge-2",
+            "subject": "RHEA:10000",
+            "predicate": "produces",
+            "object": "CHEBI:15378",
+            "evidence": shared_evidence,
+        },
+    ]
+    dumped_initial = yaml.safe_dump(
+        initial, sort_keys=False, allow_unicode=True, width=100
+    )
+    assert "&id001" in dumped_initial and "*id001" in dumped_initial
+    path.write_text(dumped_initial, encoding="utf-8")
+
+    # Round-trip through JSON to break Python object identity on shared_evidence
+    unlinked = json.loads(json.dumps(yaml.safe_load(path.read_text(encoding="utf-8"))))
+    unlinked["reactions"][0]["category"] = "molecular_activity"
+    assert publish_curation([(path, unlinked)], report, {"records": []}, apply=True) == 1
+    published_text = path.read_text(encoding="utf-8")
+    assert "&id001" in published_text and "*id001" in published_text
+

@@ -10,6 +10,7 @@ import json
 import subprocess
 import tempfile
 from collections.abc import Callable, Mapping, Sequence
+from copy import deepcopy
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,106 @@ import yaml
 from pathwaymech.schema import validate_record
 
 CAUSAL_REVIEW_BASELINE = "88744403c934a84828d373cfccb8cdaa7507ad77"
+_CANDIDATE_YAML_WIDTHS = (100, 88, 80, 120, 4096)
+
+
+def _collect_anchored_subtrees(value: Any) -> list[Any]:
+    """Return list/dict subtrees referenced multiple times (YAML anchors/aliases)."""
+    seen: dict[int, Any] = {}
+    repeated_ids: set[int] = set()
+    ordered_ids: list[int] = []
+
+    def _walk(node: Any) -> None:
+        if not isinstance(node, (dict, list)):
+            return
+        obj_id = id(node)
+        if obj_id in seen:
+            if obj_id not in repeated_ids:
+                repeated_ids.add(obj_id)
+                ordered_ids.append(obj_id)
+            return
+        seen[obj_id] = node
+        if isinstance(node, dict):
+            for child in node.values():
+                _walk(child)
+        else:
+            for child in node:
+                _walk(child)
+
+    _walk(value)
+    return [deepcopy(seen[obj_id]) for obj_id in ordered_ids]
+
+
+def _restore_yaml_anchors(value: Any, anchored_subtrees: Sequence[Any]) -> Any:
+    """Re-link equal list/dict subtrees to shared instances so safe_dump emits aliases."""
+    if not anchored_subtrees:
+        return value
+    shared_targets = [deepcopy(item) for item in anchored_subtrees]
+
+    def _relink(node: Any) -> Any:
+        if not isinstance(node, (dict, list)):
+            return node
+        for target in shared_targets:
+            if type(node) is type(target) and node == target:
+                return target
+        if isinstance(node, dict):
+            return {key: _relink(child) for key, child in node.items()}
+        return [_relink(child) for child in node]
+
+    return _relink(deepcopy(value))
+
+
+def _detect_yaml_width(existing_text: str, existing_value: Any) -> int:
+    """Detect the wrap width of an existing YAML file, defaulting to 100."""
+    if not isinstance(existing_value, dict):
+        return 100
+    existing_lines = existing_text.splitlines()
+    best_width = 100
+    best_score = -1
+    for width in _CANDIDATE_YAML_WIDTHS:
+        dumped = yaml.safe_dump(
+            existing_value,
+            sort_keys=False,
+            allow_unicode=True,
+            width=width,
+        )
+        if dumped == existing_text:
+            return width
+        dumped_lines = dumped.splitlines()
+        overlap = sum(
+            1
+            for left, right in zip(existing_lines, dumped_lines, strict=False)
+            if left == right
+        )
+        score = overlap * 2 - abs(len(existing_lines) - len(dumped_lines))
+        if score > best_score:
+            best_score = score
+            best_width = width
+    return best_width
+
+
+def _serialize_record(path: Path, record: dict) -> str:
+    """Serialize a record while preserving existing wrap width and YAML anchor aliases."""
+    width = 100
+    value: Any = record
+    if path.exists() and path.is_file():
+        try:
+            existing_text = path.read_text(encoding="utf-8")
+            existing_value = yaml.safe_load(existing_text)
+        except (OSError, yaml.YAMLError):
+            existing_text = ""
+            existing_value = None
+        if isinstance(existing_value, dict):
+            width = _detect_yaml_width(existing_text, existing_value)
+            anchored = _collect_anchored_subtrees(existing_value)
+            if anchored:
+                value = _restore_yaml_anchors(record, anchored)
+    return yaml.safe_dump(
+        value,
+        sort_keys=False,
+        allow_unicode=True,
+        width=width,
+    )
 
 
 @cache
@@ -122,15 +223,14 @@ def publish_curation(
     report_paths = {report_path.resolve(), *(path.resolve() for path in extras)}
     require(not record_paths.intersection(report_paths), "A report cannot overwrite a record")
     require(len(report_paths) == len(extras) + 1, "Duplicate report destinations")
-    serializer = serialize or (
-        lambda value: yaml.safe_dump(
-            value,
-            sort_keys=False,
-            allow_unicode=True,
-            width=100,
-        )
+    outputs = (
+        [
+            (path, serialize(record) if serialize is not None else _serialize_record(path, record))
+            for path, record in pending
+        ]
+        if apply
+        else []
     )
-    outputs = [(path, serializer(record)) for path, record in pending] if apply else []
     payload = json.dumps({**report, "applied": apply}, indent=2) + "\n"
     outputs.extend([(report_path, payload), *extras.items()])
     # Stage every output before replacing any destination: an unwritable report

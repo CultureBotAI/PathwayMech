@@ -422,6 +422,10 @@ classes:
         description: A node id in this record (checked in src/pathwaymech/schema.py).
       description:
         description: Optional prose about the edge.
+      coefficient:
+        range: integer
+        minimum_value: 1
+        description: Optional positive stoichiometric coefficient for this edge assertion.
       endpoint_qualifiers:
         description: >-
           Source-limited construct or state assertions that are part of this
@@ -479,6 +483,12 @@ classes:
       source_locator:
         pattern: "\\S"
         description: Exact source object, triple, XML path, or JSON path supporting the assertion.
+      assay_taxon:
+        pattern: "^NCBITaxon:[0-9]+(?![\\s\\S])"
+        description: Optional NCBITaxon CURIE identifying the strain or organism in which the evidence was assayed.
+      eco_code:
+        pattern: "^ECO:[0-9]{7}(?![\\s\\S])"
+        description: Optional Evidence and Conclusion Ontology (ECO) CURIE classifying the evidence type.
     exactly_one_of:
       - slot_conditions:
           quote:
@@ -659,3 +669,5 @@ enums:
           edge description or located source assertion; this does not assert all
           alternatives are required together. An explicitly typed subject must
           be a protein or complex.
+      encodes:
+        description: The subject gene or nucleic acid encodes the object gene product or protein.
