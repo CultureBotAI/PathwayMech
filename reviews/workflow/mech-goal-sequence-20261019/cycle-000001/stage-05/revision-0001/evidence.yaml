@@ -1,0 +1,54 @@
+schema_version: 1.0.0
+repository_key: pathwaymech
+github_repository: CultureBotAI/PathwayMech
+run_id: mech-goal-sequence-20261019
+cycle: 1
+stage: 5
+revision: 1
+outcome: completed
+summary: 'Completed Cycle 1 Stage 5 grouped remediation of all carried-forward Stage 4 findings (F-STAGE4-001, F-STAGE4-002) under root-cause group G-STAGE5-001 and GitHub issue #670 across all 12 affected MetaCyc pathway records (33 reaction entries), recorded 12 curation history files, regenerated rendered pages and KGX exports, and saved successor structured review bundle 20261022T033000Z-stage5-resolve-review-findings confirming 0 remaining findings.'
+source_revision: 12a62259e1fa38b8a4094dd23df00d7edc41659f
+scope_frozen_at: '2026-10-22T03:08:27Z'
+previous_evidence:
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-04/revision-0001/evidence.yaml
+  sha256: 4f8d1af7488189d8a0de7fe11e5ab21003e67af0380b66654f1fe3334b8c43c7
+artifacts:
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/issue_map.md
+  sha256: 3f178db007bb61ead01cc8a1f1f5ab151a0c5dfda8d9060e224339d5057f17c6
+  kind: issue_map
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/validation.md
+  sha256: 3995bf8c8f761afbac9e69047c37864674684efa7d6a2bcaa41191dc3ea90c54
+  kind: validation
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/coverage.json
+  sha256: a30ec90b20edb80a3408961720e9029114cacb0df61ddf37dea5a1acd6370263
+  kind: supporting
+findings:
+- finding_id: F-STAGE4-001
+  status: resolved
+  summary: 'BiGG:ACMANAptspp reaction (reactions[13]) in MetaCyc:GLCMANNANAUT-PWY (data/pathways/amino-sugar-superpathway.yaml) omits category: molecular_activity and exports as biolink:NamedThing with empty source_category in pages/downloads/nodes.tsv.'
+  group_id: G-STAGE5-001
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/670
+  disposition: 'Added explicit category: molecular_activity to reactions[13] (BiGG:ACMANAptspp) in data/pathways/amino-sugar-superpathway.yaml, regenerated pages/downloads/nodes.tsv (verifying biolink:MolecularActivity and molecular_activity export), recorded history, and verified resolution in structured review 20261022T033000Z-stage5-resolve-review-findings.'
+  carried_from: F-STAGE4-001
+- finding_id: F-STAGE4-002
+  status: resolved
+  summary: 'Twelve maintained MetaCyc pathway records mix explicit reaction category declarations with 33 catalytic reaction entries (30 RHEA:*, 2 MetaCyc:RXN-*, 1 BiGG:ACMANAptspp) that omit category: molecular_activity within the same reactions[] list.'
+  group_id: G-STAGE5-001
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/670
+  disposition: 'Added explicit category: molecular_activity to all 33 untyped catalytic reaction entries across all 12 affected MetaCyc pathway records, regenerated pages/downloads/nodes.tsv, recorded 12 curation history files, and verified resolution in structured review 20261022T033000Z-stage5-resolve-review-findings.'
+  carried_from: F-STAGE4-002
+groups:
+- group_id: G-STAGE5-001
+  finding_ids:
+  - F-STAGE4-001
+  - F-STAGE4-002
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/670
+  status: resolved
+  summary: 'Omitted category:molecular_activity declarations on 33 catalytic reactions[] entries across 12 mixed-typing MetaCyc pathway YAML records.'
+  resolution_evidence:
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/issue_map.md
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/validation.md
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/coverage.json
+  disposition: 'Resolved in data/pathways/*.yaml (12 files, 33 reaction entries), pages/downloads/nodes.tsv, history/records/*/2026-10-22T032500Z-antigravity-a1d1e5.yaml, and reviews/structured/20261022T033000Z-stage5-resolve-review-findings/review.yaml.'
+carry_forward_ids: []
+infra_tasks: []
