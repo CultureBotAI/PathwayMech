@@ -30,11 +30,11 @@ summary: 'Re-inspected and verified all 56 maintained MetaCyc pathway YAML recor
   (1597 total reactions[] entries: 1559 molecular_activity, 36 pathway, and 2 biological_process)
   now declare an explicit reaction category, that all 254 unique remediated reaction
   CURIEs export in pages/downloads/nodes.tsv as biolink:MolecularActivity with source_category=molecular_activity,
-  and that all 271 pathway records, 711 history records, 22,226 evidence blocks, and
+  and that all 271 pathway records, 711 history records, 22,211 evidence blocks, and
   201 structured review bundles pass closed LinkML schema, authority snapshot, and
   pytest validation.'
 source:
-  git_revision: 141d6b29ac5b00faa5d939dc6aaceea97af819b3
+  git_revision: 9c4f97082c20bbb66acc969d7b3a0a7915f687b8
   state: working_tree
   inputs:
   - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
@@ -1090,7 +1090,7 @@ checks:
   required: true
   summary: Validated all 271 maintained pathway records (including the 56 remediated
     MetaCyc records) against the closed LinkML schema, local identifier/label authority
-    snapshots, 711 history records, 22,226 evidence blocks, 33 source records, and
+    snapshots, 711 history records, 22,211 evidence blocks, 33 source records, and
     pages/ synchrony.
   target_ids:
   - MetaCyc:PWY-6543
@@ -1160,7 +1160,7 @@ checks:
   name: Pytest unit and integration test suite (just test)
   status: passed
   required: true
-  summary: All 8,075 passed (3 skipped) in pytest across schema, KGX export, SSSOM,
+  summary: All 8,066 passed (3 skipped) in pytest across schema, KGX export, SSSOM,
     and record-review checks.
   target_ids:
   - MetaCyc:PWY-6543
@@ -1455,14 +1455,14 @@ evidence:
 - evidence_id: EV-C2S5-SHARED-REACTIONS-FIXED
   kind: record_content
   reference: data/pathways/l-arabinose-degradation-i.yaml
-  locator: reactions[0..2] in MetaCyc:ARABCAT-PWY and all 28 shared reaction occurrences
+  locator: reactions[2] in MetaCyc:ARABCAT-PWY and all 28 shared reaction occurrences
     across 16 MetaCyc records
   accessed_at: '2026-10-22T15:18:00Z'
   support: supports
   summary: 'All 28 shared catalytic reaction entries across the 16 MetaCyc records
     in F-C2S4-001 now explicitly declare category: molecular_activity, matching their
-    14 sibling records.'
-  quote: "- id: RHEA:12649\n  label: L-ribulose 5-phosphate <=> D-xylulose 5-phosphate\n\
+    sibling records.'
+  quote: "- id: RHEA:22369\n  label: L-ribulose-5-phosphate 4-epimerase reaction\n\
     \  direction: left_to_right\n  category: molecular_activity"
   snapshot_sha256: 8c4eb5bf03ac733c78d8ff7e4828945e313074f3e813d436bf0c4e9e96570d37
 - evidence_id: EV-C2S5-56-RECORDS-FIXED
@@ -1509,14 +1509,14 @@ evidence:
 - evidence_id: EV-C2S5-QC
   kind: validation
   reference: .venv/bin/pathwaymech-run-qc
-  locator: stdout summary (271 pathway records, 711 history records, 22,226 evidence
+  locator: stdout summary (271 pathway records, 711 history records, 22,211 evidence
     blocks, 33 source records)
   accessed_at: '2026-10-22T15:20:00Z'
   support: supports
   summary: 'Executed .venv/bin/pathwaymech-run-qc: validated 271 pathway records against
     the closed LinkML schema, verified all identifiers and labels against local authority
     snapshots, validated 711 history records (including 56 new Cycle 2 Stage 5 record
-    history entries referencing issue #692) and 22,226 evidence blocks, and confirmed
+    history entries referencing issue #692) and 22,211 evidence blocks, and confirmed
     pages/ synchrony.'
 - evidence_id: EV-C2S5-PYTEST
   kind: validation
@@ -1524,7 +1524,7 @@ evidence:
   locator: pytest suite execution across tests/
   accessed_at: '2026-10-22T15:20:00Z'
   support: supports
-  summary: Executed .venv/bin/pytest -q with 8,075 passed and 3 skipped.
+  summary: Executed .venv/bin/pytest -q with 8,066 passed and 3 skipped.
 - evidence_id: EV-C2S5-RUFF
   kind: validation
   reference: .venv/bin/ruff check --no-cache .
@@ -1735,14 +1735,18 @@ findings:
   status: resolved
   certainty: confirmed
   title: 'All 28 shared catalytic reaction occurrences across 16 MetaCyc pathway records
-    now declare category: molecular_activity and match their 14 sibling records'
+    now declare category: molecular_activity and match their 15 sibling records'
   description: 'Across the 16 MetaCyc pathway records in F-C2S4-001 (MetaCyc:ARABCAT-PWY,
     MetaCyc:ARGDEGRAD-PWY, MetaCyc:CALVIN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:GALACTUROCAT-PWY,
     MetaCyc:GLUAMCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY,
     MetaCyc:HOMOSERSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY,
     MetaCyc:P101-PWY, MetaCyc:PWY-8383, and MetaCyc:PYRIDOXSYN-PWY), added explicit
     category: molecular_activity to all 28 shared catalytic reaction entries (23 unique
-    reaction CURIEs: 22 RHEA:* and 1 MetaCyc:RXN-14325) via pathwaymech.curation.publish_curation,
+    reaction CURIEs: 22 RHEA:* and 1 MetaCyc:DHBAMPLIG-RXN, matching their 15 sibling
+    records PathBank:SMP0000992, PathBank:SMP0002406, KEGG:M00008, MetaCyc:CYANCAT-PWY,
+    MetaCyc:ENTDB-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GLCMANNANAUT-PWY, MetaCyc:LYXMET-PWY,
+    MetaCyc:PWY-5903, MetaCyc:PWY-7255, MetaCyc:PWY0-1300, MetaCyc:PWY0-1471, MetaCyc:PWY0-301,
+    MetaCyc:PWY0-41, and MetaCyc:THISYN-PWY) via pathwaymech.curation.publish_curation,
     recorded 16 curation history files, and regenerated pages/.'
   target_ids:
   - MetaCyc:CALVIN-PWY

@@ -11,7 +11,7 @@
 
 ## Summary
 
-Re-inspected and verified all 56 maintained MetaCyc pathway YAML records affected by Cycle 2 Stage 4 findings F-C2S4-001 (cross-record-shared-reaction-category-inconsistency, 16 records / 28 shared reaction occurrences across 23 shared reaction CURIEs) and F-C2S4-002 (corpus-wide-untyped-reactions-in-56-metacyc-records, 56 records / 279 catalytic reaction entries across 254 unique reaction CURIEs: 263 RHEA:* and 16 MetaCyc:*) after adding explicit category: molecular_activity to all 279 previously untyped catalytic reaction entries under GitHub issue #692 via pathwaymech.curation.publish_curation. Confirmed that 100% of the 271 maintained pathway records in data/pathways/*.yaml (1597 total reactions[] entries: 1559 molecular_activity, 36 pathway, and 2 biological_process) now declare an explicit reaction category, that all 254 unique remediated reaction CURIEs export in pages/downloads/nodes.tsv as biolink:MolecularActivity with source_category=molecular_activity, and that all 271 pathway records, 711 history records, 22,226 evidence blocks, and 201 structured review bundles pass closed LinkML schema, authority snapshot, and pytest validation.
+Re-inspected and verified all 56 maintained MetaCyc pathway YAML records affected by Cycle 2 Stage 4 findings F-C2S4-001 (cross-record-shared-reaction-category-inconsistency, 16 records / 28 shared reaction occurrences across 23 shared reaction CURIEs) and F-C2S4-002 (corpus-wide-untyped-reactions-in-56-metacyc-records, 56 records / 279 catalytic reaction entries across 254 unique reaction CURIEs: 263 RHEA:* and 16 MetaCyc:*) after adding explicit category: molecular_activity to all 279 previously untyped catalytic reaction entries under GitHub issue #692 via pathwaymech.curation.publish_curation. Confirmed that 100% of the 271 maintained pathway records in data/pathways/*.yaml (1597 total reactions[] entries: 1559 molecular_activity, 36 pathway, and 2 biological_process) now declare an explicit reaction category, that all 254 unique remediated reaction CURIEs export in pages/downloads/nodes.tsv as biolink:MolecularActivity with source_category=molecular_activity, and that all 271 pathway records, 711 history records, 22,211 evidence blocks, and 201 structured review bundles pass closed LinkML schema, authority snapshot, and pytest validation.
 
 ## Scope And Provenance
 
@@ -19,7 +19,7 @@ Complete post-remediation reassessment of the 56 maintained MetaCyc pathway reco
 
 Selection: All 56 maintained pathway records in CultureBotAI/PathwayMech carrying open findings in reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.yaml (100% of open Cycle 2 Stage 4 maintained-record findings).
 Coverage: full; 56 reviewed / 56 in the declared population.
-Source: working_tree at Git base 141d6b29ac5b00faa5d939dc6aaceea97af819b3.
+Source: working_tree at Git base 9c4f97082c20bbb66acc969d7b3a0a7915f687b8.
 Working-tree hashes do not imply those bytes were committed.
 
 | Target | Path / selector | Kind | Label |
@@ -85,8 +85,8 @@ Working-tree hashes do not imply those bytes were committed.
 
 | Check | Status | Required | Targets | Result |
 | --- | --- | --- | --- | --- |
-| Repository QC and closed-schema validation (just validate) | passed | True | MetaCyc:PWY-6543, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY0-1312, MetaCyc:CALVIN-PWY, MetaCyc:ARO-PWY, MetaCyc:COA-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:P101-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:PANTO-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-6151, MetaCyc:TRESYN-PWY, MetaCyc:PWY-5686 | Validated all 271 maintained pathway records (including the 56 remediated MetaCyc records) against the closed LinkML schema, local identifier/label authority snapshots, 711 history records, 22,226 evidence blocks, 33 source records, and pages/ synchrony. |
-| Pytest unit and integration test suite (just test) | passed | True | MetaCyc:PWY-6543, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY0-1312, MetaCyc:CALVIN-PWY, MetaCyc:ARO-PWY, MetaCyc:COA-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:P101-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:PANTO-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-6151, MetaCyc:TRESYN-PWY, MetaCyc:PWY-5686 | All 8,075 passed (3 skipped) in pytest across schema, KGX export, SSSOM, and record-review checks. |
+| Repository QC and closed-schema validation (just validate) | passed | True | MetaCyc:PWY-6543, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY0-1312, MetaCyc:CALVIN-PWY, MetaCyc:ARO-PWY, MetaCyc:COA-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:P101-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:PANTO-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-6151, MetaCyc:TRESYN-PWY, MetaCyc:PWY-5686 | Validated all 271 maintained pathway records (including the 56 remediated MetaCyc records) against the closed LinkML schema, local identifier/label authority snapshots, 711 history records, 22,211 evidence blocks, 33 source records, and pages/ synchrony. |
+| Pytest unit and integration test suite (just test) | passed | True | MetaCyc:PWY-6543, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY0-1312, MetaCyc:CALVIN-PWY, MetaCyc:ARO-PWY, MetaCyc:COA-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:P101-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:PANTO-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-6151, MetaCyc:TRESYN-PWY, MetaCyc:PWY-5686 | All 8,066 passed (3 skipped) in pytest across schema, KGX export, SSSOM, and record-review checks. |
 | Ruff lint check (just lint) | passed | True | MetaCyc:PWY-6543, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY0-1312, MetaCyc:CALVIN-PWY, MetaCyc:ARO-PWY, MetaCyc:COA-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:P101-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:PANTO-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-6151, MetaCyc:TRESYN-PWY, MetaCyc:PWY-5686 | Ruff check passed with 0 errors. |
 | Git whitespace and conflict marker check | passed | True | MetaCyc:PWY-6543, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY0-1312, MetaCyc:CALVIN-PWY, MetaCyc:ARO-PWY, MetaCyc:COA-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:P101-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:PANTO-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-6151, MetaCyc:TRESYN-PWY, MetaCyc:PWY-5686 | git diff --check exited 0 with no whitespace or conflict marker issues. |
 | Structured review bundle contract check (just review-check) | passed | True | MetaCyc:PWY-6543, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY0-1312, MetaCyc:CALVIN-PWY, MetaCyc:ARO-PWY, MetaCyc:COA-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:P101-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:PANTO-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-6151, MetaCyc:TRESYN-PWY, MetaCyc:PWY-5686 | All retained structured review bundles in reviews/structured/ passed schema and append-only checks against main. |
@@ -107,11 +107,11 @@ Structural diff verification across all 56 remediated YAML files confirms that o
 
 ## Findings
 
-### F-C2S4-001: All 28 shared catalytic reaction occurrences across 16 MetaCyc pathway records now declare category: molecular_activity and match their 14 sibling records
+### F-C2S4-001: All 28 shared catalytic reaction occurrences across 16 MetaCyc pathway records now declare category: molecular_activity and match their 15 sibling records
 
 minor / resolved / confirmed; issue key: cross-record-shared-reaction-category-inconsistency.
 
-Across the 16 MetaCyc pathway records in F-C2S4-001 (MetaCyc:ARABCAT-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CALVIN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUAMCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:P101-PWY, MetaCyc:PWY-8383, and MetaCyc:PYRIDOXSYN-PWY), added explicit category: molecular_activity to all 28 shared catalytic reaction entries (23 unique reaction CURIEs: 22 RHEA:* and 1 MetaCyc:RXN-14325) via pathwaymech.curation.publish_curation, recorded 16 curation history files, and regenerated pages/.
+Across the 16 MetaCyc pathway records in F-C2S4-001 (MetaCyc:ARABCAT-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:CALVIN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUAMCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:P101-PWY, MetaCyc:PWY-8383, and MetaCyc:PYRIDOXSYN-PWY), added explicit category: molecular_activity to all 28 shared catalytic reaction entries (23 unique reaction CURIEs: 22 RHEA:* and 1 MetaCyc:DHBAMPLIG-RXN, matching their 15 sibling records PathBank:SMP0000992, PathBank:SMP0002406, KEGG:M00008, MetaCyc:CYANCAT-PWY, MetaCyc:ENTDB-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GLCMANNANAUT-PWY, MetaCyc:LYXMET-PWY, MetaCyc:PWY-5903, MetaCyc:PWY-7255, MetaCyc:PWY0-1300, MetaCyc:PWY0-1471, MetaCyc:PWY0-301, MetaCyc:PWY0-41, and MetaCyc:THISYN-PWY) via pathwaymech.curation.publish_curation, recorded 16 curation history files, and regenerated pages/.
 
 Disposition: Resolved under GitHub issue #692 by adding explicit category: molecular_activity to all 28 shared reaction occurrences (along with the remaining reaction entries in those 16 MetaCyc records) via pathwaymech.curation.publish_curation, recording 16 curation history entries, and regenerating pages/downloads/nodes.tsv so all 23 shared reaction CURIEs have uniform source_contexts with category: molecular_activity.
 
@@ -135,12 +135,12 @@ Disposition: Resolved under GitHub issue #692 by adding explicit category: molec
 | --- | --- | --- | --- |
 | EV-C2S4-PREDECESSOR | reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.yaml; findings[0] (F-C2S4-001) and findings[1] (F-C2S4-002) | supports | Predecessor Cycle 2 Stage 4 cohort review recorded two minor open findings across 56 maintained MetaCyc pathway records: F-C2S4-001 (cross-record-shared-reaction-category-inconsistency across 16 MetaCyc records and 28 shared reaction occurrences) and F-C2S4-002 (corpus-wide-untyped-reactions-in-56-metacyc-records across 56 MetaCyc records and 279 catalytic reaction entries). |
 | EV-C2S4-WORKFLOW-EVIDENCE | reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-04/revision-0001/evidence.yaml; findings[0..1] (F-C2S4-001, F-C2S4-002) | supports | Cycle 2 Stage 4 workflow evidence manifest carried forward F-C2S4-001 and F-C2S4-002 as open findings for Cycle 2 Stage 5 grouped remediation. |
-| EV-C2S5-SHARED-REACTIONS-FIXED | data/pathways/l-arabinose-degradation-i.yaml; reactions[0..2] in MetaCyc:ARABCAT-PWY and all 28 shared reaction occurrences across 16 MetaCyc records | supports | All 28 shared catalytic reaction entries across the 16 MetaCyc records in F-C2S4-001 now explicitly declare category: molecular_activity, matching their 14 sibling records. |
+| EV-C2S5-SHARED-REACTIONS-FIXED | data/pathways/l-arabinose-degradation-i.yaml; reactions[2] in MetaCyc:ARABCAT-PWY and all 28 shared reaction occurrences across 16 MetaCyc records | supports | All 28 shared catalytic reaction entries across the 16 MetaCyc records in F-C2S4-001 now explicitly declare category: molecular_activity, matching their sibling records. |
 | EV-C2S5-56-RECORDS-FIXED | data/pathways/s-adenosyl-l-methionine-cycle-i.yaml; reactions[0..5] in MetaCyc:PWY-6151 and all 279 catalytic reaction entries across 56 remediated MetaCyc records | supports | Added explicit category: molecular_activity to all 279 catalytic reaction entries (263 RHEA:* and 16 MetaCyc:*) across all 56 previously untyped MetaCyc pathway records in F-C2S4-002 via pathwaymech.curation.publish_curation. Verified across all 271 maintained pathway records (1597 total reactions[] entries: 1559 molecular_activity, 36 pathway, and 2 biological_process) that 0 reaction entries omit category. |
 | EV-C2S5-KGX-NODES | pages/downloads/nodes.tsv; 254 remediated unique reaction CURIE rows in pages/downloads/nodes.tsv | supports | After running .venv/bin/pathwaymech-render-pages, all 254 unique catalytic reaction CURIEs across the 56 remediated MetaCyc records (including all 23 shared reaction CURIEs and all 231 exclusive reaction CURIEs) export in pages/downloads/nodes.tsv with category biolink:MolecularActivity, source_category=molecular_activity, and uniform source_contexts. |
 | EV-C2S5-KGX-EXPORTER | src/pathwaymech/kgx.py; lines 74-150 (_PARTICIPANT_CATEGORIES, _PREFIX_CATEGORIES, _node_category) | supports | When reaction.category is explicitly set to 'molecular_activity', _node_category in src/pathwaymech/kgx.py maps it via _PARTICIPANT_CATEGORIES['molecular_activity'] to 'biolink:MolecularActivity' with source_category='molecular_activity'. |
-| EV-C2S5-QC | .venv/bin/pathwaymech-run-qc; stdout summary (271 pathway records, 711 history records, 22,226 evidence blocks, 33 source records) | supports | Executed .venv/bin/pathwaymech-run-qc: validated 271 pathway records against the closed LinkML schema, verified all identifiers and labels against local authority snapshots, validated 711 history records (including 56 new Cycle 2 Stage 5 record history entries referencing issue #692) and 22,226 evidence blocks, and confirmed pages/ synchrony. |
-| EV-C2S5-PYTEST | .venv/bin/pytest -q; pytest suite execution across tests/ | supports | Executed .venv/bin/pytest -q with 8,075 passed and 3 skipped. |
+| EV-C2S5-QC | .venv/bin/pathwaymech-run-qc; stdout summary (271 pathway records, 711 history records, 22,211 evidence blocks, 33 source records) | supports | Executed .venv/bin/pathwaymech-run-qc: validated 271 pathway records against the closed LinkML schema, verified all identifiers and labels against local authority snapshots, validated 711 history records (including 56 new Cycle 2 Stage 5 record history entries referencing issue #692) and 22,211 evidence blocks, and confirmed pages/ synchrony. |
+| EV-C2S5-PYTEST | .venv/bin/pytest -q; pytest suite execution across tests/ | supports | Executed .venv/bin/pytest -q with 8,066 passed and 3 skipped. |
 | EV-C2S5-RUFF | .venv/bin/ruff check --no-cache .; ruff check output | supports | Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks passed). |
 | EV-C2S5-GIT-DIFF | git diff --check; git worktree on feat/cycle2-stage5-resolve-review-findings | supports | Executed git diff --check with exit code 0; no whitespace errors or conflict markers. |
 | EV-C2S5-REVIEW-CHECK | .venv/bin/python scripts/record_review.py check --base main; reviews/structured/ | supports | Validated all retained structured review bundles in reviews/structured/ against schema/record_review.yaml and verified byte-for-byte append-only preservation against main. |
@@ -187,11 +187,11 @@ summary: 'Re-inspected and verified all 56 maintained MetaCyc pathway YAML recor
   (1597 total reactions[] entries: 1559 molecular_activity, 36 pathway, and 2 biological_process)
   now declare an explicit reaction category, that all 254 unique remediated reaction
   CURIEs export in pages/downloads/nodes.tsv as biolink:MolecularActivity with source_category=molecular_activity,
-  and that all 271 pathway records, 711 history records, 22,226 evidence blocks, and
+  and that all 271 pathway records, 711 history records, 22,211 evidence blocks, and
   201 structured review bundles pass closed LinkML schema, authority snapshot, and
   pytest validation.'
 source:
-  git_revision: 141d6b29ac5b00faa5d939dc6aaceea97af819b3
+  git_revision: 9c4f97082c20bbb66acc969d7b3a0a7915f687b8
   state: working_tree
   inputs:
   - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
@@ -1247,7 +1247,7 @@ checks:
   required: true
   summary: Validated all 271 maintained pathway records (including the 56 remediated
     MetaCyc records) against the closed LinkML schema, local identifier/label authority
-    snapshots, 711 history records, 22,226 evidence blocks, 33 source records, and
+    snapshots, 711 history records, 22,211 evidence blocks, 33 source records, and
     pages/ synchrony.
   target_ids:
   - MetaCyc:PWY-6543
@@ -1317,7 +1317,7 @@ checks:
   name: Pytest unit and integration test suite (just test)
   status: passed
   required: true
-  summary: All 8,075 passed (3 skipped) in pytest across schema, KGX export, SSSOM,
+  summary: All 8,066 passed (3 skipped) in pytest across schema, KGX export, SSSOM,
     and record-review checks.
   target_ids:
   - MetaCyc:PWY-6543
@@ -1612,14 +1612,14 @@ evidence:
 - evidence_id: EV-C2S5-SHARED-REACTIONS-FIXED
   kind: record_content
   reference: data/pathways/l-arabinose-degradation-i.yaml
-  locator: reactions[0..2] in MetaCyc:ARABCAT-PWY and all 28 shared reaction occurrences
+  locator: reactions[2] in MetaCyc:ARABCAT-PWY and all 28 shared reaction occurrences
     across 16 MetaCyc records
   accessed_at: '2026-10-22T15:18:00Z'
   support: supports
   summary: 'All 28 shared catalytic reaction entries across the 16 MetaCyc records
     in F-C2S4-001 now explicitly declare category: molecular_activity, matching their
-    14 sibling records.'
-  quote: "- id: RHEA:12649\n  label: L-ribulose 5-phosphate <=> D-xylulose 5-phosphate\n\
+    sibling records.'
+  quote: "- id: RHEA:22369\n  label: L-ribulose-5-phosphate 4-epimerase reaction\n\
     \  direction: left_to_right\n  category: molecular_activity"
   snapshot_sha256: 8c4eb5bf03ac733c78d8ff7e4828945e313074f3e813d436bf0c4e9e96570d37
 - evidence_id: EV-C2S5-56-RECORDS-FIXED
@@ -1666,14 +1666,14 @@ evidence:
 - evidence_id: EV-C2S5-QC
   kind: validation
   reference: .venv/bin/pathwaymech-run-qc
-  locator: stdout summary (271 pathway records, 711 history records, 22,226 evidence
+  locator: stdout summary (271 pathway records, 711 history records, 22,211 evidence
     blocks, 33 source records)
   accessed_at: '2026-10-22T15:20:00Z'
   support: supports
   summary: 'Executed .venv/bin/pathwaymech-run-qc: validated 271 pathway records against
     the closed LinkML schema, verified all identifiers and labels against local authority
     snapshots, validated 711 history records (including 56 new Cycle 2 Stage 5 record
-    history entries referencing issue #692) and 22,226 evidence blocks, and confirmed
+    history entries referencing issue #692) and 22,211 evidence blocks, and confirmed
     pages/ synchrony.'
 - evidence_id: EV-C2S5-PYTEST
   kind: validation
@@ -1681,7 +1681,7 @@ evidence:
   locator: pytest suite execution across tests/
   accessed_at: '2026-10-22T15:20:00Z'
   support: supports
-  summary: Executed .venv/bin/pytest -q with 8,075 passed and 3 skipped.
+  summary: Executed .venv/bin/pytest -q with 8,066 passed and 3 skipped.
 - evidence_id: EV-C2S5-RUFF
   kind: validation
   reference: .venv/bin/ruff check --no-cache .
@@ -1892,14 +1892,18 @@ findings:
   status: resolved
   certainty: confirmed
   title: 'All 28 shared catalytic reaction occurrences across 16 MetaCyc pathway records
-    now declare category: molecular_activity and match their 14 sibling records'
+    now declare category: molecular_activity and match their 15 sibling records'
   description: 'Across the 16 MetaCyc pathway records in F-C2S4-001 (MetaCyc:ARABCAT-PWY,
     MetaCyc:ARGDEGRAD-PWY, MetaCyc:CALVIN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:GALACTUROCAT-PWY,
     MetaCyc:GLUAMCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY,
     MetaCyc:HOMOSERSYN-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY,
     MetaCyc:P101-PWY, MetaCyc:PWY-8383, and MetaCyc:PYRIDOXSYN-PWY), added explicit
     category: molecular_activity to all 28 shared catalytic reaction entries (23 unique
-    reaction CURIEs: 22 RHEA:* and 1 MetaCyc:RXN-14325) via pathwaymech.curation.publish_curation,
+    reaction CURIEs: 22 RHEA:* and 1 MetaCyc:DHBAMPLIG-RXN, matching their 15 sibling
+    records PathBank:SMP0000992, PathBank:SMP0002406, KEGG:M00008, MetaCyc:CYANCAT-PWY,
+    MetaCyc:ENTDB-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GLCMANNANAUT-PWY, MetaCyc:LYXMET-PWY,
+    MetaCyc:PWY-5903, MetaCyc:PWY-7255, MetaCyc:PWY0-1300, MetaCyc:PWY0-1471, MetaCyc:PWY0-301,
+    MetaCyc:PWY0-41, and MetaCyc:THISYN-PWY) via pathwaymech.curation.publish_curation,
     recorded 16 curation history files, and regenerated pages/.'
   target_ids:
   - MetaCyc:CALVIN-PWY
