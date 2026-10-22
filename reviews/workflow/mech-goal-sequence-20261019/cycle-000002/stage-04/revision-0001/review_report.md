@@ -8,9 +8,9 @@
 - **Previous Review Lineage Evidence**: [`reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/evidence.yaml`](../../../../../reviews/workflow/mech-goal-sequence-20261019/cycle-000001/stage-05/revision-0001/evidence.yaml) (`sha256: 8179b1fbe2d53c88fac719216c530765c2a442d3a43e8a0395bc2062c279a2c6`)
 - **Structured Review ID**: `20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review`
 - **Authoritative Structured Bundle**:
-  - [`reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.yaml`](../../../../../reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.yaml) (`sha256: 8f4707a1e5ab8f5685d38f3f8ffd02ed83df2c2e4bd62ccf2d588987376ef625`)
-  - [`reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.md`](../../../../../reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.md) (`sha256: cae9a48deadabf90c5dab86db9139426ad197434d97311757107031a3072ecd0`)
-- **Coverage Ledger**: [`coverage.json`](coverage.json) (`sha256: cdcc8e21d967f85137838c2071a4ffd9b5b97590c74d3e754f4ed167dfaa4b17`)
+  - [`reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.yaml`](../../../../../reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.yaml) (`sha256: 4d88adc1bed0bf1833b05a3a531b9b9e98762de8004301c4f84182675c82174c`)
+  - [`reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.md`](../../../../../reviews/structured/20261022T134000Z-cycle2-stage4-frozen-corpus-cohort-review/review.md) (`sha256: 10b6c19fed03e2c03ac51c8df688316f5745dfbe016fcb248b36f07e03a16624`)
+- **Coverage Ledger**: [`coverage.json`](coverage.json) (`sha256: b0beb4e8c1102ce5f1a534eed01922d118dbbad2fcab2833a80ca81a717aed77`)
 - **Completion / Verdict**: `completed` / `pass_with_limitations` (`native_verdict: coherent`)
 
 ## 1. Frozen Inventory Scope & Coverage
