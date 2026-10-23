@@ -6,7 +6,7 @@
   - Path: `reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/infra_snapshot.md`
   - Cutoff (`scope_frozen_at`): `2026-10-23T19:09:34Z`
   - SHA-256: `d7cb8e6e1a54bfaee8699df9f961687e4485512528b3899cb216fe78e9c3d405`
-  - Size: `31582` bytes
+  - Size: `34721` bytes
   - Exact match with `status.json` `infra_scope`: verified (`True`).
   - Frozen non-resolved (`deferred`) task scope in `infra_snapshot.md`: `1` task (`pathwaymech-infra-0001`, [#673](https://github.com/CultureBotAI/PathwayMech/issues/673)); the other `4` tasks (`pathwaymech-infra-0002` through `pathwaymech-infra-0005`, [#674](https://github.com/CultureBotAI/PathwayMech/issues/674)–[#677](https://github.com/CultureBotAI/PathwayMech/issues/677)) were already `resolved` in Cycle 1 Stage 6.
 - **Updated `INFRA_TASKS.md` notebook validation**:

@@ -85,7 +85,6 @@ def build_pathbank_archive_manifest_entry(
 
     list(pathbank_terms(xml_root, url=PATHBANK_ARCHIVE_URL, archive_root=root))
     archive = {
-
         "bytes": len(archive_raw),
         "member": member,
         "member_bytes": len(member_raw),
