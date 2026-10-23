@@ -1,0 +1,82 @@
+schema_version: 1.0.0
+repository_key: pathwaymech
+github_repository: CultureBotAI/PathwayMech
+run_id: mech-goal-sequence-20261019
+cycle: 3
+stage: 5
+revision: 1
+outcome: completed
+summary: 'Completed Cycle 3 Stage 5 grouped remediation of all carried-forward Cycle 3 Stage 4 findings
+  (F-C3S4-001, F-C3S4-002) under root-cause group G-C3S5-001 and GitHub issue #704 across all 11 affected
+  gomodel:YeastPathways_* pathway records: added explicit polymer/small_molecule/chemical_entity categories
+  to all 6 concrete CHEBI:* untyped participant entries across 3 records, corrected all 4 keto-acid CHEBI:11851/CHEBI:16763
+  participant entries from lipid to small_molecule across 4 records, verified that the 5 generic gomodel:*
+  physical participant instances across 4 records intentionally omit category per src/pathwaymech/gocam_native.py:30-32
+  and tests/test_kgx_export.py:142-159, recorded 7 curation history files, regenerated rendered pages
+  and KGX exports, and saved successor structured review bundle 20261023T171500Z-cycle3-stage5-resolve-review-findings
+  confirming 0 remaining findings.'
+source_revision: b34c8de1eaa4976d0bb6b0d08e6df35934662f6f
+scope_frozen_at: '2026-10-23T17:05:00Z'
+previous_evidence:
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-04/revision-0001/evidence.yaml
+  sha256: 4d2b3d5cebfe913bf78886f4a95ff0e8cbf44498f8ee7c442f507e7b07446200
+artifacts:
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-05/revision-0001/issue_map.md
+  sha256: b973d4b15ab41af6c386a04da9bf5b96d81518834bff59857fa71547222c08cb
+  kind: issue_map
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-05/revision-0001/validation.md
+  sha256: 1b56cf7ee846b19522b4012a2abca3a5dc0f9cd1eee0ecd9770bf205c781224f
+  kind: validation
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-05/revision-0001/coverage.json
+  sha256: d070541272cc91cdf6fba44fa5fc94f8f4933b5a0ed4d1b81e4d928aafa17215
+  kind: supporting
+findings:
+- finding_id: F-C3S4-001
+  status: resolved
+  summary: Seven maintained gomodel:YeastPathways_* pathway records omit participants[].category on 11
+    participant entries (5 gomodel:* individuals/activities and 6 CHEBI:* entities), causing all 11 nodes
+    in pages/downloads/nodes.tsv to export with empty source_category and the 5 gomodel:* participant
+    nodes to fall back to biolink:NamedThing.
+  group_id: G-C3S5-001
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/704
+  disposition: Added explicit participants[].category values (polymer, small_molecule, or chemical_entity)
+    to all 6 concrete CHEBI:* untyped participant entries across chitin-biosynthesis.yaml, folate-interconversions.yaml,
+    and thiamine-biosynthesis.yaml via pathwaymech.curation.publish_curation (recording 3 curation history
+    files and regenerating pages/downloads/nodes.tsv), verified against src/pathwaymech/gocam_native.py:30-32
+    and tests/test_kgx_export.py:142-159 that the 5 generic gomodel:* physical participant instances across
+    4 records intentionally omit category so they export as biolink:NamedThing, and verified resolution
+    in structured review 20261023T171500Z-cycle3-stage5-resolve-review-findings.
+  carried_from: F-C3S4-001
+- finding_id: F-C3S4-002
+  status: resolved
+  summary: 'Four maintained gomodel:YeastPathways_* pathway records type keto-acid small molecules CHEBI:11851
+    (3-methyl-2-oxobutanoate) and CHEBI:16763 (2-oxobutanoate) as category: lipid instead of small_molecule,
+    causing CHEBI:11851 to export as biolink:Lipid in pages/downloads/nodes.tsv and both CURIEs to carry
+    mixed source_category=lipid|small_molecule.'
+  group_id: G-C3S5-001
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/704
+  disposition: 'Updated CHEBI:11851 in gomodel:YeastPathways_PWY3O-4105 and CHEBI:16763 in gomodel:YeastPathways_HOMOCYS-CYS-CONVERT,
+    gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, and gomodel:YeastPathways_THREOCAT2-PWY from category: lipid
+    to category: small_molecule via pathwaymech.curation.publish_curation, regenerated pages/downloads/nodes.tsv
+    (verifying CHEBI:11851 exports as biolink:SmallMolecule with source_category=small_molecule and CHEBI:16763
+    exports without lipid in source_category), recorded 4 curation history files, and verified resolution
+    in structured review 20261023T171500Z-cycle3-stage5-resolve-review-findings.'
+  carried_from: F-C3S4-002
+groups:
+- group_id: G-C3S5-001
+  finding_ids:
+  - F-C3S4-001
+  - F-C3S4-002
+  issue_url: https://github.com/CultureBotAI/PathwayMech/issues/704
+  status: resolved
+  summary: Omitted participants[].category declarations on concrete CHEBI:* participant entries and lipid
+    misclassifications on keto-acid CHEBI participant entries across gomodel:YeastPathways_* records.
+  resolution_evidence:
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-05/revision-0001/issue_map.md
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-05/revision-0001/validation.md
+  - reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-05/revision-0001/coverage.json
+  disposition: Resolved in data/pathways/*.yaml (7 remediated files / 10 participant entries + 4 contract-verified
+    files / 5 generic gomodel:* participant entries), pages/downloads/nodes.tsv, history/records/*/2026-10-23T171000Z-antigravity-a1d1e5.yaml
+    (7 files), and reviews/structured/20261023T171500Z-cycle3-stage5-resolve-review-findings/review.yaml.
+carry_forward_ids: []
+infra_tasks: []
