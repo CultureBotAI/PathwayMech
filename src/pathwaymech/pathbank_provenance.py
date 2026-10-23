@@ -7,6 +7,7 @@ import re
 import zipfile
 from pathlib import Path
 from typing import Any
+from xml.etree import ElementTree
 
 PATHBANK_ARCHIVE_KIND = "pathbank-biopax-zip"
 PATHBANK_ARCHIVE_URL = "https://pathbank.org/downloads/pathbank_primary_biopax.zip"
@@ -64,10 +65,27 @@ def build_pathbank_archive_manifest_entry(
     archive_raw = Path(archive_path).read_bytes()
     archive_sha256 = hashlib.sha256(archive_raw).hexdigest()
     with zipfile.ZipFile(archive_path, "r") as zf:
-        if member not in zf.namelist():
+        members = [info for info in zf.infolist() if info.filename == member]
+        if not members:
             raise ValueError(f"PathBank ZIP archive missing member: {member}")
-        member_raw = zf.read(member)
+        if len(members) != 1 or members[0].is_dir():
+            raise ValueError("PathBank ZIP requires one exact member")
+        member_raw = zf.read(members[0])
+    try:
+        xml_root = ElementTree.fromstring(member_raw)
+    except ElementTree.ParseError as exc:
+        raise ValueError("PathBank ZIP member requires valid XML") from exc
+    if xml_root.tag != "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF" or any(
+        not node.tag.startswith("{http://www.biopax.org/release/biopax-level3.owl#}")
+        and node.tag != "{http://www.w3.org/2002/07/owl#}Ontology"
+        for node in xml_root
+    ):
+        raise ValueError("PathBank ZIP member requires native RDF/BioPAX object types")
+    from pathwaymech.pathbank_context import pathbank_terms
+
+    list(pathbank_terms(xml_root, url=PATHBANK_ARCHIVE_URL, archive_root=root))
     archive = {
+
         "bytes": len(archive_raw),
         "member": member,
         "member_bytes": len(member_raw),
