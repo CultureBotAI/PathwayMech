@@ -53,7 +53,7 @@ tasks:
     summary: Add SGD, NCBIProtein, Reactome, gomodel, and Entrez prefix declarations to CURIE_MAP in src/pathwaymech/sssom.py for protein and gene source_mappings export
     status: resolved
     issue_url: https://github.com/CultureBotAI/PathwayMech/issues/676
-    disposition: Resolved in Stage 6 by adding Entrez, gomodel, NCBIProtein, Reactome, and SGD URI prefix mappings to CURIE_MAP in src/pathwaymech/sssom.py and updating output/sssom/source_mappings.sssom.tsv; verified by tests/test_sssom_export.py, adopted across all 95 S. cerevisiae SGD records in Cycle 2 Stage 3 (477 SGD:S0000* -> UniProtKB:* mappings), and extended across 53 additional records in Cycle 3 Stage 3 (174 mappings: 135 MetaCyc:*-MONOMER/MONOMER-* -> UniProtKB:*, 31 EcoCyc:*-MONOMER -> UniProtKB:*, and 8 NCBIProtein:* -> UniProtKB:*).
+    disposition: Resolved in Stage 6 by adding Entrez, gomodel, NCBIProtein, Reactome, and SGD URI prefix mappings to CURIE_MAP in src/pathwaymech/sssom.py and updating output/sssom/source_mappings.sssom.tsv; verified by tests/test_sssom_export.py, adopted across all 95 S. cerevisiae SGD records in Cycle 2 Stage 3 (477 SGD:S0000* -> UniProtKB:* mappings), and extended across 53 additional records in Cycle 3 Stage 3 (174 mappings comprising 135 MetaCyc:*-MONOMER/MONOMER-* -> UniProtKB:*, 31 EcoCyc:*-MONOMER -> UniProtKB:*, and 8 NCBIProtein:* -> UniProtKB:*).
   - task_id: pathwaymech-infra-0005
     summary: Add BiGG reaction prefix mapping to _PREFIX_CATEGORIES in src/pathwaymech/kgx.py and validate within-record reaction category consistency in src/pathwaymech/schema.py
     status: resolved
