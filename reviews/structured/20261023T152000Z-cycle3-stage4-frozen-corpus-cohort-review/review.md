@@ -319,7 +319,7 @@ All 272 maintained pathway records in data/pathways/*.yaml (including PathBank:S
 
 consistency: concern. Targets: gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_THREOCAT2-PWY.
 
-While 7,710 of 7,721 participant entries (99.86%) carry an explicit participants[].category, 7 gomodel:* records omit explicit category on 11 participant entries (F-C3S4-001), and 4 gomodel:* amino-acid metabolism records type short-chain 2-oxoacid intermediates CHEBI:11851 (3-methyl-2-oxobutanoate) and CHEBI:16763 (2-oxobutanoate) as category: lipid instead of category: small_molecule (F-C3S4-002), conflicting with MetaCyc:* records in pages/downloads/nodes.tsv.
+While 7,710 of 7,721 participant entries (99.86%) carry an explicit participants[].category, 7 gomodel:* records omit explicit category on 11 participant entries (6 CHEBI:* and 5 gomodel:* nodes in F-C3S4-001), and 4 gomodel:* amino-acid metabolism records type short-chain 2-oxoacid intermediates CHEBI:11851 (3-methyl-2-oxobutanoate) and CHEBI:16763 (2-oxobutanoate) as category: lipid instead of category: small_molecule (F-C3S4-002), conflicting with MetaCyc:* records in pages/downloads/nodes.tsv.
 
 ## Findings
 
@@ -327,7 +327,7 @@ While 7,710 of 7,721 participant entries (99.86%) carry an explicit participants
 
 minor / open / confirmed; issue key: gomodel-missing-participant-category-in-7-records.
 
-Across all 7,721 participant entries in the 272 maintained pathway records, 7,710 (99.86%) declare an explicit participants[].category value, whereas 11 participant entries across 7 gomodel:* records omit category: CHEBI:17029 (chitin) in gomodel:YeastPathways_PWY3O-15 (data/pathways/chitin-biosynthesis.yaml#participants[0]); gomodel:YeastPathways_PWY-5670-1/654d809000002591 and gomodel:YeastPathways_PWY-5670-1/654d809000002611 (chemical entity) in gomodel:YeastPathways_PWY-5670-1 (data/pathways/epoxysqualene-biosynthesis.yaml#participants[8], #participants[15]); CHEBI:134413 (10-formyltetrahydrofolyl-(Glu)n polyanion) in gomodel:YeastPathways_PWY3O-697 (data/pathways/folate-interconversions.yaml#participants[11]); gomodel:YeastPathways_PWY-1801-1/65692e7e00001183 (information biomacromolecule) in gomodel:YeastPathways_PWY-1801-1 (data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml#participants[7]); gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605 (a methylated methyl donor) in gomodel:YeastPathways_PWY-5041 (data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml#participants[15]); CHEBI:143915, CHEBI:29979, CHEBI:29950, and CHEBI:90873 (amino-acid residue participants) in gomodel:YeastPathways_PWY3O-17 (data/pathways/thiamine-biosynthesis.yaml#participants[30..33]); and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813 (anonymous trans-2-enoyl-CoA intermediate) in gomodel:YeastPathways_PWY-5080-1 (data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml#participants[9]). In pages/downloads/nodes.tsv, these 11 nodes are the only 11 participant/reaction nodes out of 5,442 total KGX nodes with empty source_category='' (5 gomodel:* nodes fall back to biolink:NamedThing, CHEBI:17029 chitin falls back to biolink:SmallMolecule instead of biolink:Polymer, and the 4 ChEBI amino-acid residue nodes fall back to biolink:SmallMolecule instead of biolink:ChemicalEntity).
+Across all 7,721 participant entries in the 272 maintained pathway records, 7,710 (99.86%) declare an explicit participants[].category value, whereas 11 participant entries (6 CHEBI:* nodes and 5 gomodel:* nodes) across 7 gomodel:* records omit category: CHEBI:17029 (chitin) in gomodel:YeastPathways_PWY3O-15 (data/pathways/chitin-biosynthesis.yaml#participants[0]); gomodel:YeastPathways_PWY-5670-1/654d809000002591 and gomodel:YeastPathways_PWY-5670-1/654d809000002611 (chemical entity) in gomodel:YeastPathways_PWY-5670-1 (data/pathways/epoxysqualene-biosynthesis.yaml#participants[8], #participants[15]); CHEBI:134413 (10-formyltetrahydrofolyl-(Glu)n polyanion) in gomodel:YeastPathways_PWY3O-697 (data/pathways/folate-interconversions.yaml#participants[11]); gomodel:YeastPathways_PWY-1801-1/65692e7e00001183 (information biomacromolecule) in gomodel:YeastPathways_PWY-1801-1 (data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml#participants[7]); gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605 (a methylated methyl donor) in gomodel:YeastPathways_PWY-5041 (data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml#participants[15]); CHEBI:143915 ([ThiS protein]-C-terminal Gly-NH-CH2-C(O)SH), CHEBI:29979 (L-cysteine-S-yl group), CHEBI:29950 (L-alanin-3-yl group), and CHEBI:90873 (carboxy-[ThiS protein]) in gomodel:YeastPathways_PWY3O-17 (data/pathways/thiamine-biosynthesis.yaml#participants[30..33]); and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813 (anonymous trans-2-enoyl-CoA intermediate) in gomodel:YeastPathways_PWY-5080-1 (data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml#participants[9]). In pages/downloads/nodes.tsv, these 11 nodes are the only 11 participant/reaction nodes out of 5,442 total KGX nodes with empty source_category='' (5 gomodel:* nodes fall back to biolink:NamedThing with source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity' or 'lipid', CHEBI:17029 chitin falls back to biolink:SmallMolecule with source_category='' instead of biolink:ChemicalEntity with source_category='polymer', CHEBI:134413 falls back to biolink:SmallMolecule with source_category='' instead of source_category='small_molecule', and the 4 ChEBI amino-acid residue/protein-group nodes fall back to biolink:SmallMolecule with source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity').
 
 ### F-C3S4-002: Four maintained gomodel amino-acid metabolism records type short-chain 2-oxoacid intermediates CHEBI:11851 (3-methyl-2-oxobutanoate) and CHEBI:16763 (2-oxobutanoate) as category: lipid instead of category: small_molecule
 
@@ -339,7 +339,7 @@ Four maintained gomodel:* amino-acid metabolism records type short-chain 2-oxoac
 
 ### A-C3S4-001
 
-Assign explicit participants[].category values to all 11 untyped participant entries across the 7 affected gomodel:* pathway records (polymer for CHEBI:17029 chitin; small_molecule for CHEBI:134413; chemical_entity for the 5 gomodel:* generic macromolecule/chemical-entity nodes and 4 ChEBI amino-acid residue nodes; lipid or chemical_entity for gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813), record curation history entries under history/records/&lt;slug&gt;/, and regenerate pages/.
+Assign explicit participants[].category values to all 11 untyped participant entries (6 CHEBI:* and 5 gomodel:* nodes) across the 7 affected gomodel:* pathway records (polymer for CHEBI:17029 chitin; small_molecule for CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n polyanion; chemical_entity for the 4 gomodel:* generic macromolecule/chemical-entity nodes [gomodel:YeastPathways_PWY-5670-1/654d809000002591, gomodel:YeastPathways_PWY-5670-1/654d809000002611, gomodel:YeastPathways_PWY-1801-1/65692e7e00001183, gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605] and 4 ChEBI amino-acid residue/protein-group nodes [CHEBI:143915, CHEBI:29979, CHEBI:29950, CHEBI:90873]; and lipid or chemical_entity for the anonymous trans-2-enoyl-CoA intermediate gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813), record curation history entries under history/records/&lt;slug&gt;/, and regenerate pages/.
 
 - Zero maintained records in data/pathways/*.yaml omit category on any participants[] entry (7,721 / 7,721 explicitly typed).
 - Zero participant or reaction nodes in pages/downloads/nodes.tsv have an empty source_category.
@@ -377,7 +377,7 @@ Update participants[].category from lipid to small_molecule for CHEBI:11851 (3-m
 | EV-C3-CORPUS-INSPECTION | data/pathways/; 272 maintained pathway YAML files (7,721 participants, 1,603 reactions including 704 RHEA:* reactions, 14,464 mechanistic_edges, 7,062 references, 796 source_mappings across 166 records) | supports | Inspected all 272 maintained pathway records in data/pathways/*.yaml (including PathBank:SMP0000993 added in Cycle 3 Stage 1 and the 8 pathway records enriched in Cycle 3 Stages 2-3): 100% declare valid pathway_type, 100% of 14,464 mechanistic_edges carry structured evidence blocks (21,214 edge-level evidence items; 22,340 total evidence blocks across records, steps, and edges), 100% of 1,603 reactions carry explicit category (1,565 molecular_activity, 36 pathway, 2 biological_process), and 100% of 704 RHEA:* reaction nodes declare explicit direction with zero cross-record direction conflicts. |
 | EV-C3-UNTYPED-PARTICIPANTS-7-GOMODEL | data/pathways/chitin-biosynthesis.yaml; 11 untyped participants[] entries across 7 gomodel:* pathway records (out of 7,721 total participants) | supports | Across all 7,721 participant entries in the 272 maintained pathway records, 7,710 (99.86%) declare an explicit participants[].category value, whereas 11 participant entries across 7 gomodel:* records omit category: CHEBI:17029 (chitin) in chitin-biosynthesis.yaml; gomodel:YeastPathways_PWY-5670-1/654d809000002591 and gomodel:YeastPathways_PWY-5670-1/654d809000002611 in epoxysqualene-biosynthesis.yaml; CHEBI:134413 in folate-interconversions.yaml; gomodel:YeastPathways_PWY-1801-1/65692e7e00001183 in formaldehyde-oxidation-ii-glutathione-dependent.yaml; gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605 in s-adenosyl-l-methionine-cycle-ii.yaml; CHEBI:143915, CHEBI:29979, CHEBI:29950, and CHEBI:90873 in thiamine-biosynthesis.yaml; and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813 in very-long-chain-fatty-acid-biosynthesis.yaml. |
 | EV-C3-OXOBUTANOATE-LIPID-MISMATCH | data/pathways/valine-degradation.yaml; CHEBI:11851 in valine-degradation.yaml and CHEBI:16763 in 3 gomodel:* records typed as lipid vs small_molecule in MetaCyc:* records | supports | Four gomodel:* amino-acid metabolism records type short-chain 2-oxoacid amino-acid intermediates as category: lipid instead of category: small_molecule: CHEBI:11851 (3-methyl-2-oxobutanoate) in valine-degradation.yaml#participants[3].category (typed as small_molecule in l-leucine-biosynthesis.yaml, phosphopantothenate-biosynthesis-i.yaml, and l-valine-biosynthesis.yaml) and CHEBI:16763 (2-oxobutanoate) in homocysteine-and-cysteine-interconversion.yaml#participants[13].category, l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml#participants[9].category, and threonine-degradation.yaml#participants[3].category (typed as small_molecule in l-isoleucine-biosynthesis-i-from-threonine.yaml). |
-| EV-C3-KGX-NODES-TSV | pages/downloads/nodes.tsv; 11 participant nodes with empty source_category='' and 2 ChEBI 2-oxoacid nodes with lipid&#124;small_molecule source_category | supports | In pages/downloads/nodes.tsv (5,442 total KGX nodes), the 11 untyped participants from F-C3S4-001 are the only 11 participant/reaction nodes with empty source_category='' (5 gomodel:* nodes falling back to biolink:NamedThing, CHEBI:17029 chitin falling back to biolink:SmallMolecule instead of biolink:Polymer, and 4 ChEBI amino-acid residue nodes falling back to biolink:SmallMolecule instead of biolink:ChemicalEntity), while CHEBI:11851 and CHEBI:16763 from F-C3S4-002 export with multi-category biolink:ChemicalEntity&#124;biolink:SmallMolecule and conflicting lipid&#124;small_molecule source_category values. |
+| EV-C3-KGX-NODES-TSV | pages/downloads/nodes.tsv; 11 participant nodes with empty source_category='' and 2 ChEBI 2-oxoacid nodes with lipid&#124;small_molecule source_category | supports | In pages/downloads/nodes.tsv (5,442 total KGX nodes), the 11 untyped participants from F-C3S4-001 (6 CHEBI:* nodes and 5 gomodel:* nodes) are the only 11 participant/reaction nodes with empty source_category='' (5 gomodel:* nodes falling back to biolink:NamedThing with source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity' or 'lipid'; CHEBI:17029 chitin falling back to biolink:SmallMolecule with source_category='' instead of biolink:ChemicalEntity with source_category='polymer'; CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n polyanion falling back to biolink:SmallMolecule with source_category='' instead of source_category='small_molecule'; and 4 ChEBI amino-acid residue/protein-group nodes falling back to biolink:SmallMolecule with source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity'), while CHEBI:11851 and CHEBI:16763 from F-C3S4-002 export with multi-category biolink:ChemicalEntity&#124;biolink:SmallMolecule and conflicting lipid&#124;small_molecule source_category values. |
 
 ## Limits And Additional Notes
 
@@ -6932,10 +6932,15 @@ evidence:
   accessed_at: '2026-10-23T15:14:00Z'
   support: supports
   summary: In pages/downloads/nodes.tsv (5,442 total KGX nodes), the 11 untyped participants
-    from F-C3S4-001 are the only 11 participant/reaction nodes with empty source_category=''
-    (5 gomodel:* nodes falling back to biolink:NamedThing, CHEBI:17029 chitin falling
-    back to biolink:SmallMolecule instead of biolink:Polymer, and 4 ChEBI amino-acid
-    residue nodes falling back to biolink:SmallMolecule instead of biolink:ChemicalEntity),
+    from F-C3S4-001 (6 CHEBI:* nodes and 5 gomodel:* nodes) are the only 11 participant/reaction
+    nodes with empty source_category='' (5 gomodel:* nodes falling back to biolink:NamedThing
+    with source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity'
+    or 'lipid'; CHEBI:17029 chitin falling back to biolink:SmallMolecule with source_category=''
+    instead of biolink:ChemicalEntity with source_category='polymer'; CHEBI:134413
+    10-formyltetrahydrofolyl-(Glu)n polyanion falling back to biolink:SmallMolecule
+    with source_category='' instead of source_category='small_molecule'; and 4 ChEBI
+    amino-acid residue/protein-group nodes falling back to biolink:SmallMolecule with
+    source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity'),
     while CHEBI:11851 and CHEBI:16763 from F-C3S4-002 export with multi-category biolink:ChemicalEntity|biolink:SmallMolecule
     and conflicting lipid|small_molecule source_category values.
   quote: "CHEBI:11851\tbiolink:ChemicalEntity|biolink:SmallMolecule\t3-methyl-2-oxobutanoate\t\
@@ -7285,11 +7290,11 @@ assessments:
     participant category consistency across 11 gomodel:* records
   outcome: concern
   summary: 'While 7,710 of 7,721 participant entries (99.86%) carry an explicit participants[].category,
-    7 gomodel:* records omit explicit category on 11 participant entries (F-C3S4-001),
-    and 4 gomodel:* amino-acid metabolism records type short-chain 2-oxoacid intermediates
-    CHEBI:11851 (3-methyl-2-oxobutanoate) and CHEBI:16763 (2-oxobutanoate) as category:
-    lipid instead of category: small_molecule (F-C3S4-002), conflicting with MetaCyc:*
-    records in pages/downloads/nodes.tsv.'
+    7 gomodel:* records omit explicit category on 11 participant entries (6 CHEBI:*
+    and 5 gomodel:* nodes in F-C3S4-001), and 4 gomodel:* amino-acid metabolism records
+    type short-chain 2-oxoacid intermediates CHEBI:11851 (3-methyl-2-oxobutanoate)
+    and CHEBI:16763 (2-oxobutanoate) as category: lipid instead of category: small_molecule
+    (F-C3S4-002), conflicting with MetaCyc:* records in pages/downloads/nodes.tsv.'
   target_ids:
   - gomodel:YeastPathways_PWY3O-15
   - gomodel:YeastPathways_PWY-5670-1
@@ -7342,25 +7347,30 @@ findings:
     categories in KGX nodes.tsv
   description: 'Across all 7,721 participant entries in the 272 maintained pathway
     records, 7,710 (99.86%) declare an explicit participants[].category value, whereas
-    11 participant entries across 7 gomodel:* records omit category: CHEBI:17029 (chitin)
-    in gomodel:YeastPathways_PWY3O-15 (data/pathways/chitin-biosynthesis.yaml#participants[0]);
-    gomodel:YeastPathways_PWY-5670-1/654d809000002591 and gomodel:YeastPathways_PWY-5670-1/654d809000002611
-    (chemical entity) in gomodel:YeastPathways_PWY-5670-1 (data/pathways/epoxysqualene-biosynthesis.yaml#participants[8],
-    #participants[15]); CHEBI:134413 (10-formyltetrahydrofolyl-(Glu)n polyanion) in
-    gomodel:YeastPathways_PWY3O-697 (data/pathways/folate-interconversions.yaml#participants[11]);
-    gomodel:YeastPathways_PWY-1801-1/65692e7e00001183 (information biomacromolecule)
-    in gomodel:YeastPathways_PWY-1801-1 (data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml#participants[7]);
+    11 participant entries (6 CHEBI:* nodes and 5 gomodel:* nodes) across 7 gomodel:*
+    records omit category: CHEBI:17029 (chitin) in gomodel:YeastPathways_PWY3O-15
+    (data/pathways/chitin-biosynthesis.yaml#participants[0]); gomodel:YeastPathways_PWY-5670-1/654d809000002591
+    and gomodel:YeastPathways_PWY-5670-1/654d809000002611 (chemical entity) in gomodel:YeastPathways_PWY-5670-1
+    (data/pathways/epoxysqualene-biosynthesis.yaml#participants[8], #participants[15]);
+    CHEBI:134413 (10-formyltetrahydrofolyl-(Glu)n polyanion) in gomodel:YeastPathways_PWY3O-697
+    (data/pathways/folate-interconversions.yaml#participants[11]); gomodel:YeastPathways_PWY-1801-1/65692e7e00001183
+    (information biomacromolecule) in gomodel:YeastPathways_PWY-1801-1 (data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml#participants[7]);
     gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605 (a methylated methyl donor)
     in gomodel:YeastPathways_PWY-5041 (data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml#participants[15]);
-    CHEBI:143915, CHEBI:29979, CHEBI:29950, and CHEBI:90873 (amino-acid residue participants)
+    CHEBI:143915 ([ThiS protein]-C-terminal Gly-NH-CH2-C(O)SH), CHEBI:29979 (L-cysteine-S-yl
+    group), CHEBI:29950 (L-alanin-3-yl group), and CHEBI:90873 (carboxy-[ThiS protein])
     in gomodel:YeastPathways_PWY3O-17 (data/pathways/thiamine-biosynthesis.yaml#participants[30..33]);
     and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813 (anonymous trans-2-enoyl-CoA
     intermediate) in gomodel:YeastPathways_PWY-5080-1 (data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml#participants[9]).
     In pages/downloads/nodes.tsv, these 11 nodes are the only 11 participant/reaction
     nodes out of 5,442 total KGX nodes with empty source_category='''' (5 gomodel:*
-    nodes fall back to biolink:NamedThing, CHEBI:17029 chitin falls back to biolink:SmallMolecule
-    instead of biolink:Polymer, and the 4 ChEBI amino-acid residue nodes fall back
-    to biolink:SmallMolecule instead of biolink:ChemicalEntity).'
+    nodes fall back to biolink:NamedThing with source_category='''' instead of biolink:ChemicalEntity
+    with source_category=''chemical_entity'' or ''lipid'', CHEBI:17029 chitin falls
+    back to biolink:SmallMolecule with source_category='''' instead of biolink:ChemicalEntity
+    with source_category=''polymer'', CHEBI:134413 falls back to biolink:SmallMolecule
+    with source_category='''' instead of source_category=''small_molecule'', and the
+    4 ChEBI amino-acid residue/protein-group nodes fall back to biolink:SmallMolecule
+    with source_category='''' instead of biolink:ChemicalEntity with source_category=''chemical_entity'').'
   target_ids:
   - gomodel:YeastPathways_PWY3O-15
   - gomodel:YeastPathways_PWY-5670-1
@@ -7483,12 +7493,15 @@ findings:
 actions:
 - action_id: A-C3S4-001
   description: Assign explicit participants[].category values to all 11 untyped participant
-    entries across the 7 affected gomodel:* pathway records (polymer for CHEBI:17029
-    chitin; small_molecule for CHEBI:134413; chemical_entity for the 5 gomodel:* generic
-    macromolecule/chemical-entity nodes and 4 ChEBI amino-acid residue nodes; lipid
-    or chemical_entity for gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813),
-    record curation history entries under history/records/<slug>/, and regenerate
-    pages/.
+    entries (6 CHEBI:* and 5 gomodel:* nodes) across the 7 affected gomodel:* pathway
+    records (polymer for CHEBI:17029 chitin; small_molecule for CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n
+    polyanion; chemical_entity for the 4 gomodel:* generic macromolecule/chemical-entity
+    nodes [gomodel:YeastPathways_PWY-5670-1/654d809000002591, gomodel:YeastPathways_PWY-5670-1/654d809000002611,
+    gomodel:YeastPathways_PWY-1801-1/65692e7e00001183, gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605]
+    and 4 ChEBI amino-acid residue/protein-group nodes [CHEBI:143915, CHEBI:29979,
+    CHEBI:29950, CHEBI:90873]; and lipid or chemical_entity for the anonymous trans-2-enoyl-CoA
+    intermediate gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813), record
+    curation history entries under history/records/<slug>/, and regenerate pages/.
   finding_ids:
   - F-C3S4-001
   target_ids:

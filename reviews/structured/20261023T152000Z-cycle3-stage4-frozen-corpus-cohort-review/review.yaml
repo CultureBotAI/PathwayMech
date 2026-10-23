@@ -6540,10 +6540,15 @@ evidence:
   accessed_at: '2026-10-23T15:14:00Z'
   support: supports
   summary: In pages/downloads/nodes.tsv (5,442 total KGX nodes), the 11 untyped participants
-    from F-C3S4-001 are the only 11 participant/reaction nodes with empty source_category=''
-    (5 gomodel:* nodes falling back to biolink:NamedThing, CHEBI:17029 chitin falling
-    back to biolink:SmallMolecule instead of biolink:Polymer, and 4 ChEBI amino-acid
-    residue nodes falling back to biolink:SmallMolecule instead of biolink:ChemicalEntity),
+    from F-C3S4-001 (6 CHEBI:* nodes and 5 gomodel:* nodes) are the only 11 participant/reaction
+    nodes with empty source_category='' (5 gomodel:* nodes falling back to biolink:NamedThing
+    with source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity'
+    or 'lipid'; CHEBI:17029 chitin falling back to biolink:SmallMolecule with source_category=''
+    instead of biolink:ChemicalEntity with source_category='polymer'; CHEBI:134413
+    10-formyltetrahydrofolyl-(Glu)n polyanion falling back to biolink:SmallMolecule
+    with source_category='' instead of source_category='small_molecule'; and 4 ChEBI
+    amino-acid residue/protein-group nodes falling back to biolink:SmallMolecule with
+    source_category='' instead of biolink:ChemicalEntity with source_category='chemical_entity'),
     while CHEBI:11851 and CHEBI:16763 from F-C3S4-002 export with multi-category biolink:ChemicalEntity|biolink:SmallMolecule
     and conflicting lipid|small_molecule source_category values.
   quote: "CHEBI:11851\tbiolink:ChemicalEntity|biolink:SmallMolecule\t3-methyl-2-oxobutanoate\t\
@@ -6893,11 +6898,11 @@ assessments:
     participant category consistency across 11 gomodel:* records
   outcome: concern
   summary: 'While 7,710 of 7,721 participant entries (99.86%) carry an explicit participants[].category,
-    7 gomodel:* records omit explicit category on 11 participant entries (F-C3S4-001),
-    and 4 gomodel:* amino-acid metabolism records type short-chain 2-oxoacid intermediates
-    CHEBI:11851 (3-methyl-2-oxobutanoate) and CHEBI:16763 (2-oxobutanoate) as category:
-    lipid instead of category: small_molecule (F-C3S4-002), conflicting with MetaCyc:*
-    records in pages/downloads/nodes.tsv.'
+    7 gomodel:* records omit explicit category on 11 participant entries (6 CHEBI:*
+    and 5 gomodel:* nodes in F-C3S4-001), and 4 gomodel:* amino-acid metabolism records
+    type short-chain 2-oxoacid intermediates CHEBI:11851 (3-methyl-2-oxobutanoate)
+    and CHEBI:16763 (2-oxobutanoate) as category: lipid instead of category: small_molecule
+    (F-C3S4-002), conflicting with MetaCyc:* records in pages/downloads/nodes.tsv.'
   target_ids:
   - gomodel:YeastPathways_PWY3O-15
   - gomodel:YeastPathways_PWY-5670-1
@@ -6950,25 +6955,30 @@ findings:
     categories in KGX nodes.tsv
   description: 'Across all 7,721 participant entries in the 272 maintained pathway
     records, 7,710 (99.86%) declare an explicit participants[].category value, whereas
-    11 participant entries across 7 gomodel:* records omit category: CHEBI:17029 (chitin)
-    in gomodel:YeastPathways_PWY3O-15 (data/pathways/chitin-biosynthesis.yaml#participants[0]);
-    gomodel:YeastPathways_PWY-5670-1/654d809000002591 and gomodel:YeastPathways_PWY-5670-1/654d809000002611
-    (chemical entity) in gomodel:YeastPathways_PWY-5670-1 (data/pathways/epoxysqualene-biosynthesis.yaml#participants[8],
-    #participants[15]); CHEBI:134413 (10-formyltetrahydrofolyl-(Glu)n polyanion) in
-    gomodel:YeastPathways_PWY3O-697 (data/pathways/folate-interconversions.yaml#participants[11]);
-    gomodel:YeastPathways_PWY-1801-1/65692e7e00001183 (information biomacromolecule)
-    in gomodel:YeastPathways_PWY-1801-1 (data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml#participants[7]);
+    11 participant entries (6 CHEBI:* nodes and 5 gomodel:* nodes) across 7 gomodel:*
+    records omit category: CHEBI:17029 (chitin) in gomodel:YeastPathways_PWY3O-15
+    (data/pathways/chitin-biosynthesis.yaml#participants[0]); gomodel:YeastPathways_PWY-5670-1/654d809000002591
+    and gomodel:YeastPathways_PWY-5670-1/654d809000002611 (chemical entity) in gomodel:YeastPathways_PWY-5670-1
+    (data/pathways/epoxysqualene-biosynthesis.yaml#participants[8], #participants[15]);
+    CHEBI:134413 (10-formyltetrahydrofolyl-(Glu)n polyanion) in gomodel:YeastPathways_PWY3O-697
+    (data/pathways/folate-interconversions.yaml#participants[11]); gomodel:YeastPathways_PWY-1801-1/65692e7e00001183
+    (information biomacromolecule) in gomodel:YeastPathways_PWY-1801-1 (data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml#participants[7]);
     gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605 (a methylated methyl donor)
     in gomodel:YeastPathways_PWY-5041 (data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml#participants[15]);
-    CHEBI:143915, CHEBI:29979, CHEBI:29950, and CHEBI:90873 (amino-acid residue participants)
+    CHEBI:143915 ([ThiS protein]-C-terminal Gly-NH-CH2-C(O)SH), CHEBI:29979 (L-cysteine-S-yl
+    group), CHEBI:29950 (L-alanin-3-yl group), and CHEBI:90873 (carboxy-[ThiS protein])
     in gomodel:YeastPathways_PWY3O-17 (data/pathways/thiamine-biosynthesis.yaml#participants[30..33]);
     and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813 (anonymous trans-2-enoyl-CoA
     intermediate) in gomodel:YeastPathways_PWY-5080-1 (data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml#participants[9]).
     In pages/downloads/nodes.tsv, these 11 nodes are the only 11 participant/reaction
     nodes out of 5,442 total KGX nodes with empty source_category='''' (5 gomodel:*
-    nodes fall back to biolink:NamedThing, CHEBI:17029 chitin falls back to biolink:SmallMolecule
-    instead of biolink:Polymer, and the 4 ChEBI amino-acid residue nodes fall back
-    to biolink:SmallMolecule instead of biolink:ChemicalEntity).'
+    nodes fall back to biolink:NamedThing with source_category='''' instead of biolink:ChemicalEntity
+    with source_category=''chemical_entity'' or ''lipid'', CHEBI:17029 chitin falls
+    back to biolink:SmallMolecule with source_category='''' instead of biolink:ChemicalEntity
+    with source_category=''polymer'', CHEBI:134413 falls back to biolink:SmallMolecule
+    with source_category='''' instead of source_category=''small_molecule'', and the
+    4 ChEBI amino-acid residue/protein-group nodes fall back to biolink:SmallMolecule
+    with source_category='''' instead of biolink:ChemicalEntity with source_category=''chemical_entity'').'
   target_ids:
   - gomodel:YeastPathways_PWY3O-15
   - gomodel:YeastPathways_PWY-5670-1
@@ -7091,12 +7101,15 @@ findings:
 actions:
 - action_id: A-C3S4-001
   description: Assign explicit participants[].category values to all 11 untyped participant
-    entries across the 7 affected gomodel:* pathway records (polymer for CHEBI:17029
-    chitin; small_molecule for CHEBI:134413; chemical_entity for the 5 gomodel:* generic
-    macromolecule/chemical-entity nodes and 4 ChEBI amino-acid residue nodes; lipid
-    or chemical_entity for gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813),
-    record curation history entries under history/records/<slug>/, and regenerate
-    pages/.
+    entries (6 CHEBI:* and 5 gomodel:* nodes) across the 7 affected gomodel:* pathway
+    records (polymer for CHEBI:17029 chitin; small_molecule for CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n
+    polyanion; chemical_entity for the 4 gomodel:* generic macromolecule/chemical-entity
+    nodes [gomodel:YeastPathways_PWY-5670-1/654d809000002591, gomodel:YeastPathways_PWY-5670-1/654d809000002611,
+    gomodel:YeastPathways_PWY-1801-1/65692e7e00001183, gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605]
+    and 4 ChEBI amino-acid residue/protein-group nodes [CHEBI:143915, CHEBI:29979,
+    CHEBI:29950, CHEBI:90873]; and lipid or chemical_entity for the anonymous trans-2-enoyl-CoA
+    intermediate gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813), record
+    curation history entries under history/records/<slug>/, and regenerate pages/.
   finding_ids:
   - F-C3S4-001
   target_ids:
