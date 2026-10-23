@@ -413,7 +413,7 @@ mechanistic_edges:
     source_assertion: SUBUNIT annotates a homodimer by similarity to P23254 (ECO:0000250).
     source_locator: comments[5].texts[0]; evidences
     assay_taxon: NCBITaxon:559292
-    eco_code: ECO:0000305
+    eco_code: ECO:0000250
   - reference_id: PathBank:SMP0002406
     source_assertion: Native Reactions/7089 is controlled by Catalysis/7068 through complex4403, whose
       TKL1/TKL2 protein references identify P23254/P33315. This supports source role assignment, not the
@@ -501,7 +501,7 @@ mechanistic_edges:
       database similarity evidence.
     source_locator: comments[1].reaction; reactionCrossReferences; evidences
     assay_taxon: NCBITaxon:559292
-    eco_code: ECO:0000269
+    eco_code: ECO:0000250
   - reference_id: PMID:8929392
     quote: Deletion mutants of RPE1 show no enzyme activity
     source_locator: Europe PMC core result[id="8929392"].abstractText
@@ -522,7 +522,7 @@ mechanistic_edges:
       a curator-inference annotation.
     source_locator: genes; comments[0].reaction; reactionCrossReferences; evidences
     assay_taxon: NCBITaxon:559292
-    eco_code: ECO:0000269
+    eco_code: ECO:0000305
   - reference_id: PMID:8929392
     quote: restored viability and specific D-ribose-5-phosphate ketol-isomerase activity
     source_locator: Europe PMC core result[id="8929392"].abstractText
@@ -881,52 +881,58 @@ mechanistic_edges:
     assay_taxon: NCBITaxon:559292
     eco_code: ECO:0000269
 - id: riboneogenesis-edge-051
-  subject: RHEA:30168
+  subject: RHEA:27628
   predicate: provides_input_for
-  object: RHEA:17462
+  object: RHEA:30168
   description: Direct material continuity through D-erythrose 4-phosphate (CHEBI:16897) produced by transketolase
-    step RHEA:30168 and consumed by Fba1 aldol condensation RHEA:17462.
+    step RHEA:27628 and consumed by Fba1 aldol condensation RHEA:30168.
   evidence:
+  - reference_id: RHEA:27626
+    source_assertion: RHEA:27628 products contain CHEBI:16897 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27628 rh:products; http://rdf.rhea-db.org/27626_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27626_compound_5282; rh:compound/rh:accession
   - reference_id: RHEA:30167
-    source_assertion: RHEA:30168 produces CHEBI:16897 on its right side.
-    source_locator: http://rdf.rhea-db.org/30168 rh:products; side rh:contains1/rh:compound/rh:accession
-  - reference_id: RHEA:17461
-    source_assertion: RHEA:17462 consumes CHEBI:16897 on its left side.
-    source_locator: http://rdf.rhea-db.org/17462 rh:substrates; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:30168 substrates contain CHEBI:16897 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30168 rh:substrates; http://rdf.rhea-db.org/30167_L rh:contains1
+      http://rdf.rhea-db.org/Participant_30167_compound_5282; rh:compound/rh:accession
   - reference_id: PMID:21663798
     source_assertion: Equations (1)-(5) and Figure 6E couple transketolase E4P production to Fba1 sedoheptulose-1,7-bisphosphate
       synthesis.
     source_locator: PMC3163394 equations (1)-(5); Figure 6E
 - id: riboneogenesis-edge-052
-  subject: RHEA:17462
+  subject: RHEA:30168
   predicate: provides_input_for
-  object: RHEA:10509
-  description: Direct material continuity through sedoheptulose 1,7-bisphosphate (CHEBI:57623) produced
-    by Fba1 aldol condensation RHEA:17462 and hydrolyzed by Shb17 in RHEA:10509.
+  object: RHEA:17462
+  description: Direct material continuity through sedoheptulose 1,7-bisphosphate (CHEBI:58335) produced
+    by Fba1 aldol condensation RHEA:30168 and hydrolyzed by Shb17 in RHEA:17462.
   evidence:
+  - reference_id: RHEA:30167
+    source_assertion: RHEA:30168 products contain CHEBI:58335 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/30168 rh:products; http://rdf.rhea-db.org/30167_R rh:contains1
+      http://rdf.rhea-db.org/Participant_30167_compound_2479; rh:compound/rh:accession
   - reference_id: RHEA:17461
-    source_assertion: RHEA:17462 produces CHEBI:57623 on its right side.
-    source_locator: http://rdf.rhea-db.org/17462 rh:products; side rh:contains1/rh:compound/rh:accession
-  - reference_id: RHEA:10508
-    source_assertion: RHEA:10509 consumes CHEBI:57623 on its left side.
-    source_locator: http://rdf.rhea-db.org/10509 rh:substrates; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:17462 substrates contain CHEBI:58335 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17462 rh:substrates; http://rdf.rhea-db.org/17461_L rh:contains1
+      http://rdf.rhea-db.org/Participant_17461_compound_2479; rh:compound/rh:accession
   - reference_id: PMID:21663798
     source_assertion: Equations (1)-(5) and Figure 6E define Fba1 production of sedoheptulose-1,7-bisphosphate
       as the substrate for Shb17 dephosphorylation.
     source_locator: PMC3163394 equations (1)-(5); Figure 6E
 - id: riboneogenesis-edge-053
-  subject: RHEA:10509
+  subject: RHEA:17462
   predicate: provides_input_for
-  object: RHEA:27628
+  object: RHEA:10509
   description: Direct material continuity through sedoheptulose 7-phosphate (CHEBI:57483) produced by
-    Shb17 hydrolysis RHEA:10509 and consumed by transketolase step RHEA:27628.
+    Shb17 hydrolysis RHEA:17462 and consumed by transketolase step RHEA:10509.
   evidence:
+  - reference_id: RHEA:17461
+    source_assertion: RHEA:17462 products contain CHEBI:57483 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/17462 rh:products; http://rdf.rhea-db.org/17461_R rh:contains1
+      http://rdf.rhea-db.org/Participant_17461_compound_3830; rh:compound/rh:accession
   - reference_id: RHEA:10508
-    source_assertion: RHEA:10509 produces CHEBI:57483 on its right side.
-    source_locator: http://rdf.rhea-db.org/10509 rh:products; side rh:contains1/rh:compound/rh:accession
-  - reference_id: RHEA:27626
-    source_assertion: RHEA:27628 consumes CHEBI:57483 on its left side.
-    source_locator: http://rdf.rhea-db.org/27628 rh:substrates; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:10509 substrates contain CHEBI:57483 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/10509 rh:substrates; http://rdf.rhea-db.org/10508_L rh:contains1
+      http://rdf.rhea-db.org/Participant_10508_compound_3830; rh:compound/rh:accession
   - reference_id: PMID:21663798
     source_assertion: Equations (1)-(5) and Figure 6E link Shb17 sedoheptulose-7-phosphate formation to
       transketolase pentose-phosphate production.
@@ -939,28 +945,32 @@ mechanistic_edges:
     step RHEA:27628 and epimerized by Rpe1 in RHEA:13679.
   evidence:
   - reference_id: RHEA:27626
-    source_assertion: RHEA:27628 produces CHEBI:57737 on its right side.
-    source_locator: http://rdf.rhea-db.org/27628 rh:products; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:27628 products contain CHEBI:57737 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/27628 rh:products; http://rdf.rhea-db.org/27626_L rh:contains1
+      http://rdf.rhea-db.org/Participant_27626_compound_1624; rh:compound/rh:accession
   - reference_id: RHEA:13677
-    source_assertion: RHEA:13679 consumes CHEBI:57737 on its left side.
-    source_locator: http://rdf.rhea-db.org/13679 rh:substrates; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:13679 substrates contain CHEBI:57737 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/13679 rh:substrates; http://rdf.rhea-db.org/13677_R rh:contains1
+      http://rdf.rhea-db.org/Participant_13677_compound_1624; rh:compound/rh:accession
   - reference_id: PMID:21663798
     source_assertion: Equations (1)-(5) and Figure 6E route xylulose-5-phosphate generated by transketolase
       through Rpe1 epimerization.
     source_locator: PMC3163394 equations (1)-(5); Figure 6E
 - id: riboneogenesis-edge-055
-  subject: RHEA:30168
+  subject: RHEA:10509
   predicate: provides_input_for
   object: RHEA:13679
   description: Direct material continuity through D-xylulose 5-phosphate (CHEBI:57737) produced by transketolase
-    step RHEA:30168 and epimerized by Rpe1 in RHEA:13679.
+    step RHEA:10509 and epimerized by Rpe1 in RHEA:13679.
   evidence:
-  - reference_id: RHEA:30167
-    source_assertion: RHEA:30168 produces CHEBI:57737 on its right side.
-    source_locator: http://rdf.rhea-db.org/30168 rh:products; side rh:contains1/rh:compound/rh:accession
+  - reference_id: RHEA:10508
+    source_assertion: RHEA:10509 products contain CHEBI:57737 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/10509 rh:products; http://rdf.rhea-db.org/10508_R rh:contains1
+      http://rdf.rhea-db.org/Participant_10508_compound_1624; rh:compound/rh:accession
   - reference_id: RHEA:13677
-    source_assertion: RHEA:13679 consumes CHEBI:57737 on its left side.
-    source_locator: http://rdf.rhea-db.org/13679 rh:substrates; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:13679 substrates contain CHEBI:57737 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/13679 rh:substrates; http://rdf.rhea-db.org/13677_R rh:contains1
+      http://rdf.rhea-db.org/Participant_13677_compound_1624; rh:compound/rh:accession
   - reference_id: PMID:21663798
     source_assertion: Equations (1)-(5) and Figure 6E route xylulose-5-phosphate generated by transketolase
       through Rpe1 epimerization.
@@ -973,11 +983,13 @@ mechanistic_edges:
     epimerization RHEA:13679 and isomerized to D-ribose 5-phosphate by Rki1 in RHEA:14659.
   evidence:
   - reference_id: RHEA:13677
-    source_assertion: RHEA:13679 produces CHEBI:58121 on its right side.
-    source_locator: http://rdf.rhea-db.org/13679 rh:products; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:13679 products contain CHEBI:58121 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/13679 rh:products; http://rdf.rhea-db.org/13677_L rh:contains1
+      http://rdf.rhea-db.org/Participant_13677_compound_1531; rh:compound/rh:accession
   - reference_id: RHEA:14657
-    source_assertion: RHEA:14659 consumes CHEBI:58121 on its left side.
-    source_locator: http://rdf.rhea-db.org/14659 rh:substrates; side rh:contains1/rh:compound/rh:accession
+    source_assertion: RHEA:14659 substrates contain CHEBI:58121 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/14659 rh:substrates; http://rdf.rhea-db.org/14657_R rh:contains1
+      http://rdf.rhea-db.org/Participant_14657_compound_1531; rh:compound/rh:accession
   - reference_id: PMID:21663798
     source_assertion: Equations (1)-(5) and Figure 6E couple Rpe1 ribulose-5-phosphate formation to Rki1
       isomerization into ribose-5-phosphate.
