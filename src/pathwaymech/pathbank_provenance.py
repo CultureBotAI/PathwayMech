@@ -2,11 +2,19 @@
 
 from __future__ import annotations
 
+import hashlib
 import re
+import zipfile
+from pathlib import Path
 from typing import Any
 
 PATHBANK_ARCHIVE_KIND = "pathbank-biopax-zip"
 PATHBANK_ARCHIVE_URL = "https://pathbank.org/downloads/pathbank_primary_biopax.zip"
+PATHBANK_ARCHIVE_DEFAULT_PATH = "pathbank-primary-biopax-original.zip"
+PATHBANK_ARCHIVE_VERSION = (
+    "2019-08-16 frozen primary BioPAX archive; acquisition retained by source ledger"
+)
+PATHBANK_ARCHIVE_LICENSE = "Upstream terms; public-release licensing deferred"
 
 
 def validate_pathbank_archive(url: str, sha256: str, archive: Any) -> None:
@@ -30,3 +38,58 @@ def validate_pathbank_archive(url: str, sha256: str, archive: Any) -> None:
     if any(not isinstance(archive[key], str) or not re.fullmatch(pattern, archive[key])
            for key, pattern in patterns.items()):
         raise ValueError("PathBank ZIP requires exact native member, hash and root identities")
+
+
+def build_pathbank_archive_manifest_entry(
+    archive_path: Path,
+    member: str,
+    root: str,
+    *,
+    key: str | None = None,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> dict[str, Any]:
+    """Build and validate a closed PathBank primary BioPAX ZIP manifest entry."""
+    if not isinstance(member, str) or not re.fullmatch(r"PW[0-9]+\.owl", member):
+        raise ValueError("PathBank ZIP requires an exact PW[0-9]+.owl member name")
+    if not isinstance(root, str) or not re.fullmatch(r"SMP[0-9]+", root):
+        raise ValueError("PathBank ZIP requires an exact SMP[0-9]+ root accession")
+    if not isinstance(path, str) or not path.strip():
+        raise ValueError("PathBank ZIP manifest path must be a non-empty string")
+    if not isinstance(version, str) or not version.strip():
+        raise ValueError("PathBank ZIP manifest version must be a non-empty string")
+    if not isinstance(license, str) or not license.strip():
+        raise ValueError("PathBank ZIP manifest license must be a non-empty string")
+    archive_raw = Path(archive_path).read_bytes()
+    archive_sha256 = hashlib.sha256(archive_raw).hexdigest()
+    with zipfile.ZipFile(archive_path, "r") as zf:
+        if member not in zf.namelist():
+            raise ValueError(f"PathBank ZIP archive missing member: {member}")
+        member_raw = zf.read(member)
+    archive = {
+        "bytes": len(archive_raw),
+        "member": member,
+        "member_bytes": len(member_raw),
+        "member_sha256": hashlib.sha256(member_raw).hexdigest(),
+        "root": root,
+    }
+    validate_pathbank_archive(PATHBANK_ARCHIVE_URL, archive_sha256, archive)
+    resolved_key = (
+        key
+        if key is not None
+        else f"pathbank-primary-2019-{member.removesuffix('.owl')}-{root}"
+    )
+    if not isinstance(resolved_key, str) or not resolved_key.strip():
+        raise ValueError("PathBank ZIP manifest key must be a non-empty string")
+    return {
+        "key": resolved_key,
+        "kind": PATHBANK_ARCHIVE_KIND,
+        "path": path,
+        "url": PATHBANK_ARCHIVE_URL,
+        "version": version,
+        "license": license,
+        "sha256": archive_sha256,
+        "archive": archive,
+    }
+
