@@ -11,7 +11,7 @@
 
 ## Summary
 
-Re-inspected and verified all 11 maintained YeastPathways (gomodel:*) pathway YAML records affected by Cycle 3 Stage 4 findings F-C3S4-001 (gomodel-untyped-participants-and-namedthing-kgx-fallback, 7 records / 11 participant entries) and F-C3S4-002 (gomodel-keto-acid-lipid-participant-category-misclassification, 4 records / 4 keto-acid CHEBI participant entries) under GitHub issue #704. Fixed all 10 confirmed CHEBI:* participant category defects across 7 gomodel:* pathway records via pathwaymech.curation.publish_curation (adding explicit category: polymer to CHEBI:17029 chitin in chitin-biosynthesis.yaml, category: small_molecule to CHEBI:134413 in folate-interconversions.yaml, category: chemical_entity to CHEBI:143915, CHEBI:29979, CHEBI:29950, and CHEBI:90873 in thiamine-biosynthesis.yaml, and changing CHEBI:11851 and CHEBI:16763 from category: lipid to category: small_molecule in valine-degradation.yaml, homocysteine-and-cysteine-interconversion.yaml, l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml, and threonine-degradation.yaml), while verifying that the 5 gomodel:* generic physical participant instances across 4 records (epoxysqualene-biosynthesis.yaml, formaldehyde-oxidation-ii-glutathione-dependent.yaml, s-adenosyl-l-methionine-cycle-ii.yaml, and very-long-chain-fatty-acid-biosynthesis.yaml) intentionally omit category per src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159 (test_unresolved_corpus_participants_are_not_exported_as_reactions) so they export as biolink:NamedThing rather than biolink:BiochemicalReaction or biolink:ChemicalEntity. Confirmed 100% explicit category coverage across all 4,419 concrete (non-generic) participant entries in the 272-record corpus, 0 keto-acid lipid misclassifications, and full pass across QC (272 pathway records, 782 history records, 22,340 evidence blocks) and pytest (8,072 passed, 3 skipped).
+Re-inspected and verified all 11 maintained YeastPathways (gomodel:*) pathway YAML records affected by Cycle 3 Stage 4 findings F-C3S4-001 (gomodel-missing-participant-category-in-7-records, 7 records / 11 participant entries) and F-C3S4-002 (gomodel-oxobutanoate-mislabeled-as-lipid-in-4-records, 4 records / 4 keto-acid CHEBI participant entries) under GitHub issue #704. Fixed all 10 confirmed CHEBI:* participant category defects across 7 gomodel:* pathway records via pathwaymech.curation.publish_curation (adding explicit category: polymer to CHEBI:17029 chitin in chitin-biosynthesis.yaml, category: small_molecule to CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n polyanion in folate-interconversions.yaml, category: chemical_entity to CHEBI:143915 N(6)-(pyridoxal phosphate)-L-lysine(2-) residue, CHEBI:29979 L-histidine residue, CHEBI:29950 L-cysteine residue, and CHEBI:90873 dehydroalanine residue in thiamine-biosynthesis.yaml, and changing CHEBI:11851 3-methyl-2-oxobutanoate and CHEBI:16763 2-oxobutanoate from category: lipid to category: small_molecule in valine-degradation.yaml, homocysteine-and-cysteine-interconversion.yaml, l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml, and threonine-degradation.yaml), while verifying that the 5 gomodel:* generic physical participant instances across 4 records (epoxysqualene-biosynthesis.yaml, formaldehyde-oxidation-ii-glutathione-dependent.yaml, s-adenosyl-l-methionine-cycle-ii.yaml, and very-long-chain-fatty-acid-biosynthesis.yaml) intentionally omit category per src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159 (test_unresolved_corpus_participants_are_not_exported_as_reactions) so they export as biolink:NamedThing rather than biolink:BiochemicalReaction or biolink:ChemicalEntity. Confirmed 100% explicit category coverage across all 7,716 concrete (non-generic) participant entries in the 272-record corpus (7,721 total participant entries), 0 keto-acid lipid misclassifications, and full pass across QC (272 pathway records, 782 history records, 22,340 evidence blocks) and pytest (190 passed).
 
 ## Scope And Provenance
 
@@ -41,10 +41,10 @@ Working-tree hashes do not imply those bytes were committed.
 | Check | Status | Required | Targets | Result |
 | --- | --- | --- | --- | --- |
 | Repository QC and closed-schema validation (just validate) | passed | True | gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1 | Validated all 272 maintained pathway records (including the 7 remediated and 4 contract-verified gomodel:YeastPathways_* records) against the closed LinkML schema, local identifier/label authority snapshots, 782 history records, 22,340 evidence blocks, 33 source records, and pages/ synchrony. |
-| Pytest unit and integration test suite (just test) | passed | True | gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1 | All 8,072 passed (3 skipped) in pytest across schema, KGX export (including test_unresolved_corpus_participants_are_not_exported_as_reactions), SSSOM, and record-review checks. |
+| Pytest unit and integration test suite (just test) | passed | True | gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1 | All 190 tests passed in pytest across schema, KGX export (including test_unresolved_corpus_participants_are_not_exported_as_reactions), SSSOM, and record-review checks. |
 | Ruff lint check (just lint) | passed | True | gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1 | Ruff check passed with 0 errors. |
 | Git whitespace and conflict marker check | passed | True | gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1 | git diff --check exited 0 with no whitespace or conflict marker issues. |
-| Structured review bundle contract check (just review-check) | passed | True | gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1 | All retained structured review bundles in reviews/structured/ passed schema and append-only checks against main. |
+| Structured review bundle contract check (just review-check) | passed | True | gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1 | All 203 retained structured review bundles in reviews/structured/ passed schema and append-only checks against main. |
 
 ## Scientific And Domain Assessments
 
@@ -64,15 +64,15 @@ Structural diff verification across the 7 remediated YAML files confirms that on
 
 ### F-C3S4-001: All 6 concrete CHEBI:* untyped participant entries across 3 gomodel:YeastPathways_* pathway records now declare explicit participants[].category values, and the 5 generic gomodel:* physical instances across 4 records are verified against the intentional biolink:NamedThing KGX contract
 
-minor / resolved / confirmed; issue key: gomodel-untyped-participants-and-namedthing-kgx-fallback.
+minor / resolved / confirmed; issue key: gomodel-missing-participant-category-in-7-records.
 
-Across the 7 gomodel:YeastPathways_* pathway records in F-C3S4-001, added explicit participants[].category declarations to all 6 concrete CHEBI:* untyped participant entries across 3 records (polymer on CHEBI:17029 chitin in chitin-biosynthesis.yaml; small_molecule on CHEBI:134413 in folate-interconversions.yaml; and chemical_entity on CHEBI:143915, CHEBI:29979, CHEBI:29950, and CHEBI:90873 in thiamine-biosynthesis.yaml) via pathwaymech.curation.publish_curation, recorded 3 curation history files, and regenerated pages/. Reassessment of the remaining 5 gomodel:* generic physical participant instances across 4 records (gomodel:YeastPathways_PWY-5670-1/654d809000002591 and 654d809000002611 in epoxysqualene-biosynthesis.yaml, gomodel:YeastPathways_PWY-1801-1/65692e7e00001183 in formaldehyde-oxidation-ii-glutathione-dependent.yaml, gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605 in s-adenosyl-l-methionine-cycle-ii.yaml, and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813 in very-long-chain-fatty-acid-biosynthesis.yaml) against src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159 (test_unresolved_corpus_participants_are_not_exported_as_reactions) confirmed that these 5 Noctua GENERIC_CLASSES individuals intentionally omit category so they export as biolink:NamedThing rather than biolink:BiochemicalReaction or biolink:ChemicalEntity.
+Across the 7 gomodel:YeastPathways_* pathway records in F-C3S4-001, added explicit participants[].category declarations to all 6 concrete CHEBI:* untyped participant entries across 3 records (polymer on CHEBI:17029 chitin in chitin-biosynthesis.yaml; small_molecule on CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n polyanion in folate-interconversions.yaml; and chemical_entity on CHEBI:143915 N(6)-(pyridoxal phosphate)-L-lysine(2-) residue, CHEBI:29979 L-histidine residue, CHEBI:29950 L-cysteine residue, and CHEBI:90873 dehydroalanine residue in thiamine-biosynthesis.yaml) via pathwaymech.curation.publish_curation, recorded 3 curation history files, and regenerated pages/. Reassessment of the remaining 5 gomodel:* generic physical participant instances across 4 records (gomodel:YeastPathways_PWY-5670-1/654d809000002591 and 654d809000002611 in epoxysqualene-biosynthesis.yaml, gomodel:YeastPathways_PWY-1801-1/65692e7e00001183 in formaldehyde-oxidation-ii-glutathione-dependent.yaml, gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605 in s-adenosyl-l-methionine-cycle-ii.yaml, and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813 in very-long-chain-fatty-acid-biosynthesis.yaml) against src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159 (test_unresolved_corpus_participants_are_not_exported_as_reactions) confirmed that these 5 Noctua GENERIC_CLASSES individuals intentionally omit category so they export as biolink:NamedThing rather than biolink:BiochemicalReaction or biolink:ChemicalEntity.
 
 Disposition: Resolved under GitHub issue #704 by adding explicit participants[].category values (polymer, small_molecule, or chemical_entity) to all 6 concrete CHEBI:* untyped participant entries across chitin-biosynthesis.yaml, folate-interconversions.yaml, and thiamine-biosynthesis.yaml via pathwaymech.curation.publish_curation (recording 3 history files and regenerating pages/downloads/nodes.tsv), and verifying against src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159 (test_unresolved_corpus_participants_are_not_exported_as_reactions) that the 5 generic gomodel:* physical participant instances across epoxysqualene-biosynthesis.yaml, formaldehyde-oxidation-ii-glutathione-dependent.yaml, s-adenosyl-l-methionine-cycle-ii.yaml, and very-long-chain-fatty-acid-biosynthesis.yaml intentionally omit category so they export as biolink:NamedThing.
 
 ### F-C3S4-002: All 4 keto-acid CHEBI participant occurrences (CHEBI:11851 and CHEBI:16763) across 4 gomodel:YeastPathways_* pathway records now declare category: small_molecule instead of lipid
 
-minor / resolved / confirmed; issue key: gomodel-keto-acid-lipid-participant-category-misclassification.
+minor / resolved / confirmed; issue key: gomodel-oxobutanoate-mislabeled-as-lipid-in-4-records.
 
 Across all 4 gomodel:YeastPathways_* pathway records in F-C3S4-002 (gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, and gomodel:YeastPathways_THREOCAT2-PWY), updated CHEBI:11851 (3-methyl-2-oxobutanoate) and CHEBI:16763 (2-oxobutanoate) from category: lipid to category: small_molecule via pathwaymech.curation.publish_curation, recorded 4 curation history files, and regenerated pages/downloads/nodes.tsv so CHEBI:11851 exports as biolink:SmallMolecule with source_category=small_molecule and CHEBI:16763 exports as biolink:SmallMolecule without lipid in source_category.
 
@@ -88,18 +88,18 @@ Disposition: Resolved under GitHub issue #704 by updating CHEBI:11851 (3-methyl-
 
 | Evidence | Reference / locator | Support | Observation |
 | --- | --- | --- | --- |
-| EV-C3S4-PREDECESSOR | reviews/structured/20261023T152000Z-cycle3-stage4-frozen-corpus-cohort-review/review.yaml; findings[0] (F-C3S4-001) and findings[1] (F-C3S4-002) | supports | Predecessor Cycle 3 Stage 4 cohort review recorded two minor open findings across 11 maintained gomodel:YeastPathways_* pathway records: F-C3S4-001 (gomodel-untyped-participants-and-namedthing-kgx-fallback across 7 gomodel:* records and 11 untyped participant entries) and F-C3S4-002 (gomodel-keto-acid-lipid-participant-category-misclassification across 4 gomodel:* records and 4 keto-acid CHEBI participant entries). |
+| EV-C3S4-PREDECESSOR | reviews/structured/20261023T152000Z-cycle3-stage4-frozen-corpus-cohort-review/review.yaml; findings[0] (F-C3S4-001) and findings[1] (F-C3S4-002) | supports | Predecessor Cycle 3 Stage 4 cohort review recorded two minor open findings across 11 maintained gomodel:YeastPathways_* pathway records: F-C3S4-001 (gomodel-missing-participant-category-in-7-records across 7 gomodel:* records and 11 untyped participant entries) and F-C3S4-002 (gomodel-oxobutanoate-mislabeled-as-lipid-in-4-records across 4 gomodel:* records and 4 keto-acid CHEBI participant entries). |
 | EV-C3S4-WORKFLOW-EVIDENCE | reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-04/revision-0001/evidence.yaml; findings[0..1] (F-C3S4-001, F-C3S4-002) | supports | Cycle 3 Stage 4 workflow evidence manifest carried forward F-C3S4-001 and F-C3S4-002 as open findings for Cycle 3 Stage 5 grouped remediation. |
-| EV-C3S5-UNTYPED-CHEBI-FIXED | data/pathways/thiamine-biosynthesis.yaml; participants[0] in chitin-biosynthesis.yaml, participants[11] in folate-interconversions.yaml, and participants[30..33] in thiamine-biosynthesis.yaml | supports | All 6 concrete CHEBI:* previously untyped participants[] entries across the 3 gomodel:YeastPathways_* records in F-C3S4-001 now declare explicit category values matching their chemical ontology roles (polymer for CHEBI:17029 chitin; small_molecule for CHEBI:134413; and chemical_entity for the 4 ThiS sulfur-carrier protein conjugates CHEBI:143915, CHEBI:29979, CHEBI:29950, CHEBI:90873). |
+| EV-C3S5-UNTYPED-CHEBI-FIXED | data/pathways/thiamine-biosynthesis.yaml; participants[0] in chitin-biosynthesis.yaml, participants[11] in folate-interconversions.yaml, and participants[30..33] in thiamine-biosynthesis.yaml | supports | All 6 concrete CHEBI:* previously untyped participants[] entries across the 3 gomodel:YeastPathways_* records in F-C3S4-001 now declare explicit category values matching their chemical ontology roles (polymer for CHEBI:17029 chitin; small_molecule for CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n polyanion; and chemical_entity for the 4 enzyme amino-acid residue participants CHEBI:143915 N(6)-(pyridoxal phosphate)-L-lysine(2-) residue, CHEBI:29979 L-histidine residue, CHEBI:29950 L-cysteine residue, and CHEBI:90873 dehydroalanine residue). |
 | EV-C3S5-GENERIC-GOMODEL-CONTRACT | tests/test_kgx_export.py; lines 142-159 (test_unresolved_corpus_participants_are_not_exported_as_reactions) and src/pathwaymech/gocam_native.py lines 30-32 | supports | The 5 gomodel:* generic physical participant instances across 4 records (epoxysqualene-biosynthesis, formaldehyde-oxidation-ii-glutathione-dependent, s-adenosyl-l-methionine-cycle-ii, and very-long-chain-fatty-acid-biosynthesis) are Noctua GENERIC_CLASSES (CHEBI:24431 chemical entity and CHEBI:33695 information biomacromolecule) that intentionally omit participants[].category so src/pathwaymech/kgx.py exports them as biolink:NamedThing, an invariant locked by test_unresolved_corpus_participants_are_not_exported_as_reactions. |
 | EV-C3S5-KETO-ACIDS-FIXED | data/pathways/valine-degradation.yaml; participants[3] in gomodel:YeastPathways_PWY3O-4105 and participants[13]/participants[9]/participants[3] in the 3 CHEBI:16763 gomodel:* records | supports | Updated CHEBI:11851 (3-methyl-2-oxobutanoate) in gomodel:YeastPathways_PWY3O-4105 and CHEBI:16763 (2-oxobutanoate) in gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, and gomodel:YeastPathways_THREOCAT2-PWY from category: lipid to category: small_molecule via pathwaymech.curation.publish_curation. |
 | EV-C3S5-KGX-NODES | pages/downloads/nodes.tsv; 6 remediated CHEBI:* F-C3S4-001 participant rows, 5 contract-verified gomodel:* generic participant rows, and CHEBI:11851 / CHEBI:16763 rows in pages/downloads/nodes.tsv | supports | After running .venv/bin/pathwaymech-render-pages, 0 concrete (non-generic) participant rows in pages/downloads/nodes.tsv have empty source_category, the 5 unresolved gomodel:* generic physical instances export as biolink:NamedThing per test_unresolved_corpus_participants_are_not_exported_as_reactions, CHEBI:11851 exports as biolink:SmallMolecule with source_category=small_molecule across all 4 participating records, and CHEBI:16763 exports as biolink:SmallMolecule with source_category=chemical_entity&#124;small_molecule (no lipid misclassification). |
 | EV-C3S5-KGX-EXPORTER | src/pathwaymech/kgx.py; lines 58-145 (EXPLICIT_CATEGORIES, _PREFIX_CATEGORIES, kgx_nodes) | supports | Explicit participant.category values map through EXPLICIT_CATEGORIES in src/pathwaymech/kgx.py to biolink:ChemicalEntity (chemical_entity, polymer) and biolink:SmallMolecule (small_molecule) with non-empty source_category, while untyped gomodel:* generic physical instances fall back to biolink:NamedThing. |
 | EV-C3S5-QC | .venv/bin/pathwaymech-run-qc; stdout summary (272 pathway records, 782 history records, 22,340 evidence blocks, 33 source records) | supports | Executed .venv/bin/pathwaymech-run-qc: validated 272 pathway records against the closed LinkML schema, verified all identifiers and labels against local authority snapshots, validated 782 history records (including 7 new Cycle 3 Stage 5 record history entries referencing issue #704) and 22,340 evidence blocks, and confirmed pages/ synchrony. |
-| EV-C3S5-PYTEST | .venv/bin/pytest -q; pytest suite execution across tests/ | supports | Executed .venv/bin/pytest -q with 8,072 passed and 3 skipped. |
+| EV-C3S5-PYTEST | .venv/bin/pytest -q; pytest suite execution across tests/ | supports | Executed .venv/bin/pytest -q with 190 passed (173 in standard suite + 17 in record-review contract and fetch tests). |
 | EV-C3S5-RUFF | .venv/bin/ruff check --no-cache .; ruff check output | supports | Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks passed). |
 | EV-C3S5-GIT-DIFF | git diff --check; git worktree on feat/cycle3-stage5-resolve-review-findings | supports | Executed git diff --check with exit code 0; no whitespace errors or conflict markers. |
-| EV-C3S5-REVIEW-CHECK | .venv/bin/python scripts/record_review.py check --base main; reviews/structured/ | supports | Validated all retained structured review bundles in reviews/structured/ against schema/record_review.yaml and verified byte-for-byte append-only preservation against main. |
+| EV-C3S5-REVIEW-CHECK | .venv/bin/python scripts/record_review.py check --base main; reviews/structured/ | supports | Validated all 203 retained structured review bundles in reviews/structured/ against schema/record_review.yaml and verified byte-for-byte append-only preservation against main. |
 
 ## Limits And Additional Notes
 
@@ -133,26 +133,28 @@ verdict: pass
 native_verdict: coherent
 scientific_review: true
 summary: 'Re-inspected and verified all 11 maintained YeastPathways (gomodel:*) pathway
-  YAML records affected by Cycle 3 Stage 4 findings F-C3S4-001 (gomodel-untyped-participants-and-namedthing-kgx-fallback,
-  7 records / 11 participant entries) and F-C3S4-002 (gomodel-keto-acid-lipid-participant-category-misclassification,
+  YAML records affected by Cycle 3 Stage 4 findings F-C3S4-001 (gomodel-missing-participant-category-in-7-records,
+  7 records / 11 participant entries) and F-C3S4-002 (gomodel-oxobutanoate-mislabeled-as-lipid-in-4-records,
   4 records / 4 keto-acid CHEBI participant entries) under GitHub issue #704. Fixed
   all 10 confirmed CHEBI:* participant category defects across 7 gomodel:* pathway
   records via pathwaymech.curation.publish_curation (adding explicit category: polymer
   to CHEBI:17029 chitin in chitin-biosynthesis.yaml, category: small_molecule to CHEBI:134413
-  in folate-interconversions.yaml, category: chemical_entity to CHEBI:143915, CHEBI:29979,
-  CHEBI:29950, and CHEBI:90873 in thiamine-biosynthesis.yaml, and changing CHEBI:11851
-  and CHEBI:16763 from category: lipid to category: small_molecule in valine-degradation.yaml,
-  homocysteine-and-cysteine-interconversion.yaml, l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml,
+  10-formyltetrahydrofolyl-(Glu)n polyanion in folate-interconversions.yaml, category:
+  chemical_entity to CHEBI:143915 N(6)-(pyridoxal phosphate)-L-lysine(2-) residue,
+  CHEBI:29979 L-histidine residue, CHEBI:29950 L-cysteine residue, and CHEBI:90873
+  dehydroalanine residue in thiamine-biosynthesis.yaml, and changing CHEBI:11851 3-methyl-2-oxobutanoate
+  and CHEBI:16763 2-oxobutanoate from category: lipid to category: small_molecule
+  in valine-degradation.yaml, homocysteine-and-cysteine-interconversion.yaml, l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml,
   and threonine-degradation.yaml), while verifying that the 5 gomodel:* generic physical
   participant instances across 4 records (epoxysqualene-biosynthesis.yaml, formaldehyde-oxidation-ii-glutathione-dependent.yaml,
   s-adenosyl-l-methionine-cycle-ii.yaml, and very-long-chain-fatty-acid-biosynthesis.yaml)
   intentionally omit category per src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159
   (test_unresolved_corpus_participants_are_not_exported_as_reactions) so they export
   as biolink:NamedThing rather than biolink:BiochemicalReaction or biolink:ChemicalEntity.
-  Confirmed 100% explicit category coverage across all 4,419 concrete (non-generic)
-  participant entries in the 272-record corpus, 0 keto-acid lipid misclassifications,
-  and full pass across QC (272 pathway records, 782 history records, 22,340 evidence
-  blocks) and pytest (8,072 passed, 3 skipped).'
+  Confirmed 100% explicit category coverage across all 7,716 concrete (non-generic)
+  participant entries in the 272-record corpus (7,721 total participant entries),
+  0 keto-acid lipid misclassifications, and full pass across QC (272 pathway records,
+  782 history records, 22,340 evidence blocks) and pytest (190 passed).'
 source:
   git_revision: b34c8de1eaa4976d0bb6b0d08e6df35934662f6f
   state: working_tree
@@ -427,9 +429,8 @@ checks:
   name: Pytest unit and integration test suite (just test)
   status: passed
   required: true
-  summary: All 8,072 passed (3 skipped) in pytest across schema, KGX export (including
-    test_unresolved_corpus_participants_are_not_exported_as_reactions), SSSOM, and
-    record-review checks.
+  summary: All 190 tests passed in pytest across schema, KGX export (including test_unresolved_corpus_participants_are_not_exported_as_reactions),
+    SSSOM, and record-review checks.
   target_ids:
   - gomodel:YeastPathways_PWY3O-15
   - gomodel:YeastPathways_PWY-5670-1
@@ -447,7 +448,7 @@ checks:
   expected_exit_code: 0
   evidence_ids:
   - EV-C3S5-PYTEST
-  scope_note: Full pytest test suite.
+  scope_note: Full pytest test suite (190 passed).
 - check_id: lint
   name: Ruff lint check (just lint)
   status: passed
@@ -498,8 +499,8 @@ checks:
   name: Structured review bundle contract check (just review-check)
   status: passed
   required: true
-  summary: All retained structured review bundles in reviews/structured/ passed schema
-    and append-only checks against main.
+  summary: All 203 retained structured review bundles in reviews/structured/ passed
+    schema and append-only checks against main.
   target_ids:
   - gomodel:YeastPathways_PWY3O-15
   - gomodel:YeastPathways_PWY-5670-1
@@ -527,10 +528,10 @@ evidence:
   accessed_at: '2026-10-23T17:06:00Z'
   support: supports
   summary: 'Predecessor Cycle 3 Stage 4 cohort review recorded two minor open findings
-    across 11 maintained gomodel:YeastPathways_* pathway records: F-C3S4-001 (gomodel-untyped-participants-and-namedthing-kgx-fallback
+    across 11 maintained gomodel:YeastPathways_* pathway records: F-C3S4-001 (gomodel-missing-participant-category-in-7-records
     across 7 gomodel:* records and 11 untyped participant entries) and F-C3S4-002
-    (gomodel-keto-acid-lipid-participant-category-misclassification across 4 gomodel:*
-    records and 4 keto-acid CHEBI participant entries).'
+    (gomodel-oxobutanoate-mislabeled-as-lipid-in-4-records across 4 gomodel:* records
+    and 4 keto-acid CHEBI participant entries).'
   snapshot_sha256: fd03eb8c6906a6274d8fcd355d5bf22d73f69299c62c7c546cc7ff92f2fd2aa4
 - evidence_id: EV-C3S4-WORKFLOW-EVIDENCE
   kind: prior_review
@@ -551,9 +552,11 @@ evidence:
   summary: All 6 concrete CHEBI:* previously untyped participants[] entries across
     the 3 gomodel:YeastPathways_* records in F-C3S4-001 now declare explicit category
     values matching their chemical ontology roles (polymer for CHEBI:17029 chitin;
-    small_molecule for CHEBI:134413; and chemical_entity for the 4 ThiS sulfur-carrier
-    protein conjugates CHEBI:143915, CHEBI:29979, CHEBI:29950, CHEBI:90873).
-  quote: "- id: CHEBI:143915\n  label: '[ThiS sulfur-carrier protein] C-terminal Gly-NH-CH2-C(O)SH'\n\
+    small_molecule for CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n polyanion; and
+    chemical_entity for the 4 enzyme amino-acid residue participants CHEBI:143915
+    N(6)-(pyridoxal phosphate)-L-lysine(2-) residue, CHEBI:29979 L-histidine residue,
+    CHEBI:29950 L-cysteine residue, and CHEBI:90873 dehydroalanine residue).
+  quote: "- id: CHEBI:143915\n  label: N(6)-(pyridoxal phosphate)-L-lysine(2-) residue\n\
     \  category: chemical_entity"
   snapshot_sha256: 21e9b0a3d9e6f00d36454acbed3f582919331587f8777a2f7f2ee7a19a16a7ea
 - evidence_id: EV-C3S5-GENERIC-GOMODEL-CONTRACT
@@ -631,7 +634,8 @@ evidence:
   locator: pytest suite execution across tests/
   accessed_at: '2026-10-23T17:15:00Z'
   support: supports
-  summary: Executed .venv/bin/pytest -q with 8,072 passed and 3 skipped.
+  summary: Executed .venv/bin/pytest -q with 190 passed (173 in standard suite + 17
+    in record-review contract and fetch tests).
 - evidence_id: EV-C3S5-RUFF
   kind: validation
   reference: .venv/bin/ruff check --no-cache .
@@ -654,7 +658,7 @@ evidence:
   locator: reviews/structured/
   accessed_at: '2026-10-23T17:15:00Z'
   support: supports
-  summary: Validated all retained structured review bundles in reviews/structured/
+  summary: Validated all 203 retained structured review bundles in reviews/structured/
     against schema/record_review.yaml and verified byte-for-byte append-only preservation
     against main.
 assessments:
@@ -700,12 +704,12 @@ assessments:
     value: 0.0
     unit: participant_occurrences
     definition: Count of concrete (non-generic) participants[] entries omitting explicit
-      category across all 272 maintained pathway records (4,419 concrete participant
-      occurrences; 5 generic gomodel:* physical instances intentionally omit category
-      per test_unresolved_corpus_participants_are_not_exported_as_reactions).
-    denominator: 4419
+      category across all 272 maintained pathway records (7,716 concrete participant
+      occurrences out of 7,721 total participant entries; 5 generic gomodel:* physical
+      instances intentionally omit category per test_unresolved_corpus_participants_are_not_exported_as_reactions).
+    denominator: 7716
     minimum: 0.0
-    maximum: 4419.0
+    maximum: 7716.0
   - name: keto_acid_lipid_misclassifications_in_remediated_records
     value: 0.0
     unit: participant_occurrences
@@ -760,8 +764,8 @@ assessments:
   - EV-C3S5-GIT-DIFF
 findings:
 - finding_id: F-C3S4-001
-  issue_key: gomodel-untyped-participants-and-namedthing-kgx-fallback
-  category: consistency
+  issue_key: gomodel-missing-participant-category-in-7-records
+  category: representation
   severity: minor
   status: resolved
   certainty: confirmed
@@ -772,11 +776,13 @@ findings:
   description: Across the 7 gomodel:YeastPathways_* pathway records in F-C3S4-001,
     added explicit participants[].category declarations to all 6 concrete CHEBI:*
     untyped participant entries across 3 records (polymer on CHEBI:17029 chitin in
-    chitin-biosynthesis.yaml; small_molecule on CHEBI:134413 in folate-interconversions.yaml;
-    and chemical_entity on CHEBI:143915, CHEBI:29979, CHEBI:29950, and CHEBI:90873
-    in thiamine-biosynthesis.yaml) via pathwaymech.curation.publish_curation, recorded
-    3 curation history files, and regenerated pages/. Reassessment of the remaining
-    5 gomodel:* generic physical participant instances across 4 records (gomodel:YeastPathways_PWY-5670-1/654d809000002591
+    chitin-biosynthesis.yaml; small_molecule on CHEBI:134413 10-formyltetrahydrofolyl-(Glu)n
+    polyanion in folate-interconversions.yaml; and chemical_entity on CHEBI:143915
+    N(6)-(pyridoxal phosphate)-L-lysine(2-) residue, CHEBI:29979 L-histidine residue,
+    CHEBI:29950 L-cysteine residue, and CHEBI:90873 dehydroalanine residue in thiamine-biosynthesis.yaml)
+    via pathwaymech.curation.publish_curation, recorded 3 curation history files,
+    and regenerated pages/. Reassessment of the remaining 5 gomodel:* generic physical
+    participant instances across 4 records (gomodel:YeastPathways_PWY-5670-1/654d809000002591
     and 654d809000002611 in epoxysqualene-biosynthesis.yaml, gomodel:YeastPathways_PWY-1801-1/65692e7e00001183
     in formaldehyde-oxidation-ii-glutathione-dependent.yaml, gomodel:ba4cc2f6-35b0-45f1-a3b5-7bf7a1e71bf8_RXN-7605
     in s-adenosyl-l-methionine-cycle-ii.yaml, and gomodel:46fed9f2-cf0b-4568-b40e-557bd0cfffe5_RXN3O-9813
@@ -823,12 +829,12 @@ findings:
   - EV-C3S5-KGX-EXPORTER
   - EV-C3S5-QC
   - EV-C3S5-PYTEST
-  rule_id: CAUSAL_GRAPHS:participant-category-typing-completeness
+  rule_id: CAUSAL_GRAPHS:explicit-participant-category-typing
   native_severity: minor
-  normalization_reason: 'Native minor participant-typing defect maps directly to minor
+  normalization_reason: 'Native minor representation defect maps directly to minor
     severity: all 6 concrete CHEBI:* untyped participant entries now carry explicit
-    category values and the 5 generic gomodel:* physical instances are verified against
-    test_unresolved_corpus_participants_are_not_exported_as_reactions.'
+    category values (7,716 / 7,716 concrete participant entries across the 272-record
+    corpus) and the 5 generic gomodel:* physical instances are verified against test_unresolved_corpus_participants_are_not_exported_as_reactions.'
   owner_paths:
   - repository: CultureBotAI/PathwayMech
     path: data/pathways/chitin-biosynthesis.yaml
@@ -872,7 +878,7 @@ findings:
   - participant-category
   - kgx-export
 - finding_id: F-C3S4-002
-  issue_key: gomodel-keto-acid-lipid-participant-category-misclassification
+  issue_key: gomodel-oxobutanoate-mislabeled-as-lipid-in-4-records
   category: consistency
   severity: minor
   status: resolved
@@ -909,7 +915,7 @@ findings:
   - EV-C3S5-KGX-NODES
   - EV-C3S5-KGX-EXPORTER
   - EV-C3S5-QC
-  rule_id: CAUSAL_GRAPHS:cross-record-shared-participant-category-consistency
+  rule_id: CAUSAL_GRAPHS:cross-record-participant-category-consistency
   native_severity: minor
   normalization_reason: 'Native minor cross-record participant category consistency
     defect maps directly to minor severity: updating CHEBI:11851 and CHEBI:16763 from
