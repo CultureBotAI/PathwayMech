@@ -1,0 +1,50 @@
+schema_version: 1.0.0
+repository_key: pathwaymech
+github_repository: CultureBotAI/PathwayMech
+run_id: mech-goal-sequence-20261019
+cycle: 3
+stage: 4
+revision: 1
+outcome: completed
+summary: Completed Cycle 3 Stage 4 full frozen-inventory record and cohort review
+  of all 272 maintained pathway YAML records at Git commit 62848bb7170f46df448678b50fdcf5a659769034;
+  saved structured review bundle 20261023T152000Z-cycle3-stage4-frozen-corpus-cohort-review,
+  linked prior review resolution lineage (reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/evidence.yaml),
+  verified that all Cycle 2 Stage 4 findings (F-C2S4-001, F-C2S4-002) remain resolved
+  across all 1,603 reactions, and preserved 2 open minor participant-category findings
+  (F-C3S4-001 across 7 gomodel records / 11 untyped participants, F-C3S4-002 across
+  4 gomodel records typing CHEBI:11851 and CHEBI:16763 as lipid) as carry_forward_ids
+  for Cycle 3 Stage 5 grouped remediation.
+source_revision: 62848bb7170f46df448678b50fdcf5a659769034
+previous_evidence:
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000002/stage-05/revision-0001/evidence.yaml
+  sha256: 9b874bcf4999ee0e26c53a404b5c91a3dd2ae02ac6a8ad9f97ae0b5785d6fde2
+artifacts:
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-04/revision-0001/review_report.md
+  sha256: e4f41f381c172fce5e8944266fe242e6331f008d94ec6b68b2926ba3dd6f1301
+  kind: review_report
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-04/revision-0001/review_findings.md
+  sha256: dca5bf1ce73dc185b2129c6bc9106622dfa5fe0d88ff7df3489b5ce19ef4bf85
+  kind: review_findings
+- path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-04/revision-0001/coverage.json
+  sha256: 18b6c81899be810e0b4e0f01f488e3482da60463946ec48a2fb93a275e3ef514
+  kind: supporting
+findings:
+- finding_id: F-C3S4-001
+  status: open
+  summary: Seven maintained gomodel pathway records omit explicit participants[].category
+    on 11 participant entries (5 CHEBI:* chemical entities and 6 gomodel:* pathway/biological_process
+    nodes), causing all 11 participant CURIEs to export in pages/downloads/nodes.tsv
+    with empty source_category.
+- finding_id: F-C3S4-002
+  status: open
+  summary: 'Four maintained gomodel amino-acid metabolism records type short-chain
+    2-oxoacid amino-acid intermediates (CHEBI:11851 3-methyl-2-oxobutanoate and CHEBI:16763
+    2-oxobutanoate) as category: lipid instead of category: small_molecule, conflicting
+    with sibling MetaCyc records and producing merged source_category=''lipid|small_molecule''
+    in pages/downloads/nodes.tsv.'
+groups: []
+carry_forward_ids:
+- F-C3S4-001
+- F-C3S4-002
+infra_tasks: []
