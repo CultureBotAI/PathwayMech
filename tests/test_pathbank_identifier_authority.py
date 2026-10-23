@@ -1048,6 +1048,18 @@ def test_build_pathbank_archive_manifest_entry_computes_exact_closed_provenance(
         ("PW0001.xml", "SMP9999999", {}, "exact PW"),
         ("PW9999999.owl", "PW9999999", {}, "exact SMP"),
         ("PW0000001.owl", "SMP9999999", {}, "missing member"),
+        (
+            "PW9999999.owl",
+            "SMP0000001",
+            {},
+            "PathBank request and native pathway accessions disagree",
+        ),
+        (
+            "PW9999999.owl",
+            "SMP9999998",
+            {},
+            "PathBank requested source must contain the primary pathway definition",
+        ),
         ("PW9999999.owl", "SMP9999999", {"key": " "}, "key must be a non-empty string"),
         ("PW9999999.owl", "SMP9999999", {"path": ""}, "path must be a non-empty string"),
     ],
@@ -1058,4 +1070,21 @@ def test_build_pathbank_archive_manifest_entry_rejects_invalid_inputs(
     path, _ = archive_fixture(tmp_path)
     with pytest.raises(ValueError, match=match):
         build_pathbank_archive_manifest_entry(path, member, root, **kwargs)
+
+
+def test_build_pathbank_archive_manifest_entry_rejects_duplicate_or_non_rdf_member(tmp_path):
+    path, entry = archive_fixture(tmp_path)
+    with zipfile.ZipFile(path) as archive:
+        body = archive.read(entry["archive"]["member"])
+    with zipfile.ZipFile(path, "a") as archive, pytest.warns(UserWarning, match="Duplicate name"):
+        archive.writestr(entry["archive"]["member"], body)
+    with pytest.raises(ValueError, match="one exact member"):
+        build_pathbank_archive_manifest_entry(path, "PW9999999.owl", "SMP9999999")
+
+    non_rdf_zip = tmp_path / "non_rdf.zip"
+    with zipfile.ZipFile(non_rdf_zip, "w") as archive:
+        archive.writestr("PW9999999.owl", b"<NotRDF/>")
+    with pytest.raises(ValueError, match="native RDF/BioPAX"):
+        build_pathbank_archive_manifest_entry(non_rdf_zip, "PW9999999.owl", "SMP9999999")
+
 

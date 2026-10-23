@@ -1,0 +1,61 @@
+schema_version: 1.0.0
+repository_key: pathwaymech
+github_repository: CultureBotAI/PathwayMech
+run_id: mech-goal-sequence-20261019
+cycle: 3
+stage: 6
+revision: 1
+outcome: completed
+summary: >-
+  Froze PathwayMech INFRA_TASKS.md at 2026-10-23T19:09:34Z (SHA-256
+  d7cb8e6e1a54bfaee8699df9f961687e4485512528b3899cb216fe78e9c3d405, 5 total
+  tasks with 1 non-resolved deferred task pathwaymech-infra-0001 and 4
+  previously resolved tasks pathwaymech-infra-0002 through
+  pathwaymech-infra-0005), converted the bounded intake into a dependency-aware
+  implementation plan, hardened and unit-tested
+  build_pathbank_archive_manifest_entry in src/pathwaymech/pathbank_provenance.py
+  for pathwaymech-infra-0001 (#673) to enforce unique ZIP member entries, native
+  RDF/BioPAX XML object types, and primary SMP[0-9]+ root pathway membership, and
+  explicitly carried forward the remaining 38 non-duplicate Escherichia coli
+  PathBank primary BioPAX .owl entries in pathbank_primary_biopax.zip to Cycle 4
+  Stage 1 (add_records).
+source_revision: ddaba40d41b5d2c8cd7b55a973aa307201e51530
+scope_frozen_at: '2026-10-23T19:09:34Z'
+previous_evidence:
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-05/revision-0001/evidence.yaml
+  sha256: 0727d8c8d963a0a81c9f4086077a54f67df49d07748a6b22e6217d3dcd5f1da7
+artifacts:
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/infra_snapshot.md
+    sha256: d7cb8e6e1a54bfaee8699df9f961687e4485512528b3899cb216fe78e9c3d405
+    kind: infra_snapshot
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/implementation_plan.md
+    sha256: 74b24d1e21699ca52a5fe09334d50c44bccbd76a1d337a02d85d43cf04a958b9
+    kind: implementation_plan
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/validation.md
+    sha256: d3c36ae383a95dcb87688efe1dcc8e7a2049362662708223f6b6add90f032319
+    kind: validation
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/coverage.json
+    sha256: 1fefee80eeed82bb8f6ebcee845e5a36a1c202f1ebab8b965b0143d29e0170ba
+    kind: supporting
+findings: []
+groups: []
+carry_forward_ids: []
+infra_tasks:
+  - task_id: pathwaymech-infra-0001
+    issue_url: https://github.com/CultureBotAI/PathwayMech/issues/673
+    status: deferred
+    summary: Register UniProtKB, RHEA, and PMID authority entries in conf/identifier_sources.json and data/identifier_authorities/sources.json for remaining Escherichia coli PathBank primary BioPAX pathways in pathbank_primary_biopax.zip
+    resolution_evidence:
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/implementation_plan.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/validation.md
+      - reviews/workflow/mech-goal-sequence-20261019/cycle-000003/stage-06/revision-0001/coverage.json
+    disposition: >-
+      Hardened build_pathbank_archive_manifest_entry in
+      src/pathwaymech/pathbank_provenance.py (verified in
+      tests/test_pathbank_identifier_authority.py) to enforce unique ZIP member
+      entries, native RDF/BioPAX XML object types, and primary SMP[0-9]+ root
+      pathway membership; deferred remaining 38 non-duplicate Escherichia coli
+      PathBank primary BioPAX .owl entries in pathbank_primary_biopax.zip to
+      Cycle 4 Stage 1 (add_records) because corpus-selected authority entries in
+      conf/identifier_sources.json and data/identifier_authorities/sources.json
+      must be verified per bounded pathway slice alongside curated records.
