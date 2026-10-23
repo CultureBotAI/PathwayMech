@@ -1,0 +1,83 @@
+{
+  "run_id": "mech-goal-sequence-20261019",
+  "cycle": 2,
+  "stage": 6,
+  "stage_key": "infrastructure",
+  "revision": 1,
+  "source_revision": "a066b26f72d8d7ba3a0280adf90653387d26de75",
+  "scope_frozen_at": "2026-10-23T07:14:09Z",
+  "frozen_snapshot_sha256": "0aac2ad0f049d63088e2dd3f9624b6f3feb58fc692104e5c78136bb4d9ea6904",
+  "frozen_tasks_total": 5,
+  "pending_frozen_tasks_total": 1,
+  "tasks_resolved": 4,
+  "tasks_deferred": 1,
+  "tasks_open": 0,
+  "tasks": [
+    {
+      "task_id": "pathwaymech-infra-0001",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/673",
+      "frozen_status": "open",
+      "status": "deferred",
+      "originating_stage": 1,
+      "modified_files": [
+        "src/pathwaymech/pathbank_provenance.py",
+        "tests/test_pathbank_identifier_authority.py",
+        "INFRA_TASKS.md"
+      ],
+      "disposition": "Delivered build_pathbank_archive_manifest_entry in src/pathwaymech/pathbank_provenance.py (verified in tests/test_pathbank_identifier_authority.py) to automate closed pathbank-biopax-zip manifest entry construction; deferred remaining 39 non-duplicate Escherichia coli PathBank primary BioPAX .owl entries in pathbank_primary_biopax.zip to Cycle 3 Stage 1 (add_records) because corpus-selected authority entries in conf/identifier_sources.json and data/identifier_authorities/sources.json must be verified per bounded pathway slice alongside curated records."
+    },
+    {
+      "task_id": "pathwaymech-infra-0002",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/674",
+      "frozen_status": "resolved",
+      "status": "resolved",
+      "originating_stage": 2,
+      "modified_files": [
+        "src/pathwaymech/curation.py",
+        "tests/test_curation_publication.py"
+      ],
+      "disposition": "Resolved in Stage 6 by enhancing _serialize_record in src/pathwaymech/curation.py with _detect_yaml_width, _collect_anchored_subtrees, and _restore_yaml_anchors so guarded publication preserves per-file line-wrap widths (80, 88, 100, 120, 4096) and YAML anchor/alias structure (&id001/*id001) across deep copies; verified by unit tests in tests/test_curation_publication.py."
+    },
+    {
+      "task_id": "pathwaymech-infra-0003",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/675",
+      "frozen_status": "resolved",
+      "status": "resolved",
+      "originating_stage": 2,
+      "modified_files": [
+        "src/pathwaymech/schema/pathwaymech.yaml",
+        "src/pathwaymech/schema.py",
+        "src/pathwaymech/kgx.py",
+        "tests/test_linkml_schema.py"
+      ],
+      "disposition": "Resolved in Stage 6 by adding optional MechanisticEdge.coefficient, EdgePredicateEnum.encodes, EvidenceItem.assay_taxon, and EvidenceItem.eco_code in src/pathwaymech/schema/pathwaymech.yaml, src/pathwaymech/schema.py, and src/pathwaymech/kgx.py; verified in both open and closed LinkML validators by tests/test_linkml_schema.py and adopted across 6 pathway records in Cycle 2 Stage 2 (causal_graphs)."
+    },
+    {
+      "task_id": "pathwaymech-infra-0004",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/676",
+      "frozen_status": "resolved",
+      "status": "resolved",
+      "originating_stage": 3,
+      "modified_files": [
+        "src/pathwaymech/sssom.py",
+        "output/sssom/source_mappings.sssom.tsv",
+        "tests/test_sssom_export.py"
+      ],
+      "disposition": "Resolved in Stage 6 by adding Entrez, gomodel, NCBIProtein, Reactome, and SGD URI prefix mappings to CURIE_MAP in src/pathwaymech/sssom.py and updating output/sssom/source_mappings.sssom.tsv; verified by tests/test_sssom_export.py and adopted across all 95 Saccharomyces cerevisiae SGD pathway records in Cycle 2 Stage 3 (protein_examples)."
+    },
+    {
+      "task_id": "pathwaymech-infra-0005",
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/677",
+      "frozen_status": "resolved",
+      "status": "resolved",
+      "originating_stage": 4,
+      "modified_files": [
+        "src/pathwaymech/kgx.py",
+        "src/pathwaymech/schema.py",
+        "tests/test_kgx_export.py",
+        "tests/test_linkml_schema.py"
+      ],
+      "disposition": "Resolved in Stage 6 by adding BiGG -> biolink:BiochemicalReaction to _PREFIX_CATEGORIES in src/pathwaymech/kgx.py and rejecting mixed explicit/omitted reaction category lists in _validate_named_nodes in src/pathwaymech/schema.py; verified by tests/test_kgx_export.py and tests/test_linkml_schema.py, confirmed across all 271 records in Cycle 2 Stage 4 (record_review), and followed in Cycle 2 Stage 5 (resolve_review_findings, #692) by adding explicit category: molecular_activity to all 279 catalytic reactions across the remaining 56 untyped MetaCyc records so 100% of the 271-record corpus has explicit reaction category typing."
+    }
+  ]
+}

@@ -14,7 +14,14 @@ import pytest
 import yaml
 
 from pathwaymech.identifiers import _load_authority, identifier_errors
-from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, PATHBANK_ARCHIVE_URL
+from pathwaymech.pathbank_provenance import (
+    PATHBANK_ARCHIVE_DEFAULT_PATH,
+    PATHBANK_ARCHIVE_KIND,
+    PATHBANK_ARCHIVE_LICENSE,
+    PATHBANK_ARCHIVE_URL,
+    PATHBANK_ARCHIVE_VERSION,
+    build_pathbank_archive_manifest_entry,
+)
 from scripts.build_source_identifier_snapshot import (
     build_snapshot,
     main,
@@ -1014,3 +1021,41 @@ def test_invalid_interaction_child_preserves_previous_authority_before_selection
     with pytest.raises(ValueError, match="PathBank"):
         main()
     assert output.read_bytes() == b"previous authority\n"
+
+
+def test_build_pathbank_archive_manifest_entry_computes_exact_closed_provenance(tmp_path):
+    path, expected = archive_fixture(tmp_path)
+    built = build_pathbank_archive_manifest_entry(
+        path,
+        "PW9999999.owl",
+        "SMP9999999",
+    )
+    assert built == {
+        "key": "pathbank-primary-2019-PW9999999-SMP9999999",
+        "kind": PATHBANK_ARCHIVE_KIND,
+        "path": PATHBANK_ARCHIVE_DEFAULT_PATH,
+        "url": PATHBANK_ARCHIVE_URL,
+        "version": PATHBANK_ARCHIVE_VERSION,
+        "license": PATHBANK_ARCHIVE_LICENSE,
+        "sha256": expected["sha256"],
+        "archive": expected["archive"],
+    }
+
+
+@pytest.mark.parametrize(
+    "member,root,kwargs,match",
+    [
+        ("PW0001.xml", "SMP9999999", {}, "exact PW"),
+        ("PW9999999.owl", "PW9999999", {}, "exact SMP"),
+        ("PW0000001.owl", "SMP9999999", {}, "missing member"),
+        ("PW9999999.owl", "SMP9999999", {"key": " "}, "key must be a non-empty string"),
+        ("PW9999999.owl", "SMP9999999", {"path": ""}, "path must be a non-empty string"),
+    ],
+)
+def test_build_pathbank_archive_manifest_entry_rejects_invalid_inputs(
+    tmp_path, member, root, kwargs, match
+):
+    path, _ = archive_fixture(tmp_path)
+    with pytest.raises(ValueError, match=match):
+        build_pathbank_archive_manifest_entry(path, member, root, **kwargs)
+
