@@ -328,7 +328,7 @@ In MetaCyc:ARGDEGRAD-PWY (data/pathways/l-arginine-degradation-v.yaml), decompos
 
 minor / open / confirmed; issue key: metacyc-argdegrad-pwy-stale-rhea10154-hydrogencarbonate-artifacts.
 
-In MetaCyc:ARGDEGRAD-PWY (data/pathways/l-arginine-degradation-v.yaml), the carbamate kinase step is decomposed into RHEA:30757 (carbamoyl phosphate + ADP =&gt; carbamate + ATP, producing CHEBI:13941 carbamate) and spontaneous RHEA:15650 (carbamate + 2 H(+) =&gt; NH4(+) + CO2, producing CHEBI:16526 carbon dioxide), superseding the composite reaction RHEA:10154 (ATP + NH4(+) + hydrogencarbonate = ADP + carbamoyl phosphate + H(+)). However, three stale artifacts from RHEA:10154 remain in data/pathways/l-arginine-degradation-v.yaml: (1) description (lines 3-5) still states 'converts L-arginine to L-ornithine, ammonium, and hydrogencarbonate while generating ATP via carbamate kinase' instead of carbamate and carbon dioxide; (2) participants[14] (lines 50-52) still declares CHEBI:17544 (hydrogencarbonate, category: small_molecule) with zero incident edges in mechanistic_edges (the sole orphan participant across all 7,763 participant entries in the 273-record corpus); and (3) references[9] (lines 345-348) still declares an unreferenced RHEA:10154 entry, while references[11..14] (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513 at lines 353-368) carry generic 'RHEA:&lt;ID&gt; authority record' placeholder titles instead of descriptive reaction titles.
+In MetaCyc:ARGDEGRAD-PWY (data/pathways/l-arginine-degradation-v.yaml), the carbamate kinase step is decomposed into RHEA:30757 (carbamoyl phosphate + ADP =&gt; carbamate + ATP, producing CHEBI:13941 carbamate) and spontaneous RHEA:15650 (carbamate + 2 H(+) =&gt; NH4(+) + CO2, producing CHEBI:16526 carbon dioxide), superseding the composite reaction RHEA:10154 (ATP + NH4(+) + hydrogencarbonate = ADP + carbamoyl phosphate + H(+)). However, three stale artifacts from RHEA:10154 remain in data/pathways/l-arginine-degradation-v.yaml: (1) description (lines 3-5) still states 'L-arginine degradation through the arginine deiminase pathway converts L-arginine to L-citrulline, L-ornithine, ammonium, hydrogencarbonate, and ATP through arginine deiminase, catabolic ornithine carbamoyltransferase, and carbamate kinase.' instead of carbamate and carbon dioxide; (2) participants[13] (lines 50-52) still declares CHEBI:17544 (hydrogencarbonate, category: small_molecule) with zero incident edges in mechanistic_edges (the sole orphan participant across all 7,763 participant entries in the 273-record corpus); and (3) references[3] (lines 345-348) still declares an unreferenced RHEA:10154 entry, while references[5..8] (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513 at lines 352-367) carry generic 'RHEA:&lt;ID&gt; authority record' placeholder titles instead of descriptive reaction titles.
 
 ### F-C4S4-002: Fifteen maintained MetaCyc pathway records retain 28 unreferenced superseded RHEA:* entries in references[] alongside 29 replacement RHEA:* entries with generic 'RHEA:&lt;ID&gt; authority record' placeholder titles
 
@@ -340,7 +340,7 @@ Across 15 maintained MetaCyc:* pathway records — MetaCyc:DARABCAT-PWY (d-arabi
 
 ### A-C4S4-001
 
-In data/pathways/l-arginine-degradation-v.yaml (MetaCyc:ARGDEGRAD-PWY), update description to replace 'hydrogencarbonate' with 'carbamate and carbon dioxide', remove orphan participant CHEBI:17544 (hydrogencarbonate) at participants[14], remove unreferenced RHEA:10154 at references[9], replace generic 'RHEA:&lt;ID&gt; authority record' titles on RHEA:30757, RHEA:15650, RHEA:19597, and RHEA:19513 with descriptive reaction titles, record a curation history entry under history/records/l-arginine-degradation-v/, and regenerate pages/.
+In data/pathways/l-arginine-degradation-v.yaml (MetaCyc:ARGDEGRAD-PWY), update description to replace 'hydrogencarbonate' with 'carbamate and carbon dioxide', remove orphan participant CHEBI:17544 (hydrogencarbonate) at participants[13], remove unreferenced RHEA:10154 at references[3], replace generic 'RHEA:&lt;ID&gt; authority record' titles on RHEA:30757, RHEA:15650, RHEA:19597, and RHEA:19513 (references[5..8]) with descriptive reaction titles, record a curation history entry under history/records/l-arginine-degradation-v/, and regenerate pages/.
 
 - Zero maintained records in data/pathways/*.yaml contain orphan participants with 0 incident edges in mechanistic_edges.
 - data/pathways/l-arginine-degradation-v.yaml contains no CHEBI:17544 participant, no RHEA:10154 reference, and no generic 'RHEA:&lt;ID&gt; authority record' titles.
@@ -375,7 +375,7 @@ Across the 15 affected MetaCyc:* pathway records, remove all 28 unreferenced sup
 | EV-C4-GIT-DIFF | git diff --check; git worktree at 9eae2f9a55e2ec246a4b729735bf06331f3072a2 | supports | Executed git diff --check with exit code 0; no whitespace errors or conflict markers. |
 | EV-C4-REVIEW-CHECK | reviews/structured/20261023T171500Z-cycle3-stage5-resolve-review-findings/review.yaml; 203 retained structured review bundles including Cycle 3 Stage 5 remediation review | supports | Validated all 203 previously retained structured review bundles under reviews/structured/ via scripts/record_review.py check; confirmed Cycle 3 Stage 4 findings (F-C3S4-001 and F-C3S4-002) were resolved in 20261023T171500Z-cycle3-stage5-resolve-review-findings and remain 100% resolved in Cycle 4 (all 7,758 concrete participant entries explicitly typed; only the 5 contract-verified generic gomodel:* physical participant instances omit category per src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159; CHEBI:11851 and CHEBI:16763 uniformly typed as small_molecule). |
 | EV-C4-CORPUS-INSPECTION | data/pathways/; 273 maintained pathway YAML files (7,763 participants, 1,613 reactions including 714 RHEA:* reactions, 14,563 mechanistic_edges, 7,085 references, 1,015 source_mappings across 197 records) | supports | Inspected all 273 maintained pathway records in data/pathways/*.yaml (including PathBank:SMP0002042 added in Cycle 4 Stage 1, 22 records enriched in Cycle 4 Stage 2, and 44 records enriched in Cycle 4 Stage 3): 100% declare valid pathway_type, 100% of 14,563 mechanistic_edges carry structured evidence blocks (22,325 edge/qualifier evidence items; 22,533 total evidence blocks across records, steps, mechanisms, clusters, and edges), 100% of 1,613 reactions carry explicit category (1,575 molecular_activity, 36 pathway, 2 biological_process) and reaction_type (1,551 catalytic, 48 transport, 13 spontaneous, 1 conformational_change), and 100% of 714 RHEA:* reaction nodes declare explicit direction with zero cross-record direction conflicts. |
-| EV-C4-ARGDEGRAD-STALE-ARTIFACTS | data/pathways/l-arginine-degradation-v.yaml; data/pathways/l-arginine-degradation-v.yaml#description (lines 3-5), #participants[14] (CHEBI:17544, lines 50-52), #references[9] (RHEA:10154, lines 345-348), and #references[11..14] (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513, lines 353-368) | supports | In MetaCyc:ARGDEGRAD-PWY (data/pathways/l-arginine-degradation-v.yaml), the carbamate kinase branch is modeled as RHEA:30757 (carbamoyl phosphate + ADP =&gt; carbamate + ATP, producing CHEBI:13941 carbamate) followed by spontaneous RHEA:15650 (carbamate + 2 H(+) =&gt; NH4(+) + CO2, producing CHEBI:16526 carbon dioxide), replacing the superseded composite reaction RHEA:10154 (ATP + NH4(+) + hydrogencarbonate = ADP + carbamoyl phosphate + H(+)). However, three stale artifacts from RHEA:10154 remain in the YAML: (1) description still states 'converts L-arginine to L-ornithine, ammonium, and hydrogencarbonate', (2) participants[14] declares an orphan participant CHEBI:17544 (hydrogencarbonate) with zero incident edges in mechanistic_edges (the only orphan participant across all 7,763 participant entries in the 273-record corpus), and (3) references[9] declares an unreferenced RHEA:10154 entry while references[11..14] (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513) carry generic 'RHEA:&lt;ID&gt; authority record' placeholder titles. |
+| EV-C4-ARGDEGRAD-STALE-ARTIFACTS | data/pathways/l-arginine-degradation-v.yaml; data/pathways/l-arginine-degradation-v.yaml#description (lines 3-5), #participants[13] (CHEBI:17544, lines 50-52), #references[3] (RHEA:10154, lines 345-348), and #references[5..8] (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513, lines 352-367) | supports | In MetaCyc:ARGDEGRAD-PWY (data/pathways/l-arginine-degradation-v.yaml), the carbamate kinase branch is modeled as RHEA:30757 (carbamoyl phosphate + ADP =&gt; carbamate + ATP, producing CHEBI:13941 carbamate) followed by spontaneous RHEA:15650 (carbamate + 2 H(+) =&gt; NH4(+) + CO2, producing CHEBI:16526 carbon dioxide), replacing the superseded composite reaction RHEA:10154 (ATP + NH4(+) + hydrogencarbonate = ADP + carbamoyl phosphate + H(+)). However, three stale artifacts from RHEA:10154 remain in the YAML: (1) description (lines 3-5) still states 'L-arginine degradation through the arginine deiminase pathway converts L-arginine to L-citrulline, L-ornithine, ammonium, hydrogencarbonate, and ATP through arginine deiminase, catabolic ornithine carbamoyltransferase, and carbamate kinase.', (2) participants[13] (lines 50-52) declares an orphan participant CHEBI:17544 (hydrogencarbonate) with zero incident edges in mechanistic_edges (the only orphan participant across all 7,763 participant entries in the 273-record corpus), and (3) references[3] (lines 345-348) declares an unreferenced RHEA:10154 entry while references[5..8] (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513 at lines 352-367) carry generic 'RHEA:&lt;ID&gt; authority record' placeholder titles. |
 | EV-C4-METACYC-SUPERSEDED-RHEA-REFS-15 | data/pathways/d-arabinose-degradation-i.yaml; 28 unreferenced superseded RHEA:* entries and 29 generic 'RHEA:&lt;ID&gt; authority record' entries in references[] across 15 MetaCyc:* pathway records | supports | Across 15 maintained MetaCyc:* pathway records (MetaCyc:DARABCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:PWY-6124, MetaCyc:ARABCAT-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:GLUAMCAT-PWY, and MetaCyc:NONOXIPENT-PWY), prior reaction-ID harmonization replaced directional or anomeric RHEA:* reaction nodes and edge citations with canonical master/stereospecific RHEA:* IDs, leaving 28 superseded RHEA:* entries in references[] with zero citations in mechanistic_edges and 29 replacement RHEA:* entries in references[] with generic 'RHEA:&lt;ID&gt; authority record' placeholder titles. |
 
 ## Limits And Additional Notes
@@ -6916,9 +6916,9 @@ evidence:
 - evidence_id: EV-C4-ARGDEGRAD-STALE-ARTIFACTS
   kind: record_content
   reference: data/pathways/l-arginine-degradation-v.yaml
-  locator: 'data/pathways/l-arginine-degradation-v.yaml#description (lines 3-5), #participants[14]
-    (CHEBI:17544, lines 50-52), #references[9] (RHEA:10154, lines 345-348), and #references[11..14]
-    (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513, lines 353-368)'
+  locator: 'data/pathways/l-arginine-degradation-v.yaml#description (lines 3-5), #participants[13]
+    (CHEBI:17544, lines 50-52), #references[3] (RHEA:10154, lines 345-348), and #references[5..8]
+    (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513, lines 352-367)'
   accessed_at: '2026-10-24T04:45:00Z'
   support: supports
   summary: 'In MetaCyc:ARGDEGRAD-PWY (data/pathways/l-arginine-degradation-v.yaml),
@@ -6927,16 +6927,20 @@ evidence:
     (carbamate + 2 H(+) => NH4(+) + CO2, producing CHEBI:16526 carbon dioxide), replacing
     the superseded composite reaction RHEA:10154 (ATP + NH4(+) + hydrogencarbonate
     = ADP + carbamoyl phosphate + H(+)). However, three stale artifacts from RHEA:10154
-    remain in the YAML: (1) description still states ''converts L-arginine to L-ornithine,
-    ammonium, and hydrogencarbonate'', (2) participants[14] declares an orphan participant
-    CHEBI:17544 (hydrogencarbonate) with zero incident edges in mechanistic_edges
-    (the only orphan participant across all 7,763 participant entries in the 273-record
-    corpus), and (3) references[9] declares an unreferenced RHEA:10154 entry while
-    references[11..14] (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513) carry generic
-    ''RHEA:<ID> authority record'' placeholder titles.'
-  quote: "description: >-\n  Bacterial arginine deiminase pathway that converts L-arginine\
-    \ to L-ornithine,\n  ammonium, and hydrogencarbonate while generating ATP via\
-    \ carbamate kinase."
+    remain in the YAML: (1) description (lines 3-5) still states ''L-arginine degradation
+    through the arginine deiminase pathway converts L-arginine to L-citrulline, L-ornithine,
+    ammonium, hydrogencarbonate, and ATP through arginine deiminase, catabolic ornithine
+    carbamoyltransferase, and carbamate kinase.'', (2) participants[13] (lines 50-52)
+    declares an orphan participant CHEBI:17544 (hydrogencarbonate) with zero incident
+    edges in mechanistic_edges (the only orphan participant across all 7,763 participant
+    entries in the 273-record corpus), and (3) references[3] (lines 345-348) declares
+    an unreferenced RHEA:10154 entry while references[5..8] (RHEA:30757, RHEA:15650,
+    RHEA:19597, RHEA:19513 at lines 352-367) carry generic ''RHEA:<ID> authority record''
+    placeholder titles.'
+  quote: "description: L-arginine degradation through the arginine deiminase pathway\
+    \ converts L-arginine to L-citrulline,\n  L-ornithine, ammonium, hydrogencarbonate,\
+    \ and ATP through arginine deiminase, catabolic ornithine carbamoyltransferase,\n\
+    \  and carbamate kinase."
   snapshot_sha256: cd7d502d648875efb945fc30eac703e8018180736c44bc9970a3cbdcfc928822
 - evidence_id: EV-C4-METACYC-SUPERSEDED-RHEA-REFS-15
   kind: record_content
@@ -6954,7 +6958,8 @@ evidence:
     RHEA:* IDs, leaving 28 superseded RHEA:* entries in references[] with zero citations
     in mechanistic_edges and 29 replacement RHEA:* entries in references[] with generic
     'RHEA:<ID> authority record' placeholder titles.
-  quote: "- id: RHEA:13852\n  title: Rhea D-arabinose isomerase reaction\n  url: https://www.rhea-db.org/rhea/13852"
+  quote: "- id: RHEA:13852\n  title: Rhea bidirectional D-arabinose isomerase reaction\n\
+    \  url: https://www.rhea-db.org/rhea/13852"
   snapshot_sha256: 93bfd7c620b8e7da64753a095cd37ba470524e5cb48300957f8a5fc814bc3acc
 assessments:
 - assessment_id: ASSESS-C4-IDENTITY-AND-CAUSAL-GRAPHS-ALL-273
@@ -7376,25 +7381,27 @@ findings:
     (carbamate + 2 H(+) => NH4(+) + CO2, producing CHEBI:16526 carbon dioxide), superseding
     the composite reaction RHEA:10154 (ATP + NH4(+) + hydrogencarbonate = ADP + carbamoyl
     phosphate + H(+)). However, three stale artifacts from RHEA:10154 remain in data/pathways/l-arginine-degradation-v.yaml:
-    (1) description (lines 3-5) still states ''converts L-arginine to L-ornithine,
-    ammonium, and hydrogencarbonate while generating ATP via carbamate kinase'' instead
-    of carbamate and carbon dioxide; (2) participants[14] (lines 50-52) still declares
-    CHEBI:17544 (hydrogencarbonate, category: small_molecule) with zero incident edges
-    in mechanistic_edges (the sole orphan participant across all 7,763 participant
-    entries in the 273-record corpus); and (3) references[9] (lines 345-348) still
-    declares an unreferenced RHEA:10154 entry, while references[11..14] (RHEA:30757,
-    RHEA:15650, RHEA:19597, RHEA:19513 at lines 353-368) carry generic ''RHEA:<ID>
-    authority record'' placeholder titles instead of descriptive reaction titles.'
+    (1) description (lines 3-5) still states ''L-arginine degradation through the
+    arginine deiminase pathway converts L-arginine to L-citrulline, L-ornithine, ammonium,
+    hydrogencarbonate, and ATP through arginine deiminase, catabolic ornithine carbamoyltransferase,
+    and carbamate kinase.'' instead of carbamate and carbon dioxide; (2) participants[13]
+    (lines 50-52) still declares CHEBI:17544 (hydrogencarbonate, category: small_molecule)
+    with zero incident edges in mechanistic_edges (the sole orphan participant across
+    all 7,763 participant entries in the 273-record corpus); and (3) references[3]
+    (lines 345-348) still declares an unreferenced RHEA:10154 entry, while references[5..8]
+    (RHEA:30757, RHEA:15650, RHEA:19597, RHEA:19513 at lines 352-367) carry generic
+    ''RHEA:<ID> authority record'' placeholder titles instead of descriptive reaction
+    titles.'
   target_ids:
   - MetaCyc:ARGDEGRAD-PWY
   field_paths:
   - data/pathways/l-arginine-degradation-v.yaml#description
-  - data/pathways/l-arginine-degradation-v.yaml#participants[14] (CHEBI:17544)
-  - data/pathways/l-arginine-degradation-v.yaml#references[9] (RHEA:10154)
-  - data/pathways/l-arginine-degradation-v.yaml#references[11].title (RHEA:30757)
-  - data/pathways/l-arginine-degradation-v.yaml#references[12].title (RHEA:15650)
-  - data/pathways/l-arginine-degradation-v.yaml#references[13].title (RHEA:19597)
-  - data/pathways/l-arginine-degradation-v.yaml#references[14].title (RHEA:19513)
+  - data/pathways/l-arginine-degradation-v.yaml#participants[13] (CHEBI:17544)
+  - data/pathways/l-arginine-degradation-v.yaml#references[3] (RHEA:10154)
+  - data/pathways/l-arginine-degradation-v.yaml#references[5].title (RHEA:30757)
+  - data/pathways/l-arginine-degradation-v.yaml#references[6].title (RHEA:15650)
+  - data/pathways/l-arginine-degradation-v.yaml#references[7].title (RHEA:19597)
+  - data/pathways/l-arginine-degradation-v.yaml#references[8].title (RHEA:19513)
   evidence_ids:
   - EV-C4-ARGDEGRAD-STALE-ARTIFACTS
   rule_id: CAUSAL_GRAPHS:no-orphan-participants-or-stale-reaction-artifacts
@@ -7603,10 +7610,10 @@ actions:
 - action_id: A-C4S4-001
   description: In data/pathways/l-arginine-degradation-v.yaml (MetaCyc:ARGDEGRAD-PWY),
     update description to replace 'hydrogencarbonate' with 'carbamate and carbon dioxide',
-    remove orphan participant CHEBI:17544 (hydrogencarbonate) at participants[14],
-    remove unreferenced RHEA:10154 at references[9], replace generic 'RHEA:<ID> authority
-    record' titles on RHEA:30757, RHEA:15650, RHEA:19597, and RHEA:19513 with descriptive
-    reaction titles, record a curation history entry under history/records/l-arginine-degradation-v/,
+    remove orphan participant CHEBI:17544 (hydrogencarbonate) at participants[13],
+    remove unreferenced RHEA:10154 at references[3], replace generic 'RHEA:<ID> authority
+    record' titles on RHEA:30757, RHEA:15650, RHEA:19597, and RHEA:19513 (references[5..8])
+    with descriptive reaction titles, record a curation history entry under history/records/l-arginine-degradation-v/,
     and regenerate pages/.
   finding_ids:
   - F-C4S4-001
