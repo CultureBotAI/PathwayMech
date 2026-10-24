@@ -1,0 +1,1773 @@
+id: PathBank:SMP0002042
+label: Thiamin Diphosphate Biosynthesis
+description: 'PathBank SMP0002042 (native BioPAX archive member PW002028.owl) models Escherichia coli thiamin diphosphate
+  biosynthesis across ten enzyme-catalyzed transformations spanning de novo 5-amino-1-(5-phospho-beta-D-ribosyl)imidazole
+  (AIR) formation from 5-phospho-alpha-D-ribose 1-diphosphate (PRPP) and downstream pyrimidine formation, thiazole-pyrimidine
+  condensation, and thiamine monophosphate phosphorylation. In the six-reaction upstream purine/thiamine precursor segment,
+  amidophosphoribosyltransferase PurF (UniProtKB:P0AG16; RHEA:14907, EC:2.4.2.14; native Reactions/3410) converts PRPP, L-glutamine,
+  and H2O to 5-phospho-beta-D-ribosylamine, L-glutamate, and diphosphate; phosphoribosylamine--glycine ligase PurD (UniProtKB:P15640;
+  RHEA:17454, EC:6.3.4.13; native Reactions/3411) ligates 5-phospho-beta-D-ribosylamine and glycine with ATP to form N(1)-(5-phospho-beta-D-ribosyl)glycinamide
+  (GAR); two alternative formyltransferases—10-formyltetrahydrofolate-dependent PurN (UniProtKB:P08179; RHEA:15054, EC:2.1.2.2;
+  native Reactions/5930) and ATP/formate-dependent PurT (UniProtKB:P33221; RHEA:24830, EC:6.3.1.21; native Reactions/3412)—convert
+  GAR to N(2)-formyl-N(1)-(5-phospho-beta-D-ribosyl)glycinamide (FGAR); phosphoribosylformylglycinamidine synthase PurL (UniProtKB:P15254;
+  RHEA:17130, EC:6.3.5.3; native Reactions/3413) converts FGAR, L-glutamine, ATP, and H2O to 2-formamido-N(1)-(5-O-phospho-beta-D-ribosyl)acetamidine
+  (FGAM); and phosphoribosylformylglycinamidine cyclo-ligase PurM (UniProtKB:P08178; RHEA:23033, EC:6.3.3.1; native Reactions/3414)
+  cyclizes FGAM with ATP to AIR (CHEBI:137981). In the four-reaction downstream thiamine segment, radical-SAM phosphomethylpyrimidine
+  synthase ThiC (UniProtKB:P30136; RHEA:24841, EC:4.1.99.17; native Reactions/5931) rearranges AIR with S-adenosyl-L-methionine
+  to 4-amino-2-methyl-5-(phosphooxymethyl)pyrimidine (HMP-P, CHEBI:58354), 5''-deoxyadenosine, CO, formate, L-methionine, and
+  3 H(+); hydroxymethylpyrimidine/phosphomethylpyrimidine kinase ThiD (UniProtKB:P76422; RHEA:19894, EC:2.7.1.49; native Reactions/5932)
+  phosphorylates HMP-P with ATP to 4-amino-2-methyl-5-(diphosphooxymethyl)pyrimidine (HMP-PP, CHEBI:57841); thiamine-phosphate
+  synthase ThiE (UniProtKB:P30137; RHEA:47845, EC:2.5.1.3; native Reactions/5933) condenses HMP-PP with 2-[(2R,5Z)-2-carboxy-4-methylthiazol-5(2H)-ylidene]ethyl
+  phosphate (cTHZ-P, CHEBI:62899) to thiamine monophosphate (CHEBI:37575), CO2, and diphosphate; and thiamine-monophosphate
+  kinase ThiL (UniProtKB:P0AGG0; RHEA:15914, EC:2.7.4.16; native Reactions/5934) phosphorylates thiamine monophosphate with
+  ATP to thiamine diphosphate (CHEBI:58937) and ADP.
+
+
+  Several native PW002028.owl BioPAX representation quirks are preserved in provenance while normalized to verified biochemical
+  authorities in the causal graph: (1) unlike MetaCyc THISYN-PWY (which begins at AIR and includes the IscS/ThiF/ThiI/ThiS/Dxs/ThiH/ThiG
+  thiazole-synthesis branch), PathBank SMP0002042 includes the six upstream PRPP-to-AIR reactions (PurF, PurD, PurN, PurT,
+  PurL, PurM) and treats the carboxythiazole phosphate cosubstrate (Compound/PW_C042574, CHEBI:62899) of Reactions/5933 (RHEA:47845)
+  as an external boundary input without modeling upstream thiazole synthesis; (2) native Reactions/3412 (catalyzed by PurT,
+  UniProtKB:P33221) carries partial eCNumber 2.1.2.- in PW002028.owl, whereas the ATP- and formate-dependent GAR formyltransferase
+  2 reaction is EC:6.3.1.21 (RHEA:24830, family RHEA:24829); (3) native Reactions/5933 (ThiE, RHEA:47845) lists Compound/PW_C040034
+  (Hydrogen Ion, CHEBI:15378) on bp:left with stoichiometricCoefficient 1.0, whereas the charge-balanced Rhea reaction RHEA:47845
+  consumes 2 H(+) (coefficient 2); (4) native CompoundReference/PW_C001060 (Thiamine pyrophosphate, formula C12H19N4O7P2S,
+  ChEBI_CHEBI_9532, KEGG_Compound_C00068) carries an erroneous BioCyc_2-(alpha-lactyl)-thpp cross-reference alongside its
+  thiamine diphosphate (CHEBI:58937) identifiers; and (5) native BiochemicalPathwayStep elements (PathwayEnzymeReaction/22117
+  through PathwayEnzymeReaction/22126) in PW002028.owl are listed under bp:Pathway/bp:pathwayOrder without bp:nextStep child
+  elements and native Protein/SmallMolecule instances omit bp:cellularLocation, so step ordering and metabolite handoffs are
+  anchored to bp:pathwayOrder and shared reaction bp:right/bp:left compounds and cytoplasmic localization (GO:0005737) is
+  asserted only where directly supported by reviewed UniProtKB entries (UniProtKB:P15254 and UniProtKB:P08178) for Escherichia
+  coli K-12 (NCBITaxon:83333).'
+pathway_type: cofactor-biosynthesis
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:58017
+  label: 5-phospho-alpha-D-ribose 1-diphosphate
+  category: small_molecule
+- id: CHEBI:58359
+  label: L-glutamine
+  category: small_molecule
+- id: CHEBI:15377
+  label: H2O
+  category: small_molecule
+- id: CHEBI:58681
+  label: 5-phospho-beta-D-ribosylamine
+  category: small_molecule
+- id: CHEBI:29985
+  label: L-glutamate
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate
+  category: small_molecule
+- id: CHEBI:57305
+  label: glycine
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP
+  category: small_molecule
+- id: CHEBI:143788
+  label: N(1)-(5-phospho-beta-D-ribosyl)glycinamide
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP
+  category: small_molecule
+- id: CHEBI:43474
+  label: phosphate
+  category: small_molecule
+- id: CHEBI:15378
+  label: H(+)
+  category: small_molecule
+- id: CHEBI:195366
+  label: 10-formyltetrahydrofolate(2-)
+  category: small_molecule
+- id: CHEBI:57453
+  label: (6S)-5,6,7,8-tetrahydrofolate(2-)
+  category: small_molecule
+- id: CHEBI:15740
+  label: formate
+  category: small_molecule
+- id: CHEBI:147286
+  label: N(2)-formyl-N(1)-(5-phospho-beta-D-ribosyl)glycinamide
+  category: small_molecule
+- id: CHEBI:147287
+  label: 2-formamido-N(1)-(5-O-phospho-beta-D-ribosyl)acetamidine
+  category: small_molecule
+- id: CHEBI:137981
+  label: 5-amino-1-(5-phospho-beta-D-ribosyl)imidazole
+  category: small_molecule
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:58354
+  label: 4-amino-2-methyl-5-phosphonatooxymethylpyrimidine(2-)
+  category: small_molecule
+- id: CHEBI:17319
+  label: 5'-deoxyadenosine
+  category: small_molecule
+- id: CHEBI:17245
+  label: carbon monoxide
+  category: small_molecule
+- id: CHEBI:57844
+  label: L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:57841
+  label: 4-amino-2-methyl-5-diphosphonatooxymethylpyrimidine(3-)
+  category: small_molecule
+- id: CHEBI:62899
+  label: (R,Z)- 2-carboxylato-4-methyl-5-[(2-phosphonatooxy)ethylidene]-2,5-dihydrothiazole(3-)
+  category: small_molecule
+- id: CHEBI:37575
+  label: thiamine(1+) monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:58937
+  label: thiamine(1+) diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: UniProtKB:P0AG16
+  label: Amidophosphoribosyltransferase
+  category: protein
+- id: UniProtKB:P15640
+  label: Phosphoribosylamine--glycine ligase
+  category: protein
+- id: UniProtKB:P08179
+  label: Phosphoribosylglycinamide formyltransferase
+  category: protein
+- id: UniProtKB:P33221
+  label: Formate-dependent phosphoribosylglycinamide formyltransferase
+  category: protein
+- id: UniProtKB:P15254
+  label: Phosphoribosylformylglycinamidine synthase
+  category: protein
+- id: UniProtKB:P08178
+  label: Phosphoribosylformylglycinamidine cyclo-ligase
+  category: protein
+- id: UniProtKB:P30136
+  label: Phosphomethylpyrimidine synthase
+  category: protein
+- id: UniProtKB:P76422
+  label: Hydroxymethylpyrimidine/phosphomethylpyrimidine kinase
+  category: protein
+- id: UniProtKB:P30137
+  label: Thiamine-phosphate synthase
+  category: protein
+- id: UniProtKB:P0AGG0
+  label: Thiamine-monophosphate kinase
+  category: protein
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: RHEA:14907
+  label: amidophosphoribosyltransferase reaction
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:17454
+  label: phosphoribosylamine-glycine ligase reaction
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:15054
+  label: phosphoribosylglycinamide formyltransferase reaction
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:24830
+  label: phosphoribosylglycinamide formyltransferase 2 reaction
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:17130
+  label: phosphoribosylformylglycinamidine synthase reaction
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:23033
+  label: phosphoribosylformylglycinamidine cyclo-ligase reaction
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:24841
+  label: 5-amino-1-(5-phospho-beta-D-ribosyl)imidazole + S-adenosyl-L-methionine => 4-amino-2-methyl-5-(phosphooxymethyl)pyrimidine
+    + CO + 5'-deoxyadenosine + formate + L-methionine + 3 H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:19894
+  label: 4-amino-2-methyl-5-(phosphooxymethyl)pyrimidine + ATP => 4-amino-2-methyl-5-(diphosphooxymethyl)pyrimidine
+    + ADP
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:47845
+  label: 2-[(2R,5Z)-2-carboxy-4-methylthiazol-5(2H)-ylidene]ethyl phosphate + 4-amino-2-methyl-5-(diphosphooxymethyl)pyrimidine
+    + 2 H(+) => thiamine phosphate + CO2 + diphosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:15914
+  label: thiamine phosphate + ATP => thiamine diphosphate + ADP
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0002042-edge-001
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:14907
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:14907
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:14907 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14907']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3410 (2.4.2.14, LEFT_TO_RIGHT) lists Compound/PW_C001420 (Water, ChEBI_CHEBI_15377)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:left[@rdf:resource='#Compound/PW_C001420']
+- id: smp0002042-edge-002
+  subject: CHEBI:58017
+  predicate: consumes
+  object: RHEA:14907
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:14907
+    source_assertion: Rhea lists CHEBI:58017 on the substrates side of RHEA:14907 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14907']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3410 (2.4.2.14, LEFT_TO_RIGHT) lists Compound/PW_C000190 (Phosphoribosyl pyrophosphate,
+      ChEBI_CHEBI_17111) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:left[@rdf:resource='#Compound/PW_C000190']
+- id: smp0002042-edge-003
+  subject: CHEBI:58359
+  predicate: consumes
+  object: RHEA:14907
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:14907
+    source_assertion: Rhea lists CHEBI:58359 on the substrates side of RHEA:14907 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14907']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3410 (2.4.2.14, LEFT_TO_RIGHT) lists Compound/PW_C000500 (L-Glutamine, ChEBI_CHEBI_18050)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:left[@rdf:resource='#Compound/PW_C000500']
+- id: smp0002042-edge-004
+  subject: RHEA:14907
+  predicate: produces
+  object: CHEBI:29985
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:14907
+    source_assertion: Rhea lists CHEBI:29985 on the products side of RHEA:14907 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14907']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3410 (2.4.2.14, LEFT_TO_RIGHT) lists Compound/PW_C000095 (L-Glutamic acid, ChEBI_CHEBI_16015)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:right[@rdf:resource='#Compound/PW_C000095']
+- id: smp0002042-edge-005
+  subject: RHEA:14907
+  predicate: produces
+  object: CHEBI:33019
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:14907
+    source_assertion: Rhea lists CHEBI:33019 on the products side of RHEA:14907 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14907']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3410 (2.4.2.14, LEFT_TO_RIGHT) lists Compound/PW_C000170 (Pyrophosphate, ChEBI_CHEBI_18361)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:right[@rdf:resource='#Compound/PW_C000170']
+- id: smp0002042-edge-006
+  subject: RHEA:14907
+  predicate: produces
+  object: CHEBI:58681
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:14907
+    source_assertion: Rhea lists CHEBI:58681 on the products side of RHEA:14907 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14907']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3410 (2.4.2.14, LEFT_TO_RIGHT) lists Compound/PW_C000882 (5-Phosphoribosylamine, ChEBI_CHEBI_37737)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:right[@rdf:resource='#Compound/PW_C000882']
+- id: smp0002042-edge-007
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:17454
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3411 (6.3.4.13, LEFT_TO_RIGHT) lists Compound/PW_C000414 (Adenosine triphosphate, ChEBI_CHEBI_15422)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:left[@rdf:resource='#Compound/PW_C000414']
+- id: smp0002042-edge-008
+  subject: CHEBI:57305
+  predicate: consumes
+  object: RHEA:17454
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:57305 on the substrates side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3411 (6.3.4.13, LEFT_TO_RIGHT) lists Compound/PW_C000078 (Glycine, ChEBI_CHEBI_15428)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:left[@rdf:resource='#Compound/PW_C000078']
+- id: smp0002042-edge-009
+  subject: CHEBI:58681
+  predicate: consumes
+  object: RHEA:17454
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:58681 on the substrates side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3411 (6.3.4.13, LEFT_TO_RIGHT) lists Compound/PW_C000882 (5-Phosphoribosylamine, ChEBI_CHEBI_37737)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:left[@rdf:resource='#Compound/PW_C000882']
+- id: smp0002042-edge-010
+  subject: RHEA:17454
+  predicate: produces
+  object: CHEBI:143788
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:143788 on the products side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3411 (6.3.4.13, LEFT_TO_RIGHT) lists Compound/PW_C042915 (N1-(5-phospho-beta-D-ribosyl)glycinamide,
+      formula C7H14N2O8P, PubChem-compound_25244572) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C042915']
+- id: smp0002042-edge-011
+  subject: RHEA:17454
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3411 (6.3.4.13, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C040034']
+- id: smp0002042-edge-012
+  subject: RHEA:17454
+  predicate: produces
+  object: CHEBI:43474
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:43474 on the products side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3411 (6.3.4.13, LEFT_TO_RIGHT) lists Compound/PW_C001104 (Phosphate, ChEBI_CHEBI_18367)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C001104']
+- id: smp0002042-edge-013
+  subject: RHEA:17454
+  predicate: produces
+  object: CHEBI:456216
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3411 (6.3.4.13, LEFT_TO_RIGHT) lists Compound/PW_C001034 (Adenosine diphosphate, ChEBI_CHEBI_16761)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C001034']
+- id: smp0002042-edge-014
+  subject: CHEBI:143788
+  predicate: consumes
+  object: RHEA:15054
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15054
+    source_assertion: Rhea lists CHEBI:143788 on the substrates side of RHEA:15054 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15054']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5930 (2.1.2.2, LEFT_TO_RIGHT) lists Compound/PW_C042915 (N1-(5-phospho-beta-D-ribosyl)glycinamide,
+      formula C7H14N2O8P, PubChem-compound_25244572) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:left[@rdf:resource='#Compound/PW_C042915']
+- id: smp0002042-edge-015
+  subject: CHEBI:195366
+  predicate: consumes
+  object: RHEA:15054
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15054
+    source_assertion: Rhea lists CHEBI:195366 on the substrates side of RHEA:15054 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15054']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5930 (2.1.2.2, LEFT_TO_RIGHT) lists Compound/PW_C042909 (10-formyl-tetrahydrofolate
+      mono-L-glutamate, ChEBI_CHEBI_57454) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:left[@rdf:resource='#Compound/PW_C042909']
+- id: smp0002042-edge-016
+  subject: RHEA:15054
+  predicate: produces
+  object: CHEBI:147286
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15054
+    source_assertion: Rhea lists CHEBI:147286 on the products side of RHEA:15054 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15054']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5930 (2.1.2.2, LEFT_TO_RIGHT) lists Compound/PW_C001007 (5'-Phosphoribosyl-N-formylglycinamide,
+      BioCyc 5-P-RIBOSYL-N-FORMYLGLYCINEAMIDE, KEGG C04376) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:right[@rdf:resource='#Compound/PW_C001007']
+- id: smp0002042-edge-017
+  subject: RHEA:15054
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15054
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:15054 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15054']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5930 (2.1.2.2, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:right[@rdf:resource='#Compound/PW_C040034']
+- id: smp0002042-edge-018
+  subject: RHEA:15054
+  predicate: produces
+  object: CHEBI:57453
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15054
+    source_assertion: Rhea lists CHEBI:57453 on the products side of RHEA:15054 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15054']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5930 (2.1.2.2, LEFT_TO_RIGHT) lists Compound/PW_C042960 (tetrahydropteroyl mono-L-glutamate,
+      formula C19H21N7O6, PubChem-compound_25790919) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:right[@rdf:resource='#Compound/PW_C042960']
+- id: smp0002042-edge-019
+  subject: CHEBI:143788
+  predicate: consumes
+  object: RHEA:24830
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:143788 on the substrates side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3412 (LEFT_TO_RIGHT) lists Compound/PW_C042915 (N1-(5-phospho-beta-D-ribosyl)glycinamide,
+      formula C7H14N2O8P, PubChem-compound_25244572) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:left[@rdf:resource='#Compound/PW_C042915']
+- id: smp0002042-edge-020
+  subject: CHEBI:15740
+  predicate: consumes
+  object: RHEA:24830
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:15740 on the substrates side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3412 (LEFT_TO_RIGHT) lists Compound/PW_C000092 (Formic acid, ChEBI_CHEBI_30751, BioCyc
+      FORMATE) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:left[@rdf:resource='#Compound/PW_C000092']
+- id: smp0002042-edge-021
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:24830
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3412 (LEFT_TO_RIGHT) lists Compound/PW_C000414 (Adenosine triphosphate, ChEBI_CHEBI_15422)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:left[@rdf:resource='#Compound/PW_C000414']
+- id: smp0002042-edge-022
+  subject: RHEA:24830
+  predicate: produces
+  object: CHEBI:147286
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:147286 on the products side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3412 (LEFT_TO_RIGHT) lists Compound/PW_C001007 (5'-Phosphoribosyl-N-formylglycinamide,
+      BioCyc 5-P-RIBOSYL-N-FORMYLGLYCINEAMIDE, KEGG C04376) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:right[@rdf:resource='#Compound/PW_C001007']
+- id: smp0002042-edge-023
+  subject: RHEA:24830
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3412 (LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378) on
+      bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:right[@rdf:resource='#Compound/PW_C040034']
+- id: smp0002042-edge-024
+  subject: RHEA:24830
+  predicate: produces
+  object: CHEBI:43474
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:43474 on the products side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3412 (LEFT_TO_RIGHT) lists Compound/PW_C001104 (Phosphate, ChEBI_CHEBI_18367) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:right[@rdf:resource='#Compound/PW_C001104']
+- id: smp0002042-edge-025
+  subject: RHEA:24830
+  predicate: produces
+  object: CHEBI:456216
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3412 (LEFT_TO_RIGHT) lists Compound/PW_C001034 (Adenosine diphosphate, ChEBI_CHEBI_16761)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:right[@rdf:resource='#Compound/PW_C001034']
+- id: smp0002042-edge-026
+  subject: CHEBI:147286
+  predicate: consumes
+  object: RHEA:17130
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:147286 on the substrates side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C001007 (5'-Phosphoribosyl-N-formylglycinamide,
+      BioCyc 5-P-RIBOSYL-N-FORMYLGLYCINEAMIDE, KEGG C04376) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C001007']
+- id: smp0002042-edge-027
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17130
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C001420 (Water, ChEBI_CHEBI_15377)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C001420']
+- id: smp0002042-edge-028
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:17130
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C000414 (Adenosine triphosphate, ChEBI_CHEBI_15422)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C000414']
+- id: smp0002042-edge-029
+  subject: CHEBI:58359
+  predicate: consumes
+  object: RHEA:17130
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:58359 on the substrates side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C000500 (L-Glutamine, ChEBI_CHEBI_18050)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C000500']
+- id: smp0002042-edge-030
+  subject: RHEA:17130
+  predicate: produces
+  object: CHEBI:147287
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:147287 on the products side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C002662 (2-(Formamido)-N1-(5-phospho-D-ribosyl)acetamidine,
+      ChEBI_CHEBI_18413, BioCyc 5-PHOSPHORIBOSYL-N-FORMYLGLYCINEAMIDINE) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:right[@rdf:resource='#Compound/PW_C002662']
+- id: smp0002042-edge-031
+  subject: RHEA:17130
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:right[@rdf:resource='#Compound/PW_C040034']
+- id: smp0002042-edge-032
+  subject: RHEA:17130
+  predicate: produces
+  object: CHEBI:29985
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:29985 on the products side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C000095 (L-Glutamic acid, ChEBI_CHEBI_16015)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:right[@rdf:resource='#Compound/PW_C000095']
+- id: smp0002042-edge-033
+  subject: RHEA:17130
+  predicate: produces
+  object: CHEBI:43474
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:43474 on the products side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C001104 (Phosphate, ChEBI_CHEBI_18367)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:right[@rdf:resource='#Compound/PW_C001104']
+- id: smp0002042-edge-034
+  subject: RHEA:17130
+  predicate: produces
+  object: CHEBI:456216
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3413 (6.3.5.3, LEFT_TO_RIGHT) lists Compound/PW_C001034 (Adenosine diphosphate, ChEBI_CHEBI_16761)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:right[@rdf:resource='#Compound/PW_C001034']
+- id: smp0002042-edge-035
+  subject: CHEBI:147287
+  predicate: consumes
+  object: RHEA:23033
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:147287 on the substrates side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3414 (6.3.3.1, LEFT_TO_RIGHT) lists Compound/PW_C002662 (2-(Formamido)-N1-(5-phospho-D-ribosyl)acetamidine,
+      ChEBI_CHEBI_18413, BioCyc 5-PHOSPHORIBOSYL-N-FORMYLGLYCINEAMIDINE) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:left[@rdf:resource='#Compound/PW_C002662']
+- id: smp0002042-edge-036
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:23033
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:30616 on the substrates side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3414 (6.3.3.1, LEFT_TO_RIGHT) lists Compound/PW_C000414 (Adenosine triphosphate, ChEBI_CHEBI_15422)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:left[@rdf:resource='#Compound/PW_C000414']
+- id: smp0002042-edge-037
+  subject: RHEA:23033
+  predicate: produces
+  object: CHEBI:137981
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:137981 on the products side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3414 (6.3.3.1, LEFT_TO_RIGHT) lists Compound/PW_C000955 (5-Aminoimidazole ribonucleotide,
+      ChEBI_CHEBI_28843, BioCyc 5-PHOSPHORIBOSYL-5-AMINOIMIDAZOL) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:right[@rdf:resource='#Compound/PW_C000955']
+- id: smp0002042-edge-038
+  subject: RHEA:23033
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3414 (6.3.3.1, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:right[@rdf:resource='#Compound/PW_C040034']
+- id: smp0002042-edge-039
+  subject: RHEA:23033
+  predicate: produces
+  object: CHEBI:43474
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:43474 on the products side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3414 (6.3.3.1, LEFT_TO_RIGHT) lists Compound/PW_C001104 (Phosphate, ChEBI_CHEBI_18367)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:right[@rdf:resource='#Compound/PW_C001104']
+- id: smp0002042-edge-040
+  subject: RHEA:23033
+  predicate: produces
+  object: CHEBI:456216
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:456216 on the products side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/3414 (6.3.3.1, LEFT_TO_RIGHT) lists Compound/PW_C001034 (Adenosine diphosphate, ChEBI_CHEBI_16761)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:right[@rdf:resource='#Compound/PW_C001034']
+- id: smp0002042-edge-041
+  subject: CHEBI:137981
+  predicate: consumes
+  object: RHEA:24841
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 substrates contain CHEBI:137981 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:substrates; http://rdf.rhea-db.org/24840_L rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_13720;
+      rh:compound http://rdf.rhea-db.org/Compound_13720
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C000955 (5-Aminoimidazole ribonucleotide,
+      ChEBI_CHEBI_28843, BioCyc 5-PHOSPHORIBOSYL-5-AMINOIMIDAZOL) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:left[@rdf:resource='#Compound/PW_C000955']
+- id: smp0002042-edge-042
+  subject: CHEBI:59789
+  predicate: consumes
+  object: RHEA:24841
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 substrates contain CHEBI:59789 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:substrates; http://rdf.rhea-db.org/24840_L rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_6127;
+      rh:compound http://rdf.rhea-db.org/Compound_6127
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C000921 (S-Adenosylmethionine, ChEBI_CHEBI_15414)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:left[@rdf:resource='#Compound/PW_C000921']
+- id: smp0002042-edge-043
+  subject: RHEA:24841
+  predicate: produces
+  object: CHEBI:58354
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 products contain CHEBI:58354 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_1332;
+      rh:compound http://rdf.rhea-db.org/Compound_1332
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C040755 (4-amino-2-methyl-5-phosphomethylpyrimidine,
+      ChEBI_CHEBI_58354) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C040755']
+- id: smp0002042-edge-044
+  subject: RHEA:24841
+  predicate: produces
+  object: CHEBI:17245
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 products contain CHEBI:17245 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_7041;
+      rh:compound http://rdf.rhea-db.org/Compound_7041
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C001050 (Carbon monoxide, ChEBI_CHEBI_17245)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C001050']
+- id: smp0002042-edge-045
+  subject: RHEA:24841
+  predicate: produces
+  object: CHEBI:17319
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 products contain CHEBI:17319 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_2028;
+      rh:compound http://rdf.rhea-db.org/Compound_2028
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C001329 (5'-Deoxyadenosine, ChEBI_CHEBI_17319)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C001329']
+- id: smp0002042-edge-046
+  subject: RHEA:24841
+  predicate: produces
+  object: CHEBI:15740
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 products contain CHEBI:15740 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_3001;
+      rh:compound http://rdf.rhea-db.org/Compound_3001
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C000092 (Formic acid, ChEBI_CHEBI_30751,
+      BioCyc FORMATE) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C000092']
+- id: smp0002042-edge-047
+  subject: RHEA:24841
+  predicate: produces
+  object: CHEBI:57844
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 products contain CHEBI:57844 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_2530;
+      rh:compound http://rdf.rhea-db.org/Compound_2530
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C000548 (L-Methionine, ChEBI_CHEBI_16643)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C000548']
+- id: smp0002042-edge-048
+  subject: RHEA:24841
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 3
+  evidence:
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 products contain CHEBI:15378 with coefficient 3.
+    source_locator: http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains3 http://rdf.rhea-db.org/Participant_24840_compound_3249;
+      rh:compound http://rdf.rhea-db.org/Compound_3249
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5931 (4.1.99.17, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378)
+      on bp:right with stoichiometricCoefficient 3.0 via ParticipantStoichiometry/25937.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C040034']; bp:Stoichiometry[@rdf:ID='ParticipantStoichiometry/25937']/bp:stoichiometricCoefficient
+- id: smp0002042-edge-049
+  subject: CHEBI:58354
+  predicate: consumes
+  object: RHEA:19894
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:19893
+    source_assertion: RHEA:19894 substrates contain CHEBI:58354 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19894 rh:substrates; http://rdf.rhea-db.org/19893_L rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_1332;
+      rh:compound http://rdf.rhea-db.org/Compound_1332
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5932 (2.7.1.49, LEFT_TO_RIGHT) lists Compound/PW_C040755 (4-amino-2-methyl-5-phosphomethylpyrimidine,
+      ChEBI_CHEBI_58354) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:left[@rdf:resource='#Compound/PW_C040755']
+- id: smp0002042-edge-050
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:19894
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:19893
+    source_assertion: RHEA:19894 substrates contain CHEBI:30616 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19894 rh:substrates; http://rdf.rhea-db.org/19893_L rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_6372;
+      rh:compound http://rdf.rhea-db.org/Compound_6372
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5932 (2.7.1.49, LEFT_TO_RIGHT) lists Compound/PW_C000414 (Adenosine triphosphate, ChEBI_CHEBI_15422)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:left[@rdf:resource='#Compound/PW_C000414']
+- id: smp0002042-edge-051
+  subject: RHEA:19894
+  predicate: produces
+  object: CHEBI:57841
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:19893
+    source_assertion: RHEA:19894 products contain CHEBI:57841 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19894 rh:products; http://rdf.rhea-db.org/19893_R rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_4541;
+      rh:compound http://rdf.rhea-db.org/Compound_4541
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5932 (2.7.1.49, LEFT_TO_RIGHT) lists Compound/PW_C040756 (4-amino-2-methyl-5-diphosphomethylpyrimidine,
+      ChEBI_CHEBI_57841) on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:right[@rdf:resource='#Compound/PW_C040756']
+- id: smp0002042-edge-052
+  subject: RHEA:19894
+  predicate: produces
+  object: CHEBI:456216
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:19893
+    source_assertion: RHEA:19894 products contain CHEBI:456216 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19894 rh:products; http://rdf.rhea-db.org/19893_R rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_2710;
+      rh:compound http://rdf.rhea-db.org/Compound_2710
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5932 (2.7.1.49, LEFT_TO_RIGHT) lists Compound/PW_C001034 (Adenosine diphosphate, ChEBI_CHEBI_16761)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:right[@rdf:resource='#Compound/PW_C001034']
+- id: smp0002042-edge-053
+  subject: CHEBI:62899
+  predicate: consumes
+  object: RHEA:47845
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 substrates contain CHEBI:62899 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_6833;
+      rh:compound http://rdf.rhea-db.org/Compound_6833
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5933 (2.5.1.3, LEFT_TO_RIGHT) lists Compound/PW_C042574 (2-((2R,5Z)-2-Carboxy-4-methylthiazol-5(2H)-ylidene)ethyl
+      phosphate, formula C7H7NO6PS) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:left[@rdf:resource='#Compound/PW_C042574']
+- id: smp0002042-edge-054
+  subject: CHEBI:57841
+  predicate: consumes
+  object: RHEA:47845
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 substrates contain CHEBI:57841 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_4541;
+      rh:compound http://rdf.rhea-db.org/Compound_4541
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5933 (2.5.1.3, LEFT_TO_RIGHT) lists Compound/PW_C040756 (4-amino-2-methyl-5-diphosphomethylpyrimidine,
+      ChEBI_CHEBI_57841) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:left[@rdf:resource='#Compound/PW_C040756']
+- id: smp0002042-edge-055
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:47845
+  coefficient: 2
+  evidence:
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 substrates contain CHEBI:15378 with coefficient 2.
+    source_locator: http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains2 http://rdf.rhea-db.org/Participant_47844_compound_3249;
+      rh:compound http://rdf.rhea-db.org/Compound_3249
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5933 (2.5.1.3, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378)
+      on bp:left with stoichiometricCoefficient 1.0, whereas the charge-balanced Rhea reaction RHEA:47845 consumes 2 H(+).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:left[@rdf:resource='#Compound/PW_C040034']
+- id: smp0002042-edge-056
+  subject: RHEA:47845
+  predicate: produces
+  object: CHEBI:37575
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 products contain CHEBI:37575 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/47845 rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_5658;
+      rh:compound http://rdf.rhea-db.org/Compound_5658
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5933 (2.5.1.3, LEFT_TO_RIGHT) lists Compound/PW_C001679 (Thiamine monophosphate, ChEBI_CHEBI_37574)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:right[@rdf:resource='#Compound/PW_C001679']
+- id: smp0002042-edge-057
+  subject: RHEA:47845
+  predicate: produces
+  object: CHEBI:16526
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 products contain CHEBI:16526 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/47845 rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_4391;
+      rh:compound http://rdf.rhea-db.org/Compound_4391
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5933 (2.5.1.3, LEFT_TO_RIGHT) lists Compound/PW_C001316 (Carbon dioxide, ChEBI_CHEBI_16526)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:right[@rdf:resource='#Compound/PW_C001316']
+- id: smp0002042-edge-058
+  subject: RHEA:47845
+  predicate: produces
+  object: CHEBI:33019
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 products contain CHEBI:33019 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/47845 rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_2106;
+      rh:compound http://rdf.rhea-db.org/Compound_2106
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5933 (2.5.1.3, LEFT_TO_RIGHT) lists Compound/PW_C000170 (Pyrophosphate, ChEBI_CHEBI_18361)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:right[@rdf:resource='#Compound/PW_C000170']
+- id: smp0002042-edge-059
+  subject: CHEBI:37575
+  predicate: consumes
+  object: RHEA:15914
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15913
+    source_assertion: RHEA:15914 substrates contain CHEBI:37575 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15914 rh:substrates; http://rdf.rhea-db.org/15913_L rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_5658;
+      rh:compound http://rdf.rhea-db.org/Compound_5658
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5934 (2.7.4.16, LEFT_TO_RIGHT) lists Compound/PW_C001679 (Thiamine monophosphate, ChEBI_CHEBI_37574)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5934']/bp:left[@rdf:resource='#Compound/PW_C001679']
+- id: smp0002042-edge-060
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:15914
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15913
+    source_assertion: RHEA:15914 substrates contain CHEBI:30616 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15914 rh:substrates; http://rdf.rhea-db.org/15913_L rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_6372;
+      rh:compound http://rdf.rhea-db.org/Compound_6372
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5934 (2.7.4.16, LEFT_TO_RIGHT) lists Compound/PW_C000414 (Adenosine triphosphate, ChEBI_CHEBI_15422)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5934']/bp:left[@rdf:resource='#Compound/PW_C000414']
+- id: smp0002042-edge-061
+  subject: RHEA:15914
+  predicate: produces
+  object: CHEBI:58937
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15913
+    source_assertion: RHEA:15914 products contain CHEBI:58937 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15914 rh:products; http://rdf.rhea-db.org/15913_R rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_5328;
+      rh:compound http://rdf.rhea-db.org/Compound_5328
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5934 (2.7.4.16, LEFT_TO_RIGHT) lists Compound/PW_C001060 (Thiamine pyrophosphate, formula
+      C12H19N4O7P2S, ChEBI_CHEBI_9532, KEGG C00068; erroneously cross-referenced to BioCyc 2-(alpha-lactyl)-thpp) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5934']/bp:right[@rdf:resource='#Compound/PW_C001060']
+- id: smp0002042-edge-062
+  subject: RHEA:15914
+  predicate: produces
+  object: CHEBI:456216
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:15913
+    source_assertion: RHEA:15914 products contain CHEBI:456216 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15914 rh:products; http://rdf.rhea-db.org/15913_R rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_2710;
+      rh:compound http://rdf.rhea-db.org/Compound_2710
+  - reference_id: PathBank:SMP0002042
+    source_assertion: Native Reactions/5934 (2.7.4.16, LEFT_TO_RIGHT) lists Compound/PW_C001034 (Adenosine diphosphate, ChEBI_CHEBI_16761)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5934']/bp:right[@rdf:resource='#Compound/PW_C001034']
+- id: smp0002042-edge-073
+  subject: UniProtKB:P0AG16
+  predicate: enables
+  object: RHEA:14907
+  evidence:
+  - reference_id: UniProtKB:P0AG16
+    source_assertion: 'UniProt annotates UniProtKB:P0AG16 with catalytic activity for the reaction family
+      of RHEA:14907. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/3377 links ProteinComplex/3640 (amidophosphoribosyltransferase homotetramer,
+      4 copies of Protein/6280 -> ProteinReference/6280 -> UniProt_P0AG16) as ACTIVATION_ALLOSTERIC controller of Reactions/3410.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/3377']/bp:controller[@rdf:resource='#ProteinComplex/3640']; bp:ProteinReference[@rdf:ID='ProteinReference/6280']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P0AG16']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-074
+  subject: UniProtKB:P15640
+  predicate: enables
+  object: RHEA:17454
+  evidence:
+  - reference_id: UniProtKB:P15640
+    source_assertion: 'UniProt annotates UniProtKB:P15640 with catalytic activity for the reaction family
+      of RHEA:17454. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/3378 links Protein/6345 (phosphoribosylamine--glycine ligase, ProteinReference/6345
+      -> UniProt_P15640) as ACTIVATION_ALLOSTERIC controller of Reactions/3411.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/3378']/bp:controller[@rdf:resource='#Protein/6345']; bp:ProteinReference[@rdf:ID='ProteinReference/6345']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P15640']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-075
+  subject: UniProtKB:P08179
+  predicate: enables
+  object: RHEA:15054
+  evidence:
+  - reference_id: UniProtKB:P08179
+    source_assertion: 'UniProt annotates UniProtKB:P08179 with catalytic activity for the reaction family
+      of RHEA:15054. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/5894 links Protein/5939 (phosphoribosylglycinamide formyltransferase
+      1, ProteinReference/5939 -> UniProt_P08179) as ACTIVATION_ALLOSTERIC controller of Reactions/5930.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5894']/bp:controller[@rdf:resource='#Protein/5939']; bp:ProteinReference[@rdf:ID='ProteinReference/5939']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P08179']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-076
+  subject: UniProtKB:P33221
+  predicate: enables
+  object: RHEA:24830
+  evidence:
+  - reference_id: UniProtKB:P33221
+    source_assertion: 'UniProt annotates UniProtKB:P33221 with catalytic activity for the reaction family
+      of RHEA:24830. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/3379 links Protein/6538 (formate-dependent phosphoribosylglycinamide
+      formyltransferase, ProteinReference/6538 -> UniProt_P33221) as ACTIVATION_ALLOSTERIC controller of Reactions/3412.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/3379']/bp:controller[@rdf:resource='#Protein/6538']; bp:ProteinReference[@rdf:ID='ProteinReference/6538']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P33221']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-077
+  subject: UniProtKB:P15254
+  predicate: enables
+  object: RHEA:17130
+  evidence:
+  - reference_id: UniProtKB:P15254
+    source_assertion: 'UniProt annotates UniProtKB:P15254 with catalytic activity for the reaction family
+      of RHEA:17130. Annotation evidence: ECO:0000255, ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/3380 links Protein/6342 (phosphoribosylformylglycinamidine synthase,
+      ProteinReference/6342 -> UniProt_P15254) as ACTIVATION_ALLOSTERIC controller of Reactions/3413.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/3380']/bp:controller[@rdf:resource='#Protein/6342']; bp:ProteinReference[@rdf:ID='ProteinReference/6342']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P15254']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-078
+  subject: UniProtKB:P08178
+  predicate: enables
+  object: RHEA:23033
+  evidence:
+  - reference_id: UniProtKB:P08178
+    source_assertion: 'UniProt annotates UniProtKB:P08178 with catalytic activity for the reaction family
+      of RHEA:23033. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/3381 links ProteinComplex/3643 (phosphoribosylformylglycinamidine
+      cyclo-ligase homodimer, 2 copies of Protein/5938 -> ProteinReference/5938 -> UniProt_P08178) as ACTIVATION_ALLOSTERIC
+      controller of Reactions/3414.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/3381']/bp:controller[@rdf:resource='#ProteinComplex/3643']; bp:ProteinReference[@rdf:ID='ProteinReference/5938']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P08178']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-079
+  subject: UniProtKB:P30136
+  predicate: enables
+  object: RHEA:24841
+  evidence:
+  - reference_id: UniProtKB:P30136
+    source_assertion: UniProtKB:P30136 (Escherichia coli strain K12, NCBITaxon:83333) is annotated with catalytic
+      activity for RHEA:24840 (HAMAP-Rule:MF_01233, ECO:0000255).
+    source_locator: $.comments[?(@.commentType=='CATALYTIC ACTIVITY')].reaction
+    eco_code: ECO:0000255
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:15326535
+    source_locator: abstractText
+    quote: The E. coli thiC gene product and an additional unidentified E. coli protein are required for the
+      reaction.
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/5895 links Protein/7439 (phosphomethylpyrimidine synthase, ProteinReference/7439
+      -> UniProt_P30136) as ACTIVATION_ALLOSTERIC controller of Reactions/5931.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5895']/bp:controller[@rdf:resource='#Protein/7439']; bp:ProteinReference[@rdf:ID='ProteinReference/7439']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P30136']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-080
+  subject: UniProtKB:P76422
+  predicate: enables
+  object: RHEA:19894
+  evidence:
+  - reference_id: UniProtKB:P76422
+    source_assertion: UniProtKB:P76422 (Escherichia coli strain K12, NCBITaxon:83333) is annotated with catalytic
+      activity for RHEA:19893 (ECO:0000255 HAMAP-Rule:MF_00894; ECO:0000269 PubMed:10986239, PubMed:9265595).
+    source_locator: $.comments[?(@.commentType=='CATALYTIC ACTIVITY')].reaction
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/5896 links ProteinComplex/3997 (hydroxymethylpyrimidine/phosphomethylpyrimidine
+      kinase homotetramer, 4 copies of Protein/6749 -> ProteinReference/6749 -> UniProt_P76422) as ACTIVATION_ALLOSTERIC
+      controller of Reactions/5932.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5896']/bp:controller[@rdf:resource='#ProteinComplex/3997']; bp:ProteinReference[@rdf:ID='ProteinReference/6749']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P76422']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-081
+  subject: UniProtKB:P30137
+  predicate: enables
+  object: RHEA:47845
+  evidence:
+  - reference_id: UniProtKB:P30137
+    source_assertion: UniProtKB:P30137 (Escherichia coli strain K12, NCBITaxon:83333) is annotated with catalytic
+      activity for RHEA:47844 (ECO:0000269 PubMed:25108351).
+    source_locator: $.comments[?(@.commentType=='CATALYTIC ACTIVITY')].reaction
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/5897 links Protein/6491 (thiamine-phosphate synthase, ProteinReference/6491
+      -> UniProt_P30137) as ACTIVATION_ALLOSTERIC controller of Reactions/5933.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5897']/bp:controller[@rdf:resource='#Protein/6491']; bp:ProteinReference[@rdf:ID='ProteinReference/6491']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P30137']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-082
+  subject: UniProtKB:P0AGG0
+  predicate: enables
+  object: RHEA:15914
+  evidence:
+  - reference_id: UniProtKB:P0AGG0
+    source_assertion: UniProtKB:P0AGG0 (Escherichia coli strain K12, NCBITaxon:83333) is annotated with catalytic
+      activity for RHEA:15913 (ECO:0000255 HAMAP-Rule:MF_00073; ECO:0000269 PubMed:6284709, PubMed:8226681).
+    source_locator: $.comments[?(@.commentType=='CATALYTIC ACTIVITY')].reaction
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:6284709
+    source_locator: abstractText
+    quote: the latter lacks thiamine monophosphate kinase activity
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PathBank:SMP0002042
+    source_assertion: ReactionCatalysis/5898 links Protein/6291 (thiamine-monophosphate kinase, ProteinReference/6291
+      -> UniProt_P0AGG0) as ACTIVATION_ALLOSTERIC controller of Reactions/5934.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5898']/bp:controller[@rdf:resource='#Protein/6291']; bp:ProteinReference[@rdf:ID='ProteinReference/6291']/bp:xref[@rdf:resource='#UnificationXref/UniProt_P0AGG0']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-083
+  subject: UniProtKB:P0AG16
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P0AG16
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P0AG16 (evidence: ECO:0000255).
+      Binds 1 Mg(2+) ion per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+    eco_code: ECO:0000255
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-084
+  subject: UniProtKB:P15640
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P15640
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P15640 (evidence: ECO:0000269).
+      Binds 1 Mg(2+) or Mn(2+) ion per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-085
+  subject: UniProtKB:P15640
+  predicate: has_cofactor
+  object: CHEBI:29035
+  evidence:
+  - reference_id: UniProtKB:P15640
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:P15640 (evidence: ECO:0000250).
+      Binds 1 Mg(2+) or Mn(2+) ion per subunit.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+    eco_code: ECO:0000250
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-086
+  subject: UniProtKB:P30136
+  predicate: has_cofactor
+  object: CHEBI:49883
+  evidence:
+  - reference_id: UniProtKB:P30136
+    source_assertion: UniProtKB:P30136 (Escherichia coli strain K12, NCBITaxon:83333) COFACTOR comment lists
+      [4Fe-4S] cluster (CHEBI:49883; ECO:0000255 HAMAP-Rule:MF_01233).
+    source_locator: $.comments[?(@.commentType=='COFACTOR')].cofactors[0]
+    eco_code: ECO:0000255
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-087
+  subject: UniProtKB:P30137
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P30137
+    source_assertion: UniProtKB:P30137 (Escherichia coli strain K12, NCBITaxon:83333) COFACTOR comment lists
+      Mg(2+) (CHEBI:18420; ECO:0000250 UniProtKB:P39594).
+    source_locator: $.comments[?(@.commentType=='COFACTOR')].cofactors[0]
+    eco_code: ECO:0000250
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-088
+  subject: UniProtKB:P15254
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P15254
+    source_assertion: 'UniProt locates UniProtKB:P15254 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: ECO:0000255, ECO:0000269.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-089
+  subject: UniProtKB:P08178
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P08178
+    source_assertion: 'UniProt locates UniProtKB:P08178 in Cytoplasm (SL-0086, mapped by UniProt to GO:0005737).
+      Annotation evidence: curated source annotation.'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; UniProt location
+      vocabulary GO mapping
+    assay_taxon: NCBITaxon:83333
+- id: smp0002042-edge-090
+  subject: RHEA:14907
+  predicate: precedes
+  object: RHEA:17454
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3410 (RHEA:14907) before Reactions/3411 (RHEA:17454)
+      via shared intermediate CHEBI:58681 (Compound/PW_C000882, 5-Phosphoribosylamine).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:right[@rdf:resource='#Compound/PW_C000882'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:left[@rdf:resource='#Compound/PW_C000882']
+- id: smp0002042-edge-091
+  subject: RHEA:17454
+  predicate: precedes
+  object: RHEA:15054
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3411 (RHEA:17454) before Reactions/5930 (RHEA:15054)
+      via shared intermediate CHEBI:143788 (Compound/PW_C042915, 5'-Phosphoribosylglycinamide).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C042915'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:left[@rdf:resource='#Compound/PW_C042915']
+- id: smp0002042-edge-092
+  subject: RHEA:17454
+  predicate: precedes
+  object: RHEA:24830
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3411 (RHEA:17454) before Reactions/3412 (RHEA:24830)
+      via shared intermediate CHEBI:143788 (Compound/PW_C042915, 5'-Phosphoribosylglycinamide).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C042915'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:left[@rdf:resource='#Compound/PW_C042915']
+- id: smp0002042-edge-093
+  subject: RHEA:15054
+  predicate: precedes
+  object: RHEA:17130
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5930 (RHEA:15054) before Reactions/3413 (RHEA:17130)
+      via shared intermediate CHEBI:147286 (Compound/PW_C001007, 5'-Phosphoribosyl-N-formylglycinamide).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:right[@rdf:resource='#Compound/PW_C001007'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C001007']
+- id: smp0002042-edge-094
+  subject: RHEA:24830
+  predicate: precedes
+  object: RHEA:17130
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3412 (RHEA:24830) before Reactions/3413 (RHEA:17130)
+      via shared intermediate CHEBI:147286 (Compound/PW_C001007, 5'-Phosphoribosyl-N-formylglycinamide).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:right[@rdf:resource='#Compound/PW_C001007'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C001007']
+- id: smp0002042-edge-095
+  subject: RHEA:17130
+  predicate: precedes
+  object: RHEA:23033
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3413 (RHEA:17130) before Reactions/3414 (RHEA:23033)
+      via shared intermediate CHEBI:147287 (Compound/PW_C002662, 2-(Formamido)-N1-(5-phospho-D-ribosyl)acetamidine).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:right[@rdf:resource='#Compound/PW_C002662'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:left[@rdf:resource='#Compound/PW_C002662']
+- id: smp0002042-edge-096
+  subject: RHEA:23033
+  predicate: precedes
+  object: RHEA:24841
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3414 (RHEA:23033) before Reactions/5931 (RHEA:24841)
+      via shared intermediate CHEBI:137981 (Compound/PW_C000955, 5-Aminoimidazole ribonucleotide).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:right[@rdf:resource='#Compound/PW_C000955'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:left[@rdf:resource='#Compound/PW_C000955']
+- id: smp0002042-edge-097
+  subject: RHEA:24841
+  predicate: precedes
+  object: RHEA:19894
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5931 (RHEA:24841) before Reactions/5932 (RHEA:19894)
+      via shared intermediate CHEBI:58354 (Compound/PW_C040755, 4-amino-2-methyl-5-phosphomethylpyrimidine).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C040755'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:left[@rdf:resource='#Compound/PW_C040755']
+- id: smp0002042-edge-098
+  subject: RHEA:19894
+  predicate: precedes
+  object: RHEA:47845
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5932 (RHEA:19894) before Reactions/5933 (RHEA:47845)
+      via shared intermediate CHEBI:57841 (Compound/PW_C040756, 4-amino-2-methyl-5-diphosphomethylpyrimidine).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:right[@rdf:resource='#Compound/PW_C040756'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:left[@rdf:resource='#Compound/PW_C040756']
+- id: smp0002042-edge-099
+  subject: RHEA:47845
+  predicate: precedes
+  object: RHEA:15914
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5933 (RHEA:47845) before Reactions/5934 (RHEA:15914)
+      via shared intermediate CHEBI:37575 (Compound/PW_C001679, Thiamine monophosphate).
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:right[@rdf:resource='#Compound/PW_C001679'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5934']/bp:left[@rdf:resource='#Compound/PW_C001679']
+
+- id: smp0002042-edge-100
+  subject: RHEA:14907
+  predicate: provides_input_for
+  object: RHEA:17454
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3410 (RHEA:14907) before Reactions/3411 (RHEA:17454),
+      and Compound/PW_C000882 (CHEBI:58681, 5-Phosphoribosylamine) produced on bp:right of Reactions/3410 is consumed on bp:left
+      of Reactions/3411.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3410']/bp:right[@rdf:resource='#Compound/PW_C000882'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:left[@rdf:resource='#Compound/PW_C000882']
+  - reference_id: RHEA:14907
+    source_assertion: Rhea lists CHEBI:58681 on the products side of RHEA:14907 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/14907']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:58681 on the substrates side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: smp0002042-edge-101
+  subject: RHEA:17454
+  predicate: provides_input_for
+  object: RHEA:15054
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3411 (RHEA:17454) before Reactions/5930 (RHEA:15054),
+      and Compound/PW_C042915 (CHEBI:143788, 5'-Phosphoribosylglycinamide) produced on bp:right of Reactions/3411 is consumed
+      on bp:left of Reactions/5930.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C042915'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:left[@rdf:resource='#Compound/PW_C042915']
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:143788 on the products side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: RHEA:15054
+    source_assertion: Rhea lists CHEBI:143788 on the substrates side of RHEA:15054 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15054']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: smp0002042-edge-102
+  subject: RHEA:17454
+  predicate: provides_input_for
+  object: RHEA:24830
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3411 (RHEA:17454) before Reactions/3412 (RHEA:24830),
+      and Compound/PW_C042915 (CHEBI:143788, 5'-Phosphoribosylglycinamide) produced on bp:right of Reactions/3411 is consumed
+      on bp:left of Reactions/3412.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3411']/bp:right[@rdf:resource='#Compound/PW_C042915'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:left[@rdf:resource='#Compound/PW_C042915']
+  - reference_id: RHEA:17454
+    source_assertion: Rhea lists CHEBI:143788 on the products side of RHEA:17454 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17454']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:143788 on the substrates side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: smp0002042-edge-103
+  subject: RHEA:15054
+  predicate: provides_input_for
+  object: RHEA:17130
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5930 (RHEA:15054) before Reactions/3413 (RHEA:17130),
+      and Compound/PW_C001007 (CHEBI:147286, 5'-Phosphoribosyl-N-formylglycinamide) produced on bp:right of Reactions/5930
+      is consumed on bp:left of Reactions/3413.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5930']/bp:right[@rdf:resource='#Compound/PW_C001007'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C001007']
+  - reference_id: RHEA:15054
+    source_assertion: Rhea lists CHEBI:147286 on the products side of RHEA:15054 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/15054']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:147286 on the substrates side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: smp0002042-edge-104
+  subject: RHEA:24830
+  predicate: provides_input_for
+  object: RHEA:17130
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3412 (RHEA:24830) before Reactions/3413 (RHEA:17130),
+      and Compound/PW_C001007 (CHEBI:147286, 5'-Phosphoribosyl-N-formylglycinamide) produced on bp:right of Reactions/3412
+      is consumed on bp:left of Reactions/3413.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3412']/bp:right[@rdf:resource='#Compound/PW_C001007'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:left[@rdf:resource='#Compound/PW_C001007']
+  - reference_id: RHEA:24830
+    source_assertion: Rhea lists CHEBI:147286 on the products side of RHEA:24830 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/24830']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:147286 on the substrates side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: smp0002042-edge-105
+  subject: RHEA:17130
+  predicate: provides_input_for
+  object: RHEA:23033
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3413 (RHEA:17130) before Reactions/3414 (RHEA:23033),
+      and Compound/PW_C002662 (CHEBI:147287, 2-(Formamido)-N1-(5-phospho-D-ribosyl)acetamidine) produced on bp:right of Reactions/3413
+      is consumed on bp:left of Reactions/3414.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3413']/bp:right[@rdf:resource='#Compound/PW_C002662'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:left[@rdf:resource='#Compound/PW_C002662']
+  - reference_id: RHEA:17130
+    source_assertion: Rhea lists CHEBI:147287 on the products side of RHEA:17130 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/17130']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:147287 on the substrates side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:substrates; rh:contains/rh:compound/rh:accession
+- id: smp0002042-edge-106
+  subject: RHEA:23033
+  predicate: provides_input_for
+  object: RHEA:24841
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/3414 (RHEA:23033) before Reactions/5931 (RHEA:24841),
+      and Compound/PW_C000955 (CHEBI:137981, 5-Aminoimidazole ribonucleotide) produced on bp:right of Reactions/3414 is consumed
+      on bp:left of Reactions/5931.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/3414']/bp:right[@rdf:resource='#Compound/PW_C000955'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:left[@rdf:resource='#Compound/PW_C000955']
+  - reference_id: RHEA:23033
+    source_assertion: Rhea lists CHEBI:137981 on the products side of RHEA:23033 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23033']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 substrates contain CHEBI:137981 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:substrates; http://rdf.rhea-db.org/24840_L rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_13720;
+      rh:compound http://rdf.rhea-db.org/Compound_13720
+- id: smp0002042-edge-107
+  subject: RHEA:24841
+  predicate: provides_input_for
+  object: RHEA:19894
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5931 (RHEA:24841) before Reactions/5932 (RHEA:19894),
+      and Compound/PW_C040755 (CHEBI:58354, 4-amino-2-methyl-5-phosphomethylpyrimidine) produced on bp:right of Reactions/5931
+      is consumed on bp:left of Reactions/5932.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5931']/bp:right[@rdf:resource='#Compound/PW_C040755'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:left[@rdf:resource='#Compound/PW_C040755']
+  - reference_id: RHEA:24840
+    source_assertion: RHEA:24841 products contain CHEBI:58354 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24841 rh:products; http://rdf.rhea-db.org/24840_R rh:contains1 http://rdf.rhea-db.org/Participant_24840_compound_1332;
+      rh:compound http://rdf.rhea-db.org/Compound_1332
+  - reference_id: RHEA:19893
+    source_assertion: RHEA:19894 substrates contain CHEBI:58354 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19894 rh:substrates; http://rdf.rhea-db.org/19893_L rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_1332;
+      rh:compound http://rdf.rhea-db.org/Compound_1332
+- id: smp0002042-edge-108
+  subject: RHEA:19894
+  predicate: provides_input_for
+  object: RHEA:47845
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5932 (RHEA:19894) before Reactions/5933 (RHEA:47845),
+      and Compound/PW_C040756 (CHEBI:57841, 4-amino-2-methyl-5-diphosphomethylpyrimidine) produced on bp:right of Reactions/5932
+      is consumed on bp:left of Reactions/5933.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5932']/bp:right[@rdf:resource='#Compound/PW_C040756'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:left[@rdf:resource='#Compound/PW_C040756']
+  - reference_id: RHEA:19893
+    source_assertion: RHEA:19894 products contain CHEBI:57841 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/19894 rh:products; http://rdf.rhea-db.org/19893_R rh:contains1 http://rdf.rhea-db.org/Participant_19893_compound_4541;
+      rh:compound http://rdf.rhea-db.org/Compound_4541
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 substrates contain CHEBI:57841 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/47845 rh:substrates; http://rdf.rhea-db.org/47844_L rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_4541;
+      rh:compound http://rdf.rhea-db.org/Compound_4541
+- id: smp0002042-edge-109
+  subject: RHEA:47845
+  predicate: provides_input_for
+  object: RHEA:15914
+  evidence:
+  - reference_id: PathBank:SMP0002042
+    source_assertion: PathBank SMP0002042 chains Reactions/5933 (RHEA:47845) before Reactions/5934 (RHEA:15914),
+      and Compound/PW_C001679 (CHEBI:37575, Thiamine monophosphate) produced on bp:right of Reactions/5933 is consumed on
+      bp:left of Reactions/5934.
+    source_locator: bp:Pathway[@rdf:ID='Pathway/100357']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5933']/bp:right[@rdf:resource='#Compound/PW_C001679'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5934']/bp:left[@rdf:resource='#Compound/PW_C001679']
+  - reference_id: RHEA:47844
+    source_assertion: RHEA:47845 products contain CHEBI:37575 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/47845 rh:products; http://rdf.rhea-db.org/47844_R rh:contains1 http://rdf.rhea-db.org/Participant_47844_compound_5658;
+      rh:compound http://rdf.rhea-db.org/Compound_5658
+  - reference_id: RHEA:15913
+    source_assertion: RHEA:15914 substrates contain CHEBI:37575 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/15914 rh:substrates; http://rdf.rhea-db.org/15913_L rh:contains1 http://rdf.rhea-db.org/Participant_15913_compound_5658;
+      rh:compound http://rdf.rhea-db.org/Compound_5658
+source_mappings:
+- subject_id: UniProt:P08178
+  subject_label: Phosphoribosylformylglycinamidine cyclo-ligase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P08178
+  object_label: Phosphoribosylformylglycinamidine cyclo-ligase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/5938
+- subject_id: UniProt:P08179
+  subject_label: Phosphoribosylglycinamide formyltransferase 1
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P08179
+  object_label: Phosphoribosylglycinamide formyltransferase 1
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/5939
+- subject_id: UniProt:P0AG16
+  subject_label: Amidophosphoribosyltransferase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0AG16
+  object_label: Amidophosphoribosyltransferase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/6280
+- subject_id: UniProt:P0AGG0
+  subject_label: Thiamine-monophosphate kinase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0AGG0
+  object_label: Thiamine-monophosphate kinase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/6291
+- subject_id: UniProt:P15254
+  subject_label: Phosphoribosylformylglycinamidine synthase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P15254
+  object_label: Phosphoribosylformylglycinamidine synthase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/6342
+- subject_id: UniProt:P15640
+  subject_label: Phosphoribosylamine--glycine ligase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P15640
+  object_label: Phosphoribosylamine--glycine ligase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/6345
+- subject_id: UniProt:P30136
+  subject_label: Phosphomethylpyrimidine synthase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P30136
+  object_label: Phosphomethylpyrimidine synthase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/7439
+- subject_id: UniProt:P30137
+  subject_label: Thiamine-phosphate synthase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P30137
+  object_label: Thiamine-phosphate synthase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/6491
+- subject_id: UniProt:P33221
+  subject_label: Formate-dependent phosphoribosylglycinamide formyltransferase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P33221
+  object_label: Formate-dependent phosphoribosylglycinamide formyltransferase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/6538
+- subject_id: UniProt:P76422
+  subject_label: Hydroxymethylpyrimidine/phosphomethylpyrimidine kinase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P76422
+  object_label: Hydroxymethylpyrimidine/phosphomethylpyrimidine kinase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002042
+  source_element_id: ProteinReference/6749
+references:
+- id: PathBank:SMP0002042
+  title: PathBank SMP0002042 Thiamin Diphosphate Biosynthesis (Escherichia coli)
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip#PW002028.owl
+  source_version: 2019-10-01 primary BioPAX OWL archive (PW002028.owl)
+  source_sha256: 3bf07c81fe0406c0b6a49912134ef04991c46d2eb9b4f7216b1c4c2802aed6dd
+- id: RHEA:14907
+  title: Rhea 5-phospho-beta-D-ribosylamine-forming direction
+  url: https://www.rhea-db.org/rhea/14907
+  source_version: '139'
+- id: RHEA:17454
+  title: Rhea glycinamide ribonucleotide-forming direction
+  url: https://www.rhea-db.org/rhea/17454
+  source_version: '139'
+- id: RHEA:15054
+  title: Rhea FGAR-forming direction
+  url: https://www.rhea-db.org/rhea/15054
+  source_version: '139'
+- id: RHEA:24830
+  title: Rhea FGAR-forming direction
+  url: https://www.rhea-db.org/rhea/24830
+  source_version: '139'
+- id: RHEA:17130
+  title: Rhea FGAM-forming direction
+  url: https://www.rhea-db.org/rhea/17130
+  source_version: '139'
+- id: RHEA:23033
+  title: Rhea AIR-forming direction
+  url: https://www.rhea-db.org/rhea/23033
+  source_version: '139'
+- id: RHEA:24840
+  title: Rhea reaction family 24840
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:19893
+  title: Rhea reaction family 19893
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:47844
+  title: Rhea reaction family 47844
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:15913
+  title: Rhea reaction family 15913
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P08178
+  title: UniProtKB:P08178 authority record
+  url: https://rest.uniprot.org/uniprotkb/P08178.json
+  source_version: '2026_03'
+- id: UniProtKB:P08179
+  title: UniProtKB:P08179 authority record
+  url: https://rest.uniprot.org/uniprotkb/P08179.json
+  source_version: '2026_03'
+- id: UniProtKB:P0AG16
+  title: UniProtKB:P0AG16 authority record
+  url: https://rest.uniprot.org/uniprotkb/P0AG16.json
+  source_version: '2026_03'
+- id: UniProtKB:P0AGG0
+  title: Thiamine-monophosphate kinase
+  url: https://rest.uniprot.org/uniprotkb/P0AGG0.json
+  source_version: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 134; actual body digest
+  source_sha256: 5272c2e747dabd317ede8c4ab32ff17aee3f74204fd4d4ab30c3a7655675f68d
+- id: UniProtKB:P15254
+  title: UniProtKB:P15254 authority record
+  url: https://rest.uniprot.org/uniprotkb/P15254.json
+  source_version: '2026_03'
+- id: UniProtKB:P15640
+  title: UniProtKB:P15640 authority record
+  url: https://rest.uniprot.org/uniprotkb/P15640.json
+  source_version: '2026_03'
+- id: UniProtKB:P30136
+  title: Phosphomethylpyrimidine synthase
+  url: https://rest.uniprot.org/uniprotkb/P30136.json
+  source_version: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 175; actual body digest
+  source_sha256: 657c6c480fa7e9086c3fa986b849f3a14981efca8fa77cd35af86e4fdb8f482e
+- id: UniProtKB:P30137
+  title: Thiamine-phosphate synthase
+  url: https://rest.uniprot.org/uniprotkb/P30137.json
+  source_version: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 187; actual body digest
+  source_sha256: 527c5b8c50ca84d497a52867438a862be552b769c2a5b0906cfd5b0ff225d4c8
+- id: UniProtKB:P33221
+  title: UniProtKB:P33221 authority record
+  url: https://rest.uniprot.org/uniprotkb/P33221.json
+  source_version: '2026_03'
+- id: UniProtKB:P76422
+  title: Hydroxymethylpyrimidine/phosphomethylpyrimidine kinase
+  url: https://rest.uniprot.org/uniprotkb/P76422.json
+  source_version: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 164; actual body digest
+  source_sha256: b0dfa0d060f67fe121e20c2823b469bc94dde145a6132a1706ff391d112f0577
+- id: PMID:15326535
+  title: 'Biosynthesis of the thiamin pyrimidine: the reconstitution of a remarkable rearrangement reaction.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:15326535%20AND%20SRC:MED&format=xml&resultType=core
+  source_version: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text
+    digest
+  source_sha256: 3e9920ec4c149fdfd919016c5b0039e6d655572a57fdc1a0565a6adadb142b5c
+- id: PMID:6284709
+  title: thiK and thiL loci of Escherichia coli.
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:6284709%20AND%20SRC:MED&format=xml&resultType=core
+  source_version: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text
+    digest
+  source_sha256: a05512b7aa902a6f13d3ad28beb0aa7e2c85287c5d9ffdd5b9ef306804d2960d
