@@ -1,0 +1,772 @@
+id: PathBank:SMP0002055
+label: Thiazole Biosynthesis I
+description: 'PathBank SMP0002055 (native BioPAX archive member PW002041.owl) models Escherichia coli thiazole biosynthesis
+  I across three enzyme-catalyzed transformations that supply the 2-[(2R,5Z)-2-carboxy-4-methylthiazol-5(2H)-ylidene]ethyl
+  phosphate (cTHZ-P, CHEBI:62899) moiety for thiamine diphosphate biosynthesis. In the two parallel precursor-forming branches,
+  homodimeric 1-deoxy-D-xylulose-5-phosphate synthase Dxs (PathBank:SMP0002055/ProteinComplex/3831, containing 2 copies of
+  UniProtKB:P77488; RHEA:12606, EC:2.2.1.7; native Reactions/5963) condenses pyruvate (CHEBI:15361) and D-glyceraldehyde 3-phosphate
+  (CHEBI:59776) with H(+) (CHEBI:15378) using Mg(2+) and thiamine diphosphate cofactors to produce 1-deoxy-D-xylulose 5-phosphate
+  (DXP, CHEBI:57792) and CO2 (CHEBI:16526), while radical-SAM 2-iminoacetate synthase ThiH (UniProtKB:P30140; RHEA:26362,
+  EC:4.1.99.19; native Reactions/5962) cleaves the C(alpha)-C(beta) bond of L-tyrosine (CHEBI:58315; marked as a SubPathwayOutput
+  from Tyrosine Biosynthesis SMP0000826 in PW002041.owl) with S-adenosyl-L-methionine (CHEBI:59789) and NADPH (CHEBI:57783)
+  via its [4Fe-4S] cluster to produce 2-iminoacetate (dehydroglycine zwitterion, CHEBI:77846), 4-methylphenol (p-cresol, CHEBI:17847),
+  5''-deoxyadenosine (CHEBI:17319), L-methionine (CHEBI:57844), and NADP(+) (CHEBI:58349). In the converging thiazole-ring-forming
+  step, the hetero-oligomeric thiazole synthase assembly ThiGH (PathBank:SMP0002055/ProteinComplex/4013, containing 6 copies
+  of thiazole synthase ThiG, UniProtKB:P30139, and 6 copies of 2-iminoacetate synthase ThiH, UniProtKB:P30140; RHEA:26298,
+  EC:2.8.1.10; native Reactions/5964) condenses DXP (CHEBI:57792), 2-iminoacetate (CHEBI:77846), and C-terminally thiocarboxylated
+  sulfur-carrier protein ThiS (RHEA-COMP:19908, native Compound/Generic238) to yield [ThiS sulfur-carrier protein]-C-terminal
+  Gly-Gly (RHEA-COMP:12909, native Compound/Generic239), 2-[(2R,5Z)-2-carboxy-4-methylthiazol-5(2H)-ylidene]ethyl phosphate
+  (CHEBI:62899; marked as a SubPathwayInput to Thiamin Diphosphate Biosynthesis SMP0002042 in PW002041.owl), 2 H2O (CHEBI:15377),
+  and H(+) (CHEBI:15378).
+
+
+  Several native PW002041.owl BioPAX representation quirks are preserved in provenance while normalized to verified biochemical
+  authorities in the causal graph: (1) unlike MetaCyc PWY-6892 (part of THISYN-PWY), which explicitly includes the upstream
+  IscS/ThiF/ThiI sulfur-mobilization and ThiS-adenylation/thiocarboxylation reactions (RHEA:17458, RHEA:43345, RHEA:43341),
+  PathBank SMP0002055 models only the three-reaction DXP + tyrosine + thiocarboxylated-ThiS condensation core (Reactions/5963,
+  Reactions/5962, Reactions/5964) and treats thiocarboxylated ThiS (Compound/Generic238, RHEA-COMP:19908) as a boundary input;
+  (2) native Reactions/5962 (dehydroglycine synthase ThiH) omits bp:eCNumber in PW002041.owl and erroneously lists Compound/PW_C000696
+  (4-Methylcatechol, CHEBI:17254, formula C7H8O2) and Compound/PW_C040034 (Hydrogen Ion, CHEBI:15378) on bp:right, whereas
+  radical-SAM tyrosine lyase ThiH (EC:4.1.99.19, RHEA:26362, UniProtKB:P30140, PMID:19923213) cleaves L-tyrosine (C9H11NO3)
+  to 2-iminoacetate (CHEBI:77846) and 4-methylphenol (p-cresol, CHEBI:17847, formula C7H8O) without introducing an unbuffered
+  hydroxyl oxygen or extra free proton; (3) native Reactions/5964 (thiazole synthase, eCNumber 2.8.1.10) omits the balanced
+  proton (CHEBI:15378) on bp:right that RHEA:26298 produces with coefficient 1; and (4) native BiochemicalPathwayStep elements
+  (PathwayEnzymeReaction/22285 through PathwayEnzymeReaction/22287) in PW002041.owl are listed under bp:pathwayOrder without
+  bp:nextStep links and native Protein/SmallMolecule instances omit bp:cellularLocation, so reaction ordering and metabolite
+  handoffs are grounded in bp:pathwayOrder and shared reaction bp:right/bp:left intermediates (CHEBI:57792 and CHEBI:77846)
+  and cytoplasmic localization (GO:0005737) is asserted only where directly supported by reviewed UniProtKB annotations (UniProtKB:P77488)
+  for Escherichia coli K-12 (NCBITaxon:83333).'
+pathway_type: cofactor-biosynthesis
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:59776
+  label: D-glyceraldehyde 3-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:15361
+  label: pyruvate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:57792
+  label: 1-deoxy-D-xylulose 5-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:58315
+  label: L-tyrosine zwitterion
+  category: small_molecule
+- id: CHEBI:59789
+  label: S-adenosyl-L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:77846
+  label: dehydroglycine zwitterion
+  category: small_molecule
+- id: CHEBI:17847
+  label: p-cresol
+  category: small_molecule
+- id: CHEBI:17319
+  label: 5'-deoxyadenosine
+  category: small_molecule
+- id: CHEBI:57844
+  label: L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: RHEA-COMP:19908
+  label: '[ThiS sulfur-carrier protein]-C-terminal-Gly-aminoethanethioate'
+  category: protein
+- id: RHEA-COMP:12909
+  label: '[ThiS sulfur-carrier protein]-C-terminal Gly-Gly'
+  category: protein
+- id: CHEBI:62899
+  label: (R,Z)- 2-carboxylato-4-methyl-5-[(2-phosphonatooxy)ethylidene]-2,5-dihydrothiazole(3-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:58937
+  label: thiamine(1+) diphosphate(3-)
+  category: cofactor
+- id: CHEBI:49883
+  label: tetra-mu3-sulfido-tetrairon
+  category: cofactor
+- id: UniProtKB:P77488
+  label: 1-deoxy-D-xylulose-5-phosphate synthase
+  category: protein
+- id: UniProtKB:P30139
+  label: Thiazole synthase
+  category: protein
+- id: UniProtKB:P30140
+  label: 2-iminoacetate synthase
+  category: protein
+- id: PathBank:SMP0002055/ProteinComplex/3831
+  label: 1-deoxyxylulose-5-phosphate synthase
+  category: complex
+- id: PathBank:SMP0002055/ProteinComplex/4013
+  label: thiazole synthase
+  category: complex
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: RHEA:12606
+  label: pyruvate + D-glyceraldehyde 3-phosphate + H(+) => 1-deoxy-D-xylulose 5-phosphate + CO2
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:26362
+  label: L-tyrosine + S-adenosyl-L-methionine + NADPH => 2-iminoacetate + 4-methylphenol + 5'-deoxyadenosine
+    + L-methionine + NADP(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:26298
+  label: '[ThiS sulfur-carrier protein]-C-terminal-Gly-NH-CH2-C(=O)SH + 1-deoxy-D-xylulose 5-phosphate + 2-iminoacetate
+    => [ThiS sulfur-carrier protein]-C-terminal-Gly-Gly + 2-[(2R,5Z)-2-carboxy-4-methylthiazol-5(2H)-ylidene]ethyl
+    phosphate + 2 H2O + H(+)'
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0002055-edge-001
+  subject: CHEBI:59776
+  predicate: consumes
+  object: RHEA:12606
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:12605
+    source_assertion: RHEA:12606 substrates contain CHEBI:59776 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/12606 rh:substrates; http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_6062;
+      rh:compound http://rdf.rhea-db.org/Compound_6062
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5963 (LEFT_TO_RIGHT) lists Compound/PW_C000869 (Glyceraldehyde 3-phosphate, ChEBI_CHEBI_29052)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5963']/bp:left[@rdf:resource='#Compound/PW_C000869']
+- id: smp0002055-edge-002
+  subject: CHEBI:15361
+  predicate: consumes
+  object: RHEA:12606
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:12605
+    source_assertion: RHEA:12606 substrates contain CHEBI:15361 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/12606 rh:substrates; http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_3719;
+      rh:compound http://rdf.rhea-db.org/Compound_3719
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5963 (LEFT_TO_RIGHT) lists Compound/PW_C000164 (Pyruvic acid, ChEBI_CHEBI_15361) on
+      bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5963']/bp:left[@rdf:resource='#Compound/PW_C000164']
+- id: smp0002055-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:12606
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:12605
+    source_assertion: RHEA:12606 substrates contain CHEBI:15378 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/12606 rh:substrates; http://rdf.rhea-db.org/12605_L rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_3249;
+      rh:compound http://rdf.rhea-db.org/Compound_3249
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5963 (LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378) on
+      bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5963']/bp:left[@rdf:resource='#Compound/PW_C040034']
+- id: smp0002055-edge-004
+  subject: RHEA:12606
+  predicate: produces
+  object: CHEBI:57792
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:12605
+    source_assertion: RHEA:12606 products contain CHEBI:57792 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/12606 rh:products; http://rdf.rhea-db.org/12605_R rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_2654;
+      rh:compound http://rdf.rhea-db.org/Compound_2654
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5963 (LEFT_TO_RIGHT) lists Compound/PW_C000944 (1-Deoxy-D-xylulose 5-phosphate, ChEBI_CHEBI_57792)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5963']/bp:right[@rdf:resource='#Compound/PW_C000944']
+- id: smp0002055-edge-005
+  subject: RHEA:12606
+  predicate: produces
+  object: CHEBI:16526
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:12605
+    source_assertion: RHEA:12606 products contain CHEBI:16526 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/12606 rh:products; http://rdf.rhea-db.org/12605_R rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_4391;
+      rh:compound http://rdf.rhea-db.org/Compound_4391
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5963 (LEFT_TO_RIGHT) lists Compound/PW_C001316 (Carbon dioxide, ChEBI_CHEBI_16526)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5963']/bp:right[@rdf:resource='#Compound/PW_C001316']
+- id: smp0002055-edge-006
+  subject: CHEBI:58315
+  predicate: consumes
+  object: RHEA:26362
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 substrates contain CHEBI:58315 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:substrates; http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_1046;
+      rh:compound http://rdf.rhea-db.org/Compound_1046
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C000103 (L-Tyrosine, ChEBI_CHEBI_17895; marked
+      SubPathwayOutput from Tyrosine Biosynthesis SMP0000826) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:left[@rdf:resource='#Compound/PW_C000103']
+- id: smp0002055-edge-007
+  subject: CHEBI:59789
+  predicate: consumes
+  object: RHEA:26362
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 substrates contain CHEBI:59789 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:substrates; http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_6127;
+      rh:compound http://rdf.rhea-db.org/Compound_6127
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C000921 (S-Adenosylmethionine, ChEBI_CHEBI_15414)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:left[@rdf:resource='#Compound/PW_C000921']
+- id: smp0002055-edge-008
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:26362
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 substrates contain CHEBI:57783 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:substrates; http://rdf.rhea-db.org/26361_L rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_3438;
+      rh:compound http://rdf.rhea-db.org/Compound_3438
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C000146 (NADPH, ChEBI_CHEBI_16474) on bp:left
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:left[@rdf:resource='#Compound/PW_C000146']
+- id: smp0002055-edge-009
+  subject: RHEA:26362
+  predicate: produces
+  object: CHEBI:77846
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 products contain CHEBI:77846 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_9982;
+      rh:compound http://rdf.rhea-db.org/Compound_9982
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C041634 (2-Iminoacetate, ChEBI_CHEBI_37080)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:right[@rdf:resource='#Compound/PW_C041634']
+- id: smp0002055-edge-010
+  subject: RHEA:26362
+  predicate: produces
+  object: CHEBI:17847
+  coefficient: 1
+  description: Radical-SAM tyrosine lyase ThiH cleaves the C(alpha)-C(beta) bond of L-tyrosine to produce 4-methylphenol (p-cresol,
+    CHEBI:17847, formula C7H8O); native Reactions/5962 erroneously substitutes Compound/PW_C000696 (4-Methylcatechol, CHEBI:17254,
+    formula C7H8O2) and an extra proton on bp:right.
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 products contain CHEBI:17847 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_4232;
+      rh:compound http://rdf.rhea-db.org/Compound_4232
+  - reference_id: UniProtKB:P30140
+    source_assertion: 'ThiH catalyzes RHEA:26361 (L-tyrosine + S-adenosyl-L-methionine + NADPH = 2-iminoacetate + 4-methylphenol
+      + 5''-deoxyadenosine + L-methionine + NADP(+)); ECO:0000269, PMIDs 17403671 and 17969213.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:19923213
+    quote: ThiH is a tyrosine lyase that cleaves the Cα–Cβ bond of tyrosine
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C000696 (4-Methylcatechol, ChEBI_CHEBI_17254)
+      and Compound/PW_C040034 (Hydrogen Ion, ChEBI_CHEBI_15378) on bp:right with stoichiometricCoefficient 1.0, which is normalized
+      to the mass- and charge-balanced p-cresol (CHEBI:17847) product of RHEA:26362.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:right[@rdf:resource='#Compound/PW_C000696']
+- id: smp0002055-edge-011
+  subject: RHEA:26362
+  predicate: produces
+  object: CHEBI:17319
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 products contain CHEBI:17319 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_2028;
+      rh:compound http://rdf.rhea-db.org/Compound_2028
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C001329 (5'-Deoxyadenosine, ChEBI_CHEBI_17319)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:right[@rdf:resource='#Compound/PW_C001329']
+- id: smp0002055-edge-012
+  subject: RHEA:26362
+  predicate: produces
+  object: CHEBI:57844
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 products contain CHEBI:57844 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_2530;
+      rh:compound http://rdf.rhea-db.org/Compound_2530
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C000548 (L-Methionine, ChEBI_CHEBI_16643) on
+      bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:right[@rdf:resource='#Compound/PW_C000548']
+- id: smp0002055-edge-013
+  subject: RHEA:26362
+  predicate: produces
+  object: CHEBI:58349
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 products contain CHEBI:58349 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_5188;
+      rh:compound http://rdf.rhea-db.org/Compound_5188
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5962 (LEFT_TO_RIGHT) lists Compound/PW_C000143 (NADP, ChEBI_CHEBI_18009) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:right[@rdf:resource='#Compound/PW_C000143']
+- id: smp0002055-edge-014
+  subject: RHEA-COMP:19908
+  predicate: consumes
+  object: RHEA:26298
+  coefficient: 1
+  description: Whole protein carrier state ([ThiS sulfur-carrier protein]-C-terminal-Gly-aminoethanethioate) is retained from
+    RHEA:26298 corresponding to native Compound/Generic238 (a thiocarboxy-[ThiS-Protein]).
+  evidence:
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 substrates contain RHEA-COMP:19908 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_19908;
+      rh:compound http://rdf.rhea-db.org/Compound_19908
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5964 (2.8.1.10, LEFT_TO_RIGHT) lists Compound/Generic238 (a thiocarboxy-[ThiS-Protein])
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:left[@rdf:resource='#Compound/Generic238']
+- id: smp0002055-edge-015
+  subject: CHEBI:77846
+  predicate: consumes
+  object: RHEA:26298
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 substrates contain CHEBI:77846 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_9982;
+      rh:compound http://rdf.rhea-db.org/Compound_9982
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5964 (2.8.1.10, LEFT_TO_RIGHT) lists Compound/PW_C041634 (2-Iminoacetate, ChEBI_CHEBI_37080)
+      on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:left[@rdf:resource='#Compound/PW_C041634']
+- id: smp0002055-edge-016
+  subject: CHEBI:57792
+  predicate: consumes
+  object: RHEA:26298
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 substrates contain CHEBI:57792 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_2654;
+      rh:compound http://rdf.rhea-db.org/Compound_2654
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5964 (2.8.1.10, LEFT_TO_RIGHT) lists Compound/PW_C000944 (1-Deoxy-D-xylulose 5-phosphate,
+      ChEBI_CHEBI_57792) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:left[@rdf:resource='#Compound/PW_C000944']
+- id: smp0002055-edge-017
+  subject: RHEA:26298
+  predicate: produces
+  object: RHEA-COMP:12909
+  coefficient: 1
+  description: Whole protein carrier state ([ThiS sulfur-carrier protein]-C-terminal Gly-Gly) is retained from RHEA:26298
+    corresponding to native Compound/Generic239 (a [ThiS-Protein]).
+  evidence:
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 products contain RHEA-COMP:12909 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_12909;
+      rh:compound http://rdf.rhea-db.org/Compound_12909
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5964 (2.8.1.10, LEFT_TO_RIGHT) lists Compound/Generic239 (a [ThiS-Protein]) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:right[@rdf:resource='#Compound/Generic239']
+- id: smp0002055-edge-018
+  subject: RHEA:26298
+  predicate: produces
+  object: CHEBI:62899
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 products contain CHEBI:62899 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_6833;
+      rh:compound http://rdf.rhea-db.org/Compound_6833
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5964 (2.8.1.10, LEFT_TO_RIGHT) lists Compound/PW_C042574 (2-((2R,5Z)-2-Carboxy-4-methylthiazol-5(2H)-ylidene)ethyl
+      phosphate, ChEBI_CHEBI_62899; marked SubPathwayInput to Thiamin Diphosphate Biosynthesis SMP0002042) on bp:right with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:right[@rdf:resource='#Compound/PW_C042574']
+- id: smp0002055-edge-019
+  subject: RHEA:26298
+  predicate: produces
+  object: CHEBI:15377
+  coefficient: 2
+  evidence:
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 products contain CHEBI:15377 with coefficient 2.
+    source_locator: http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains2 http://rdf.rhea-db.org/Participant_26297_compound_1283;
+      rh:compound http://rdf.rhea-db.org/Compound_1283
+  - reference_id: PathBank:SMP0002055
+    source_assertion: Native Reactions/5964 (2.8.1.10, LEFT_TO_RIGHT) lists Compound/PW_C001420 (Water, ChEBI_CHEBI_15377)
+      on bp:right with stoichiometricCoefficient 2.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:right[@rdf:resource='#Compound/PW_C001420']
+- id: smp0002055-edge-020
+  subject: RHEA:26298
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  description: Charge-balanced Rhea reaction RHEA:26298 produces 1 H(+) (CHEBI:15378), which is omitted on bp:right of native
+    Reactions/5964 in PW002041.owl.
+  evidence:
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 products contain CHEBI:15378 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:products; http://rdf.rhea-db.org/26297_R rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_3249;
+      rh:compound http://rdf.rhea-db.org/Compound_3249
+- id: smp0002055-edge-021
+  subject: RHEA:12606
+  predicate: part_of
+  object: PathBank:SMP0002055
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: PathBank SMP0002055 includes Reactions/5963 (PathwayEnzymeReaction/22286) in bp:pathwayComponent and
+      bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayComponent[@rdf:resource='#Reactions/5963'];
+      bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22286']
+  - reference_id: UniProtKB:P77488
+    source_assertion: 'UniProt PATHWAY annotates Dxs (UniProtKB:P77488) in Cofactor biosynthesis; thiamine diphosphate biosynthesis
+      (ECO:0000269, PMIDs 9371765 and 9482846).'
+    source_locator: comments[commentType='PATHWAY'].texts
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-022
+  subject: RHEA:26362
+  predicate: part_of
+  object: PathBank:SMP0002055
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: PathBank SMP0002055 includes Reactions/5962 (PathwayEnzymeReaction/22285) in bp:pathwayComponent and
+      bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayComponent[@rdf:resource='#Reactions/5962'];
+      bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22285']
+  - reference_id: UniProtKB:P30140
+    source_assertion: 'UniProt PATHWAY annotates ThiH (UniProtKB:P30140) in Cofactor biosynthesis; thiamine diphosphate biosynthesis;
+      thiazole phosphate from 1-deoxy-D-xylulose 5-phosphate, L-cysteine and L-tyrosine: step 2/3.'
+    source_locator: comments[commentType='PATHWAY'].texts
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-023
+  subject: RHEA:26298
+  predicate: part_of
+  object: PathBank:SMP0002055
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: PathBank SMP0002055 includes Reactions/5964 (PathwayEnzymeReaction/22287) in bp:pathwayComponent and
+      bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayComponent[@rdf:resource='#Reactions/5964'];
+      bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22287']
+  - reference_id: UniProtKB:P30139
+    source_assertion: 'UniProt PATHWAY annotates ThiG (UniProtKB:P30139) in Cofactor biosynthesis; thiamine diphosphate biosynthesis;
+      thiazole phosphate from 1-deoxy-D-xylulose 5-phosphate, L-cysteine and L-tyrosine: step 3/3.'
+    source_locator: comments[commentType='PATHWAY'].texts
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-024
+  subject: PathBank:SMP0002055/ProteinComplex/3831
+  predicate: catalyzes
+  object: RHEA:12606
+  description: Homodimeric 1-deoxy-D-xylulose-5-phosphate synthase Dxs (ProteinComplex/3831) catalyzes the condensation of
+    pyruvate and D-glyceraldehyde 3-phosphate to 1-deoxy-D-xylulose 5-phosphate and CO2.
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: ReactionCatalysis/5927 links controller ProteinComplex/3831 (1-deoxyxylulose-5-phosphate synthase, containing
+      2 copies of Protein/6780 -> ProteinReference/6780 -> UniProt_P77488) to controlled Reactions/5963 with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5927']; bp:Complex[@rdf:ID='ProteinComplex/3831']/bp:component[@rdf:resource='#Protein/6780']
+  - reference_id: UniProtKB:P77488
+    source_assertion: 'Dxs catalyzes RHEA:12605; the annotated physiological direction is RHEA:12606. ECO:0000269 catalytic
+      evidence: PMIDs 9371765 and 9482846.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-025
+  subject: UniProtKB:P30140
+  predicate: catalyzes
+  object: RHEA:26362
+  description: Radical-SAM 2-iminoacetate synthase ThiH (Protein/7340) cleaves L-tyrosine to 2-iminoacetate and 4-methylphenol
+    (p-cresol); in vitro reconstitution uses NADPH, flavodoxin, and flavodoxin reductase under anaerobic conditions.
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: ReactionCatalysis/5926 links controller Protein/7340 (Dehydroglycine synthase, ProteinReference/7340
+      -> UniProt_P30140) to controlled Reactions/5962 with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5926']; bp:Protein[@rdf:ID='Protein/7340']/bp:entityReference[@rdf:resource='#ProteinReference/7340']
+  - reference_id: UniProtKB:P30140
+    source_assertion: ThiH catalyzes RHEA:26361; ECO:0000269, PMIDs 17403671 and 17969213.
+    source_locator: comments[commentType='CATALYTIC ACTIVITY']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:19923213
+    quote: ThiH is a tyrosine lyase that cleaves the Cα–Cβ bond of tyrosine
+- id: smp0002055-edge-026
+  subject: PathBank:SMP0002055/ProteinComplex/4013
+  predicate: catalyzes
+  object: RHEA:26298
+  description: Native thiazole synthase complex ProteinComplex/4013 (composed of 6 ThiG and 6 ThiH subunits) catalyzes the
+    condensation of 1-deoxy-D-xylulose 5-phosphate, 2-iminoacetate, and thiocarboxylated ThiS to form 2-[(2R,5Z)-2-carboxy-4-methylthiazol-5(2H)-ylidene]ethyl
+    phosphate.
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: ReactionCatalysis/5928 links controller ProteinComplex/4013 (thiazole synthase, containing 6 copies
+      of Protein/7286 -> UniProt_P30139 and 6 copies of Protein/7340 -> UniProt_P30140) to controlled Reactions/5964 (eCNumber
+      2.8.1.10) with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5928']; bp:Complex[@rdf:ID='ProteinComplex/4013']/bp:component
+  - reference_id: UniProtKB:P30139
+    source_assertion: ThiG is annotated with RHEA:26297, consuming ThiS thiocarboxylate, dehydroglycine, and DXP and producing
+      the (2R,5Z) thiazole tautomer; this reaction comment has no attached ECO code.
+    source_locator: comments[commentType='CATALYTIC ACTIVITY']
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:17403671
+    quote: 'The activity is shown to require four proteins isolated as heterodimers: ThiGH and ThiFS.'
+- id: smp0002055-edge-027
+  subject: UniProtKB:P77488
+  predicate: part_of
+  object: PathBank:SMP0002055/ProteinComplex/3831
+  coefficient: 2
+  description: 'Native stoichiometry: 2 subunits. Reviewed UniProtKB SUBUNIT annotation independently supports the homodimer.'
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: ProteinComplex/3831 (1-deoxyxylulose-5-phosphate synthase) contains Protein/6780 (ProteinReference/6780
+      -> UniProt_P77488) with componentStoichiometry 2.0 (#Protein/6780/Stoichiometry/2.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3831']/bp:componentStoichiometry[@rdf:resource='#Protein/6780/Stoichiometry/2.0']
+  - reference_id: UniProtKB:P77488
+    source_assertion: Homodimer; supported by the reviewed direct-experiment SUBUNIT annotation (ECO:0000269, PMID 17135236).
+    source_locator: comments[commentType='SUBUNIT']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-028
+  subject: UniProtKB:P30139
+  predicate: part_of
+  object: PathBank:SMP0002055/ProteinComplex/4013
+  coefficient: 6
+  description: 'Native stoichiometry: 6 subunits. The isolated complex comprises at least six ThiGH heterodimers in primary
+    chromatography; this is not a universal cellular stoichiometry claim.'
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: ProteinComplex/4013 (thiazole synthase) contains Protein/7286 (ProteinReference/7286 -> UniProt_P30139)
+      with componentStoichiometry 6.0 (#Protein/7286/Stoichiometry/6.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/4013']/bp:componentStoichiometry[@rdf:resource='#Protein/7286/Stoichiometry/6.0']
+  - reference_id: UniProtKB:P30139
+    source_assertion: Forms ThiGH heterodimers; ECO:0000269, PMID 12650933. The native larger complex is an assembly of these
+      heterodimeric units.
+    source_locator: comments[commentType='SUBUNIT']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:19923213
+    quote: at least six ThiGH heterodimers
+- id: smp0002055-edge-029
+  subject: UniProtKB:P30140
+  predicate: part_of
+  object: PathBank:SMP0002055/ProteinComplex/4013
+  coefficient: 6
+  description: 'Native stoichiometry: 6 subunits. The isolated complex comprises at least six ThiGH heterodimers in primary
+    chromatography; this is not a universal cellular stoichiometry claim.'
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: ProteinComplex/4013 (thiazole synthase) contains Protein/7340 (ProteinReference/7340 -> UniProt_P30140)
+      with componentStoichiometry 6.0 (#Protein/7340/Stoichiometry/6.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/4013']/bp:componentStoichiometry[@rdf:resource='#Protein/7340/Stoichiometry/6.0']
+  - reference_id: UniProtKB:P30140
+    source_assertion: Forms ThiGH heterodimers; ECO:0000269, PMID 12650933. The native larger complex is an assembly of these
+      heterodimeric units.
+    source_locator: comments[commentType='SUBUNIT']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:19923213
+    quote: at least six ThiGH heterodimers
+- id: smp0002055-edge-030
+  subject: UniProtKB:P77488
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: One Mg(2+) ion per Dxs subunit; ECO:0000269, PMID 17135236.
+  evidence:
+  - reference_id: UniProtKB:P77488
+    source_assertion: One Mg2+ per Dxs subunit; ECO:0000269, PMID 17135236.
+    source_locator: comments[commentType='COFACTOR']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-031
+  subject: UniProtKB:P77488
+  predicate: has_cofactor
+  object: CHEBI:58937
+  description: Thiamine diphosphate is a bound Dxs cofactor; ECO:0000269, PMIDs 9371765 and 17135236.
+  evidence:
+  - reference_id: UniProtKB:P77488
+    source_assertion: Thiamine diphosphate is a bound Dxs cofactor; ECO:0000269, PMIDs 9371765 and 17135236.
+    source_locator: comments[commentType='COFACTOR']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-032
+  subject: UniProtKB:P30140
+  predicate: has_cofactor
+  object: CHEBI:49883
+  description: One [4Fe-4S] cluster per ThiH subunit; ECO:0000269, PMIDs 12650933 and 17403671; three cysteine ligands plus
+    exchangeable SAM.
+  evidence:
+  - reference_id: UniProtKB:P30140
+    source_assertion: One [4Fe-4S] cluster per ThiH subunit; ECO:0000269, PMIDs 12650933 and 17403671; three cysteine ligands
+      plus exchangeable SAM.
+    source_locator: comments[commentType='COFACTOR']
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-033
+  subject: UniProtKB:P77488
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: UniProtKB:P77488
+    source_assertion: 'UniProt locates UniProtKB:P77488 in Cytoplasm (SL-0086, GO:0005737) for Escherichia coli K-12 (NCBITaxon:83333).'
+    source_locator: comments[commentType='SUBCELLULAR LOCATION'].subcellularLocations; uniProtKBCrossReferences[database='GO'][id='GO:0005737']
+    assay_taxon: NCBITaxon:83333
+- id: smp0002055-edge-034
+  subject: RHEA:12606
+  predicate: precedes
+  object: RHEA:26298
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: 'PathBank SMP0002055 orders PathwayEnzymeReaction/22286 (Reactions/5963, RHEA:12606) before PathwayEnzymeReaction/22287
+      (Reactions/5964, RHEA:26298), connected by shared intermediate Compound/PW_C000944 (1-Deoxy-D-xylulose 5-phosphate,
+      CHEBI:57792).'
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5963']/bp:right[@rdf:resource='#Compound/PW_C000944'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:left[@rdf:resource='#Compound/PW_C000944']
+- id: smp0002055-edge-035
+  subject: RHEA:26362
+  predicate: precedes
+  object: RHEA:26298
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: 'PathBank SMP0002055 orders PathwayEnzymeReaction/22285 (Reactions/5962, RHEA:26362) before PathwayEnzymeReaction/22287
+      (Reactions/5964, RHEA:26298), connected by shared intermediate Compound/PW_C041634 (2-Iminoacetate, CHEBI:77846).'
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:right[@rdf:resource='#Compound/PW_C041634'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:left[@rdf:resource='#Compound/PW_C041634']
+- id: smp0002055-edge-036
+  subject: RHEA:12606
+  predicate: provides_input_for
+  object: RHEA:26298
+  description: RHEA:12606 produces 1-deoxy-D-xylulose 5-phosphate(2-) (CHEBI:57792), which is consumed by RHEA:26298 in the
+    converging thiazole-forming reaction.
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: PathBank SMP0002055 chains Reactions/5963 (RHEA:12606) before Reactions/5964 (RHEA:26298), and Compound/PW_C000944
+      (CHEBI:57792, 1-Deoxy-D-xylulose 5-phosphate) produced on bp:right of Reactions/5963 is consumed on bp:left of Reactions/5964.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5963']/bp:right[@rdf:resource='#Compound/PW_C000944'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:left[@rdf:resource='#Compound/PW_C000944']
+  - reference_id: RHEA:12605
+    source_assertion: RHEA:12606 products contain CHEBI:57792 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/12606 rh:products; http://rdf.rhea-db.org/12605_R rh:contains1 http://rdf.rhea-db.org/Participant_12605_compound_2654;
+      rh:compound http://rdf.rhea-db.org/Compound_2654
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 substrates contain CHEBI:57792 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_2654;
+      rh:compound http://rdf.rhea-db.org/Compound_2654
+- id: smp0002055-edge-037
+  subject: RHEA:26362
+  predicate: provides_input_for
+  object: RHEA:26298
+  description: RHEA:26362 produces dehydroglycine zwitterion (2-iminoacetate, CHEBI:77846), which is consumed by RHEA:26298
+    in the converging thiazole-forming reaction.
+  evidence:
+  - reference_id: PathBank:SMP0002055
+    source_assertion: PathBank SMP0002055 chains Reactions/5962 (RHEA:26362) before Reactions/5964 (RHEA:26298), and Compound/PW_C041634
+      (CHEBI:77846, 2-Iminoacetate) produced on bp:right of Reactions/5962 is consumed on bp:left of Reactions/5964.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002055']/bp:pathwayOrder; bp:BiochemicalReaction[@rdf:ID='Reactions/5962']/bp:right[@rdf:resource='#Compound/PW_C041634'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5964']/bp:left[@rdf:resource='#Compound/PW_C041634']
+  - reference_id: RHEA:26361
+    source_assertion: RHEA:26362 products contain CHEBI:77846 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26362 rh:products; http://rdf.rhea-db.org/26361_R rh:contains1 http://rdf.rhea-db.org/Participant_26361_compound_9982;
+      rh:compound http://rdf.rhea-db.org/Compound_9982
+  - reference_id: RHEA:26297
+    source_assertion: RHEA:26298 substrates contain CHEBI:77846 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/26298 rh:substrates; http://rdf.rhea-db.org/26297_L rh:contains1 http://rdf.rhea-db.org/Participant_26297_compound_9982;
+      rh:compound http://rdf.rhea-db.org/Compound_9982
+source_mappings:
+- subject_id: UniProt:P30139
+  subject_label: Thiazole synthase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P30139
+  object_label: Thiazole synthase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002055
+  source_element_id: ProteinReference/7286
+- subject_id: UniProt:P30140
+  subject_label: Dehydroglycine synthase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P30140
+  object_label: 2-iminoacetate synthase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002055
+  source_element_id: ProteinReference/7340
+- subject_id: UniProt:P77488
+  subject_label: 1-deoxy-D-xylulose-5-phosphate synthase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P77488
+  object_label: 1-deoxy-D-xylulose-5-phosphate synthase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002055
+  source_element_id: ProteinReference/6780
+references:
+- id: PathBank:SMP0002055
+  title: PathBank SMP0002055 Thiazole Biosynthesis I (Escherichia coli)
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip#PW002041.owl
+  source_version: 2019-08-16 frozen primary BioPAX archive (PW002041.owl)
+  source_sha256: 7f370910f43fcc0fc61ed494e6e69f19e91b3b7aefcb27454730494ff46d7e5e
+- id: RHEA:12605
+  title: Rhea reaction family 12605
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:26361
+  title: Rhea reaction family 26361
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:26297
+  title: Rhea reaction family 26297
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea release 142, 2026-09-02; SHA-256 covers the complete compressed official RDF artifact
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P30139
+  title: Thiazole synthase
+  url: https://rest.uniprot.org/uniprotkb/P30139.json
+  source_version: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 185; actual body digest
+  source_sha256: 00c096f44e433cd321cb938ea608ea6cdf615a0399e2965ca8ab27f838987c7c
+- id: UniProtKB:P30140
+  title: 2-iminoacetate synthase
+  url: https://rest.uniprot.org/uniprotkb/P30140.json
+  source_version: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 174; actual body digest
+  source_sha256: 873b14d2454f2ab3bd4a0af773fe8b4606904e335d09bf65ca0cea9f31c6d036
+- id: UniProtKB:P77488
+  title: 1-deoxy-D-xylulose-5-phosphate synthase
+  url: https://rest.uniprot.org/uniprotkb/P77488.json
+  source_version: Reviewed full UniProt JSON retrieved 2026-10-11; entry version 199; actual body digest
+  source_sha256: 5628fe96cf93c95aaa5241f0733dd0fdb541ef3d93e92cac805397ba64e5f848
+- id: PMID:19923213
+  title: 'Catalytic Activity of the Anaerobic Tyrosine Lyase Required for Thiamine Biosynthesis in Escherichia coli*'
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2820752/
+  source_version: PMC full article HTML retrieved 2026-10-11; actual HTML digest
+  source_sha256: 25915620054c357692ee48396ac5dff4888f149b34fa23cf46e1da1df3a474a1
+- id: PMID:17403671
+  title: 'Thiazole synthase from Escherichia coli: an investigation of the substrates and purified proteins required for activity
+    in vitro.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:17403671%20AND%20SRC:MED&format=xml&resultType=core
+  source_version: Europe PMC indexed primary abstract and metadata retrieved 2026-10-11; not a full-text digest
+  source_sha256: 966bb9c9b2b88691c59868c8efe42ae0544a3b286ab80296a36c0400fd3dc103
