@@ -1,17 +1,18 @@
 id: MetaCyc:PWY-7971
 label: adenosylcobinamide-GDP salvage from cobinamide I
 description: 'The Escherichia coli K-12 activation subpathway converts cob(II)inamide to adenosylcobinamide-GDP.
-  It retains all five native reactions: binding to corrinoid adenosyltransferase, reduction of the bound corrinoid,
-  adenosyl transfer and release, ATP-dependent phosphorylation, and guanylyl transfer. The reduction can occur
-  spontaneously; the complete generic flavoprotein donor and bound-enzyme states do not identify a specific
-  E. coli electron donor or oligomer. BtuR and CobU functional assignments are supported by native annotation,
-  similarity and genetic evidence, not purified E. coli reconstitution of every step. Two native PathBank CobU
-  role/location projections each contain two P0AE76 subunits; they are not asserted to be distinct enzyme species
-  or formally identical objects. The homodimer and activities retain annotation/inference limits, without claiming
-  monomer sufficiency. BtuR mutants retain anaerobic cobinamide utilization in the tested conditions; no universal
-  BtuR requirement is asserted. This record uses Rhea charge forms and stops at adenosylcobinamide-GDP, before
-  nucleotide-loop assembly. It does not include the net activation reaction as a second parallel conversion,
-  corrin-ring synthesis, transport or complete cobalamin salvage.'
+  It retains all five native reactions: binding to corrinoid adenosyltransferase, reduction of the bound
+  corrinoid, adenosyl transfer and release, ATP-dependent phosphorylation, and guanylyl transfer. The
+  reduction can occur spontaneously; the complete generic flavoprotein donor and bound-enzyme states do
+  not identify a specific E. coli electron donor or oligomer. BtuR and CobU functional assignments are
+  supported by native annotation, similarity and genetic evidence, not purified E. coli reconstitution
+  of every step. Two native PathBank CobU role/location projections each contain two P0AE76 subunits;
+  they are not asserted to be distinct enzyme species or formally identical objects. The homodimer and
+  activities retain annotation/inference limits, without claiming monomer sufficiency. BtuR mutants retain
+  anaerobic cobinamide utilization in the tested conditions; no universal BtuR requirement is asserted.
+  This record uses Rhea charge forms and stops at adenosylcobinamide-GDP, before nucleotide-loop assembly.
+  It does not include the net activation reaction as a second parallel conversion, corrin-ring synthesis,
+  transport or complete cobalamin salvage.'
 pathway_type: corrinoid-salvage-and-activation
 taxa:
 - id: NCBITaxon:83333
@@ -83,13 +84,13 @@ reactions:
   direction: left_to_right
   category: molecular_activity
 - id: RHEA:57693
-  label: 2 cob(II)inamide-[corrinoid adenosyltransferase] + reduced [electron-transfer flavoprotein] => 2 cob(I)inamide-[corrinoid
-    adenosyltransferase] + oxidized [electron-transfer flavoprotein] + 3 H(+)
+  label: 2 cob(II)inamide-[corrinoid adenosyltransferase] + reduced [electron-transfer flavoprotein] =>
+    2 cob(I)inamide-[corrinoid adenosyltransferase] + oxidized [electron-transfer flavoprotein] + 3 H(+)
   direction: left_to_right
   category: molecular_activity
 - id: RHEA:57697
-  label: cob(I)inamide-[corrinoid adenosyltransferase] + ATP => apo-[corrinoid adenosyltransferase] + adenosylcob(III)inamide
-    + triphosphate
+  label: cob(I)inamide-[corrinoid adenosyltransferase] + ATP => apo-[corrinoid adenosyltransferase] +
+    adenosylcob(III)inamide + triphosphate
   direction: left_to_right
   category: molecular_activity
 - id: RHEA:15770
@@ -105,6 +106,7 @@ mechanistic_edges:
   subject: CHEBI:141013
   predicate: consumes
   object: RHEA:57689
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:57688
@@ -115,109 +117,119 @@ mechanistic_edges:
   subject: RHEA-COMP:14743
   predicate: consumes
   object: RHEA:57689
-  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence.
+  coefficient: 1
+  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence.
   evidence:
   - reference_id: RHEA:57688
-    source_assertion: RHEA:57689 substrates contain GENERIC:14743 with coefficient 1; the compound is apo-[corrinoid
-      adenosyltransferase].
+    source_assertion: RHEA:57689 substrates contain GENERIC:14743 with coefficient 1; the compound is
+      apo-[corrinoid adenosyltransferase].
     source_locator: http://rdf.rhea-db.org/57689 rh:substrates; http://rdf.rhea-db.org/57688_L rh:contains1
       http://rdf.rhea-db.org/Participant_57688_compound_14743; rh:compound/rh:accession
 - id: activation-edge-003
   subject: RHEA:57689
   predicate: produces
   object: RHEA-COMP:14966
-  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence.
+  coefficient: 1
+  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence.
   evidence:
   - reference_id: RHEA:57688
     source_assertion: RHEA:57689 products contain GENERIC:14966 with coefficient 1; the compound is cob(II)inamide-[corrinoid
       adenosyltransferase].
-    source_locator: http://rdf.rhea-db.org/57689 rh:products; http://rdf.rhea-db.org/57688_R rh:contains1 http://rdf.rhea-db.org/Participant_57688_compound_14966;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57689 rh:products; http://rdf.rhea-db.org/57688_R rh:contains1
+      http://rdf.rhea-db.org/Participant_57688_compound_14966; rh:compound/rh:accession
 - id: activation-edge-004
   subject: RHEA-COMP:14966
   predicate: consumes
   object: RHEA:57693
-  description: Coefficient 2 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur spontaneously;
-    no separate reductase or specific physiological electron donor is assigned.
+  coefficient: 2
+  description: Coefficient 2 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur
+    spontaneously; no separate reductase or specific physiological electron donor is assigned.
   evidence:
   - reference_id: RHEA:57692
-    source_assertion: RHEA:57693 substrates contain GENERIC:14966 with coefficient 2; the compound is cob(II)inamide-[corrinoid
-      adenosyltransferase].
+    source_assertion: RHEA:57693 substrates contain GENERIC:14966 with coefficient 2; the compound is
+      cob(II)inamide-[corrinoid adenosyltransferase].
     source_locator: http://rdf.rhea-db.org/57693 rh:substrates; http://rdf.rhea-db.org/57692_L rh:contains2
       http://rdf.rhea-db.org/Participant_57692_compound_14966; rh:compound/rh:accession
 - id: activation-edge-005
   subject: RHEA-COMP:10686
   predicate: consumes
   object: RHEA:57693
-  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur spontaneously;
-    no separate reductase or specific physiological electron donor is assigned.
+  coefficient: 1
+  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur
+    spontaneously; no separate reductase or specific physiological electron donor is assigned.
   evidence:
   - reference_id: RHEA:57692
-    source_assertion: RHEA:57693 substrates contain GENERIC:10686 with coefficient 1; the compound is reduced
-      [electron-transfer flavoprotein].
+    source_assertion: RHEA:57693 substrates contain GENERIC:10686 with coefficient 1; the compound is
+      reduced [electron-transfer flavoprotein].
     source_locator: http://rdf.rhea-db.org/57693 rh:substrates; http://rdf.rhea-db.org/57692_L rh:contains1
       http://rdf.rhea-db.org/Participant_57692_compound_10686; rh:compound/rh:accession
 - id: activation-edge-006
   subject: RHEA:57693
   predicate: produces
   object: RHEA-COMP:16964
-  description: Coefficient 2 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur spontaneously;
-    no separate reductase or specific physiological electron donor is assigned.
+  coefficient: 2
+  description: Coefficient 2 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur
+    spontaneously; no separate reductase or specific physiological electron donor is assigned.
   evidence:
   - reference_id: RHEA:57692
     source_assertion: RHEA:57693 products contain GENERIC:16964 with coefficient 2; the compound is cob(I)inamide-[corrinoid
       adenosyltransferase].
-    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains2 http://rdf.rhea-db.org/Participant_57692_compound_16964;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains2
+      http://rdf.rhea-db.org/Participant_57692_compound_16964; rh:compound/rh:accession
 - id: activation-edge-007
   subject: RHEA:57693
   predicate: produces
   object: RHEA-COMP:10685
-  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur spontaneously;
-    no separate reductase or specific physiological electron donor is assigned.
+  coefficient: 1
+  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence. The bound-corrinoid reduction can occur
+    spontaneously; no separate reductase or specific physiological electron donor is assigned.
   evidence:
   - reference_id: RHEA:57692
     source_assertion: RHEA:57693 products contain GENERIC:10685 with coefficient 1; the compound is oxidized
       [electron-transfer flavoprotein].
-    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains1 http://rdf.rhea-db.org/Participant_57692_compound_10685;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains1
+      http://rdf.rhea-db.org/Participant_57692_compound_10685; rh:compound/rh:accession
 - id: activation-edge-008
   subject: RHEA:57693
   predicate: produces
   object: CHEBI:15378
+  coefficient: 3
   description: Coefficient 3 in the selected Rhea direction. The bound-corrinoid reduction can occur spontaneously;
     no separate reductase or specific physiological electron donor is assigned.
   evidence:
   - reference_id: RHEA:57692
     source_assertion: RHEA:57693 products contain CHEBI:15378 with coefficient 3; the compound is H(+).
-    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains3 http://rdf.rhea-db.org/Participant_57692_compound_3249;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains3
+      http://rdf.rhea-db.org/Participant_57692_compound_3249; rh:compound/rh:accession
   - reference_id: MetaCyc:RXN-19338
     source_assertion: RXN-19338 is spontaneous and produces 2 PROTON, whereas the selected Rhea142 reaction
-      produces 3 H(+). The graph consistently uses the Rhea charge convention, not the old native proton coefficient.
+      produces 3 H(+). The graph consistently uses the Rhea charge convention, not the old native proton
+      coefficient.
     source_locator: Reaction[@frameid='RXN-19338']/spontaneous; right[Compound/@frameid='PROTON']/coefficient
 - id: activation-edge-009
   subject: RHEA-COMP:16964
   predicate: consumes
   object: RHEA:57697
-  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence.
+  coefficient: 1
+  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence.
   evidence:
   - reference_id: RHEA:57696
-    source_assertion: RHEA:57697 substrates contain GENERIC:16964 with coefficient 1; the compound is cob(I)inamide-[corrinoid
-      adenosyltransferase].
+    source_assertion: RHEA:57697 substrates contain GENERIC:16964 with coefficient 1; the compound is
+      cob(I)inamide-[corrinoid adenosyltransferase].
     source_locator: http://rdf.rhea-db.org/57697 rh:substrates; http://rdf.rhea-db.org/57696_L rh:contains1
       http://rdf.rhea-db.org/Participant_57696_compound_16964; rh:compound/rh:accession
 - id: activation-edge-010
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:57697
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:57696
@@ -228,38 +240,42 @@ mechanistic_edges:
   subject: RHEA:57697
   predicate: produces
   object: RHEA-COMP:14743
-  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not its
-    isolated reactive part or an identified E. coli sequence.
+  coefficient: 1
+  description: Coefficient 1 in the selected Rhea direction. This is a whole generic protein state, not
+    its isolated reactive part or an identified E. coli sequence.
   evidence:
   - reference_id: RHEA:57696
     source_assertion: RHEA:57697 products contain GENERIC:14743 with coefficient 1; the compound is apo-[corrinoid
       adenosyltransferase].
-    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1 http://rdf.rhea-db.org/Participant_57696_compound_14743;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1
+      http://rdf.rhea-db.org/Participant_57696_compound_14743; rh:compound/rh:accession
 - id: activation-edge-012
   subject: RHEA:57697
   predicate: produces
   object: CHEBI:2480
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:57696
     source_assertion: RHEA:57697 products contain CHEBI:2480 with coefficient 1; the compound is adenosylcob(III)inamide.
-    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1 http://rdf.rhea-db.org/Participant_57696_compound_4575;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1
+      http://rdf.rhea-db.org/Participant_57696_compound_4575; rh:compound/rh:accession
 - id: activation-edge-013
   subject: RHEA:57697
   predicate: produces
   object: CHEBI:18036
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:57696
     source_assertion: RHEA:57697 products contain CHEBI:18036 with coefficient 1; the compound is triphosphate.
-    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1 http://rdf.rhea-db.org/Participant_57696_compound_5288;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1
+      http://rdf.rhea-db.org/Participant_57696_compound_5288; rh:compound/rh:accession
 - id: activation-edge-014
   subject: CHEBI:2480
   predicate: consumes
   object: RHEA:15770
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:15769
@@ -270,6 +286,7 @@ mechanistic_edges:
   subject: CHEBI:30616
   predicate: consumes
   object: RHEA:15770
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:15769
@@ -280,37 +297,41 @@ mechanistic_edges:
   subject: RHEA:15770
   predicate: produces
   object: CHEBI:58502
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:15769
     source_assertion: RHEA:15770 products contain CHEBI:58502 with coefficient 1; the compound is adenosylcob(III)inamide
       phosphate.
-    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1 http://rdf.rhea-db.org/Participant_15769_compound_3151;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15769_compound_3151; rh:compound/rh:accession
 - id: activation-edge-017
   subject: RHEA:15770
   predicate: produces
   object: CHEBI:456216
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:15769
     source_assertion: RHEA:15770 products contain CHEBI:456216 with coefficient 1; the compound is ADP.
-    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1 http://rdf.rhea-db.org/Participant_15769_compound_2710;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15769_compound_2710; rh:compound/rh:accession
 - id: activation-edge-018
   subject: RHEA:15770
   predicate: produces
   object: CHEBI:15378
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:15769
     source_assertion: RHEA:15770 products contain CHEBI:15378 with coefficient 1; the compound is H(+).
-    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1 http://rdf.rhea-db.org/Participant_15769_compound_3249;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15769_compound_3249; rh:compound/rh:accession
 - id: activation-edge-019
   subject: CHEBI:58502
   predicate: consumes
   object: RHEA:22713
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:22712
@@ -322,6 +343,7 @@ mechanistic_edges:
   subject: CHEBI:37565
   predicate: consumes
   object: RHEA:22713
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:22712
@@ -332,6 +354,7 @@ mechanistic_edges:
   subject: CHEBI:15378
   predicate: consumes
   object: RHEA:22713
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:22712
@@ -342,36 +365,39 @@ mechanistic_edges:
   subject: RHEA:22713
   predicate: produces
   object: CHEBI:60487
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:22712
     source_assertion: RHEA:22713 products contain CHEBI:60487 with coefficient 1; the compound is adenosylcob(III)inamide-GDP.
-    source_locator: http://rdf.rhea-db.org/22713 rh:products; http://rdf.rhea-db.org/22712_R rh:contains1 http://rdf.rhea-db.org/Participant_22712_compound_6530;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/22713 rh:products; http://rdf.rhea-db.org/22712_R rh:contains1
+      http://rdf.rhea-db.org/Participant_22712_compound_6530; rh:compound/rh:accession
 - id: activation-edge-023
   subject: RHEA:22713
   predicate: produces
   object: CHEBI:33019
+  coefficient: 1
   description: Coefficient 1 in the selected Rhea direction.
   evidence:
   - reference_id: RHEA:22712
     source_assertion: RHEA:22713 products contain CHEBI:33019 with coefficient 1; the compound is diphosphate.
-    source_locator: http://rdf.rhea-db.org/22713 rh:products; http://rdf.rhea-db.org/22712_R rh:contains1 http://rdf.rhea-db.org/Participant_22712_compound_2106;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/22713 rh:products; http://rdf.rhea-db.org/22712_R rh:contains1
+      http://rdf.rhea-db.org/Participant_22712_compound_2106; rh:compound/rh:accession
 - id: activation-edge-024
   subject: UniProtKB:P0A9H5
   predicate: enables
   object: RHEA:57697
   description: BtuR has the annotated cobinamide adenosyltransferase role. Assignment to the adenosyl-transfer
     component follows the native composite decomposition and matching Rhea chemistry; it is not a purified
-    E. coli component assay or a claim that a monomer is sufficient. K-12 genetics supports this role, with
-    anaerobic bypass; the feeding experiment did not isolate the charged component reaction.
+    E. coli component assay or a claim that a monomer is sufficient. K-12 genetics supports this role,
+    with anaerobic bypass; the feeding experiment did not isolate the charged component reaction.
   evidence:
   - reference_id: UniProtKB:P0A9H5
-    source_assertion: The ECOLI protein unifies with P0A9H5 and catalyzes BTUR2-RXN through BTUR2-ENZRXN. Its
-      comment bases the cobinamide assignment on sequence similarity and heterologous complementation.
+    source_assertion: The ECOLI protein unifies with P0A9H5 and catalyzes BTUR2-RXN through BTUR2-ENZRXN.
+      Its comment bases the cobinamide assignment on sequence similarity and heterologous complementation.
     source_locator: Protein[@frameid='COBALADENOSYLTRANS-MONOMER']/dblink[dblink-db='UNIPROT']; catalyzes/Enzymatic-Reaction[@frameid='BTUR2-ENZRXN'];
       comment
+    assay_taxon: NCBITaxon:83333
   - reference_id: MetaCyc:BTUR2-RXN
     source_assertion: The cobinamide adenosyltransferase composite contains RXN-19342, RXN-19338 and RXN-19343
       and unifies with RHEA:14726. The selected component RXN-19343 performs adenosyl transfer.
@@ -385,9 +411,10 @@ mechanistic_edges:
       citing PMID:7916712. This is inferred function, not a direct E. coli enzyme assay.
     source_locator: https://pathway.yeastgenome.org/getxml?ECOLI:BTUR2-ENZRXN; Enzymatic-Reaction/evidence;
       enzyme; reaction
+    assay_taxon: NCBITaxon:83333
   - reference_id: PMID:7592411
-    source_assertion: K-12 W3110 DNA supplied cob genes by complementation. Tables 2 and 3 and the btuR results
-      distinguish aerobic cobinamide dependence from anaerobic utilization by btuR mutants.
+    source_assertion: K-12 W3110 DNA supplied cob genes by complementation. Tables 2 and 3 and the btuR
+      results distinguish aerobic cobinamide dependence from anaerobic utilization by btuR mutants.
     source_locator: Full primary PDF pp. 6373, 6375-6376; Cloning the E. coli cob genes by complementation;
       Tables 2/3; btuR results
   - reference_id: PMID:7592411
@@ -399,12 +426,12 @@ mechanistic_edges:
   object: RHEA:15770
   description: This source-defined CobU homodimer projection carries the indicated activity. Its two P0AE76
     subunits and reaction control are explicit in PathBank; reviewed catalytic assignment is by similarity
-    to Q05599. The two native projections are not asserted to be different enzyme species or joined by a sameAs
-    assertion.
+    to Q05599. The two native projections are not asserted to be different enzyme species or joined by
+    a sameAs assertion.
   evidence:
   - reference_id: PathBank:SMP0001898
-    source_assertion: ReactionCatalysis/5113 assigns ProteinComplex/3868 as controller of Reactions/5140; its
-      left-to-right chemical equation is the ATP-dependent kinase conversion.
+    source_assertion: ReactionCatalysis/5113 assigns ProteinComplex/3868 as controller of Reactions/5140;
+      its left-to-right chemical equation is the ATP-dependent kinase conversion.
     source_locator: 'PW001884.owl#ReactionCatalysis/5113/bp:controller; bp:controlled; #Reactions/5140/bp:left;
       bp:right; bp:name; bp:conversionDirection'
   - reference_id: UniProtKB:P0AE76
@@ -412,20 +439,22 @@ mechanistic_edges:
       from UniProtKB:Q05599; the SUBUNIT comment says homodimer by similarity.
     source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[reactionCrossReferences.id="RHEA:15769"];
       evidences; comments[commentType="SUBUNIT"]
+    eco_code: ECO:0000250
+    assay_taxon: NCBITaxon:83333
   - reference_id: RHEA:15769
-    source_assertion: RHEA:15769 lists RHEA:15770 as a directional reaction; its substrates and products select
-      the forward salvage direction.
-    source_locator: http://rdf.rhea-db.org/15769 rh:directionalReaction; http://rdf.rhea-db.org/15770 rh:substrates;
-      rh:products
+    source_assertion: RHEA:15769 lists RHEA:15770 as a directional reaction; its substrates and products
+      select the forward salvage direction.
+    source_locator: http://rdf.rhea-db.org/15769 rh:directionalReaction; http://rdf.rhea-db.org/15770
+      rh:substrates; rh:products
 - id: activation-edge-026
   subject: PathBank:SMP0001898/ProteinComplex/3869_Cytosol
   predicate: catalyzes
   object: RHEA:22713
   description: This source-defined CobU homodimer projection carries the indicated activity. Its two P0AE76
     subunits and reaction control are explicit in PathBank; reviewed catalytic assignment is by similarity
-    to Q05599. The two native projections are not asserted to be different enzyme species or joined by a sameAs
-    assertion. Native Reactions/5141 has a copied kinase EC/display label; its chemical sides and current UniProt/Rhea
-    identify guanylyl transfer instead.
+    to Q05599. The two native projections are not asserted to be different enzyme species or joined by
+    a sameAs assertion. Native Reactions/5141 has a copied kinase EC/display label; its chemical sides
+    and current UniProt/Rhea identify guanylyl transfer instead.
   evidence:
   - reference_id: PathBank:SMP0001898
     source_assertion: ReactionCatalysis/5114 assigns ProteinComplex/3869_Cytosol as controller of Reactions/5141;
@@ -437,108 +466,111 @@ mechanistic_edges:
       from UniProtKB:Q05599; the SUBUNIT comment says homodimer by similarity.
     source_locator: comments[commentType="CATALYTIC ACTIVITY"].reaction[reactionCrossReferences.id="RHEA:22712"];
       evidences; comments[commentType="SUBUNIT"]
+    eco_code: ECO:0000250
+    assay_taxon: NCBITaxon:83333
   - reference_id: RHEA:22712
-    source_assertion: RHEA:22712 lists RHEA:22713 as a directional reaction; its substrates and products select
-      the forward salvage direction.
-    source_locator: http://rdf.rhea-db.org/22712 rh:directionalReaction; http://rdf.rhea-db.org/22713 rh:substrates;
-      rh:products
+    source_assertion: RHEA:22712 lists RHEA:22713 as a directional reaction; its substrates and products
+      select the forward salvage direction.
+    source_locator: http://rdf.rhea-db.org/22712 rh:directionalReaction; http://rdf.rhea-db.org/22713
+      rh:substrates; rh:products
 - id: activation-edge-027
   subject: RHEA:57689
   predicate: part_of
   object: MetaCyc:PWY-7971
-  description: This is one of the five reactions of the native activation subpathway. Native and Rhea component
-    identities are reconciled without adding the composite net reaction. K-12 scope combines native MG1655
-    annotation with W3110-derived genetics, not a claim of primary testing in every substrain.
+  description: This is one of the five reactions of the native activation subpathway. Native and Rhea
+    component identities are reconciled without adding the composite net reaction. K-12 scope combines
+    native MG1655 annotation with W3110-derived genetics, not a claim of primary testing in every substrain.
   evidence:
   - reference_id: MetaCyc:PWY-7971
     source_assertion: PWY-7971 explicitly lists RXN-19342 and selects its left-to-right direction.
     source_locator: Pathway[@frameid="PWY-7971"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-19342"]
   - reference_id: RHEA:57688
-    source_assertion: RHEA:57689 cross-references MetaCyc RXN-19342; its master RHEA:57688 lists this directional
-      reaction.
+    source_assertion: RHEA:57689 cross-references MetaCyc RXN-19342; its master RHEA:57688 lists this
+      directional reaction.
     source_locator: http://rdf.rhea-db.org/57689 rdfs:seeAlso http://identifiers.org/biocyc/METACYC:RXN-19342;
       http://rdf.rhea-db.org/57688 rh:directionalReaction
   - reference_id: MetaCyc:PWY-7971
-    source_assertion: PWY-7971 includes Escherichia coli K-12 MG1655 and experimental mutant-phenotype evidence
-      citing PMID:7592411; this source also contains a Salmonella scope not represented here.
+    source_assertion: PWY-7971 includes Escherichia coli K-12 MG1655 and experimental mutant-phenotype
+      evidence citing PMID:7592411; this source also contains a Salmonella scope not represented here.
     source_locator: Pathway[@frameid='PWY-7971']/species; evidence
 - id: activation-edge-028
   subject: RHEA:57693
   predicate: part_of
   object: MetaCyc:PWY-7971
-  description: This is one of the five reactions of the native activation subpathway. Native and Rhea component
-    identities are reconciled without adding the composite net reaction.
+  description: This is one of the five reactions of the native activation subpathway. Native and Rhea
+    component identities are reconciled without adding the composite net reaction.
   evidence:
   - reference_id: MetaCyc:PWY-7971
     source_assertion: PWY-7971 explicitly lists RXN-19338 and selects its left-to-right direction.
     source_locator: Pathway[@frameid="PWY-7971"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-19338"]
   - reference_id: MetaCyc:RXN-19338
     source_assertion: RXN-19338 reduces two bound cob(II)inamide states (CPD-20906) to bound cob(I)inamide
-      (CPD-20907), with reduced/oxidized flavoproteins. This is the selected chemical correspondence, with
-      the proton coefficient difference retained.
+      (CPD-20907), with reduced/oxidized flavoproteins. This is the selected chemical correspondence,
+      with the proton coefficient difference retained.
     source_locator: Reaction[@frameid='RXN-19338']/left; right; spontaneous
   - reference_id: RHEA:57692
-    source_assertion: RHEA:57692 lists directional RHEA:57693 and the same bound-corrinoid reduction with whole
-      reduced/oxidized flavoproteins; Rhea uses coefficient 3 for H(+). No native cross-reference is claimed
-      for this component.
+    source_assertion: RHEA:57692 lists directional RHEA:57693 and the same bound-corrinoid reduction with
+      whole reduced/oxidized flavoproteins; Rhea uses coefficient 3 for H(+). No native cross-reference
+      is claimed for this component.
     source_locator: http://rdf.rhea-db.org/57692 rh:directionalReaction; rh:equation; http://rdf.rhea-db.org/57692_R
       rh:contains3
 - id: activation-edge-029
   subject: RHEA:57697
   predicate: part_of
   object: MetaCyc:PWY-7971
-  description: This is one of the five reactions of the native activation subpathway. Native and Rhea component
-    identities are reconciled without adding the composite net reaction.
+  description: This is one of the five reactions of the native activation subpathway. Native and Rhea
+    component identities are reconciled without adding the composite net reaction.
   evidence:
   - reference_id: MetaCyc:PWY-7971
     source_assertion: PWY-7971 explicitly lists RXN-19343 and selects its left-to-right direction.
     source_locator: Pathway[@frameid="PWY-7971"]/reaction-list; reaction-layout[Reaction/@frameid="RXN-19343"]
   - reference_id: RHEA:57696
-    source_assertion: RHEA:57697 cross-references MetaCyc RXN-19343; its master RHEA:57696 lists this directional
-      reaction.
+    source_assertion: RHEA:57697 cross-references MetaCyc RXN-19343; its master RHEA:57696 lists this
+      directional reaction.
     source_locator: http://rdf.rhea-db.org/57697 rdfs:seeAlso http://identifiers.org/biocyc/METACYC:RXN-19343;
       http://rdf.rhea-db.org/57696 rh:directionalReaction
 - id: activation-edge-030
   subject: RHEA:15770
   predicate: part_of
   object: MetaCyc:PWY-7971
-  description: This is one of the five reactions of the native activation subpathway. Native and Rhea component
-    identities are reconciled without adding the composite net reaction.
+  description: This is one of the five reactions of the native activation subpathway. Native and Rhea
+    component identities are reconciled without adding the composite net reaction.
   evidence:
   - reference_id: MetaCyc:PWY-7971
     source_assertion: PWY-7971 explicitly lists COBINAMIDEKIN-RXN and selects its left-to-right direction.
     source_locator: Pathway[@frameid="PWY-7971"]/reaction-list; reaction-layout[Reaction/@frameid="COBINAMIDEKIN-RXN"]
   - reference_id: RHEA:15769
-    source_assertion: RHEA:15770 cross-references MetaCyc COBINAMIDEKIN-RXN; its master RHEA:15769 lists this
-      directional reaction.
+    source_assertion: RHEA:15770 cross-references MetaCyc COBINAMIDEKIN-RXN; its master RHEA:15769 lists
+      this directional reaction.
     source_locator: http://rdf.rhea-db.org/15770 rdfs:seeAlso http://identifiers.org/biocyc/METACYC:COBINAMIDEKIN-RXN;
       http://rdf.rhea-db.org/15769 rh:directionalReaction
 - id: activation-edge-031
   subject: RHEA:22713
   predicate: part_of
   object: MetaCyc:PWY-7971
-  description: This is one of the five reactions of the native activation subpathway. Native and Rhea component
-    identities are reconciled without adding the composite net reaction.
+  description: This is one of the five reactions of the native activation subpathway. Native and Rhea
+    component identities are reconciled without adding the composite net reaction.
   evidence:
   - reference_id: MetaCyc:PWY-7971
-    source_assertion: PWY-7971 explicitly lists COBINPGUANYLYLTRANS-RXN and selects its left-to-right direction.
+    source_assertion: PWY-7971 explicitly lists COBINPGUANYLYLTRANS-RXN and selects its left-to-right
+      direction.
     source_locator: Pathway[@frameid="PWY-7971"]/reaction-list; reaction-layout[Reaction/@frameid="COBINPGUANYLYLTRANS-RXN"]
   - reference_id: RHEA:22712
-    source_assertion: RHEA:22713 cross-references MetaCyc COBINPGUANYLYLTRANS-RXN; its master RHEA:22712 lists
-      this directional reaction.
+    source_assertion: RHEA:22713 cross-references MetaCyc COBINPGUANYLYLTRANS-RXN; its master RHEA:22712
+      lists this directional reaction.
     source_locator: http://rdf.rhea-db.org/22713 rdfs:seeAlso http://identifiers.org/biocyc/METACYC:COBINPGUANYLYLTRANS-RXN;
       http://rdf.rhea-db.org/22712 rh:directionalReaction
 - id: activation-edge-032
   subject: RHEA:57689
   predicate: provides_input_for
   object: RHEA:57693
-  description: The reactions share this exact chemical or whole bound-protein state. Different equation scaling
-    is retained; this edge does not assert physical channeling or a protein complex.
+  description: The reactions share this exact chemical or whole bound-protein state. Different equation
+    scaling is retained; this edge does not assert physical channeling or a protein complex.
   evidence:
   - reference_id: RHEA:57688
     source_assertion: RHEA:57689 produces RHEA-COMP:14966 with coefficient 1.
-    source_locator: http://rdf.rhea-db.org/57689 rh:products; http://rdf.rhea-db.org/57688_R rh:contains1 http://rdf.rhea-db.org/Participant_57688_compound_14966;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57689 rh:products; http://rdf.rhea-db.org/57688_R rh:contains1
+      http://rdf.rhea-db.org/Participant_57688_compound_14966; rh:compound/rh:accession
   - reference_id: RHEA:57692
     source_assertion: RHEA:57693 consumes RHEA-COMP:14966 with coefficient 2.
     source_locator: http://rdf.rhea-db.org/57693 rh:substrates; http://rdf.rhea-db.org/57692_L rh:contains2
@@ -547,13 +579,13 @@ mechanistic_edges:
   subject: RHEA:57693
   predicate: provides_input_for
   object: RHEA:57697
-  description: The reactions share this exact chemical or whole bound-protein state. Different equation scaling
-    is retained; this edge does not assert physical channeling or a protein complex.
+  description: The reactions share this exact chemical or whole bound-protein state. Different equation
+    scaling is retained; this edge does not assert physical channeling or a protein complex.
   evidence:
   - reference_id: RHEA:57692
     source_assertion: RHEA:57693 produces RHEA-COMP:16964 with coefficient 2.
-    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains2 http://rdf.rhea-db.org/Participant_57692_compound_16964;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57693 rh:products; http://rdf.rhea-db.org/57692_R rh:contains2
+      http://rdf.rhea-db.org/Participant_57692_compound_16964; rh:compound/rh:accession
   - reference_id: RHEA:57696
     source_assertion: RHEA:57697 consumes RHEA-COMP:16964 with coefficient 1.
     source_locator: http://rdf.rhea-db.org/57697 rh:substrates; http://rdf.rhea-db.org/57696_L rh:contains1
@@ -562,13 +594,13 @@ mechanistic_edges:
   subject: RHEA:57697
   predicate: provides_input_for
   object: RHEA:15770
-  description: The reactions share this exact chemical or whole bound-protein state. Different equation scaling
-    is retained; this edge does not assert physical channeling or a protein complex.
+  description: The reactions share this exact chemical or whole bound-protein state. Different equation
+    scaling is retained; this edge does not assert physical channeling or a protein complex.
   evidence:
   - reference_id: RHEA:57696
     source_assertion: RHEA:57697 produces CHEBI:2480 with coefficient 1.
-    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1 http://rdf.rhea-db.org/Participant_57696_compound_4575;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/57697 rh:products; http://rdf.rhea-db.org/57696_R rh:contains1
+      http://rdf.rhea-db.org/Participant_57696_compound_4575; rh:compound/rh:accession
   - reference_id: RHEA:15769
     source_assertion: RHEA:15770 consumes CHEBI:2480 with coefficient 1.
     source_locator: http://rdf.rhea-db.org/15770 rh:substrates; http://rdf.rhea-db.org/15769_L rh:contains1
@@ -577,13 +609,13 @@ mechanistic_edges:
   subject: RHEA:15770
   predicate: provides_input_for
   object: RHEA:22713
-  description: The reactions share this exact chemical or whole bound-protein state. Different equation scaling
-    is retained; this edge does not assert physical channeling or a protein complex.
+  description: The reactions share this exact chemical or whole bound-protein state. Different equation
+    scaling is retained; this edge does not assert physical channeling or a protein complex.
   evidence:
   - reference_id: RHEA:15769
     source_assertion: RHEA:15770 produces CHEBI:58502 with coefficient 1.
-    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1 http://rdf.rhea-db.org/Participant_15769_compound_3151;
-      rh:compound/rh:accession
+    source_locator: http://rdf.rhea-db.org/15770 rh:products; http://rdf.rhea-db.org/15769_R rh:contains1
+      http://rdf.rhea-db.org/Participant_15769_compound_3151; rh:compound/rh:accession
   - reference_id: RHEA:22712
     source_assertion: RHEA:22713 consumes CHEBI:58502 with coefficient 1.
     source_locator: http://rdf.rhea-db.org/22713 rh:substrates; http://rdf.rhea-db.org/22712_L rh:contains1
@@ -592,42 +624,48 @@ mechanistic_edges:
   subject: UniProtKB:P0AE76
   predicate: part_of
   object: PathBank:SMP0001898/ProteinComplex/3868
-  description: The source declares coefficient 2 of CobU in this role/location projection. UniProt calls CobU
-    a homodimer by similarity; native membership is not an independent structural determination.
+  coefficient: 2
+  description: The source declares coefficient 2 of CobU in this role/location projection. UniProt calls
+    CobU a homodimer by similarity; native membership is not an independent structural determination.
   evidence:
   - reference_id: PathBank:SMP0001898
-    source_assertion: ProteinComplex/3868 contains Protein/6232 with stoichiometricCoefficient 2.0; its ProteinReference/6232
-      has the UniProt P0AE76 unification cross-reference.
+    source_assertion: ProteinComplex/3868 contains Protein/6232 with stoichiometricCoefficient 2.0; its
+      ProteinReference/6232 has the UniProt P0AE76 unification cross-reference.
     source_locator: 'PW001884.owl#ProteinComplex/3868/bp:component; bp:componentStoichiometry; #Protein/6232/Stoichiometry/2.0;
       #ProteinReference/6232/bp:xref; #Reference/UniProt_P0AE76'
   - reference_id: UniProtKB:P0AE76
     source_assertion: The SUBUNIT comment states Homodimer with ECO:0000250 evidence (by similarity).
     source_locator: comments[commentType="SUBUNIT"].texts
+    eco_code: ECO:0000250
+    assay_taxon: NCBITaxon:83333
 - id: activation-edge-037
   subject: UniProtKB:P0AE76
   predicate: part_of
   object: PathBank:SMP0001898/ProteinComplex/3869_Cytosol
-  description: The source declares coefficient 2 of CobU in this role/location projection. UniProt calls CobU
-    a homodimer by similarity; native membership is not an independent structural determination.
+  coefficient: 2
+  description: The source declares coefficient 2 of CobU in this role/location projection. UniProt calls
+    CobU a homodimer by similarity; native membership is not an independent structural determination.
   evidence:
   - reference_id: PathBank:SMP0001898
     source_assertion: ProteinComplex/3869_Cytosol contains Protein/6232_Cytosol with stoichiometricCoefficient
       2.0; its ProteinReference/6232 has the UniProt P0AE76 unification cross-reference.
-    source_locator: 'PW001884.owl#ProteinComplex/3869_Cytosol/bp:component; bp:componentStoichiometry; #Protein/6232_Cytosol/Stoichiometry/2.0;
-      #ProteinReference/6232/bp:xref; #Reference/UniProt_P0AE76'
+    source_locator: 'PW001884.owl#ProteinComplex/3869_Cytosol/bp:component; bp:componentStoichiometry;
+      #Protein/6232_Cytosol/Stoichiometry/2.0; #ProteinReference/6232/bp:xref; #Reference/UniProt_P0AE76'
   - reference_id: UniProtKB:P0AE76
     source_assertion: The SUBUNIT comment states Homodimer with ECO:0000250 evidence (by similarity).
     source_locator: comments[commentType="SUBUNIT"].texts
+    eco_code: ECO:0000250
+    assay_taxon: NCBITaxon:83333
 - id: activation-edge-038
   subject: PathBank:SMP0001898/ProteinComplex/3869_Cytosol
   predicate: located_in
   object: GO:0005829
-  description: Only the explicitly localized native CobU projection receives the cytosol edge; location is
-    not automatically copied to the other projection.
+  description: Only the explicitly localized native CobU projection receives the cytosol edge; location
+    is not automatically copied to the other projection.
   evidence:
   - reference_id: PathBank:SMP0001898
-    source_assertion: ProteinComplex/3869_Cytosol has cellularLocation CellularLocation/Cytosol, whose unification
-      xref is GO:0005829.
+    source_assertion: ProteinComplex/3869_Cytosol has cellularLocation CellularLocation/Cytosol, whose
+      unification xref is GO:0005829.
     source_locator: 'PW001884.owl#ProteinComplex/3869_Cytosol/bp:cellularLocation; #CellularLocation/Cytosol/bp:xref;
       #Reference/GENE_ONTOLOGY_GO_0005829'
 references:
@@ -685,8 +723,8 @@ references:
 - id: PMID:7592411
   title: The cobalamin (coenzyme B12) biosynthetic genes of Escherichia coli.
   url: https://europepmc.org/articles/PMC177486?pdf=render
-  source_version: Full primary1995 paper; retrieved2026-10-10; DOI10.1128/jb.177.22.6371-6380.1995; exact PDF
-    response digest
+  source_version: Full primary1995 paper; retrieved2026-10-10; DOI10.1128/jb.177.22.6371-6380.1995; exact
+    PDF response digest
   source_sha256: 42da7e9bae0a77458a857218fe302469602a6e9247cb4e5092af60c362ad122b
 - id: PathBank:SMP0001898
   title: PathBank native adenosylcobalamin salvage diagram, CobU role and location projections
