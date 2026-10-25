@@ -20,6 +20,7 @@ from pathwaymech.pathbank_provenance import (
     PATHBANK_ARCHIVE_LICENSE,
     PATHBANK_ARCHIVE_URL,
     PATHBANK_ARCHIVE_VERSION,
+    audit_pathbank_archive_member_authority,
     build_pathbank_archive_manifest_entry,
     inspect_pathbank_archive_member,
 )
@@ -1142,3 +1143,143 @@ def test_inspect_pathbank_archive_member_enumerates_native_terms_and_external_xr
             "UniProtKB": ["UniProtKB:P0A9T0"],
         },
     }
+
+
+def test_audit_pathbank_archive_member_authority_partitions_indexed_and_missing_curies(tmp_path):
+    root = native_source()
+    add_stub(root)
+    uniprot_xref = ET.SubElement(root, BP + "UnificationXref", {RDF + "ID": "uniprot-xref"})
+    ET.SubElement(uniprot_xref, BP + "db").text = "UniProt"
+    ET.SubElement(uniprot_xref, BP + "id").text = "P0A9T0"
+    taxon_xref = ET.SubElement(root, BP + "UnificationXref", {RDF + "ID": "taxon-xref"})
+    ET.SubElement(taxon_xref, BP + "db").text = "TAXONOMY"
+    ET.SubElement(taxon_xref, BP + "id").text = "562"
+    path, _ = archive_fixture(tmp_path, root)
+
+    partial_snapshot = tmp_path / "partial_sources.json"
+    partial_snapshot.write_text(
+        json.dumps(
+            {
+                "sources": {},
+                "terms": {
+                    "CHEBI:15377": {"label": "water", "synonyms": [], "source": "chebi-obo"},
+                    "NCBITaxon:562": {
+                        "label": "Escherichia coli",
+                        "synonyms": [],
+                        "source": "ncbitaxon-obo",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    partial_audit = audit_pathbank_archive_member_authority(
+        path, "PW9999999.owl", "SMP9999999", partial_snapshot
+    )
+    assert partial_audit["manifest_key_registered"] is False
+    assert partial_audit["indexed_native_term_ids"] == []
+    assert partial_audit["missing_native_term_ids"] == [
+        PATHWAY,
+        "PathBank:SMP9999998",
+        PATHWAY + "/Reactions/7",
+        PATHWAY + "/ProteinComplex/8",
+    ]
+    assert partial_audit["indexed_external_xrefs"] == {
+        "CHEBI": ["CHEBI:15377"],
+        "NCBITaxon": ["NCBITaxon:562"],
+        "UniProtKB": [],
+    }
+    assert partial_audit["missing_external_xrefs"] == {
+        "CHEBI": [],
+        "NCBITaxon": [],
+        "UniProtKB": ["UniProtKB:P0A9T0"],
+    }
+    assert partial_audit["ready_for_check_identifiers"] is False
+
+    complete_snapshot = tmp_path / "complete_sources.json"
+    complete_snapshot.write_text(
+        json.dumps(
+            {
+                "sources": {
+                    "pathbank-primary-2019-PW9999999-SMP9999999": partial_audit["manifest_entry"]
+                },
+                "terms": {
+                    PATHWAY: {
+                        "label": "Native pathway title",
+                        "synonyms": [],
+                        "source": "pathbank-primary-2019-PW9999999-SMP9999999",
+                    },
+                    "PathBank:SMP9999998": {
+                        "label": "An independently named adjacent pathway",
+                        "synonyms": [],
+                        "source": "pathbank-primary-2019-PW9999999-SMP9999999",
+                    },
+                    PATHWAY + "/Reactions/7": {
+                        "label": "Reaction 7",
+                        "synonyms": [],
+                        "source": "pathbank-primary-2019-PW9999999-SMP9999999",
+                    },
+                    PATHWAY + "/ProteinComplex/8": {
+                        "label": "Complex 8",
+                        "synonyms": [],
+                        "source": "pathbank-primary-2019-PW9999999-SMP9999999",
+                    },
+                    "CHEBI:15377": {"label": "water", "synonyms": [], "source": "chebi-obo"},
+                    "NCBITaxon:562": {
+                        "label": "Escherichia coli",
+                        "synonyms": [],
+                        "source": "ncbitaxon-obo",
+                    },
+                    "UniProtKB:P0A9T0": {
+                        "label": "D-3-phosphoglycerate dehydrogenase",
+                        "synonyms": [],
+                        "source": "uniprot-entries",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    complete_audit = audit_pathbank_archive_member_authority(
+        path, "PW9999999.owl", "SMP9999999", complete_snapshot
+    )
+    assert complete_audit["manifest_key_registered"] is True
+    assert complete_audit["indexed_native_term_ids"] == [
+        PATHWAY,
+        "PathBank:SMP9999998",
+        PATHWAY + "/Reactions/7",
+        PATHWAY + "/ProteinComplex/8",
+    ]
+    assert complete_audit["missing_native_term_ids"] == []
+    assert complete_audit["indexed_external_xrefs"] == {
+        "CHEBI": ["CHEBI:15377"],
+        "NCBITaxon": ["NCBITaxon:562"],
+        "UniProtKB": ["UniProtKB:P0A9T0"],
+    }
+    assert complete_audit["missing_external_xrefs"] == {
+        "CHEBI": [],
+        "NCBITaxon": [],
+        "UniProtKB": [],
+    }
+    assert complete_audit["ready_for_check_identifiers"] is True
+
+
+@pytest.mark.parametrize(
+    "payload,match",
+    [
+        (None, "valid JSON authority snapshot"),
+        ("not json", "valid JSON authority snapshot"),
+        ("[]", "'sources' and 'terms' mappings"),
+        ('{"sources": []}', "'sources' and 'terms' mappings"),
+        ('{"sources": {}, "terms": []}', "'sources' and 'terms' mappings"),
+    ],
+)
+def test_audit_pathbank_archive_member_authority_rejects_invalid_snapshot(tmp_path, payload, match):
+    path, _ = archive_fixture(tmp_path)
+    snapshot_path = tmp_path / "invalid_sources.json"
+    if payload is not None:
+        snapshot_path.write_text(payload, encoding="utf-8")
+    with pytest.raises(ValueError, match=match):
+        audit_pathbank_archive_member_authority(
+            path, "PW9999999.owl", "SMP9999999", snapshot_path
+        )

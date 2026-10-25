@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import zipfile
 from pathlib import Path
@@ -197,5 +198,78 @@ def inspect_pathbank_archive_member(
             "NCBITaxon": sorted(taxon_ids),
             "UniProtKB": sorted(uniprot_ids),
         },
+    }
+
+
+def audit_pathbank_archive_member_authority(
+    archive_path: Path,
+    member: str,
+    root: str,
+    authority_snapshot_path: Path,
+    *,
+    key: str | None = None,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> dict[str, Any]:
+    """Audit a PathBank ZIP member against a checked-in authority snapshot.
+
+    Deterministically reports whether the member's manifest key is registered in
+    ``sources`` and partitions its native ``PathBank:*`` terms and referenced
+    external ``UnificationXref`` CURIEs (``CHEBI``, ``NCBITaxon``, ``UniProtKB``)
+    into indexed vs. missing sets relative to ``terms`` in ``authority_snapshot_path``.
+    """
+    summary = inspect_pathbank_archive_member(
+        archive_path,
+        member,
+        root,
+        key=key,
+        path=path,
+        version=version,
+        license=license,
+    )
+    try:
+        snapshot = json.loads(Path(authority_snapshot_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(
+            "PathBank authority audit requires a valid JSON authority snapshot"
+        ) from exc
+    if (
+        not isinstance(snapshot, dict)
+        or not isinstance(snapshot.get("sources"), dict)
+        or not isinstance(snapshot.get("terms"), dict)
+    ):
+        raise ValueError(
+            "PathBank authority audit requires an authority snapshot "
+            "with 'sources' and 'terms' mappings"
+        )
+    sources = snapshot["sources"]
+    terms = snapshot["terms"]
+    manifest_key = summary["manifest_entry"]["key"]
+    manifest_key_registered = manifest_key in sources
+    native_term_ids = summary["native_term_ids"]
+    indexed_native_term_ids = [term_id for term_id in native_term_ids if term_id in terms]
+    missing_native_term_ids = [term_id for term_id in native_term_ids if term_id not in terms]
+    indexed_external_xrefs = {
+        prefix: [curie for curie in curies if curie in terms]
+        for prefix, curies in summary["external_xrefs"].items()
+    }
+    missing_external_xrefs = {
+        prefix: [curie for curie in curies if curie not in terms]
+        for prefix, curies in summary["external_xrefs"].items()
+    }
+    ready_for_check_identifiers = (
+        manifest_key_registered
+        and not missing_native_term_ids
+        and all(not missing for missing in missing_external_xrefs.values())
+    )
+    return {
+        **summary,
+        "manifest_key_registered": manifest_key_registered,
+        "indexed_native_term_ids": indexed_native_term_ids,
+        "missing_native_term_ids": missing_native_term_ids,
+        "indexed_external_xrefs": indexed_external_xrefs,
+        "missing_external_xrefs": missing_external_xrefs,
+        "ready_for_check_identifiers": ready_for_check_identifiers,
     }
 
