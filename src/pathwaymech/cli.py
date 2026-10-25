@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import functools
 import hashlib
 import html
 import json
@@ -10,7 +11,7 @@ import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote, urlsplit
+from urllib.parse import quote, urlencode, urlsplit
 from xml.etree import ElementTree
 
 import yaml
@@ -49,6 +50,8 @@ from pathwaymech.rhea import load_rhea_tsv, rhea_seed_rows
 from pathwaymech.schema import ValidationError, validate_record
 from pathwaymech.seed_subsystems import load_seed_subsystem_bundle, seed_subsystem_rows
 from pathwaymech.site_display import (
+    autolink_html,
+    corpus_as_of,
     evidence_html,
     history_html,
     label_html,
@@ -56,6 +59,7 @@ from pathwaymech.site_display import (
     plain_label,
     record_kind,
     record_metadata,
+    rich_text_html,
 )
 from pathwaymech.sources import (
     SourceInventoryError,
@@ -73,6 +77,13 @@ from pathwaymech.wikipathways import (
 from pathwaymech.yaml_io import load_pathway_records, pathway_files
 
 ROOT = Path(__file__).resolve().parents[2]
+ASSETS = Path(__file__).parent / "assets"
+SCHEMA_PATH = Path(__file__).parent / "schema" / "pathwaymech.yaml"
+GITHUB_REPO = "https://github.com/CultureBotAI/PathwayMech"
+GITHUB_BLOB = f"{GITHUB_REPO}/blob/main"
+# Where GitHub Pages serves pages/. Only the not-found page needs it: it is
+# served at whatever address was missing, so its links cannot be relative.
+SITE_URL = "https://culturebotai.github.io/PathwayMech/pages/"
 
 
 def validate_main() -> int:
@@ -187,7 +198,9 @@ class SiteError(ValueError):
 
 
 def _record_facets(record: object) -> tuple[str, list[str], list[str]]:
-    kind = record_kind(record)
+    # The record's own pathway_type, which its page shows as "Pathway type".
+    # record_kind() is an edge-count summary, not a class to filter by.
+    kind = getattr(record, "pathway_type", "") or ""
     taxa = sorted({
         (taxon.get("label") or taxon["id"]).strip()
         for taxon in getattr(record, "taxa", [])
@@ -210,6 +223,27 @@ def _record_facets(record: object) -> tuple[str, list[str], list[str]]:
     return kind, taxa, grounding
 
 
+def _by_count(counts: dict[str, int]) -> list[tuple[str, int]]:
+    """Facet values, most frequent first, then by name."""
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0].casefold()))
+
+
+def _corpus_note(records: list, sessions: list[list[dict]]) -> str:
+    """The dated corpus version every page footer states."""
+    count = f"{len(records):,} pathway record{'' if len(records) == 1 else 's'}"
+    as_of = corpus_as_of(records, sessions)
+    return f"Corpus as of {as_of} · {count}" if as_of else count
+
+
+def _map_urls(payload: dict[str, Any]) -> set[str]:
+    """Every record page an embedding map's points open."""
+    urls = set()
+    for item in (*payload.get("points", []), *payload.get("pathways", []),
+                 *payload.get("proteins", [])):
+        urls.update(url for url in (item.get("url"), *item.get("pathway_urls", [])) if url)
+    return urls
+
+
 def render_site(records: list, source_paths: dict[str, str] | None = None,
                 histories: dict[str, list[dict]] | None = None,
                 *, root: Path = ROOT) -> dict[str, str]:
@@ -217,8 +251,15 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
     files: dict[str, str] = {}
     claimed: dict[str, str] = {}
     rows = []
-    all_kinds: set[str] = set()
+    type_counts: dict[str, int] = {}
     taxon_counts: dict[str, int] = {}
+    grounding_counts: dict[str, int] = {}
+    # A record page links another published record by this path, relative to
+    # records/, rather than sending the reader to the identifier's authority.
+    own_pages = {record.id: f"{_slug(record.id)}.html" for record in records}
+    sessions = {record.id: (histories or {}).get((source_paths or {}).get(record.id), [])
+                for record in records}
+    note = _corpus_note(records, list(sessions.values()))
     for record in sorted(records, key=lambda r: (plain_label(r.label).casefold(), r.id)):
         slug = _slug(record.id)
         # Compared without case: on a case-insensitive filesystem two slugs that
@@ -229,9 +270,12 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
                 f"{other} and {record.id} both render to pages/records/{slug}.html"
             )
         kind, taxa, grounding = _record_facets(record)
-        all_kinds.add(kind)
+        if kind:
+            type_counts[kind] = type_counts.get(kind, 0) + 1
         for t in taxa:
             taxon_counts[t] = taxon_counts.get(t, 0) + 1
+        for g in grounding:
+            grounding_counts[g] = grounding_counts.get(g, 0) + 1
         search = html.escape(f"{plain_label(record.label)} {record.id}", quote=True)
         label_attr = html.escape(plain_label(record.label).casefold(), quote=True)
         id_attr = html.escape(record.id, quote=True)
@@ -239,23 +283,20 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
         type_attr = html.escape(kind, quote=True)
         taxa_attr = html.escape("|".join(taxa), quote=True)
         grounding_attr = html.escape("|".join(grounding), quote=True)
+        type_text = f"{html.escape(kind.replace('-', ' '))} · " if kind else ""
         rows.append(
             f'<li data-search="{search}" data-label="{label_attr}" data-id="{id_attr}" '
             f'data-edges="{edge_count}" data-type="{type_attr}" '
             f'data-taxa="{taxa_attr}" data-grounding="{grounding_attr}">'
             f'<a href="records/{slug}.html">'
             f'<strong>{label_html(record.label)}</strong>'
-            f"<span>{html.escape(record.id)} — {record_kind(record)}</span></a></li>"
+            f"<span>{html.escape(record.id)} — {type_text}{record_kind(record)}</span></a></li>"
         )
         source_path = (source_paths or {}).get(record.id)
         files[f"records/{slug}.html"] = _record_page(
-            record, source_path, (histories or {}).get(source_path, [])
+            record, source_path, sessions[record.id], own_pages=own_pages, corpus_note=note,
         )
 
-    sorted_kinds = sorted(all_kinds)
-    sorted_taxa = [
-        t for t, _ in sorted(taxon_counts.items(), key=lambda kv: (-kv[1], kv[0].casefold()))
-    ]
     browse_body = "\n".join(rows) if rows else "<p>No curated pathway records yet.</p>"
     files["browse.html"] = _page(
         "PathwayMech records",
@@ -263,13 +304,23 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
         '<a href="index.html">PathwayMech</a> <span aria-hidden="true">/</span> '
         '<span aria-current="page">Browse pathways</span></nav>'
         '<div class="browse-layout">'
-        + _browse_controls(sorted_kinds, sorted_taxa)
+        + _browse_controls(_by_count(type_counts), _by_count(taxon_counts), grounding_counts)
         + '<div class="browse-results">'
         + f'<ul class="record-list" id="pathway-list">{browse_body}</ul>'
-        + "</div></div>"
+        + "</div></div>",
+        corpus_note=note,
     )
-    files["map.html"] = _map_page(records, root=root)
-    files["sequence-map.html"] = _sequence_map_page(records, root=root)
+    corpus_map = _load_or_fallback_corpus_map(records, root)
+    sequence_map = _load_or_fallback_sequence_map(records, root)
+    for url in sorted(_map_urls(corpus_map) | _map_urls(sequence_map)):
+        if url not in files:
+            raise SiteError(f"an embedding map links pages/{url}, which no record renders")
+    files["map.html"] = _map_page(records, root=root, payload=corpus_map, corpus_note=note)
+    files["sequence-map.html"] = _sequence_map_page(
+        records, root=root, payload=sequence_map, corpus_note=note,
+    )
+    files["schema.html"] = _schema_page(corpus_note=note)
+    files["404.html"] = _not_found_page(root, record_count=len(records), corpus_note=note)
     exports = render_kgx(records)
     fingerprint = hashlib.sha256("".join(exports.values()).encode()).hexdigest()
     for name, text in exports.items():
@@ -283,14 +334,14 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
                   for name, text in exports.items()},
     }
     files["downloads/manifest.json"] = json.dumps(manifest, indent=2) + "\n"
-    files["index.html"] = _home_page(records, fingerprint)
+    files["index.html"] = _home_page(records, fingerprint, corpus_note=note)
     files["pathway_index.json"] = pathway_index_json(records)
-    for name in ("pathway-network.css", "pathway-network.js"):
-        files[f"assets/{name}"] = (Path(__file__).parent / "assets" / name).read_text()
+    for name in ("pathway-network.css", "pathway-network.js", "theme.js"):
+        files[f"assets/{name}"] = (ASSETS / name).read_text()
     return files
 
 
-def _home_page(records: list, version: str = "") -> str:
+def _home_page(records: list, version: str = "", *, corpus_note: str = "") -> str:
     """Describe the same published records that populate the pathway browser."""
     metrics = [
         (len(records), "Pathway records"),
@@ -303,8 +354,9 @@ def _home_page(records: list, version: str = "") -> str:
         f'<div class="home-stat"><dt>{label}</dt><dd>{count:,}</dd></div>'
         for count, label in metrics
     )
-    gh_repo = "https://github.com/CultureBotAI/PathwayMech"
-    gh_blob = f"{gh_repo}/blob/main"
+    gh_repo = GITHUB_REPO
+    gh_blob = GITHUB_BLOB
+    dated = f" {html.escape(corpus_note)}." if corpus_note else ""
     body = f"""<section class="home-hero" aria-labelledby="home-title">
       <p class="home-eyebrow">Microbial pathway knowledge base</p>
       <h1 id="home-title">PathwayMech</h1>
@@ -336,7 +388,7 @@ follow its evidence, or contribute a record.</p>
       <div class="home-cards">
         <article class="home-card">
           <h3>Pathway browser</h3>
-          <p>Filter and search the published collection by pathway class, \
+          <p>Filter and search the published collection by pathway type, \
 organism, protein grounding, or identifier.</p>
           <a href="browse.html">Browse pathway records <span aria-hidden="true">→</span></a>
         </article>
@@ -369,6 +421,8 @@ mechanistic evidence to individual pathway edges.</p>
         <a href="pathway_index.json" download>Pathway index (JSON)</a>, and
         <a href="downloads/manifest.json">Version, row counts and file checksums</a>.</p>
       <p><strong>LinkML Schema &amp; Data Model:</strong>
+        <a href="schema.html">Schema reference (every class, slot and enumeration, \
+generated from the schema)</a> ·
         <a href="{gh_blob}/src/pathwaymech/schema/pathwaymech.yaml">\
 PathwayMech LinkML schema (<code>pathwaymech.yaml</code>)</a> ·
         <a href="{gh_blob}/src/pathwaymech/schema/mech_shared.yaml">\
@@ -381,35 +435,13 @@ Source authority registry (<code>sources.yaml</code>)</a> ·
 Corpus text embedding coordinates (JSON)</a> ·
         <a href="{gh_blob}/data/embeddings/sequence_map.json">\
 ESM-2 sequence embedding coordinates (JSON)</a>.</p>
-      <p>Graph version: <code>{version or "See download manifest"}</code>.
-        Data: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>;
-        upstream source terms still apply.</p>
-    </section>
-    <footer class="home-footer">Part of the CultureBotAI Mech knowledge bases.
-      <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a>
-    </footer>
-    <script>
-    (function () {{
-      try {{
-        var saved = localStorage.getItem('mech-theme');
-        if (saved === 'dark' || saved === 'light') {{
-          document.documentElement.setAttribute('data-theme', saved);
-        }}
-      }} catch (e) {{}}
-      var btn = document.getElementById('theme-toggle');
-      if (btn) {{
-        btn.addEventListener('click', function () {{
-          var cur = document.documentElement.getAttribute('data-theme');
-          var mq = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var isDark = cur ? cur === 'dark' : mq;
-          var next = isDark ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', next);
-          try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
-        }});
-      }}
-    }}());
-    </script>"""
-    return _page("PathwayMech", body, homepage=True)
+      <p>Graph version: <code>{version or "See download manifest"}</code>.{dated}
+        Project data: <a href="{gh_blob}/LICENSE-DATA">CC BY 4.0</a>.
+        Code: <a href="{gh_blob}/LICENSE-CODE">BSD-3-Clause</a>.
+        Third-party source material keeps its own terms
+        (<a href="{gh_blob}/LICENSE">licence scope</a>).</p>
+    </section>"""
+    return _page("PathwayMech", body, homepage=True, corpus_note=corpus_note)
 
 
 def _files_under(pages: Path) -> set[str]:
@@ -474,7 +506,8 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
     # under the old one. Other unexpected files are left for the check to name.
     rendered = {path for path in _files_under(pages) if path.startswith("records/")}
     rendered |= {
-        name for name in ("browse.html", "index.html", "map.html", "sequence-map.html")
+        name for name in ("browse.html", "index.html", "map.html", "sequence-map.html",
+                          "schema.html", "404.html")
         if (pages / name).is_file()
     }
     orphaned = sorted(path for path in rendered - set(expected) if path.endswith(".html"))
@@ -1108,29 +1141,47 @@ def import_veupathdb_main(argv: list[str] | None = None) -> int:
 
 def _page(
     title: str, body: str, stylesheet_href: str = "style.css", *, homepage: bool = False,
-    extra_head: str = "",
+    extra_head: str = "", corpus_note: str = "", site_root: str | None = None,
+    inline_css: str | None = None,
 ) -> str:
-    site_root = html.escape(stylesheet_href.removesuffix("style.css"))
+    """One page in the site shell.
+
+    `inline_css` makes a page that needs no other file -- the stylesheet and the
+    theme script are embedded -- for the not-found page, which is served at
+    addresses where no relative link resolves; it passes an absolute `site_root`.
+    """
+    root = html.escape(stylesheet_href.removesuffix("style.css") if site_root is None
+                       else site_root)
+    if inline_css is None:
+        assets = (f'<link rel="stylesheet" href="{html.escape(stylesheet_href)}">\n'
+                  f'  <script src="{root}assets/theme.js"></script>')
+    else:
+        script = (ASSETS / "theme.js").read_text()
+        if "</style" in inline_css.lower() or "</script" in script.lower():
+            raise SiteError("an inlined stylesheet or script would end its own element")
+        assets = f"<style>\n{inline_css}</style>\n  <script>\n{script}</script>"
     body_class = ' class="home-page"' if homepage else ""
     heading = "" if homepage else f"    <h1>{label_html(title)}</h1>"
+    corpus = f"\n    <p>{html.escape(corpus_note)}</p>" if corpus_note else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{html.escape(plain_label(title))}</title>
-  <link rel="stylesheet" href="{html.escape(stylesheet_href)}">
+  {assets}
 {extra_head}
 </head>
 <body{body_class}>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header><nav aria-label="Main navigation">
-    <a href="{site_root}index.html">PathwayMech overview</a>
-    <a href="{site_root}browse.html">Browse pathways</a>
-    <a href="{site_root}map.html">Text map</a>
-    <a href="{site_root}sequence-map.html">Sequence map (pLM)</a>
-    <a href="{site_root}index.html#downloads-title">Downloads &amp; Schema</a>
-    <a href="https://github.com/CultureBotAI/PathwayMech">Source</a>
+    <a href="{root}index.html">PathwayMech overview</a>
+    <a href="{root}browse.html">Browse pathways</a>
+    <a href="{root}map.html">Text map</a>
+    <a href="{root}sequence-map.html">Sequence map (pLM)</a>
+    <a href="{root}index.html#downloads-title">Downloads</a>
+    <a href="{root}schema.html">Schema</a>
+    <a href="{GITHUB_REPO}">Source</a>
     <a href="https://culturebotai.github.io/mechs/">All Mech projects</a>
     <button type="button" id="theme-toggle" class="theme-toggle" \
 aria-label="Toggle dark mode">Theme</button>
@@ -1139,22 +1190,46 @@ aria-label="Toggle dark mode">Theme</button>
 {heading}
     {body}
   </main>
+  <footer class="site-footer">
+    <p>Project data: <a href="{GITHUB_BLOB}/LICENSE-DATA">CC BY 4.0</a>.
+      Code: <a href="{GITHUB_BLOB}/LICENSE-CODE">BSD-3-Clause</a>.
+      Third-party source material keeps its own terms
+      (<a href="{GITHUB_BLOB}/LICENSE">licence scope</a>).</p>{corpus}
+    <p>Part of the CultureBotAI Mech knowledge bases.
+      <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a></p>
+  </footer>
 </body>
 </html>
 """
 
 
+_GROUNDING_OPTIONS = (
+    ("protein-grounded", "Protein-grounded (UniProtKB)"),
+    ("reaction-mechanisms", "Detailed reaction mechanisms"),
+    ("gene-clusters", "Biosynthetic gene clusters"),
+    ("curated-edges", "Curated mechanistic edges"),
+)
+
+
 def _browse_controls(
-    kinds: list[str] | None = None,
-    taxa: list[str] | None = None,
+    types: list[tuple[str, int]] | None = None,
+    taxa: list[tuple[str, int]] | None = None,
+    grounding: dict[str, int] | None = None,
 ) -> str:
-    kind_opts = "".join(
-        f'<option value="{html.escape(k, quote=True)}">{html.escape(k)}</option>'
-        for k in (kinds or [])
+    """Filters whose options state how many records each one keeps."""
+    type_opts = "".join(
+        f'<option value="{html.escape(value, quote=True)}">'
+        f'{html.escape(value.replace("-", " "))} ({count:,})</option>'
+        for value, count in (types or [])
     )
     taxon_opts = "".join(
-        f'<option value="{html.escape(t, quote=True)}">{html.escape(t)}</option>'
-        for t in (taxa or [])[:150]
+        f'<option value="{html.escape(value, quote=True)}">'
+        f'{html.escape(value)} ({count:,})</option>'
+        for value, count in (taxa or [])[:150]
+    )
+    grounding_opts = "".join(
+        f'<option value="{value}">{label} ({(grounding or {}).get(value, 0):,})</option>'
+        for value, label in _GROUNDING_OPTIONS
     )
     return f"""<aside class="facet-sidebar" aria-label="Pathway filters">
 <form id="pathway-search" class="facet-form" hidden>
@@ -1164,10 +1239,10 @@ def _browse_controls(
 placeholder="e.g. methanogenesis, MetaCyc...">
   </div>
   <div class="facet-group">
-    <label for="pathway-type">Pathway class</label>
+    <label for="pathway-type">Pathway type</label>
     <select id="pathway-type">
-      <option value="">All pathway classes</option>
-      {kind_opts}
+      <option value="">All pathway types</option>
+      {type_opts}
     </select>
   </div>
   <div class="facet-group">
@@ -1181,10 +1256,7 @@ placeholder="e.g. methanogenesis, MetaCyc...">
     <label for="pathway-grounding">Grounding &amp; mechanism</label>
     <select id="pathway-grounding">
       <option value="">All records</option>
-      <option value="protein-grounded">Protein-grounded (UniProtKB)</option>
-      <option value="reaction-mechanisms">Detailed reaction mechanisms</option>
-      <option value="gene-clusters">Biosynthetic gene clusters</option>
-      <option value="curated-edges">Curated mechanistic edges</option>
+      {grounding_opts}
     </select>
   </div>
   <div class="facet-group">
@@ -1195,7 +1267,7 @@ placeholder="e.g. methanogenesis, MetaCyc...">
       <option value="edges-desc">Mechanistic edges (high–low)</option>
       <option value="edges-asc">Mechanistic edges (low–high)</option>
       <option value="id-asc">Identifier (A–Z)</option>
-      <option value="type-asc">Pathway class (A–Z)</option>
+      <option value="type-asc">Pathway type (A–Z)</option>
     </select>
   </div>
   <div class="facet-actions">
@@ -1218,21 +1290,6 @@ document.addEventListener('DOMContentLoaded', function () {{
   const groundingFilter = document.getElementById('pathway-grounding');
   const sortSelect = document.getElementById('pathway-sort');
   const listEl = document.getElementById('pathway-list');
-  const themeBtn = document.getElementById('theme-toggle');
-  if (themeBtn && document.documentElement) {{
-    try {{
-      const saved = localStorage.getItem('mech-theme');
-      if (saved === 'dark' || saved === 'light') {{
-        document.documentElement.setAttribute('data-theme', saved);
-      }}
-    }} catch (e) {{}}
-    themeBtn.addEventListener('click', function () {{
-      const cur = document.documentElement.getAttribute('data-theme');
-      const next = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
-    }});
-  }}
   const rows = Array.from(document.querySelectorAll('#pathway-list li'));
   function filter() {{
     const term = query.value.trim().toLowerCase();
@@ -1302,13 +1359,20 @@ document.addEventListener('DOMContentLoaded', function () {{
     history.replaceState(null, '', url);
     filter();
   }}
+  // A value no option carries -- a link shared before the options changed --
+  // selects the default rather than leaving the control blank.
+  function choose(select, value, fallback) {{
+    if (!select) return;
+    select.value = value || fallback;
+    if (select.selectedIndex < 0) select.value = fallback;
+  }}
   function restore() {{
     const params = new URLSearchParams(window.location.search);
     query.value = params.get('q') || '';
-    if (typeFilter) typeFilter.value = params.get('type') || '';
-    if (taxonFilter) taxonFilter.value = params.get('taxon') || '';
-    if (groundingFilter) groundingFilter.value = params.get('grounding') || '';
-    if (sortSelect) sortSelect.value = params.get('sort') || 'label-asc';
+    choose(typeFilter, params.get('type'), '');
+    choose(taxonFilter, params.get('taxon'), '');
+    choose(groundingFilter, params.get('grounding'), '');
+    choose(sortSelect, params.get('sort'), 'label-asc');
     filter();
   }}
   query.addEventListener('input', remember);
@@ -1334,6 +1398,18 @@ document.addEventListener('DOMContentLoaded', function () {{
 </aside>"""
 
 
+def _record_url(identifier: object, published: dict | set) -> str:
+    """The page a map point opens, relative to pages/; empty if none is published.
+
+    Derived from the record id, as the renderer names the page. The embedding
+    files also store hrefs, but those were written from YAML file stems, which
+    are not page names, and every one of them opened a 404.
+    """
+    if not isinstance(identifier, str) or identifier not in published:
+        return ""
+    return f"records/{_slug(identifier)}.html"
+
+
 def _load_or_fallback_corpus_map(records: list, root: Path) -> dict[str, Any]:
     map_path = root / "data" / "embeddings" / "corpus_map.json"
     rec_by_id = {r.id: r for r in records}
@@ -1341,7 +1417,6 @@ def _load_or_fallback_corpus_map(records: list, root: Path) -> dict[str, Any]:
         try:
             raw = json.loads(map_path.read_text(encoding="utf-8"))
             classes = raw.get("classes") or []
-            hrefs = raw.get("hrefs") or {}
             norm_points = []
             for pt in raw.get("points") or []:
                 if isinstance(pt, list) and len(pt) >= 7:
@@ -1358,7 +1433,7 @@ def _load_or_fallback_corpus_map(records: list, root: Path) -> dict[str, Any]:
                         "id": ident,
                         "slug": _slug(ident),
                         "label": lbl,
-                        "url": hrefs.get(ident) or f"records/{_slug(ident)}.html",
+                        "url": _record_url(ident, rec_by_id),
                         "x": x,
                         "y": y,
                         "pathway_type": classes[cidx] if 0 <= cidx < len(classes) else kind,
@@ -1370,7 +1445,7 @@ def _load_or_fallback_corpus_map(records: list, root: Path) -> dict[str, Any]:
                         "protein_count": p_count,
                     })
                 elif isinstance(pt, dict):
-                    norm_points.append(pt)
+                    norm_points.append({**pt, "url": _record_url(pt.get("id"), rec_by_id)})
             return {
                 "model": raw.get("model", "BAAI/bge-large-en-v1.5"),
                 "method": raw.get("method", "pacmap"),
@@ -1409,17 +1484,29 @@ def _load_or_fallback_corpus_map(records: list, root: Path) -> dict[str, Any]:
 
 def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
     seq_path = root / "data" / "embeddings" / "sequence_map.json"
+    published = {record.id for record in records}
     if seq_path.is_file():
         try:
             raw = json.loads(seq_path.read_text(encoding="utf-8"))
             if "proteins" in raw and "pathways" in raw:
-                return raw
+                pages = {_record_url(identifier, published) for identifier in published}
+                return {
+                    **raw,
+                    "pathways": [{**item, "url": _record_url(item.get("id"), published)}
+                                 for item in raw["pathways"]],
+                    "proteins": [{**item,
+                                  "url": item.get("url") if item.get("url") in pages else "",
+                                  "pathway_urls": [url for url in item.get("pathway_urls", [])
+                                                   if url in pages]}
+                                 for item in raw["proteins"]],
+                }
             proteins = []
             by_pw: dict[str, dict[str, Any]] = {}
             for pt in raw.get("points") or []:
                 recs = pt.get("records") or []
                 pw_labels = [r["label"] for r in recs if r.get("label")]
-                pw_urls = [r["href"] for r in recs if r.get("href")]
+                pw_urls = [url for url in (_record_url(r.get("id"), published) for r in recs)
+                           if url]
                 org = pt.get("organism") or "Unspecified"
                 p_cls = pt.get("class") or "pathway"
                 proteins.append({
@@ -1433,7 +1520,7 @@ def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
                     "length": pt.get("length", 0),
                     "pathway_labels": pw_labels,
                     "pathway_urls": pw_urls,
-                    "url": pt.get("primary_href") or (pw_urls[0] if pw_urls else ""),
+                    "url": pw_urls[0] if pw_urls else "",
                 })
                 for r in recs:
                     pw_id = r.get("id")
@@ -1442,7 +1529,7 @@ def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
                     entry = by_pw.setdefault(pw_id, {
                         "id": pw_id,
                         "label": r.get("label", pw_id),
-                        "url": r.get("href", f"records/{_slug(pw_id)}.html"),
+                        "url": _record_url(pw_id, published),
                         "pathway_type": r.get("class") or p_cls,
                         "top_taxon": org,
                         "taxa": set(),
@@ -1491,9 +1578,24 @@ def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
     }
 
 
-def _map_page(records: list, *, root: Path = ROOT) -> str:
-    payload = _load_or_fallback_corpus_map(records, root)
+def _map_page(records: list, *, root: Path = ROOT, payload: dict[str, Any] | None = None,
+              corpus_note: str = "") -> str:
+    if payload is None:
+        payload = _load_or_fallback_corpus_map(records, root)
     points = payload.get("points", [])
+    plotted = {point.get("id") for point in points}
+    unplotted = sorted((record for record in records if record.id not in plotted),
+                       key=lambda record: record.id)
+    coverage = ""
+    if unplotted:
+        missing = ", ".join(
+            f'<a href="records/{_slug(record.id)}.html">{label_html(record.label)}</a> '
+            f'(<code>{html.escape(record.id)}</code>)' for record in unplotted)
+        shown = len(records) - len(unplotted)
+        coverage = (f'<p class="map-coverage">{shown:,} of {len(records):,} published '
+                    f'pathway records are plotted. Not on this map, because '
+                    f'<code>data/embeddings/corpus_map.json</code> has no point for them '
+                    f'yet: {missing}.</p>')
     types = sorted({str(p.get("pathway_type", "pathway")) for p in points})
     taxon_counts: dict[str, int] = {}
     for p in points:
@@ -1523,6 +1625,7 @@ def _map_page(records: list, *, root: Path = ROOT) -> str:
       ({dim_val}-d) text embeddings across {len(points):,} curated pathways.
       Drag to pan, scroll to zoom, hover for details, and click any point \
 to open its pathway record.</p>
+    {coverage}
     <div class="browse-layout">
       <aside class="facet-sidebar" aria-label="Embedding map filters">
         <form id="map-filter-form" class="facet-form">
@@ -1579,22 +1682,6 @@ aria-label="2D corpus embedding scatter plot"></canvas>
     <script>
     document.addEventListener('DOMContentLoaded', function () {{
       'use strict';
-      const themeBtn = document.getElementById('theme-toggle');
-      if (themeBtn) {{
-        try {{
-          const saved = localStorage.getItem('mech-theme');
-          if (saved === 'dark' || saved === 'light') {{
-            document.documentElement.setAttribute('data-theme', saved);
-          }}
-        }} catch (e) {{}}
-        themeBtn.addEventListener('click', function () {{
-          const cur = document.documentElement.getAttribute('data-theme');
-          const next = cur === 'dark' ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', next);
-          try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
-          draw();
-        }});
-      }}
       const payload = JSON.parse(document.getElementById('corpus-map-data').textContent);
       const points = payload.points || [];
       const canvas = document.getElementById('map-canvas');
@@ -1800,13 +1887,17 @@ aria-label="2D corpus embedding scatter plot"></canvas>
       draw();
     }});
     </script>"""
-    return _page("PathwayMech text embedding map", body)
+    return _page("PathwayMech text embedding map", body, corpus_note=corpus_note)
 
 
-def _sequence_map_page(records: list, *, root: Path = ROOT) -> str:
-    payload = _load_or_fallback_sequence_map(records, root)
+def _sequence_map_page(records: list, *, root: Path = ROOT,
+                       payload: dict[str, Any] | None = None, corpus_note: str = "") -> str:
+    if payload is None:
+        payload = _load_or_fallback_sequence_map(records, root)
     proteins = payload.get("proteins", [])
     pathways = payload.get("pathways", [])
+    published = {record.id for record in records}
+    covered = len(published & {pathway.get("id") for pathway in pathways})
     types = sorted({
         str(p.get("pathway_type", "pathway"))
         for item in (*pathways, *proteins)
@@ -1838,6 +1929,10 @@ def _sequence_map_page(records: list, *, root: Path = ROOT) -> str:
 <strong>{len(proteins):,}</strong> UniProtKB proteins
       and <strong>{len(pathways):,}</strong> mean-pooled pathway sequence centroids.
       Switch between pathway centroids and individual proteins in the sidebar.</p>
+    <p class="map-coverage">Centroids cover {covered:,} of the {len(records):,} published
+      pathway records: a record appears only when
+      <code>data/embeddings/sequence_map.json</code> holds an embedded UniProtKB protein
+      for it.</p>
     <div class="browse-layout">
       <aside class="facet-sidebar" aria-label="Sequence map filters">
         <form id="seq-filter-form" class="facet-form">
@@ -1893,22 +1988,6 @@ aria-label="2D ESM-2 sequence embedding scatter plot"></canvas>
     <script>
     document.addEventListener('DOMContentLoaded', function () {{
       'use strict';
-      const themeBtn = document.getElementById('theme-toggle');
-      if (themeBtn) {{
-        try {{
-          const saved = localStorage.getItem('mech-theme');
-          if (saved === 'dark' || saved === 'light') {{
-            document.documentElement.setAttribute('data-theme', saved);
-          }}
-        }} catch (e) {{}}
-        themeBtn.addEventListener('click', function () {{
-          const cur = document.documentElement.getAttribute('data-theme');
-          const next = cur === 'dark' ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', next);
-          try {{ localStorage.setItem('mech-theme', next); }} catch (e) {{}}
-          draw();
-        }});
-      }}
       const payload = JSON.parse(document.getElementById('seq-map-data').textContent);
       const canvas = document.getElementById('seq-canvas');
       const ctx = canvas.getContext('2d');
@@ -2134,42 +2213,134 @@ aria-label="2D ESM-2 sequence embedding scatter plot"></canvas>
       draw();
     }});
     </script>"""
-    return _page("PathwayMech sequence embedding map (ESM-2 pLM)", body)
+    return _page("PathwayMech sequence embedding map (ESM-2 pLM)", body,
+                 corpus_note=corpus_note)
+
+
+# The public page for each namespace a record page shows: the local-id shape a
+# page exists for, and its URL. An identifier whose shape does not match has no
+# page of its own and is left unlinked rather than sent to a 404 -- the GO-CAM
+# and GPML node ids scoped to their source model, PathBank's BioPAX objects and
+# PathWhiz PW ids. MetaCyc and EcoCyc are the citation routes this repository
+# already used; _term_url() types them by what the record declares.
+_ROUTES: dict[str, tuple[str, str]] = {
+    "CHEBI": (r"[0-9]+", "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:{}"),
+    "EC": (r"[0-9]+\.[0-9]+\.[0-9]+\.n?[0-9]+", "https://enzyme.expasy.org/EC/{}"),
+    "EcoCyc": (r"[A-Za-z0-9][A-Za-z0-9_.-]*", "https://ecocyc.org/gene?id={}"),
+    "Entrez": (r"[0-9]+", "https://www.ncbi.nlm.nih.gov/gene/{}"),
+    "GO": (r"[0-9]{7}", "https://www.ebi.ac.uk/QuickGO/term/GO:{}"),
+    "gomodel": (r"[0-9a-f]{16}|YeastPathways_[A-Za-z0-9+_.-]+",
+                "https://model.geneontology.org/{}"),
+    "hdl": (r"[0-9][0-9.]*/[A-Za-z0-9._-]+", "https://hdl.handle.net/{}"),
+    "KEGG": (r"[CDGKMR][0-9]{5}|[a-z]{3,4}:[A-Za-z0-9_.-]+", "https://www.kegg.jp/entry/{}"),
+    "MetaCyc": (r"[A-Za-z0-9_.-]+", "https://metacyc.org/META/NEW-IMAGE?type=PATHWAY&object={}"),
+    "metanetx.chemical": (r"MNXM[0-9]+", "https://www.metanetx.org/chem_info/{}"),
+    "MIBiG": (r"BGC[0-9]+(?:\.[0-9]+)?", "https://mibig.secondarymetabolites.org/go/{}"),
+    "NCBIProtein": (r"[A-Z]{1,3}_?[0-9]+(?:\.[0-9]+)?", "https://www.ncbi.nlm.nih.gov/protein/{}"),
+    "NCBITaxon": (r"[0-9]+", "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id={}"),
+    "PathBank": (r"SMP[0-9]{7}", "https://pathbank.org/view/{}"),
+    "PubChem": (r"[0-9]+", "https://pubchem.ncbi.nlm.nih.gov/compound/{}"),
+    "Reactome": (r"R-[A-Z]+-[0-9]+(?:\.[0-9]+)?", "https://reactome.org/content/detail/{}"),
+    "RHEA": (r"[0-9]+", "https://www.rhea-db.org/rhea/{}"),
+    "SGD": (r"S[0-9]{9}", "https://www.yeastgenome.org/locus/{}"),
+    "UniProtKB": (r"[A-Z0-9]{6,10}(?:-[0-9]+)?", "https://www.uniprot.org/uniprotkb/{}/entry"),
+    "WikiPathways": (r"WP[0-9]+", "https://www.wikipathways.org/instance/{}"),
+}
+# BioCyc and BiGG pages are typed (biocyc.org/linking.shtml): the route follows
+# the category a record declares for the node. With no declared category --
+# a reference the record cites but does not declare -- there is no link rather
+# than a page of the wrong type.
+_KIND_OF_CATEGORY = {
+    "pathway": "pathway", "biological_process": "pathway",
+    "molecular_activity": "reaction",
+    "chemical_entity": "compound", "small_molecule": "compound", "cofactor": "compound",
+    "lipid": "compound", "polymer": "compound",
+    "protein": "gene", "complex": "gene", "rna": "gene", "gene": "gene",
+}
+_TYPED_ROUTES = {
+    ("MetaCyc", "pathway"): "https://metacyc.org/META/NEW-IMAGE?type=PATHWAY&object={}",
+    ("MetaCyc", "reaction"): "https://metacyc.org/META/NEW-IMAGE?type=REACTION&object={}",
+    ("MetaCyc", "compound"): "https://metacyc.org/compound?orgid=META&id={}",
+    ("MetaCyc", "gene"): "https://metacyc.org/gene?orgid=META&id={}",
+    ("EcoCyc", "pathway"): "https://ecocyc.org/ECOLI/NEW-IMAGE?type=PATHWAY&object={}",
+    ("EcoCyc", "reaction"): "https://ecocyc.org/ECOLI/NEW-IMAGE?type=REACTION&object={}",
+    ("EcoCyc", "compound"): "https://ecocyc.org/compound?orgid=ECOLI&id={}",
+    ("EcoCyc", "gene"): "https://ecocyc.org/gene?id={}",
+    ("BiGG", "reaction"): "https://bigg.ucsd.edu/universal/reactions/{}",
+    ("BiGG", "compound"): "https://bigg.ucsd.edu/universal/metabolites/{}",
+}
+_TYPED_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9+_.-]*")
+# Namespaces this repository uses whose identifiers have no page outside the
+# routes above: bioregistry resolves neither RHEA-COMP nor a bare BiGG id.
+_KNOWN_PREFIXES = frozenset({*_ROUTES, "PMID", "DOI", "BiGG", "RHEA-COMP"})
+_CURIE = re.compile(r"[A-Za-z][A-Za-z0-9_.-]*:[^\s<>\"'\\]+")
 
 
 def _reference_url(identifier: str) -> str | None:
-    """Resolve only citation namespaces with a known public source route."""
+    """Resolve only namespaces with a known public route for the identifier's shape."""
     prefix, _, local_id = identifier.partition(":")
     if prefix == "PMID" and local_id.isdigit():
         return f"https://pubmed.ncbi.nlm.nih.gov/{local_id}/"
     if prefix == "DOI" and local_id.startswith("10.") and "/" in local_id:
         return "https://doi.org/" + quote(local_id, safe="/")
-    if prefix == "RHEA" and local_id.isdigit():
-        return f"https://www.rhea-db.org/rhea/{local_id}"
-    if prefix == "WikiPathways" and re.fullmatch(r"WP[0-9]+", local_id):
-        return f"https://www.wikipathways.org/instance/{local_id}"
-    if prefix == "MIBiG" and re.fullmatch(r"BGC[0-9]+(?:\.[0-9]+)?", local_id):
-        return f"https://mibig.secondarymetabolites.org/go/{local_id}"
-    if prefix == "Reactome" and re.fullmatch(r"R-[A-Z]+-[0-9]+(?:\.[0-9]+)?", local_id):
-        return f"https://reactome.org/content/detail/{local_id}"
-    if prefix == "EcoCyc" and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", local_id):
-        return f"https://ecocyc.org/gene?id={local_id}"
-    if prefix == "MetaCyc" and re.fullmatch(r"[A-Za-z0-9_.-]+", local_id):
-        return f"https://metacyc.org/META/NEW-IMAGE?type=PATHWAY&object={local_id}"
-    if prefix == "gomodel" and re.fullmatch(r"[A-Za-z0-9_.-]+", local_id):
-        return f"https://model.geneontology.org/{local_id}"
+    route = _ROUTES.get(prefix)
+    if route and re.fullmatch(route[0], local_id):
+        return route[1].format(quote(local_id, safe=":/"))
     return None
 
 
+def _term_url(identifier: str, category: str = "") -> str | None:
+    """Where a reader can look up a displayed identifier, or None if nowhere.
+
+    `category` is the node category the record declares for it (or "pathway"
+    for the record's own id), which the typed BioCyc and BiGG routes need.
+    Other known namespaces use their routes; an identifier of any other
+    well-formed prefix falls back to bioregistry.io, which resolves or explains
+    every registered prefix.
+    """
+    prefix, _, local_id = identifier.partition(":")
+    if prefix in {"MetaCyc", "EcoCyc", "BiGG"}:
+        route = _TYPED_ROUTES.get((prefix, _KIND_OF_CATEGORY.get(category, "")))
+        if route and _TYPED_ID.fullmatch(local_id):
+            return route.format(quote(local_id, safe=""))
+        return None
+    url = _reference_url(identifier)
+    if url:
+        return url
+    if prefix in _KNOWN_PREFIXES or not _CURIE.fullmatch(identifier):
+        return None
+    return "https://bioregistry.io/" + quote(identifier, safe=":/")
+
+
 def _record_page(record: object, source_path: str | None = None,
-                 sessions: list[dict] | None = None) -> str:
-    """Publish the declared endpoints and evidence without interpreting them."""
+                 sessions: list[dict] | None = None, *,
+                 own_pages: dict[str, str] | None = None, corpus_note: str = "") -> str:
+    """Publish the declared endpoints and evidence without interpreting them.
+
+    `own_pages` maps every published record id to its page beside this one, so
+    an identifier naming another PathwayMech record opens that record.
+    """
     labels: dict[str, set[str]] = {}
     for field in ("taxa", "participants", "reactions", "gene_clusters"):
         for node in getattr(record, field, []):
             labels.setdefault(node["id"], set()).add(node.get("label") or node["id"])
     nodes = {identifier: next(iter(values)) if len(values) == 1 else identifier
              for identifier, values in labels.items()}
+    record_id = getattr(record, "id", "")
+    # The declared category types a BioCyc or BiGG link; the record itself is a pathway.
+    categories = {record_id: "pathway"}
+    for field, default in (("participants", ""), ("reactions", "molecular_activity")):
+        for node in getattr(record, field, []):
+            categories.setdefault(node["id"], node.get("category") or default)
+
+    def curie_html(identifier: str) -> str:
+        """The identifier as code, linked to where a reader can look it up."""
+        code = f"<code>{html.escape(identifier)}</code>"
+        if identifier != record_id and identifier in (own_pages or {}):
+            return f'<a href="{html.escape(own_pages[identifier])}">{code}</a>'
+        url = _term_url(identifier, categories.get(identifier, ""))
+        return f'<a href="{html.escape(url)}">{code}</a>' if url else code
+
     components = []
     component_anchors: dict[str, str] = {}
     detail_only = set(getattr(record, "detail_only_participant_ids", []))
@@ -2183,7 +2354,7 @@ def _record_page(record: object, source_path: str | None = None,
                      if node["id"] in detail_only else "")
             components.append(
                 f'<tr id="{component_anchor}"><td>{label_html(nodes[node["id"]])}<br>'
-                f"<code>{html.escape(node['id'])}</code></td>"
+                f"{curie_html(node['id'])}</td>"
                 f"<td>{html.escape(kind.replace('_', ' '))}{scope}</td>"
                 f"<td>{html.escape(direction.replace('_', ' '))}</td></tr>"
             )
@@ -2198,15 +2369,15 @@ def _record_page(record: object, source_path: str | None = None,
 
     def endpoint(identifier: str, edge: dict, number: int, role: str) -> str:
         label = nodes.get(identifier, identifier)
-        rendered = (f"{label_html(label)}<br><code>{html.escape(identifier)}</code>"
-                    if label != identifier else f"<code>{html.escape(identifier)}</code>")
+        rendered = (f"{label_html(label)}<br>{curie_html(identifier)}"
+                    if label != identifier else curie_html(identifier))
         for qualifier in edge.get("endpoint_qualifiers", []):
             if qualifier["endpoint"] == role:
                 rendered += (
                     '<div class="endpoint-qualifier" '
                     f'id="mechanism-edge-{number}-qualifier-{role}">'
                     f'<p><strong>{html.escape(qualifier["kind"].replace("_", " "))}:</strong> '
-                    f'{html.escape(qualifier["description"])}</p>'
+                    f'{autolink_html(qualifier["description"])}</p>'
                     '<details><summary>Qualification evidence</summary><ul>'
                     + citations_html(qualifier["evidence"]) + '</ul></details></div>'
                 )
@@ -2224,7 +2395,7 @@ def _record_page(record: object, source_path: str | None = None,
                 support = evidence_html(evidence["reference_id"], evidence["quote"])
             else:
                 support = ("<p><strong>Source assertion:</strong> "
-                           f"{html.escape(evidence['source_assertion'])}</p>")
+                           f"{autolink_html(evidence['source_assertion'])}</p>")
             if evidence.get("source_locator"):
                 support += ("<details><summary>Source location</summary><code>"
                             f"{html.escape(evidence['source_locator'])}</code></details>")
@@ -2233,7 +2404,7 @@ def _record_page(record: object, source_path: str | None = None,
 
     rows = []
     for edge_number, edge in enumerate(record.mechanistic_edges, 1):
-        description = html.escape(edge.get("description", ""))
+        description = autolink_html(edge.get("description", ""))
         for mechanism in getattr(record, "reaction_mechanisms", []):
             if (mechanism["relation_to_source"] == "alternative_interpretation"
                     and mechanism["source_reaction_id"] in {edge["subject"], edge["object"]}):
@@ -2258,30 +2429,44 @@ def _record_page(record: object, source_path: str | None = None,
                  else '<p>No mechanistic edges recorded.</p>')
     cited = []
     for ref in references:
-        details = " — ".join(label_html(ref[field])
+        details = " — ".join(rich_text_html(ref[field])
                              for field in ("title", "citation") if ref.get(field))
         identifier = html.escape(ref["id"])
-        source_url = ref.get("url") or _reference_url(ref["id"])
+        # The identifier opens the source's own page; `url` is the exact file or
+        # API response the evidence was read from, which is often machine-readable,
+        # so it stays beside it rather than replacing it.
+        landing = _term_url(ref["id"], categories.get(ref["id"], ""))
+        retrieved = ref.get("url")
+        source_url = landing or retrieved or _reference_url(ref["id"])
         if ref.get("source_version"):
-            details += f" (source version: {html.escape(ref['source_version'])})"
+            details += f" (source version: {autolink_html(ref['source_version'])})"
+        if landing and retrieved and retrieved != landing:
+            details += f' · <a href="{html.escape(retrieved)}">retrieved source</a>'
         reference = (f'<a href="{html.escape(source_url)}">{identifier}</a>'
                      if source_url else identifier)
         cited.append(f'<li id="{ref_anchors[ref["id"]]}"><code>{reference}</code> {details}</li>')
     reference_section = f"<h2>References</h2><ul>{''.join(cited)}</ul>" if cited else ""
-    provenance = (f'<p><a href="https://github.com/CultureBotAI/PathwayMech/blob/main/'
-                  f'{quote(source_path, safe="/")}">Read the source YAML</a></p>'
-                  if source_path else "")
+    actions = []
+    if source_path:
+        actions.append(f'<a href="{GITHUB_BLOB}/{quote(source_path, safe="/")}">'
+                       "Read the source YAML</a>")
+    if record_id:
+        page_url = f"{SITE_URL}records/{_slug(record_id)}.html"
+        report = urlencode({"title": record_id, "body": f"Record page: {page_url}\n"},
+                           quote_via=quote)
+        actions.append(f'<a href="{GITHUB_REPO}/issues/new?{html.escape(report)}">'
+                       "Report a problem with this record</a>")
+    provenance = (f'<p class="record-actions">{" · ".join(actions)}</p>' if actions else "")
     clusters = _gene_clusters(getattr(record, "gene_clusters", []))
-    identifier = html.escape(getattr(record, "id", ""))
-    if getattr(record, "id", None):
-        component_anchors.setdefault(record.id, "pathway-identity")
+    if record_id:
+        component_anchors.setdefault(record_id, "pathway-identity")
     details = mechanism_views(record, nodes, component_anchors, citations_html)
     top_bar = (
         '<div class="downstream-top-bar">'
         '<nav class="breadcrumb" aria-label="Breadcrumb">'
         '<a href="../index.html">PathwayMech</a> <span aria-hidden="true">/</span> '
         '<a href="../browse.html">Browse pathways</a> <span aria-hidden="true">/</span> '
-        f'<span aria-current="page">{identifier}</span></nav>'
+        f'<span aria-current="page">{html.escape(record_id)}</span></nav>'
         '<form class="page-search" action="../browse.html" method="get" role="search">'
         '<label class="visually-hidden" for="record-page-search">Search pathways</label>'
         '<input id="record-page-search" name="q" type="search" '
@@ -2290,8 +2475,8 @@ def _record_page(record: object, source_path: str | None = None,
     )
     return _page(
         record.label,
-        f'{top_bar}<p id="pathway-identity"><code>{identifier}</code></p>'
-        + "".join(f"<p>{label_html(paragraph)}</p>"
+        f'{top_bar}<p id="pathway-identity">{curie_html(record_id)}</p>'
+        + "".join(f"<p>{rich_text_html(paragraph)}</p>"
                   for paragraph in re.split(r"\n\s*\n", record.description))
         + f"{record_metadata(record)}{provenance}{graph_html(record, nodes, component_anchors)}"
         f"{details}"
@@ -2300,6 +2485,7 @@ def _record_page(record: object, source_path: str | None = None,
         stylesheet_href="../style.css",
         extra_head=('<link rel="stylesheet" href="../assets/pathway-network.css">\n'
                     '<script src="../assets/pathway-network.js" defer></script>'),
+        corpus_note=corpus_note,
     )
 
 
@@ -2342,6 +2528,140 @@ def _gene_clusters(clusters: list[dict[str, object]]) -> str:
             "</li>"
         )
     return f"<h2>Biosynthetic gene clusters</h2><ul>{''.join(rendered)}</ul>"
+
+
+@functools.lru_cache(maxsize=4)
+def _schema_reference(schema_path: str, _digest: str) -> str:
+    """The schema page's content, cached on the schema's bytes (`_digest`)."""
+    from linkml_runtime.utils.schemaview import SchemaView
+
+    view = SchemaView(schema_path)
+    classes = view.all_classes()
+    enums = view.all_enums()
+
+    def ranges(slot: Any) -> str:
+        names = [alt.range for alt in (slot.any_of or slot.exactly_one_of or []) if alt.range]
+        out = []
+        for name in names or [slot.range or view.schema.default_range or "string"]:
+            code = f"<code>{html.escape(name)}</code>"
+            kind = "class" if name in classes else "enum" if name in enums else ""
+            out.append(f'<a href="#{kind}-{html.escape(name)}">{code}</a>' if kind else code)
+        return " or ".join(out)
+
+    def slot_row(owner: str, slot: Any) -> str:
+        name = html.escape(slot.name)
+        note = " (identifier)" if slot.identifier else ""
+        cardinality = ("Required" if slot.required or slot.identifier else "Optional") + (
+            ", multivalued" if slot.multivalued else "")
+        pattern = (f'<br><span class="schema-pattern">Pattern '
+                   f'<code>{html.escape(slot.pattern)}</code></span>' if slot.pattern else "")
+        return (f'<tr id="class-{html.escape(owner)}-{name}"><th scope="row"><code>{name}</code>'
+                f"{note}</th><td>{ranges(slot)}</td><td>{cardinality}</td>"
+                f"<td>{html.escape(slot.description or '')}{pattern}</td></tr>")
+
+    sections = []
+    for name, element in classes.items():
+        slots = view.class_induced_slots(name)
+        anchor = html.escape(name)
+        table = (f'<div class="table-scroll" role="region" tabindex="0" '
+                 f'aria-label="{anchor} slots"><table><caption>{anchor} slots ({len(slots)})'
+                 '</caption><thead><tr><th scope="col">Slot</th><th scope="col">Range</th>'
+                 '<th scope="col">Cardinality</th><th scope="col">Description</th></tr>'
+                 f"</thead><tbody>{''.join(slot_row(name, slot) for slot in slots)}</tbody>"
+                 "</table></div>" if slots else "<p>This class declares no slots.</p>")
+        parent = (f' <span class="schema-meta">is a <a href="#class-{html.escape(element.is_a)}">'
+                  f"{html.escape(element.is_a)}</a></span>" if element.is_a else "")
+        sections.append(
+            f'<section class="schema-class" id="class-{anchor}" '
+            f'aria-labelledby="class-{anchor}-heading">'
+            f'<h3 id="class-{anchor}-heading">{anchor}{parent}</h3>'
+            f"<p>{html.escape(element.description or '')}</p>{table}</section>")
+    values = []
+    for name, enum in enums.items():
+        anchor = html.escape(name)
+        entries = []
+        for text, value in (enum.permissible_values or {}).items():
+            meaning = ""
+            if value.meaning:
+                url = _term_url(value.meaning)
+                code = f"<code>{html.escape(value.meaning)}</code>"
+                meaning = f' <a href="{html.escape(url)}">{code}</a>' if url else f" {code}"
+            entries.append(f"<dt><code>{html.escape(text)}</code>{meaning}</dt>"
+                           f"<dd>{html.escape(value.description or 'No description.')}</dd>")
+        values.append(
+            f'<section class="schema-enum" id="enum-{anchor}" '
+            f'aria-labelledby="enum-{anchor}-heading">'
+            f'<h3 id="enum-{anchor}-heading">{anchor}</h3>'
+            f"<p>{html.escape(enum.description or '')}</p>"
+            f'<dl class="schema-values">{"".join(entries)}</dl></section>')
+    source = f"src/pathwaymech/schema/{Path(schema_path).name}"
+    shared = " and ".join(
+        f'<a href="{GITHUB_BLOB}/src/pathwaymech/schema/{name}"><code>{name}</code></a>'
+        for name in ("mech_shared.yaml", "history.yaml"))
+    contents = " · ".join(f'<a href="#class-{html.escape(n)}">{html.escape(n)}</a>'
+                          for n in classes)
+    enum_contents = " · ".join(f'<a href="#enum-{html.escape(n)}">{html.escape(n)}</a>'
+                               for n in enums)
+    return f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">PathwayMech</a> <span aria-hidden="true">/</span>
+      <span aria-current="page">Schema</span></nav>
+    <p>{html.escape(view.schema.description or "")}</p>
+    <p class="schema-meta">Generated by <code>just render-pages</code> from
+      <a href="{GITHUB_BLOB}/{source}"><code>{source}</code></a>, version
+      {html.escape(str(view.schema.version or "not stated"))}. Each class lists the slots
+      LinkML resolves for it. Descriptions are shown as written, without links: the
+      identifiers in them are format examples. Schema licence:
+      <a href="{GITHUB_BLOB}/LICENSE-CODE">{html.escape(view.schema.license or "BSD-3-Clause")}</a>.
+      The vendored fleet schemas {shared} are published as YAML.</p>
+    <nav class="schema-contents" aria-labelledby="schema-contents-title">
+      <h2 id="schema-contents-title">Contents</h2>
+      <p><strong>Classes:</strong> {contents}</p>
+      <p><strong>Enumerations:</strong> {enum_contents}</p></nav>
+    <section aria-labelledby="schema-classes">
+      <h2 id="schema-classes">Classes ({len(classes)})</h2>{"".join(sections)}</section>
+    <section aria-labelledby="schema-enums">
+      <h2 id="schema-enums">Enumerations ({len(enums)})</h2>{"".join(values)}</section>"""
+
+
+def _schema_page(*, corpus_note: str = "", schema_path: Path = SCHEMA_PATH) -> str:
+    """Readable documentation of the record schema, read from the schema itself.
+
+    Every class with its induced slots and every enumeration with its values,
+    in the schema's own order and with no clock, so an unchanged schema renders
+    the same bytes and the pages/ check covers it.
+    """
+    digest = hashlib.sha256(schema_path.read_bytes()).hexdigest()
+    return _page("PathwayMech schema", _schema_reference(str(schema_path), digest),
+                 corpus_note=corpus_note)
+
+
+def _not_found_page(root: Path, *, record_count: int = 0, corpus_note: str = "") -> str:
+    """What GitHub Pages serves, with HTTP 404, at any address the site lacks.
+
+    The Pages workflow copies it to the artifact root, where GitHub looks for
+    it. It is served at the missing address, where no relative link resolves,
+    so its links are absolute, and the stylesheet and theme script are embedded
+    rather than loaded from culturebotai.github.io, which the site check counts
+    as a third-party asset.
+    """
+    stylesheet = root / "pages" / "style.css"
+    css = stylesheet.read_text(encoding="utf-8") if stylesheet.is_file() else ""
+    count = f"{record_count:,} " if record_count else ""
+    body = f"""<p>There is no page at this address. Record pages are named after the
+      record's identifier, with <code>:</code> and <code>/</code> replaced by
+      <code>_</code>.</p>
+    <form class="page-search" action="{SITE_URL}browse.html" method="get" role="search">
+      <label class="visually-hidden" for="not-found-search">Search pathways</label>
+      <input id="not-found-search" name="q" type="search"
+             placeholder="Search pathways, organisms, or IDs...">
+      <button type="submit">Search</button></form>
+    <ul class="not-found-routes">
+      <li><a href="{SITE_URL}browse.html">Browse all {count}pathway records</a></li>
+      <li><a href="{SITE_URL}index.html">PathwayMech overview</a></li>
+      <li><a href="{GITHUB_REPO}/issues/new">Report a broken link</a></li>
+    </ul>"""
+    return _page("PathwayMech: page not found", body, site_root=SITE_URL, inline_css=css,
+                 corpus_note=corpus_note, extra_head='<meta name="robots" content="noindex">')
 
 
 def _slug(identifier: str) -> str:

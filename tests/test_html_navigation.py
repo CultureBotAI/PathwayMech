@@ -41,7 +41,10 @@ def test_record_displays_declared_labels_each_evidence_quote_and_real_source_pat
                      "Source paper", "Second source"]:
         assert expected in text
     scripts = [attrs for tag, attrs in parsed.elements if tag == "script"]
-    assert scripts == [{"src": "../assets/pathway-network.js", "defer": None}]
+    # No inline script: the theme control, which must run before first paint,
+    # and the deferred network enhancement are both files.
+    assert scripts == [{"src": "../assets/theme.js"},
+                       {"src": "../assets/pathway-network.js", "defer": None}]
     links = [attrs.get("href") for tag, attrs in parsed.elements if tag == "a"]
     for link in ["../browse.html", "../index.html", "#reference-1", "#reference-2",
                  "https://culturebotai.github.io/mechs/",

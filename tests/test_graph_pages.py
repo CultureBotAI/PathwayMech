@@ -132,7 +132,9 @@ def test_every_published_graph_preserves_directed_edges_and_evidence_targets(rec
                     assert any(attrs.get("id") == anchor for _, attrs in parsed.elements)
                 else:
                     assert display_key == edge[role], (name, row_id, role)
-            row = " ".join(parsed.rows[row_id])
+            # The row's text as a reader sees it: a citation linked inside a
+            # source assertion splits the parser's text into several pieces.
+            row = "".join(parsed.rows[row_id])
             for evidence in edge["evidence"]:
                 assert evidence["reference_id"] in row, (name, row_id)
                 if "source_assertion" in evidence:
@@ -158,7 +160,7 @@ def test_every_published_graph_preserves_directed_edges_and_evidence_targets(rec
                 assert native_triple(diagram_edge) == (
                     endpoints[0], edge["predicate"], endpoints[1]
                 ), (name, row_id)
-                row = " ".join(parsed.rows[row_id])
+                row = "".join(parsed.rows[row_id])
                 for evidence in edge["evidence"]:
                     assert evidence["reference_id"] in row, (name, row_id)
                     for field in ("source_assertion", "source_locator", "quote"):
