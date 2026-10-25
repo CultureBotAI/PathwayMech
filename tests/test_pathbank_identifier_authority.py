@@ -21,6 +21,7 @@ from pathwaymech.pathbank_provenance import (
     PATHBANK_ARCHIVE_URL,
     PATHBANK_ARCHIVE_VERSION,
     build_pathbank_archive_manifest_entry,
+    inspect_pathbank_archive_member,
 )
 from scripts.build_source_identifier_snapshot import (
     build_snapshot,
@@ -1062,6 +1063,18 @@ def test_build_pathbank_archive_manifest_entry_computes_exact_closed_provenance(
         ),
         ("PW9999999.owl", "SMP9999999", {"key": " "}, "key must be a non-empty string"),
         ("PW9999999.owl", "SMP9999999", {"path": ""}, "path must be a non-empty string"),
+        (
+            "PW9999999.owl",
+            "SMP9999999",
+            {"path": "/etc/primary.zip"},
+            "relative path without parent traversal",
+        ),
+        (
+            "PW9999999.owl",
+            "SMP9999999",
+            {"path": "../primary.zip"},
+            "relative path without parent traversal",
+        ),
     ],
 )
 def test_build_pathbank_archive_manifest_entry_rejects_invalid_inputs(
@@ -1087,4 +1100,45 @@ def test_build_pathbank_archive_manifest_entry_rejects_duplicate_or_non_rdf_memb
     with pytest.raises(ValueError, match="native RDF/BioPAX"):
         build_pathbank_archive_manifest_entry(non_rdf_zip, "PW9999999.owl", "SMP9999999")
 
+    bad_zip = tmp_path / "bad.zip"
+    bad_zip.write_bytes(b"not a zip archive")
+    with pytest.raises(ValueError, match="valid ZIP archive"):
+        build_pathbank_archive_manifest_entry(bad_zip, "PW9999999.owl", "SMP9999999")
 
+
+def test_inspect_pathbank_archive_member_enumerates_native_terms_and_external_xrefs(tmp_path):
+    root = native_source()
+    add_stub(root)
+    uniprot_xref = ET.SubElement(root, BP + "UnificationXref", {RDF + "ID": "uniprot-xref"})
+    ET.SubElement(uniprot_xref, BP + "db").text = "UniProt"
+    ET.SubElement(uniprot_xref, BP + "id").text = "P0A9T0"
+    taxon_xref = ET.SubElement(root, BP + "UnificationXref", {RDF + "ID": "taxon-xref"})
+    ET.SubElement(taxon_xref, BP + "db").text = "TAXONOMY"
+    ET.SubElement(taxon_xref, BP + "id").text = "562"
+    path, expected = archive_fixture(tmp_path, root)
+    summary = inspect_pathbank_archive_member(path, "PW9999999.owl", "SMP9999999")
+    assert summary == {
+        "manifest_entry": {
+            "key": "pathbank-primary-2019-PW9999999-SMP9999999",
+            "kind": PATHBANK_ARCHIVE_KIND,
+            "path": PATHBANK_ARCHIVE_DEFAULT_PATH,
+            "url": PATHBANK_ARCHIVE_URL,
+            "version": PATHBANK_ARCHIVE_VERSION,
+            "license": PATHBANK_ARCHIVE_LICENSE,
+            "sha256": expected["sha256"],
+            "archive": expected["archive"],
+        },
+        "pathway_id": PATHWAY,
+        "pathway_label": "Native pathway title",
+        "native_term_ids": [
+            PATHWAY,
+            "PathBank:SMP9999998",
+            PATHWAY + "/Reactions/7",
+            PATHWAY + "/ProteinComplex/8",
+        ],
+        "external_xrefs": {
+            "CHEBI": ["CHEBI:15377"],
+            "NCBITaxon": ["NCBITaxon:562"],
+            "UniProtKB": ["UniProtKB:P0A9T0"],
+        },
+    }

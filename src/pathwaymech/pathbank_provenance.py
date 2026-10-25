@@ -41,7 +41,7 @@ def validate_pathbank_archive(url: str, sha256: str, archive: Any) -> None:
         raise ValueError("PathBank ZIP requires exact native member, hash and root identities")
 
 
-def build_pathbank_archive_manifest_entry(
+def _parse_validated_archive_member(
     archive_path: Path,
     member: str,
     root: str,
@@ -50,27 +50,34 @@ def build_pathbank_archive_manifest_entry(
     path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
     version: str = PATHBANK_ARCHIVE_VERSION,
     license: str = PATHBANK_ARCHIVE_LICENSE,
-) -> dict[str, Any]:
-    """Build and validate a closed PathBank primary BioPAX ZIP manifest entry."""
+) -> tuple[dict[str, Any], ElementTree.Element, list[tuple[str, str, list[str]]]]:
     if not isinstance(member, str) or not re.fullmatch(r"PW[0-9]+\.owl", member):
         raise ValueError("PathBank ZIP requires an exact PW[0-9]+.owl member name")
     if not isinstance(root, str) or not re.fullmatch(r"SMP[0-9]+", root):
         raise ValueError("PathBank ZIP requires an exact SMP[0-9]+ root accession")
     if not isinstance(path, str) or not path.strip():
         raise ValueError("PathBank ZIP manifest path must be a non-empty string")
+    relative_path = Path(path)
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        raise ValueError(
+            "PathBank ZIP manifest path must be a relative path without parent traversal"
+        )
     if not isinstance(version, str) or not version.strip():
         raise ValueError("PathBank ZIP manifest version must be a non-empty string")
     if not isinstance(license, str) or not license.strip():
         raise ValueError("PathBank ZIP manifest license must be a non-empty string")
     archive_raw = Path(archive_path).read_bytes()
     archive_sha256 = hashlib.sha256(archive_raw).hexdigest()
-    with zipfile.ZipFile(archive_path, "r") as zf:
-        members = [info for info in zf.infolist() if info.filename == member]
-        if not members:
-            raise ValueError(f"PathBank ZIP archive missing member: {member}")
-        if len(members) != 1 or members[0].is_dir():
-            raise ValueError("PathBank ZIP requires one exact member")
-        member_raw = zf.read(members[0])
+    try:
+        with zipfile.ZipFile(archive_path, "r") as zf:
+            members = [info for info in zf.infolist() if info.filename == member]
+            if not members:
+                raise ValueError(f"PathBank ZIP archive missing member: {member}")
+            if len(members) != 1 or members[0].is_dir():
+                raise ValueError("PathBank ZIP requires one exact member")
+            member_raw = zf.read(members[0])
+    except zipfile.BadZipFile as exc:
+        raise ValueError("PathBank ZIP requires a valid ZIP archive") from exc
     try:
         xml_root = ElementTree.fromstring(member_raw)
     except ElementTree.ParseError as exc:
@@ -83,7 +90,7 @@ def build_pathbank_archive_manifest_entry(
         raise ValueError("PathBank ZIP member requires native RDF/BioPAX object types")
     from pathwaymech.pathbank_context import pathbank_terms
 
-    list(pathbank_terms(xml_root, url=PATHBANK_ARCHIVE_URL, archive_root=root))
+    terms = list(pathbank_terms(xml_root, url=PATHBANK_ARCHIVE_URL, archive_root=root))
     archive = {
         "bytes": len(archive_raw),
         "member": member,
@@ -99,7 +106,7 @@ def build_pathbank_archive_manifest_entry(
     )
     if not isinstance(resolved_key, str) or not resolved_key.strip():
         raise ValueError("PathBank ZIP manifest key must be a non-empty string")
-    return {
+    manifest_entry = {
         "key": resolved_key,
         "kind": PATHBANK_ARCHIVE_KIND,
         "path": path,
@@ -108,5 +115,87 @@ def build_pathbank_archive_manifest_entry(
         "license": license,
         "sha256": archive_sha256,
         "archive": archive,
+    }
+    return manifest_entry, xml_root, terms
+
+
+def build_pathbank_archive_manifest_entry(
+    archive_path: Path,
+    member: str,
+    root: str,
+    *,
+    key: str | None = None,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> dict[str, Any]:
+    """Build and validate a closed PathBank primary BioPAX ZIP manifest entry."""
+    manifest_entry, _, _ = _parse_validated_archive_member(
+        archive_path,
+        member,
+        root,
+        key=key,
+        path=path,
+        version=version,
+        license=license,
+    )
+    return manifest_entry
+
+
+def inspect_pathbank_archive_member(
+    archive_path: Path,
+    member: str,
+    root: str,
+    *,
+    key: str | None = None,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> dict[str, Any]:
+    """Validate a PathBank ZIP member and summarize its native terms and external xref CURIEs.
+
+    External UnificationXref CURIEs (CHEBI, NCBITaxon, UniProtKB) are enumerated
+    purely for pre-ingestion authority auditing against their respective issuing
+    authorities; they are never used as identifier-label authorities by
+    ``pathbank_terms``.
+    """
+    manifest_entry, xml_root, terms = _parse_validated_archive_member(
+        archive_path,
+        member,
+        root,
+        key=key,
+        path=path,
+        version=version,
+        license=license,
+    )
+    bp = "{http://www.biopax.org/release/biopax-level3.owl#}"
+    chebi_ids: set[str] = set()
+    taxon_ids: set[str] = set()
+    uniprot_ids: set[str] = set()
+    for node in xml_root.findall(bp + "UnificationXref"):
+        db = (node.findtext(bp + "db") or "").strip()
+        ident = (node.findtext(bp + "id") or "").strip()
+        if db == "ChEBI":
+            match = re.fullmatch(r"(?:CHEBI:)?([0-9]+)", ident)
+            if match:
+                chebi_ids.add(f"CHEBI:{match[1]}")
+        elif db == "TAXONOMY":
+            match = re.fullmatch(r"(?:NCBITaxon:)?([0-9]+)", ident)
+            if match:
+                taxon_ids.add(f"NCBITaxon:{match[1]}")
+        elif db == "UniProt":
+            match = re.fullmatch(r"(?:UniProtKB:)?([A-Z0-9]{6,10})", ident)
+            if match:
+                uniprot_ids.add(f"UniProtKB:{match[1]}")
+    return {
+        "manifest_entry": manifest_entry,
+        "pathway_id": terms[0][0],
+        "pathway_label": terms[0][1],
+        "native_term_ids": [term_id for term_id, _, _ in terms],
+        "external_xrefs": {
+            "CHEBI": sorted(chebi_ids),
+            "NCBITaxon": sorted(taxon_ids),
+            "UniProtKB": sorted(uniprot_ids),
+        },
     }
 
