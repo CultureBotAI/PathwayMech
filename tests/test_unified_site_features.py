@@ -497,8 +497,10 @@ def test_citations_link_in_every_part_of_a_record_page():
 # Every page states its licences and a dated corpus version
 # --------------------------------------------------------------------------
 
-def test_every_page_type_footer_states_the_licences_and_the_corpus_date():
-    files = render_site([record(curation_history=[{"timestamp": "2026-10-01T09:30:00Z"}])])
+def test_every_page_type_footer_states_the_licences_and_a_dated_version():
+    files = render_site([record(curation_history=[{"timestamp": "2026-10-01T09:30:00Z"}]),
+                         record(id="MetaCyc:PWY-LATER", label="Later",
+                                curation_history=[{"timestamp": "2026-10-05T12:00:00Z"}])])
     for name, page in files.items():
         if not name.endswith(".html"):
             continue
@@ -508,7 +510,36 @@ def test_every_page_type_footer_states_the_licences_and_the_corpus_date():
         assert hrefs(footer)[:3] == licences, name
         assert "Project data:" in footer and "CC BY 4.0" in footer and "BSD-3-Clause" in footer
         assert "Third-party source material keeps its own terms" in footer
-        assert "Corpus as of 2026-10-01 09:30 UTC · 1 pathway record" in footer, name
+        if name.startswith("records/"):
+            # A record page states its own record's date, never the corpus's.
+            assert "Corpus as of" not in footer and "pathway record" not in footer, name
+        else:
+            assert "Corpus as of 2026-10-05 12:00 UTC · 2 pathway records" in footer, name
+    test_page = between(files["records/MetaCyc_PWY-TEST.html"], '<footer class="site-footer">',
+                        "</footer>")
+    assert "Record as of 2026-10-01 09:30 UTC" in test_page
+
+
+def test_a_record_page_does_not_change_when_another_record_does():
+    """A corpus-wide date or count in record footers rewrote every record page on
+    each curation commit, so concurrent record PRs conflicted on all of them."""
+    stable = record(id="MetaCyc:PWY-A", label="A",
+                    curation_history=[{"timestamp": "2026-10-01T09:30:00Z"}])
+
+    def site(moving_date: str, extra: bool = False) -> dict[str, str]:
+        moving = record(id="MetaCyc:PWY-B", label="B",
+                        curation_history=[{"timestamp": moving_date}])
+        added = [record(id="MetaCyc:PWY-C", label="C")] if extra else []
+        return render_site([stable, moving, *added])
+
+    before = site("2026-10-02T00:00:00Z")
+    curated = site("2026-10-20T00:00:00Z")
+    grown = site("2026-10-02T00:00:00Z", extra=True)
+    page = "records/MetaCyc_PWY-A.html"
+    assert curated[page] == before[page], "another record's curation rewrote this page"
+    assert grown[page] == before[page], "adding a record rewrote this page"
+    assert curated["records/MetaCyc_PWY-B.html"] != before["records/MetaCyc_PWY-B.html"]
+    assert curated["index.html"] != before["index.html"], "aggregate pages keep the corpus date"
 
 
 def test_footer_licences_are_what_the_licence_files_say():

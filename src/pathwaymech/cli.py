@@ -237,6 +237,16 @@ def _corpus_note(records: list, sessions: list[list[dict]]) -> str:
     return f"Corpus as of {as_of} · {count}" if as_of else count
 
 
+def _record_note(record: object, sessions: list[dict]) -> str:
+    """A record page's dated version: its own latest recorded curation.
+
+    Never the corpus date or count, which would make every curation commit
+    rewrite every record page and every concurrent record PR conflict.
+    """
+    as_of = corpus_as_of([record], [sessions])
+    return f"Record as of {as_of}" if as_of else ""
+
+
 def _map_urls(payload: dict[str, Any]) -> set[str]:
     """Every record page an embedding map's points open."""
     urls = set()
@@ -296,7 +306,8 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
         )
         source_path = (source_paths or {}).get(record.id)
         files[f"records/{slug}.html"] = _record_page(
-            record, source_path, sessions[record.id], own_pages=own_pages, corpus_note=note,
+            record, source_path, sessions[record.id], own_pages=own_pages,
+            record_note=_record_note(record, sessions[record.id]),
         )
 
     browse_body = "\n".join(rows) if rows else "<p>No curated pathway records yet.</p>"
@@ -310,7 +321,7 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
         + '<div class="browse-results">'
         + f'<ul class="record-list" id="pathway-list">{browse_body}</ul>'
         + "</div></div>",
-        corpus_note=note,
+        provenance=note,
     )
     corpus_map = _load_or_fallback_corpus_map(records, root)
     sequence_map = _load_or_fallback_sequence_map(records, root)
@@ -442,7 +453,7 @@ ESM-2 sequence embedding coordinates (JSON)</a>.</p>
         Third-party source material keeps its own terms
         (<a href="{gh_blob}/LICENSE">licence scope</a>).</p>
     </section>"""
-    return _page("PathwayMech", body, homepage=True, corpus_note=corpus_note)
+    return _page("PathwayMech", body, homepage=True, provenance=corpus_note)
 
 
 def _files_under(pages: Path) -> set[str]:
@@ -1148,8 +1159,10 @@ def import_veupathdb_main(argv: list[str] | None = None) -> int:
 
 def _page(
     title: str, body: str, stylesheet_href: str = "style.css", *, homepage: bool = False,
-    extra_head: str = "", corpus_note: str = "",
+    extra_head: str = "", provenance: str = "",
 ) -> str:
+    """One page in the site shell. `provenance` is the dated version its footer
+    states: the corpus's on aggregate pages, the record's own on a record page."""
     root = html.escape(stylesheet_href.removesuffix("style.css"))
     # The theme script loads in <head>, without defer, so a saved theme is set
     # before the first paint.
@@ -1157,7 +1170,7 @@ def _page(
               f'  <script src="{root}assets/theme.js"></script>')
     body_class = ' class="home-page"' if homepage else ""
     heading = "" if homepage else f"    <h1>{label_html(title)}</h1>"
-    corpus = f"\n    <p>{html.escape(corpus_note)}</p>" if corpus_note else ""
+    dated = f"\n    <p>{html.escape(provenance)}</p>" if provenance else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -1189,7 +1202,7 @@ aria-label="Toggle dark mode">Theme</button>
     <p>Project data: <a href="{GITHUB_BLOB}/LICENSE-DATA">CC BY 4.0</a>.
       Code: <a href="{GITHUB_BLOB}/LICENSE-CODE">BSD-3-Clause</a>.
       Third-party source material keeps its own terms
-      (<a href="{GITHUB_BLOB}/LICENSE">licence scope</a>).</p>{corpus}
+      (<a href="{GITHUB_BLOB}/LICENSE">licence scope</a>).</p>{dated}
     <p>Part of the CultureBotAI Mech knowledge bases.
       <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a></p>
   </footer>
@@ -1964,7 +1977,7 @@ aria-label="2D corpus embedding scatter plot"></canvas>
       draw();
     }});
     </script>"""
-    return _page("PathwayMech text embedding map", body, corpus_note=corpus_note)
+    return _page("PathwayMech text embedding map", body, provenance=corpus_note)
 
 
 def _sequence_map_page(records: list, *, root: Path = ROOT,
@@ -2317,7 +2330,7 @@ aria-label="2D ESM-2 sequence embedding scatter plot"></canvas>
     }});
     </script>"""
     return _page("PathwayMech sequence embedding map (ESM-2 pLM)", body,
-                 corpus_note=corpus_note)
+                 provenance=corpus_note)
 
 
 # The public page for each namespace a record page shows: the local-id shape a
@@ -2417,7 +2430,7 @@ def _term_url(identifier: str, category: str = "") -> str | None:
 
 def _record_page(record: object, source_path: str | None = None,
                  sessions: list[dict] | None = None, *,
-                 own_pages: dict[str, str] | None = None, corpus_note: str = "") -> str:
+                 own_pages: dict[str, str] | None = None, record_note: str = "") -> str:
     """Publish the declared endpoints and evidence without interpreting them.
 
     `own_pages` maps every published record id to its page beside this one, so
@@ -2589,7 +2602,7 @@ def _record_page(record: object, source_path: str | None = None,
         stylesheet_href="../style.css",
         extra_head=('<link rel="stylesheet" href="../assets/pathway-network.css">\n'
                     '<script src="../assets/pathway-network.js" defer></script>'),
-        corpus_note=corpus_note,
+        provenance=record_note,
     )
 
 
@@ -2736,7 +2749,7 @@ def _schema_page(*, corpus_note: str = "", schema_path: Path = SCHEMA_PATH) -> s
     """
     digest = hashlib.sha256(schema_path.read_bytes()).hexdigest()
     return _page("PathwayMech schema", _schema_reference(str(schema_path), digest),
-                 corpus_note=corpus_note)
+                 provenance=corpus_note)
 
 
 def _not_found_page() -> str:
