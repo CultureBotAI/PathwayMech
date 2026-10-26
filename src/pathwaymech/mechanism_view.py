@@ -11,7 +11,7 @@ from collections.abc import Callable
 
 from pathwaymech.graph_view import display_graph_html
 from pathwaymech.reaction_mechanisms import mechanism_equation
-from pathwaymech.site_display import label_html, plain_label
+from pathwaymech.site_display import autolink_html, label_html, plain_label
 
 
 def mechanism_anchor(record_id: str, mechanism_key: str, kind: str, key: str = "") -> str:
@@ -66,7 +66,7 @@ def mechanism_views(
             f'<h2 id="{anchor("heading")}">{html.escape(heading)}</h2>',
             f'<p><strong>Relation to source:</strong> {html.escape(relation)}. '
             f'<strong>Parent reaction:</strong> {chemical(owner)}.</p>',
-            f'<p>{html.escape(mechanism["description"])}</p>',
+            f'<p>{autolink_html(mechanism["description"])}</p>',
             '<p>Steps below are evidence-bearing claims within this record. '
             'They do not assert new external reaction identities.</p>',
             '<h3>Association evidence</h3>', evidence(mechanism["evidence"]),
@@ -95,7 +95,7 @@ def mechanism_views(
                     + chemical(conflict["source_participant_id"]) + '<br>'
                     '<strong>Interpreted identity:</strong> '
                     + chemical(conflict["interpreted_participant_id"]) + '</p>',
-                    f'<p>{html.escape(conflict["rationale"])}</p>',
+                    f'<p>{autolink_html(conflict["rationale"])}</p>',
                     evidence(conflict["evidence"]), '</article>',
                 ]
         locations = [edge for edge in mechanism["edges"] if edge["predicate"] == "occurs_in"]
@@ -125,7 +125,7 @@ def mechanism_views(
                     kind_label = html.escape(qualifier["kind"].replace("_", " "))
                     content += (f'<div class="endpoint-qualifier" id="{target}">'
                                 f'<p><strong>{kind_label}:</strong> '
-                                f'{html.escape(qualifier["description"])}</p>'
+                                f'{autolink_html(qualifier["description"])}</p>'
                                 + evidence(qualifier["evidence"]) + '</div>')
             return content
 
@@ -169,12 +169,12 @@ def mechanism_views(
         for step in mechanism["steps"]:
             pieces += [f'<article class="mechanism-step" id="{anchor("step", step["key"])}">',
                        f'<h4>{label_html(step["label"])} {_badge(step["assertion_status"])}</h4>',
-                       f'<p>{html.escape(step["description"])}</p>', evidence(step["evidence"])]
+                       f'<p>{autolink_html(step["description"])}</p>', evidence(step["evidence"])]
             for index, hypothesis in enumerate(step.get("hypotheses", []), 1):
                 target = anchor("hypothesis", json.dumps([step["key"], index]))
                 pieces += [f'<aside class="mechanism-hypothesis" id="{target}">',
                            '<h5>Mechanistic hypothesis ' + _badge(hypothesis["status"]) + '</h5>',
-                           f'<p>{html.escape(hypothesis["description"])}</p>',
+                           f'<p>{autolink_html(hypothesis["description"])}</p>',
                            evidence(hypothesis["evidence"]), '</aside>']
             pieces.append('</article>')
         pieces.append('<h3>Detailed relationships and evidence</h3>'
@@ -191,7 +191,7 @@ def mechanism_views(
             pieces.append(f'<tr id="{anchor("edge", edge["key"])}">'
                           f'<td>{endpoint(edge["subject"], edge, "subject")}</td>'
                           f'<td>{claim} {_badge(edge["assertion_status"])}'
-                          f'<p>{html.escape(edge.get("description", ""))}</p></td>'
+                          f'<p>{autolink_html(edge.get("description", ""))}</p></td>'
                           f'<td>{endpoint(edge["object"], edge, "object")}</td>'
                           f'<td>{evidence(edge["evidence"])}</td></tr>')
         pieces.append('</tbody></table></div></section>')

@@ -4,16 +4,34 @@
   --text: #102033;
   --muted: #526173;
   --link: #2563eb;
+  --card: #ffffff;
+  --border: #cbd5e1;
 }
 
+/* Dark values are declared twice, identically: for the operating system's
+   preference unless the reader chose light, and for a chosen dark theme
+   (assets/theme.js sets data-theme). A token changed in one block and not the
+   other themes correctly one way and wrongly the other. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #0f172a;
     --text: #f8fafc;
     --muted: #cbd5e1;
     --link: #93c5fd;
+    --card: #1e293b;
+    --border: #334155;
   }
 }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #0f172a;
+  --text: #f8fafc;
+  --muted: #cbd5e1;
+  --link: #93c5fd;
+  --card: #1e293b;
+  --border: #334155;
+}
+:root[data-theme="light"] { color-scheme: light; }
 
 body {
   margin: 0;
@@ -139,15 +157,13 @@ blockquote { margin: .4rem 0 1rem; }
 .home-card h3 { margin: 0; font-size: 1.25rem; }
 .home-card p { color: var(--muted); margin: 1rem 0 1.5rem; }
 .home-card a { margin-top: auto; font-weight: 600; }
-.home-footer { padding: 1.5rem 24px 2.5rem; text-align: center; color: var(--muted); }
-.home-footer a { display: inline-block; margin: .5rem; }
 @media (max-width: 800px) {
   .home-cards { grid-template-columns: 1fr; }
   .home-hero { padding: 2.5rem 24px; }
   .home-stat { flex-basis: 130px; }
 }
 @media (prefers-color-scheme: dark) {
-  .home-page {
+  :root:not([data-theme="light"]) .home-page {
     --home-card: #18243a;
     --home-border: #40506b;
     --home-hero-start: #1a2c48;
@@ -157,23 +173,7 @@ blockquote { margin: .4rem 0 1rem; }
     --home-on-accent: #102033;
   }
 }
-
-/* Long identifiers, exact source extracts and graph fingerprints stay local. */
-main { overflow-wrap: anywhere; max-width: 1200px; }
-pre { max-width: 100%; overflow: auto; white-space: pre-wrap; }
-dt { font-weight: 650; }
-dd { margin: 0 0 1rem; }
-details { margin-block: .5rem; }
-
-[data-theme="dark"] {
-  --bg: #0f172a;
-  --fg: #e2e8f0;
-  --muted: #94a3b8;
-  --border: #334155;
-  --accent: #38bdf8;
-  --card: #1e293b;
-}
-[data-theme="dark"] .home-page {
+:root[data-theme="dark"] .home-page {
   --home-card: #18243a;
   --home-border: #40506b;
   --home-hero-start: #1a2c48;
@@ -182,14 +182,25 @@ details { margin-block: .5rem; }
   --home-accent: #93c5fd;
   --home-on-accent: #102033;
 }
-[data-theme="light"] {
-  --bg: #f8fafc;
-  --fg: #0f172a;
-  --muted: #475569;
-  --border: #cbd5e1;
-  --accent: #0f766e;
-  --card: #ffffff;
+
+/* Every page: licences, the corpus version and the Mech directory. */
+.site-footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 24px 2.5rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: .9rem;
+  text-align: center;
 }
+.site-footer p { margin: .4rem 0; }
+
+/* Long identifiers, exact source extracts and graph fingerprints stay local. */
+main { overflow-wrap: anywhere; max-width: 1200px; }
+pre { max-width: 100%; overflow: auto; white-space: pre-wrap; }
+dt { font-weight: 650; }
+dd { margin: 0 0 1rem; }
+details { margin-block: .5rem; }
 
 .visually-hidden {
   position: absolute;
@@ -211,7 +222,7 @@ details { margin-block: .5rem; }
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--card);
-  color: var(--fg);
+  color: var(--text);
   cursor: pointer;
 }
 
@@ -230,15 +241,15 @@ details { margin-block: .5rem; }
   border: 1px solid var(--home-border, var(--border));
   border-radius: 10px;
   background: var(--card);
-  color: var(--fg);
+  color: var(--text);
 }
 .hero-search button {
   padding: 0.75rem 1.3rem;
   font: inherit;
   font-weight: 600;
-  border: 1px solid var(--home-accent, var(--accent));
+  border: 1px solid var(--home-accent, var(--link));
   border-radius: 10px;
-  background: var(--home-accent, var(--accent));
+  background: var(--home-accent, var(--link));
   color: var(--home-on-accent, #ffffff);
   cursor: pointer;
 }
@@ -274,7 +285,7 @@ details { margin-block: .5rem; }
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card);
-  color: var(--fg);
+  color: var(--text);
 }
 .page-search button {
   padding: 0.4rem 0.8rem;
@@ -283,7 +294,7 @@ details { margin-block: .5rem; }
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card);
-  color: var(--fg);
+  color: var(--text);
   cursor: pointer;
 }
 
@@ -316,7 +327,7 @@ details { margin-block: .5rem; }
 .facet-group label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--fg);
+  color: var(--text);
 }
 .facet-group input,
 .facet-group select {
@@ -327,8 +338,8 @@ details { margin-block: .5rem; }
   font-size: 0.9rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--background);
+  color: var(--text);
 }
 .facet-actions {
   display: flex;
@@ -341,8 +352,8 @@ details { margin-block: .5rem; }
   font-size: 0.9rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--background);
+  color: var(--text);
   cursor: pointer;
 }
 .facet-status {
@@ -391,7 +402,7 @@ details { margin-block: .5rem; }
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--card);
-  color: var(--fg);
+  color: var(--text);
   font-size: 0.82rem;
   line-height: 1.35;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
@@ -424,11 +435,61 @@ details { margin-block: .5rem; }
 }
 
 @media (max-width: 860px) {
+  /* minmax(0, ...), as on wide screens: a bare 1fr grows to fit a wide table,
+     which then widens the page instead of scrolling in its own region. */
   .browse-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .facet-sidebar {
     position: static;
   }
 }
 
+
+.map-coverage {
+  color: var(--muted);
+  font-size: .9rem;
+}
+.record-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem .75rem;
+}
+.theme-toggle[aria-pressed="true"] {
+  border-color: var(--link);
+}
+
+/* The schema reference generated from the LinkML schema. */
+.schema-meta,
+.schema-pattern {
+  color: var(--muted);
+  font-size: .9rem;
+}
+.schema-class,
+.schema-enum {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+.schema-class h3,
+.schema-enum h3 {
+  margin-top: 0;
+}
+.schema-values dt {
+  margin-top: .5rem;
+}
+
+.not-found-routes {
+  line-height: 2;
+}
+
+/* The data-table alternative to each embedding map. */
+.map-table {
+  margin-top: 1rem;
+}
+.map-table summary {
+  cursor: pointer;
+  font-weight: 600;
+}

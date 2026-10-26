@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PathwayMech</title>
   <link rel="stylesheet" href="style.css">
+  <script src="assets/theme.js"></script>
 
 </head>
 <body class="home-page">
@@ -14,7 +15,8 @@
     <a href="browse.html">Browse pathways</a>
     <a href="map.html">Text map</a>
     <a href="sequence-map.html">Sequence map (pLM)</a>
-    <a href="index.html#downloads-title">Downloads &amp; Schema</a>
+    <a href="index.html#downloads-title">Downloads</a>
+    <a href="schema.html">Schema</a>
     <a href="https://github.com/CultureBotAI/PathwayMech">Source</a>
     <a href="https://culturebotai.github.io/mechs/">All Mech projects</a>
     <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">Theme</button>
@@ -48,7 +50,7 @@
       <div class="home-cards">
         <article class="home-card">
           <h3>Pathway browser</h3>
-          <p>Filter and search the published collection by pathway class, organism, protein grounding, or identifier.</p>
+          <p>Filter and search the published collection by pathway type, organism, protein grounding, or identifier.</p>
           <a href="browse.html">Browse pathway records <span aria-hidden="true">→</span></a>
         </article>
         <article class="home-card">
@@ -77,40 +79,28 @@
         <a href="pathway_index.json" download>Pathway index (JSON)</a>, and
         <a href="downloads/manifest.json">Version, row counts and file checksums</a>.</p>
       <p><strong>LinkML Schema &amp; Data Model:</strong>
+        <a href="schema.html">Schema reference (every class, slot and enumeration, generated from the schema)</a> ·
         <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/src/pathwaymech/schema/pathwaymech.yaml">PathwayMech LinkML schema (<code>pathwaymech.yaml</code>)</a> ·
         <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/src/pathwaymech/schema/mech_shared.yaml">Shared X-Mech primitives (<code>mech_shared.yaml</code>)</a> ·
         <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/src/pathwaymech/schema/history.yaml">Curation history schema (<code>history.yaml</code>)</a> ·
         <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/conf/sources.yaml">Source authority registry (<code>sources.yaml</code>)</a> ·
         <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/data/embeddings/corpus_map.json">Corpus text embedding coordinates (JSON)</a> ·
         <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/data/embeddings/sequence_map.json">ESM-2 sequence embedding coordinates (JSON)</a>.</p>
-      <p>Graph version: <code>399aea02a991eca34a6b29f72d28add69cf17dd1de9495eebfb9676d199035e4</code>.
-        Data: <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>;
-        upstream source terms still apply.</p>
+      <p>Graph version: <code>399aea02a991eca34a6b29f72d28add69cf17dd1de9495eebfb9676d199035e4</code>. Corpus as of 2026-10-25 20:30 UTC · 275 pathway records.
+        Project data: <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/LICENSE-DATA">CC BY 4.0</a>.
+        Code: <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/LICENSE-CODE">BSD-3-Clause</a>.
+        Third-party source material keeps its own terms
+        (<a href="https://github.com/CultureBotAI/PathwayMech/blob/main/LICENSE">licence scope</a>).</p>
     </section>
-    <footer class="home-footer">Part of the CultureBotAI Mech knowledge bases.
-      <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a>
-    </footer>
-    <script>
-    (function () {
-      try {
-        var saved = localStorage.getItem('mech-theme');
-        if (saved === 'dark' || saved === 'light') {
-          document.documentElement.setAttribute('data-theme', saved);
-        }
-      } catch (e) {}
-      var btn = document.getElementById('theme-toggle');
-      if (btn) {
-        btn.addEventListener('click', function () {
-          var cur = document.documentElement.getAttribute('data-theme');
-          var mq = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var isDark = cur ? cur === 'dark' : mq;
-          var next = isDark ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', next);
-          try { localStorage.setItem('mech-theme', next); } catch (e) {}
-        });
-      }
-    }());
-    </script>
   </main>
+  <footer class="site-footer">
+    <p>Project data: <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/LICENSE-DATA">CC BY 4.0</a>.
+      Code: <a href="https://github.com/CultureBotAI/PathwayMech/blob/main/LICENSE-CODE">BSD-3-Clause</a>.
+      Third-party source material keeps its own terms
+      (<a href="https://github.com/CultureBotAI/PathwayMech/blob/main/LICENSE">licence scope</a>).</p>
+    <p>Corpus as of 2026-10-25 20:30 UTC · 275 pathway records</p>
+    <p>Part of the CultureBotAI Mech knowledge bases.
+      <a href="https://culturebotai.github.io/mechs/">Explore all Mech projects</a></p>
+  </footer>
 </body>
 </html>

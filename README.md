@@ -106,8 +106,8 @@ JavaScript, with a full-size scrolling option for larger networks.
 `.github/workflows/main.yaml` ("Build and test") runs lint, the tests and
 `just validate` on every pull request and push. When it passes on a push to
 `main`, `.github/workflows/pages.yaml` publishes the root `index.html`
-redirect and `pages/` -- only those, only for the commit that is still `main`,
-and only after checking again that `pages/` is current.
+redirect, the root `404.html` and `pages/` -- only those, only for the commit
+that is still `main`, and only after checking again that `pages/` is current.
 
 ## License
 
