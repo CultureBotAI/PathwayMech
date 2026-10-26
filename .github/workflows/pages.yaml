@@ -1,8 +1,8 @@
 name: Publish Pages
 
-# Publishes only the root redirect, pages/ and a root copy of pages/404.html,
-# only for main's current head, and only once "Build and test" has passed on a
-# push of that exact commit.
+# Publishes only the root redirect, the root 404.html and pages/, only for
+# main's current head, and only once "Build and test" has passed on a push of
+# that exact commit.
 on:  # yamllint disable-line rule:truthy
   workflow_run:
     workflows: [Build and test]
@@ -84,14 +84,13 @@ jobs:
         run: uv run --locked pathwaymech-check-pages
 
       # GitHub serves the artifact root's 404.html, with HTTP 404, for every
-      # missing address; the renderer writes it self-contained, with absolute links.
+      # missing address; the renderer writes it with site-root-absolute links.
       - name: Stage the site
         run: |
           site="$RUNNER_TEMP/pathwaymech-site"
           mkdir -p "$site"
-          cp index.html "$site/"
+          cp index.html 404.html "$site/"
           cp -R pages "$site/pages"
-          cp pages/404.html "$site/404.html"
 
       - uses: actions/configure-pages@v5
 

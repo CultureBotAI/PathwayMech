@@ -81,9 +81,11 @@ ASSETS = Path(__file__).parent / "assets"
 SCHEMA_PATH = Path(__file__).parent / "schema" / "pathwaymech.yaml"
 GITHUB_REPO = "https://github.com/CultureBotAI/PathwayMech"
 GITHUB_BLOB = f"{GITHUB_REPO}/blob/main"
-# Where GitHub Pages serves pages/. Only the not-found page needs it: it is
-# served at whatever address was missing, so its links cannot be relative.
-SITE_URL = "https://culturebotai.github.io/PathwayMech/pages/"
+# Where GitHub Pages serves pages/: site-root-absolute, for the not-found page,
+# which is served at whatever address was missing; and as a URL, for links
+# that leave the site, such as an issue naming a record page.
+SITE_PATH = "/PathwayMech/pages/"
+SITE_URL = f"https://culturebotai.github.io{SITE_PATH}"
 
 
 def validate_main() -> int:
@@ -320,7 +322,6 @@ def render_site(records: list, source_paths: dict[str, str] | None = None,
         records, root=root, payload=sequence_map, corpus_note=note,
     )
     files["schema.html"] = _schema_page(corpus_note=note)
-    files["404.html"] = _not_found_page(root, record_count=len(records), corpus_note=note)
     exports = render_kgx(records)
     fingerprint = hashlib.sha256("".join(exports.values()).encode()).hexdigest()
     for name, text in exports.items():
@@ -489,9 +490,14 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
     except SiteError as error:
         print(str(error), file=sys.stderr)
         return 1
+    # The not-found page lives beside the root redirect, outside pages/; the
+    # Pages workflow publishes both at the artifact root.
+    not_found = _not_found_page().encode("utf-8")
 
     if args.check:
         problems = _site_problems(pages, expected)
+        if not (root / "404.html").is_file() or (root / "404.html").read_bytes() != not_found:
+            problems.append("404.html: not what the renderer writes")
         for line in problems:
             print(line, file=sys.stderr)
         if problems:
@@ -507,7 +513,7 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
     rendered = {path for path in _files_under(pages) if path.startswith("records/")}
     rendered |= {
         name for name in ("browse.html", "index.html", "map.html", "sequence-map.html",
-                          "schema.html", "404.html")
+                          "schema.html")
         if (pages / name).is_file()
     }
     orphaned = sorted(path for path in rendered - set(expected) if path.endswith(".html"))
@@ -517,6 +523,7 @@ def render_pages_main(argv: list[str] | None = None, *, root: Path = ROOT) -> in
     for path, text in expected.items():
         (pages / path).parent.mkdir(parents=True, exist_ok=True)
         (pages / path).write_bytes(text.encode("utf-8"))
+    (root / "404.html").write_bytes(not_found)
     print(f"rendered {len(records)} pathway records" + (
         f"; removed {len(orphaned)} orphaned page(s)" if orphaned else ""
     ))
@@ -1141,25 +1148,13 @@ def import_veupathdb_main(argv: list[str] | None = None) -> int:
 
 def _page(
     title: str, body: str, stylesheet_href: str = "style.css", *, homepage: bool = False,
-    extra_head: str = "", corpus_note: str = "", site_root: str | None = None,
-    inline_css: str | None = None,
+    extra_head: str = "", corpus_note: str = "",
 ) -> str:
-    """One page in the site shell.
-
-    `inline_css` makes a page that needs no other file -- the stylesheet and the
-    theme script are embedded -- for the not-found page, which is served at
-    addresses where no relative link resolves; it passes an absolute `site_root`.
-    """
-    root = html.escape(stylesheet_href.removesuffix("style.css") if site_root is None
-                       else site_root)
-    if inline_css is None:
-        assets = (f'<link rel="stylesheet" href="{html.escape(stylesheet_href)}">\n'
-                  f'  <script src="{root}assets/theme.js"></script>')
-    else:
-        script = (ASSETS / "theme.js").read_text()
-        if "</style" in inline_css.lower() or "</script" in script.lower():
-            raise SiteError("an inlined stylesheet or script would end its own element")
-        assets = f"<style>\n{inline_css}</style>\n  <script>\n{script}</script>"
+    root = html.escape(stylesheet_href.removesuffix("style.css"))
+    # The theme script loads in <head>, without defer, so a saved theme is set
+    # before the first paint.
+    assets = (f'<link rel="stylesheet" href="{html.escape(stylesheet_href)}">\n'
+              f'  <script src="{root}assets/theme.js"></script>')
     body_class = ' class="home-page"' if homepage else ""
     heading = "" if homepage else f"    <h1>{label_html(title)}</h1>"
     corpus = f"\n    <p>{html.escape(corpus_note)}</p>" if corpus_note else ""
@@ -1496,17 +1491,18 @@ def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
                                  for item in raw["pathways"]],
                     "proteins": [{**item,
                                   "url": item.get("url") if item.get("url") in pages else "",
-                                  "pathway_urls": [url for url in item.get("pathway_urls", [])
-                                                   if url in pages]}
+                                  "pathway_urls": [url if url in pages else ""
+                                                   for url in item.get("pathway_urls", [])]}
                                  for item in raw["proteins"]],
                 }
             proteins = []
             by_pw: dict[str, dict[str, Any]] = {}
             for pt in raw.get("points") or []:
                 recs = pt.get("records") or []
-                pw_labels = [r["label"] for r in recs if r.get("label")]
-                pw_urls = [url for url in (_record_url(r.get("id"), published) for r in recs)
-                           if url]
+                pw_labels = [r.get("label") or r.get("id") or "" for r in recs]
+                # Aligned with pw_labels, empty where the record is not published,
+                # so the data table can pair each pathway with its link.
+                pw_urls = [_record_url(r.get("id"), published) for r in recs]
                 org = pt.get("organism") or "Unspecified"
                 p_cls = pt.get("class") or "pathway"
                 proteins.append({
@@ -1520,7 +1516,7 @@ def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
                     "length": pt.get("length", 0),
                     "pathway_labels": pw_labels,
                     "pathway_urls": pw_urls,
-                    "url": pw_urls[0] if pw_urls else "",
+                    "url": next((url for url in pw_urls if url), ""),
                 })
                 for r in recs:
                     pw_id = r.get("id")
@@ -1578,6 +1574,70 @@ def _load_or_fallback_sequence_map(records: list, root: Path) -> dict[str, Any]:
     }
 
 
+_MAP_NOSCRIPT = (
+    '<noscript><p class="map-coverage">This map and its data table are drawn with '
+    'JavaScript. Every pathway record is listed on <a href="browse.html">Browse '
+    "pathways</a>, which works without it.</p></noscript>"
+)
+
+# Fills a map's data table from the points it plots. Rows are built from the
+# page's own JSON, with text set as text, when the disclosure is opened.
+_MAP_TABLE_JS = """
+      function fillTable(prefix, columns, rows) {
+        const headRow = document.createElement('tr');
+        columns.forEach(name => {
+          const th = document.createElement('th');
+          th.scope = 'col';
+          th.textContent = name;
+          headRow.appendChild(th);
+        });
+        document.getElementById(prefix + '-table-head').replaceChildren(headRow);
+        const fragment = document.createDocumentFragment();
+        rows.forEach(cells => {
+          const tr = document.createElement('tr');
+          cells.forEach((value, index) => {
+            const cell = document.createElement(index === 0 ? 'th' : 'td');
+            if (index === 0) cell.scope = 'row';
+            (Array.isArray(value) ? value : [value]).forEach((part, n) => {
+              if (n) cell.appendChild(document.createTextNode(', '));
+              if (part && part.href) {
+                const link = document.createElement('a');
+                link.href = part.href;
+                link.textContent = part.text;
+                cell.appendChild(link);
+              } else if (part && part.code) {
+                const code = document.createElement('code');
+                code.textContent = part.code;
+                cell.appendChild(code);
+              } else {
+                cell.appendChild(document.createTextNode(part == null ? '' : String(part)));
+              }
+            });
+            tr.appendChild(cell);
+          });
+          fragment.appendChild(tr);
+        });
+        document.getElementById(prefix + '-table-body').replaceChildren(fragment);
+      }
+"""
+
+
+def _map_table(prefix: str, caption: str) -> str:
+    """The table alternative to an embedding map: what it plots, each row
+    linking its record. It follows the map's search and filters."""
+    label = html.escape(caption)
+    return f"""<details class="map-table" id="{prefix}-table">
+          <summary>View data as table</summary>
+          <p id="{prefix}-table-count" class="map-coverage"></p>
+          <div class="table-scroll" role="region" tabindex="0" aria-label="{label}">
+            <table><caption>{label}</caption>
+              <thead id="{prefix}-table-head"></thead>
+              <tbody id="{prefix}-table-body"></tbody>
+            </table>
+          </div>
+        </details>"""
+
+
 def _map_page(records: list, *, root: Path = ROOT, payload: dict[str, Any] | None = None,
               corpus_note: str = "") -> str:
     if payload is None:
@@ -1593,9 +1653,11 @@ def _map_page(records: list, *, root: Path = ROOT, payload: dict[str, Any] | Non
             f'(<code>{html.escape(record.id)}</code>)' for record in unplotted)
         shown = len(records) - len(unplotted)
         coverage = (f'<p class="map-coverage">{shown:,} of {len(records):,} published '
-                    f'pathway records are plotted. Not on this map, because '
-                    f'<code>data/embeddings/corpus_map.json</code> has no point for them '
-                    f'yet: {missing}.</p>')
+                    f'pathway records are plotted. The coordinates come from '
+                    f'<code>data/embeddings/corpus_map.json</code>, which is computed '
+                    f'separately from these pages (<code>scripts/embed_records.py</code>, '
+                    f'<code>scripts/embed_map.py</code>) and has no point yet for: '
+                    f'{missing}.</p>')
     types = sorted({str(p.get("pathway_type", "pathway")) for p in points})
     taxon_counts: dict[str, int] = {}
     for p in points:
@@ -1626,6 +1688,7 @@ def _map_page(records: list, *, root: Path = ROOT, payload: dict[str, Any] | Non
       Drag to pan, scroll to zoom, hover for details, and click any point \
 to open its pathway record.</p>
     {coverage}
+    {_MAP_NOSCRIPT}
     <div class="browse-layout">
       <aside class="facet-sidebar" aria-label="Embedding map filters">
         <form id="map-filter-form" class="facet-form">
@@ -1676,6 +1739,7 @@ to open its pathway record.</p>
 aria-label="2D corpus embedding scatter plot"></canvas>
           <div id="map-tooltip" class="map-tooltip" hidden></div>
         </div>
+        {_map_table("map", "Pathways on the text map")}
       </div>
     </div>
     <script id="corpus-map-data" type="application/json">{json_blob}</script>
@@ -1794,6 +1858,18 @@ aria-label="2D corpus embedding scatter plot"></canvas>
         }});
         statusEl.textContent = activeCount + ' of ' + points.length + ' pathways visible';
       }}
+{_MAP_TABLE_JS}
+      const tableEl = document.getElementById('map-table');
+      function renderTable() {{
+        if (!tableEl.open) return;
+        const shown = points.filter(p => p._active);
+        fillTable('map', ['Pathway', 'Identifier', 'Pathway class', 'Primary taxon'],
+          shown.map(p => [p.url ? {{href: p.url, text: p.label}} : p.label, {{code: p.id}},
+                          p.pathway_type, p.top_taxon]));
+        document.getElementById('map-table-count').textContent =
+          shown.length + ' of ' + points.length + ' plotted pathways, as filtered above.';
+      }}
+      tableEl.addEventListener('toggle', renderTable);
 
       function syncUrl() {{
         const url = new URL(window.location.href);
@@ -1812,6 +1888,7 @@ aria-label="2D corpus embedding scatter plot"></canvas>
         else url.searchParams.delete('grounding');
         history.replaceState(null, '', url);
         draw();
+        renderTable();
       }}
 
       canvas.addEventListener('mousedown', e => {{
@@ -1933,6 +2010,7 @@ def _sequence_map_page(records: list, *, root: Path = ROOT,
       pathway records: a record appears only when
       <code>data/embeddings/sequence_map.json</code> holds an embedded UniProtKB protein
       for it.</p>
+    {_MAP_NOSCRIPT}
     <div class="browse-layout">
       <aside class="facet-sidebar" aria-label="Sequence map filters">
         <form id="seq-filter-form" class="facet-form">
@@ -1982,6 +2060,7 @@ placeholder="e.g. UniProtKB, rubisco, E. coli...">
 aria-label="2D ESM-2 sequence embedding scatter plot"></canvas>
           <div id="seq-tooltip" class="map-tooltip" hidden></div>
         </div>
+        {_map_table("seq", "Points on the sequence map")}
       </div>
     </div>
     <script id="seq-map-data" type="application/json">{json_blob}</script>
@@ -2109,6 +2188,29 @@ aria-label="2D ESM-2 sequence embedding scatter plot"></canvas>
         const unit = modeEl.value === 'proteins' ? 'proteins' : 'pathway centroids';
         statusEl.textContent = activeCount + ' of ' + pts.length + ' ' + unit + ' visible';
       }}
+{_MAP_TABLE_JS}
+      const tableEl = document.getElementById('seq-table');
+      function renderTable() {{
+        if (!tableEl.open) return;
+        const proteinMode = modeEl.value === 'proteins';
+        const all = activePoints();
+        const shown = all.filter(p => p._active);
+        if (proteinMode) {{
+          fillTable('seq', ['Protein', 'UniProtKB', 'Organism', 'Pathway records'],
+            shown.map(p => [p.label, {{code: p.id}}, p.taxon,
+              (p.pathway_labels || []).map((label, i) => {{
+                const url = (p.pathway_urls || [])[i];
+                return url ? {{href: url, text: label}} : label;
+              }})]));
+        }} else {{
+          fillTable('seq', ['Pathway', 'Identifier', 'Pathway class', 'Taxa', 'Proteins'],
+            shown.map(p => [p.url ? {{href: p.url, text: p.label}} : p.label, {{code: p.id}},
+                            p.pathway_type, (p.taxa || []).join(', '), p.protein_count]));
+        }}
+        document.getElementById('seq-table-count').textContent = shown.length + ' of ' +
+          all.length + (proteinMode ? ' proteins' : ' pathway centroids') + ', as filtered above.';
+      }}
+      tableEl.addEventListener('toggle', renderTable);
 
       function syncSeqUrl() {{
         const url = new URL(window.location.href);
@@ -2130,6 +2232,7 @@ aria-label="2D ESM-2 sequence embedding scatter plot"></canvas>
         else url.searchParams.delete('taxon');
         history.replaceState(null, '', url);
         draw();
+        renderTable();
       }}
 
       canvas.addEventListener('mousedown', e => {{
@@ -2448,11 +2551,12 @@ def _record_page(record: object, source_path: str | None = None,
     reference_section = f"<h2>References</h2><ul>{''.join(cited)}</ul>" if cited else ""
     actions = []
     if source_path:
-        actions.append(f'<a href="{GITHUB_BLOB}/{quote(source_path, safe="/")}">'
-                       "Read the source YAML</a>")
+        path = quote(source_path, safe="/")
+        actions.append(f'<a href="{GITHUB_BLOB}/{path}">Read the source YAML</a>')
+        actions.append(f'<a href="{GITHUB_REPO}/edit/main/{path}">Edit on GitHub</a>')
     if record_id:
-        page_url = f"{SITE_URL}records/{_slug(record_id)}.html"
-        report = urlencode({"title": record_id, "body": f"Record page: {page_url}\n"},
+        report = urlencode({"title": f"Problem with {record_id}",
+                            "body": f"{SITE_URL}records/{_slug(record_id)}.html"},
                            quote_via=quote)
         actions.append(f'<a href="{GITHUB_REPO}/issues/new?{html.escape(report)}">'
                        "Report a problem with this record</a>")
@@ -2635,33 +2739,30 @@ def _schema_page(*, corpus_note: str = "", schema_path: Path = SCHEMA_PATH) -> s
                  corpus_note=corpus_note)
 
 
-def _not_found_page(root: Path, *, record_count: int = 0, corpus_note: str = "") -> str:
+def _not_found_page() -> str:
     """What GitHub Pages serves, with HTTP 404, at any address the site lacks.
 
-    The Pages workflow copies it to the artifact root, where GitHub looks for
-    it. It is served at the missing address, where no relative link resolves,
-    so its links are absolute, and the stylesheet and theme script are embedded
-    rather than loaded from culturebotai.github.io, which the site check counts
-    as a third-party asset.
+    Written beside the root redirect and copied by the Pages workflow to the
+    artifact root, where GitHub looks for it. It is served at the missing
+    address, at any depth, so every link and asset is site-root-absolute. It
+    states no corpus date or record count, so a curation change never
+    rewrites it.
     """
-    stylesheet = root / "pages" / "style.css"
-    css = stylesheet.read_text(encoding="utf-8") if stylesheet.is_file() else ""
-    count = f"{record_count:,} " if record_count else ""
     body = f"""<p>There is no page at this address. Record pages are named after the
       record's identifier, with <code>:</code> and <code>/</code> replaced by
       <code>_</code>.</p>
-    <form class="page-search" action="{SITE_URL}browse.html" method="get" role="search">
+    <form class="page-search" action="{SITE_PATH}browse.html" method="get" role="search">
       <label class="visually-hidden" for="not-found-search">Search pathways</label>
       <input id="not-found-search" name="q" type="search"
              placeholder="Search pathways, organisms, or IDs...">
       <button type="submit">Search</button></form>
     <ul class="not-found-routes">
-      <li><a href="{SITE_URL}browse.html">Browse all {count}pathway records</a></li>
-      <li><a href="{SITE_URL}index.html">PathwayMech overview</a></li>
+      <li><a href="{SITE_PATH}browse.html">Browse all pathway records</a></li>
+      <li><a href="{SITE_PATH}index.html">PathwayMech overview</a></li>
       <li><a href="{GITHUB_REPO}/issues/new">Report a broken link</a></li>
     </ul>"""
-    return _page("PathwayMech: page not found", body, site_root=SITE_URL, inline_css=css,
-                 corpus_note=corpus_note, extra_head='<meta name="robots" content="noindex">')
+    return _page("PathwayMech: page not found", body, f"{SITE_PATH}style.css",
+                 extra_head='<meta name="robots" content="noindex">')
 
 
 def _slug(identifier: str) -> str:

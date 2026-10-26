@@ -435,8 +435,10 @@ details { margin-block: .5rem; }
 }
 
 @media (max-width: 860px) {
+  /* minmax(0, ...), as on wide screens: a bare 1fr grows to fit a wide table,
+     which then widens the page instead of scrolling in its own region. */
   .browse-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .facet-sidebar {
     position: static;
@@ -481,4 +483,13 @@ details { margin-block: .5rem; }
 
 .not-found-routes {
   line-height: 2;
+}
+
+/* The data-table alternative to each embedding map. */
+.map-table {
+  margin-top: 1rem;
+}
+.map-table summary {
+  cursor: pointer;
+  font-weight: 600;
 }

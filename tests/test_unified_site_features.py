@@ -108,7 +108,11 @@ def test_a_point_for_an_unpublished_record_opens_nothing(tmp_path):
     root = _site_with_maps(tmp_path, [*published, record(id="MetaCyc:GONE", label="Gone")])
     files = render_site(published, root=root)
     sequence = map_payload(files["sequence-map.html"], "seq-map-data")
-    assert "records/MetaCyc_GONE.html" not in sequence["proteins"][0]["pathway_urls"]
+    protein = sequence["proteins"][0]
+    # Labels and links stay aligned, so the data table pairs each pathway with its page.
+    assert protein["pathway_urls"] == ["records/MetaCyc_PWY-A.html",
+                                       "records/MetaCyc_PWY-B.html", ""]
+    assert len(protein["pathway_labels"]) == len(protein["pathway_urls"])
     assert {item["id"]: item["url"] for item in sequence["pathways"]}["MetaCyc:GONE"] == ""
 
 
@@ -131,8 +135,45 @@ def test_the_text_map_names_the_published_records_it_does_not_plot(tmp_path):
     page = render_site(records, root=_site_with_maps(tmp_path, records))["map.html"]
     coverage = between(page, '<p class="map-coverage">', "</p>")
     assert "2 of 3 published pathway records are plotted" in coverage
+    assert "computed separately" in coverage and "corpus_map.json" in coverage
     assert hrefs(coverage) == ["records/GO_0000001.html"]
     assert "Not embedded" in coverage
+
+
+def test_each_map_offers_its_data_as_a_keyboard_reachable_table():
+    files = render_site([record()])
+    for name, prefix in (("map.html", "map"), ("sequence-map.html", "seq")):
+        page = files[name]
+        table = between(page, f'<details class="map-table" id="{prefix}-table">', "</details>")
+        assert "<summary>View data as table</summary>" in table, name
+        assert re.search(r'<div class="table-scroll" role="region" tabindex="0" '
+                         r'aria-label="[^"]+">', table), name
+        assert hrefs(between(page, "<noscript>", "</noscript>")) == ["browse.html"], name
+
+
+@needs_node
+@pytest.mark.parametrize("name, scenario", [
+    ("map.html", "map_table_lists_the_plotted_records_and_follows_the_search"),
+    ("sequence-map.html", "sequence_table_links_each_proteins_pathways"),
+])
+def test_shipped_map_table(tmp_path, name, scenario):
+    scripts = re.findall(r"<script>(.*?)</script>", render_site([record()])[name], re.S)
+    assert len(scripts) == 1
+    script = tmp_path / "map.js"
+    script.write_text(scripts[0])
+    result = subprocess.run(["node", str(HARNESS), str(script), scenario],
+                            capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert f"Site feature passed: {scenario}" in result.stdout
+
+
+def test_the_narrow_layout_keeps_a_wide_table_inside_its_scrolling_region():
+    """At 390 px a bare `1fr` column grew to fit the open protein table, so the
+    page scrolled sideways and the table's own region never did."""
+    css = (ROOT / "pages/style.css").read_text()
+    narrow = between(css, "@media (max-width: 860px) {", "\n}\n")
+    rule = between(narrow, ".browse-layout {", "}")
+    assert "grid-template-columns: minmax(0, 1fr);" in rule
 
 
 def test_every_committed_map_point_opens_a_published_record():
@@ -205,13 +246,12 @@ def test_no_dark_rule_ignores_a_chosen_light_theme():
 def test_every_page_loads_the_one_theme_script_and_carries_no_other_toggle():
     files = render_site([record()])
     pages = {name: text for name, text in files.items() if name.endswith(".html")}
+    pages["../404.html"] = cli._not_found_page()
     assert {"index.html", "browse.html", "map.html", "sequence-map.html", "schema.html",
-            "records/MetaCyc_PWY-TEST.html", "404.html"} <= set(pages)
+            "records/MetaCyc_PWY-TEST.html", "../404.html"} <= set(pages)
     for name, page in pages.items():
         head = between(page, "<head>", "</head>")
-        if name == "404.html":
-            continue
-        root = "../" if name.startswith("records/") else ""
+        root = {"records/": "../", "../": cli.SITE_PATH}.get(name[:name.find("/") + 1], "")
         assert f'<script src="{root}assets/theme.js"></script>' in head, name
         assert "mech-theme" not in page, f"{name} has its own theme handler"
     assert "mech-theme" not in files["assets/pathway-network.js"]
@@ -389,6 +429,20 @@ def test_references_open_the_sources_page_and_keep_the_retrieved_file():
                                                  "https://example.org/a?b=1&amp;c=2")]),
     ("javascript:alert(1) and PMID:x", []),
     ("https://user:secret@example.org/x", []),
+    # Markup around a citation ends the token instead of joining it (TraitMech #2022).
+    ("[10.1038/x](https://doi.org/10.1038/x)", [
+        ("https://doi.org/10.1038/x", "10.1038/x"),
+        ("https://doi.org/10.1038/x", "https://doi.org/10.1038/x")]),
+    ("**10.1099/y**", [("https://doi.org/10.1099/y", "10.1099/y")]),
+    ("`10.1146/z`", [("https://doi.org/10.1146/z", "10.1146/z")]),
+    ("see **https://example.org/b**; and https://example.org/c:", [
+        ("https://example.org/b", "https://example.org/b"),
+        ("https://example.org/c", "https://example.org/c")]),
+    ("(https://example.org/a)-(https://example.org/b)", [
+        ("https://example.org/a", "https://example.org/a"),
+        ("https://example.org/b", "https://example.org/b")]),
+    ("rdf:about='http://rdf.rhea-db.org/20374'", [
+        ("http://rdf.rhea-db.org/20374", "http://rdf.rhea-db.org/20374")]),
     ('https://example.org/"><script>x</script>', [("https://example.org/", "https://example.org/")]),
 ])
 def test_autolink_links_only_citation_tokens_and_keeps_the_text(text, links):
@@ -449,8 +503,9 @@ def test_every_page_type_footer_states_the_licences_and_the_corpus_date():
         if not name.endswith(".html"):
             continue
         footer = between(page, '<footer class="site-footer">', "</footer>")
-        assert hrefs(footer)[:3] == [f"{cli.GITHUB_BLOB}/LICENSE-DATA",
-                                     f"{cli.GITHUB_BLOB}/LICENSE-CODE", f"{cli.GITHUB_BLOB}/LICENSE"], name
+        licences = [f"{cli.GITHUB_BLOB}/{licence}"
+                    for licence in ("LICENSE-DATA", "LICENSE-CODE", "LICENSE")]
+        assert hrefs(footer)[:3] == licences, name
         assert "Project data:" in footer and "CC BY 4.0" in footer and "BSD-3-Clause" in footer
         assert "Third-party source material keeps its own terms" in footer
         assert "Corpus as of 2026-10-01 09:30 UTC · 1 pathway record" in footer, name
@@ -563,31 +618,62 @@ def test_every_page_type_links_the_schema_from_its_navigation():
 # --------------------------------------------------------------------------
 
 def test_the_not_found_page_works_at_any_address():
-    page = render_site([record()])["404.html"]
+    """GitHub serves it at the missing address, at any depth: nothing may be relative."""
+    page = cli._not_found_page()
     assert '<meta name="robots" content="noindex">' in page
-    assert "<link" not in page and "<script src" not in page
-    assert "<style>" in page and "mech-theme" in page
-    relative = [link for link in hrefs(page) if not link.startswith(("https://", "#"))]
-    assert relative == []
-    assert re.search(r'action="([^"]+)"', page).group(1) == f"{SITE_URL}browse.html"
+    head = between(page, "<head>", "</head>")
+    assert '<link rel="stylesheet" href="/PathwayMech/pages/style.css">' in head
+    assert '<script src="/PathwayMech/pages/assets/theme.js"></script>' in head
+    references = hrefs(page) + re.findall(r'(?:src|action)="([^"]+)"', page)
+    assert [ref for ref in references
+            if not ref.startswith(("/PathwayMech/", "https://", "#"))] == []
+    assert re.search(r'action="([^"]+)"', page).group(1) == "/PathwayMech/pages/browse.html"
     main = between(page, "<main", "</main>")
-    assert f"{SITE_URL}browse.html" in hrefs(main) and f"{SITE_URL}index.html" in hrefs(main)
+    assert {"/PathwayMech/pages/browse.html", "/PathwayMech/pages/index.html"} <= set(hrefs(main))
     assert page.index('<a class="skip-link" href="#main-content">') < page.index("<main")
+    footer = between(page, '<footer class="site-footer">', "</footer>")
+    assert f"{cli.GITHUB_BLOB}/LICENSE-CODE" in hrefs(footer)
+    # No corpus date or record count, so a curation change never rewrites it.
+    assert "Corpus as of" not in page
+    assert not re.search(r"[0-9] pathway record", page)
 
 
-def test_the_not_found_page_carries_the_hand_kept_stylesheet(tmp_path):
+def _two_record_site(tmp_path: Path) -> Path:
+    for path in sorted((ROOT / "data" / "pathways").glob("*.yaml"))[:2]:
+        target = tmp_path / "data" / "pathways" / path.name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(path, target)
     (tmp_path / "pages").mkdir()
-    (tmp_path / "pages" / "style.css").write_text(".marker { color: red; }\n")
-    page = render_site([record()], root=tmp_path)["404.html"]
-    assert ".marker { color: red; }" in between(page, "<style>", "</style>")
+    (tmp_path / "pages" / "style.css").write_text("body {}\n")
+    (tmp_path / "pages" / ".nojekyll").write_text("\n")
+    return tmp_path
+
+
+def test_the_render_writes_the_root_not_found_page_and_the_check_guards_it(tmp_path, capsys):
+    site = _two_record_site(tmp_path)
+    assert cli.render_pages_main([], root=site) == 0
+    assert (site / "404.html").read_text() == cli._not_found_page()
+    assert not (site / "pages" / "404.html").exists()
+    assert cli.render_pages_main(["--check"], root=site) == 0
+    (site / "404.html").write_text("stale")
+    assert cli.render_pages_main(["--check"], root=site) == 1
+    assert "404.html: not what the renderer writes" in capsys.readouterr().err
+    (site / "404.html").unlink()
+    assert cli.render_pages_main(["--check"], root=site) == 1
+
+
+def test_the_committed_not_found_page_is_current():
+    assert (ROOT / "404.html").read_text() == cli._not_found_page()
 
 
 def test_the_pages_workflow_publishes_the_not_found_page_at_the_artifact_root():
     workflow = yaml.safe_load((ROOT / ".github/workflows/pages.yaml").read_text())
     steps = workflow["jobs"]["publish"]["steps"]
     stage = next(step["run"] for step in steps if step.get("name") == "Stage the site")
-    assert 'cp pages/404.html "$site/404.html"' in stage
-    assert stage.index("cp -R pages") < stage.index("cp pages/404.html")
+    assert 'cp index.html 404.html "$site/"' in [line.strip() for line in stage.splitlines()]
+    # The stale-site refusal, which now also covers 404.html, runs before staging.
+    runs = [step.get("run", "") for step in steps]
+    assert any("pathwaymech-check-pages" in run for run in runs[:runs.index(stage)])
 
 
 def test_every_record_page_links_a_prefilled_issue_for_that_record():
@@ -596,9 +682,10 @@ def test_every_record_page_links_a_prefilled_issue_for_that_record():
     issue = next(link for link in hrefs(actions) if "/issues/new?" in link)
     query = parse_qs(urlsplit(issue).query)
     assert urlsplit(issue)._replace(query="").geturl() == f"{cli.GITHUB_REPO}/issues/new"
-    assert query["title"] == ["MetaCyc:PWY-TEST"]
-    assert f"{SITE_URL}records/MetaCyc_PWY-TEST.html" in query["body"][0]
+    assert query["title"] == ["Problem with MetaCyc:PWY-TEST"]
+    assert query["body"] == [f"{SITE_URL}records/MetaCyc_PWY-TEST.html"]
     assert f"{cli.GITHUB_BLOB}/data/pathways/test.yaml" in hrefs(actions)
+    assert f"{cli.GITHUB_REPO}/edit/main/data/pathways/test.yaml" in hrefs(actions)
 
 
 # --------------------------------------------------------------------------

@@ -15,14 +15,18 @@ _JSON_STRING_FIELD = re.compile(r'"([^"\\]+)"\s*:\s*("(?:[^"\\]|\\.)*")')
 
 # Citation tokens inside record prose. URLs come first so that a DOI inside a
 # URL stays part of that URL. Matching runs on the raw text and every piece is
-# escaped on the way out, so record text never becomes markup.
+# escaped on the way out, so record text never becomes markup. A URL or DOI
+# never contains whitespace, angle brackets, quotes, backticks or square
+# brackets, so markup written around one -- `[10.1/x](https://...)`, `10.1/x`
+# in backticks -- ends the token instead of joining it.
+_TOKEN_CHARS = r"[^\s<>\"'`\\\[\]]"
 _CITATION_TOKEN = re.compile(
-    r"(?P<url>\b(?i:https?)://[^\s<>\"\\]+)"
-    r"|(?P<doi>(?:\b(?i:doi)(?::\s?|=|\s))?(?<![\w./])10\.[0-9]{4,9}/[^\s<>\"\\]+)"
+    rf"(?P<url>\b(?i:https?)://{_TOKEN_CHARS}+)"
+    rf"|(?P<doi>(?:\b(?i:doi)(?::\s?|=|\s))?(?<![\w./])10\.[0-9]{{4,9}}/{_TOKEN_CHARS}+)"
     r"|(?P<pmid>\b(?i:pmid)(?::\s?|\s)(?P<pmid_number>[0-9]{1,9})\b)"
     r"|(?P<pmcid>\bPMC[0-9]{4,9}\b)"
 )
-_CLOSERS = {")": "(", "]": "[", "}": "{"}
+_CLOSERS = {")": "(", "}": "{"}
 
 
 def plain_label(value: str) -> str:
@@ -36,11 +40,22 @@ def label_html(value: str) -> str:
 
 
 def _trim_token(token: str) -> str:
-    """Drop the sentence punctuation and unbalanced closers that end a token."""
+    """Cut a token at a closing parenthesis it never opened, then drop the
+    sentence punctuation, emphasis marks and unbalanced closers that end it.
+
+    `(see 10.1016/0005-2744(70)90044-4)` keeps the DOI's own parentheses, and
+    `(https://doi.org/10.1/x)` loses the one that closes the sentence's.
+    """
+    depth = 0
+    for index, char in enumerate(token):
+        depth += {"(": 1, ")": -1}.get(char, 0)
+        if depth < 0:
+            token = token[:index]
+            break
     while token:
         last = token[-1]
-        if last in ".,;:!?'\"" or (last in _CLOSERS
-                                   and token.count(last) > token.count(_CLOSERS[last])):
+        if last in ".,;:!?*" or (last in _CLOSERS
+                                 and token.count(last) > token.count(_CLOSERS[last])):
             token = token[:-1]
             continue
         break
@@ -82,18 +97,21 @@ def autolink_html(value: str) -> str:
     """
     text = str(value)
     out: list[str] = []
-    position = 0
-    for match in _CITATION_TOKEN.finditer(text):
+    position = scan = 0
+    while match := _CITATION_TOKEN.search(text, scan):
         kind = match.lastgroup if match.lastgroup != "pmid_number" else "pmid"
         token = match.group(0)
         if kind in {"url", "doi"}:
             token = _trim_token(token)
         url = _token_url(kind, token, match) if token else None
         if not url:
+            scan = match.end()
             continue
         out.append(html.escape(text[position:match.start()]))
         out.append(f'<a href="{html.escape(url)}">{html.escape(token)}</a>')
-        position = match.start() + len(token)
+        # Resume after the token, not the match: what trimming cut off may hold
+        # the next citation, as in "(https://a.org/x)-(https://b.org/y)".
+        position = scan = match.start() + len(token)
     out.append(html.escape(text[position:]))
     return "".join(out)
 

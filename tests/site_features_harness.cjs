@@ -50,7 +50,93 @@ function select(values) {
   return control;
 }
 
+// A map page: the controls its script reads, a canvas stub, and the data table.
+function node(tag) {
+  const el = element();
+  el.tagName = tag.toUpperCase();
+  el.children = [];
+  el.appendChild = child => { el.children.push(child); return child; };
+  el.replaceChildren = (...nodes) => {
+    el.children = nodes.flatMap(n => (n.isFragment ? n.children : [n]));
+  };
+  Object.defineProperty(el, 'text', {get() {
+    return el.children.length ? el.children.map(c => c.text ?? c.textContent).join('') : el.textContent;
+  }});
+  return el;
+}
+function mapPage(prefix, payload, values = {}) {
+  const ids = {};
+  const get = id => (ids[id] ||= Object.assign(node('div'), {value: values[id] ?? ''}));
+  get(`${prefix === 'map' ? 'corpus' : 'seq'}-map-data`).textContent = JSON.stringify(payload);
+  Object.assign(get(`${prefix}-canvas`), {width: 920, height: 620,
+    getContext: () => new Proxy({}, {get: (t, k) => (k in t ? t[k] : () => {}), set: (t, k, v) => { t[k] = v; return true; }}),
+    getBoundingClientRect: () => ({left: 0, top: 0, width: 920, height: 620})});
+  get(`${prefix}-table`).open = false;
+  const ready = [];
+  const context = {
+    URL, URLSearchParams, Math, JSON, Number, String, Array, Map,
+    window: {location: {href: `https://pathway.test/${prefix}.html`, search: ''}, addEventListener() {}},
+    history: {replaceState() {}},
+    document: {
+      getElementById: get,
+      createElement: tag => node(tag),
+      createDocumentFragment: () => Object.assign(node('fragment'), {isFragment: true}),
+      createTextNode: text => ({textContent: text, text}),
+      addEventListener(name, callback) { assert.equal(name, 'DOMContentLoaded'); ready.push(callback); },
+    },
+  };
+  vm.runInNewContext(source, context);
+  ready.forEach(callback => callback());
+  const rows = () => get(`${prefix}-table-body`).children;
+  const open = () => { get(`${prefix}-table`).open = true; get(`${prefix}-table`).events.toggle(); };
+  return {get, rows, open};
+}
+const MARKUP = '<img src=x onerror=alert(1)>';
+
 const scenarios = {
+  map_table_lists_the_plotted_records_and_follows_the_search() {
+    const point = (id, label, url) => ({id, label, url, x: 0.5, y: 0.5, pathway_type: 'cofactor-biosynthesis',
+      top_taxon: 'E. coli', taxa: ['E. coli'], has_proteins: false});
+    const page = mapPage('map', {points: [point('GO:1', MARKUP, 'records/GO_1.html'),
+      point('GO:2', 'unpublished pathway', ''), point('GO:3', 'thiamin biosynthesis', 'records/GO_3.html')]});
+    assert.equal(page.rows().length, 0, 'rows are built only when the disclosure opens');
+    page.get('map-query').value = 'pathway';
+    page.get('map-query').events.input();
+    assert.equal(page.rows().length, 0, 'filtering a closed table builds no rows');
+    page.get('map-query').value = '';
+    page.get('map-query').events.input();
+    page.open();
+    assert.equal(page.rows().length, 3);
+    assert.deepEqual(page.get('map-table-head').children[0].children.map(c => c.textContent),
+      ['Pathway', 'Identifier', 'Pathway class', 'Primary taxon']);
+    const [first, second] = page.rows();
+    assert.equal(first.children[0].tagName, 'TH');
+    const link = first.children[0].children[0];
+    assert.equal(link.tagName, 'A');
+    assert.equal(link.href, 'records/GO_1.html');
+    assert.equal(link.textContent, MARKUP, 'a label is set as text, never parsed as markup');
+    assert.equal(second.children[0].children[0].tagName, undefined, 'no page, no link');
+    page.get('map-query').value = 'thiamin';
+    page.get('map-query').events.input();
+    assert.equal(page.rows().length, 1, 'the table follows the search');
+    assert.equal(page.rows()[0].children[0].children[0].href, 'records/GO_3.html');
+    assert.equal(page.get('map-table-count').textContent, '1 of 3 plotted pathways, as filtered above.');
+  },
+  sequence_table_links_each_proteins_pathways() {
+    const protein = {id: 'UniProtKB:P1', label: 'enzyme', x: 0.4, y: 0.4, pathway_type: 'c', taxon: 'E. coli',
+      taxa: ['E. coli'], pathway_labels: ['first pathway', 'unpublished', 'third pathway'],
+      pathway_urls: ['records/A.html', '', 'records/C.html'], url: 'records/A.html'};
+    const page = mapPage('seq', {proteins: [protein], pathways: []}, {'seq-mode': 'proteins', 'seq-color': 'pathway_type'});
+    page.open();
+    assert.equal(page.rows().length, 1);
+    const cells = page.rows()[0].children;
+    assert.deepEqual(page.get('seq-table-head').children[0].children.map(c => c.textContent),
+      ['Protein', 'UniProtKB', 'Organism', 'Pathway records']);
+    const links = cells[3].children.filter(c => c.tagName === 'A');
+    assert.deepEqual(links.map(a => [a.textContent, a.href]),
+      [['first pathway', 'records/A.html'], ['third pathway', 'records/C.html']]);
+    assert.equal(cells[3].text, 'first pathway, unpublished, third pathway');
+  },
   saved_choice_applies_before_the_page_parses() {
     const page = themePage({saved: 'dark', osDark: false});
     assert.equal(page.beforeParse, 'dark', 'the saved theme must be set before first paint');
