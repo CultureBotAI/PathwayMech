@@ -1,0 +1,81 @@
+{
+  "run_id": "mech-goal-sequence-20261019",
+  "cycle": 6,
+  "stage": 6,
+  "stage_name": "infrastructure",
+  "frozen_cutoff": "2026-10-30T13:39:28Z",
+  "frozen_snapshot_path": "reviews/workflow/mech-goal-sequence-20261019/cycle-000006/stage-06/revision-0001/infra_snapshot.md",
+  "frozen_snapshot_sha256": "8c8f7957095d1b7d7696623b27ae2626abf0575ab77fc4f72082d90e50104344",
+  "total_frozen_tasks": 5,
+  "status_counts_before": {
+    "note": 0,
+    "open": 0,
+    "deferred": 1,
+    "resolved": 4
+  },
+  "status_counts_after": {
+    "note": 0,
+    "open": 0,
+    "deferred": 1,
+    "resolved": 4
+  },
+  "carry_forward_ids": [
+    "pathwaymech-infra-0001"
+  ],
+  "tasks": [
+    {
+      "task_id": "pathwaymech-infra-0001",
+      "issue_number": 673,
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/673",
+      "pre_stage_status": "deferred",
+      "post_stage_status": "deferred",
+      "action": "added_archive_member_candidate_ranker_and_deferred_remaining_slices",
+      "files_modified": [
+        "src/pathwaymech/pathbank_provenance.py",
+        "tests/test_pathbank_identifier_authority.py",
+        "INFRA_TASKS.md"
+      ],
+      "disposition": "Added rank_pathbank_archive_member_candidates, audit_pathbank_archive_member_authority, inspect_pathbank_archive_member, and hardened build_pathbank_archive_manifest_entry in src/pathwaymech/pathbank_provenance.py (verified in tests/test_pathbank_identifier_authority.py) to automate closed pathbank-biopax-zip manifest entry construction, unique-member/valid-ZIP/relative-path verification, primary SMP[0-9]+ root pathway verification via pathbank_terms, external CHEBI/NCBITaxon/UniProtKB UnificationXref enumeration, authority-snapshot coverage auditing, and deterministic candidate readiness ranking across archive slices; registered pathbank-primary-2019-PW000977-SMP0000993 in Cycle 3 Stage 1, pathbank-primary-2019-PW002028-SMP0002042 in Cycle 4 Stage 1, pathbank-primary-2019-PW002041-SMP0002055 in Cycle 5 Stage 1, and pathbank-primary-2019-PW000975-SMP0000991 (curating PathBank:SMP0000991 in data/pathways/isoprenoid-biosynthesis-nonmevalonate-pathway-escherichia-coli.yaml) in Cycle 6 Stage 1 (add_records); 35 remaining non-duplicate Escherichia coli PathBank primary BioPAX .owl entries in pathbank_primary_biopax.zip remain deferred for per-slice authority verification alongside curated records."
+    },
+    {
+      "task_id": "pathwaymech-infra-0002",
+      "issue_number": 674,
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/674",
+      "pre_stage_status": "resolved",
+      "post_stage_status": "resolved",
+      "action": "preserved_resolved",
+      "files_modified": [],
+      "disposition": "Resolved in Stage 6 by enhancing _serialize_record in src/pathwaymech/curation.py with _detect_yaml_width, _collect_anchored_subtrees, and _restore_yaml_anchors so guarded publication preserves per-file line-wrap widths (80, 88, 100, 120, 4096) and YAML anchor/alias structure (&id001/*id001) across deep copies; verified by unit tests in tests/test_curation_publication.py."
+    },
+    {
+      "task_id": "pathwaymech-infra-0003",
+      "issue_number": 675,
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/675",
+      "pre_stage_status": "resolved",
+      "post_stage_status": "resolved",
+      "action": "preserved_resolved",
+      "files_modified": [],
+      "disposition": "Resolved in Stage 6 by adding optional MechanisticEdge.coefficient, EdgePredicateEnum.encodes, EvidenceItem.assay_taxon, and EvidenceItem.eco_code in src/pathwaymech/schema/pathwaymech.yaml, src/pathwaymech/schema.py, and src/pathwaymech/kgx.py; verified in both open and closed LinkML validators by tests/test_linkml_schema.py and adopted across 6 pathway records in Cycle 2 Stage 2, all 8 remaining PathBank:* records in Cycle 3 Stage 2, 8 additional MetaCyc/GO records in Cycle 4 Stage 2, 8 additional MetaCyc/gomodel records in Cycle 5 Stage 2, 8 additional MetaCyc/gomodel/GO records in Cycle 6 Stage 2 (causal_graphs), and 6 additional MetaCyc records in Cycle 6 Stage 3 (protein_examples, #740, bringing the 275-record corpus to 48 records with Stage 6 causal-graph schema slots: 1,177 MechanisticEdge.coefficient edges, 21 EdgePredicateEnum.encodes edges, 298 EvidenceItem.eco_code qualifiers, and 535 EvidenceItem.assay_taxon qualifiers)."
+    },
+    {
+      "task_id": "pathwaymech-infra-0004",
+      "issue_number": 676,
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/676",
+      "pre_stage_status": "resolved",
+      "post_stage_status": "resolved",
+      "action": "preserved_resolved",
+      "files_modified": [],
+      "disposition": "Resolved in Stage 6 by adding Entrez, gomodel, NCBIProtein, Reactome, and SGD URI prefix mappings to CURIE_MAP in src/pathwaymech/sssom.py and updating output/sssom/source_mappings.sssom.tsv; verified by tests/test_sssom_export.py, adopted across all 95 S. cerevisiae SGD records in Cycle 2 Stage 3 (477 SGD:S0000* -> UniProtKB:* mappings), extended across 53 additional records in Cycle 3 Stage 3 (174 mappings comprising 135 MetaCyc:*-MONOMER/MONOMER-* -> UniProtKB:*, 31 EcoCyc:*-MONOMER -> UniProtKB:*, and 8 NCBIProtein:* -> UniProtKB:*), extended across 50 MetaCyc:* records in Cycle 4 Stage 3 (209 mappings comprising 185 MetaCyc:* -> UniProtKB:*, 23 EcoCyc:* -> UniProtKB:*, and 1 NCBIProtein:* -> UniProtKB:*), extended across 10 MetaCyc/GO/gomodel records in Cycle 5 Stage 3 (31 mappings comprising 16 MetaCyc:* -> UniProtKB:* and 15 EcoCyc:* -> UniProtKB:*), and re-audited across all 275 records in Cycle 6 Stage 3 (#740: 1,057 total source_mappings rows across 216 records, plus 34 UniProtKB protein edges enriched with eco_code and assay_taxon and 16 UniProtKB reference titles enriched across 6 MetaCyc records)."
+    },
+    {
+      "task_id": "pathwaymech-infra-0005",
+      "issue_number": 677,
+      "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/677",
+      "pre_stage_status": "resolved",
+      "post_stage_status": "resolved",
+      "action": "preserved_resolved",
+      "files_modified": [],
+      "disposition": "Resolved in Stage 6 by adding BiGG -> biolink:BiochemicalReaction to _PREFIX_CATEGORIES in src/pathwaymech/kgx.py and rejecting mixed explicit/omitted reaction category lists in _validate_named_nodes in src/pathwaymech/schema.py; verified by tests/test_kgx_export.py and tests/test_linkml_schema.py, confirmed across all 271 records in Cycle 2 Stage 4 (record_review), followed in Cycle 2 Stage 5 (resolve_review_findings, #692) by adding explicit molecular_activity reaction categories to all 279 catalytic reactions across the remaining 56 untyped MetaCyc records, confirmed across all 272 records / 1,603 reactions in Cycle 3 Stage 4/5 (#704), confirmed across all 273 records / 1,613 reactions in Cycle 4 Stage 4/5 (#714), confirmed across all 274 records / 1,616 reactions in Cycle 5 Stage 4/5 (#723, #724), and confirmed across all 275 records / 1,625 reactions in Cycle 6 Stage 4/5 (#744, #745)."
+    }
+  ]
+}

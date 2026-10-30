@@ -273,3 +273,83 @@ def audit_pathbank_archive_member_authority(
         "ready_for_check_identifiers": ready_for_check_identifiers,
     }
 
+
+def rank_pathbank_archive_member_candidates(
+    archive_path: Path,
+    candidates: list[tuple[str, str]] | tuple[tuple[str, str], ...],
+    authority_snapshot_path: Path,
+    *,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> list[dict[str, Any]]:
+    """Audit and deterministically rank PathBank ZIP candidate members by authority readiness.
+
+    Validates that ``candidates`` is a non-empty sequence of unique ``(member, root)``
+    string pairs, audits each candidate against ``authority_snapshot_path``, attaches
+    ``missing_external_xref_count`` and ``missing_native_term_count``, and returns the
+    candidate audit dictionaries ordered from most ready (already ready for
+    ``pathwaymech-check-identifiers``, then fewest missing external ``UnificationXref``
+    CURIEs, then fewest missing native ``PathBank:*`` terms, then lexical ``member``
+    and ``root``) to least ready.
+    """
+    if not isinstance(candidates, (list, tuple)) or not candidates:
+        raise ValueError(
+            "PathBank candidate ranking requires a non-empty sequence of (member, root) pairs"
+        )
+    seen_members: set[str] = set()
+    seen_roots: set[str] = set()
+    normalized_candidates: list[tuple[str, str]] = []
+    for item in candidates:
+        if (
+            not isinstance(item, (list, tuple))
+            or len(item) != 2
+            or not isinstance(item[0], str)
+            or not isinstance(item[1], str)
+        ):
+            raise ValueError(
+                "PathBank candidate ranking requires 2-element (member, root) string pairs"
+            )
+        member, root = item[0], item[1]
+        if member in seen_members:
+            raise ValueError(f"PathBank candidate ranking duplicate member: {member}")
+        if root in seen_roots:
+            raise ValueError(f"PathBank candidate ranking duplicate root: {root}")
+        seen_members.add(member)
+        seen_roots.add(root)
+        normalized_candidates.append((member, root))
+
+    ranked: list[dict[str, Any]] = []
+    for member, root in normalized_candidates:
+        audit = audit_pathbank_archive_member_authority(
+            archive_path,
+            member,
+            root,
+            authority_snapshot_path,
+            path=path,
+            version=version,
+            license=license,
+        )
+        missing_external_xref_count = sum(
+            len(curies) for curies in audit["missing_external_xrefs"].values()
+        )
+        missing_native_term_count = len(audit["missing_native_term_ids"])
+        ranked.append(
+            {
+                **audit,
+                "missing_external_xref_count": missing_external_xref_count,
+                "missing_native_term_count": missing_native_term_count,
+            }
+        )
+    ranked.sort(
+        key=lambda entry: (
+            not entry["ready_for_check_identifiers"],
+            entry["missing_external_xref_count"],
+            entry["missing_native_term_count"],
+            entry["manifest_entry"]["archive"]["member"],
+            entry["manifest_entry"]["archive"]["root"],
+        )
+    )
+    return ranked
+
+

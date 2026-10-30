@@ -23,6 +23,7 @@ from pathwaymech.pathbank_provenance import (
     audit_pathbank_archive_member_authority,
     build_pathbank_archive_manifest_entry,
     inspect_pathbank_archive_member,
+    rank_pathbank_archive_member_candidates,
 )
 from scripts.build_source_identifier_snapshot import (
     build_snapshot,
@@ -1283,3 +1284,118 @@ def test_audit_pathbank_archive_member_authority_rejects_invalid_snapshot(tmp_pa
         audit_pathbank_archive_member_authority(
             path, "PW9999999.owl", "SMP9999999", snapshot_path
         )
+
+
+def _member_root_for_accession(
+    smp_accession: str, *, uniprot_ids: tuple[str, ...] = ()
+) -> ET.Element:
+    root = native_source()
+    pathway = root.find(BP + "Pathway")
+    pathway.set(RDF + "about", f"http://identifiers.org/smpdb/{smp_accession}")
+    root.find(BP + "UnificationXref").find(BP + "id").text = smp_accession
+    for idx, uniprot_id in enumerate(uniprot_ids):
+        xref = ET.SubElement(root, BP + "UnificationXref", {RDF + "ID": f"uniprot-{idx}"})
+        ET.SubElement(xref, BP + "db").text = "UniProt"
+        ET.SubElement(xref, BP + "id").text = uniprot_id
+    return root
+
+
+def test_rank_pathbank_archive_member_candidates_orders_by_readiness_and_missing_counts(tmp_path):
+    archive_path = tmp_path / "candidates.zip"
+    root_ready = _member_root_for_accession("SMP9999991", uniprot_ids=("P0A9T0",))
+    root_one_missing = _member_root_for_accession("SMP9999992", uniprot_ids=("P0A9T0", "P00877"))
+    root_two_missing = _member_root_for_accession(
+        "SMP9999993", uniprot_ids=("P00877", "P0A6D7")
+    )
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr(
+            "PW9999993.owl", ET.tostring(root_two_missing, encoding="utf-8", xml_declaration=True)
+        )
+        archive.writestr(
+            "PW9999991.owl", ET.tostring(root_ready, encoding="utf-8", xml_declaration=True)
+        )
+        archive.writestr(
+            "PW9999992.owl", ET.tostring(root_one_missing, encoding="utf-8", xml_declaration=True)
+        )
+
+    ready_manifest = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999991.owl", "SMP9999991"
+    )
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "sources": {ready_manifest["key"]: ready_manifest},
+                "terms": {
+                    "PathBank:SMP9999991": {
+                        "label": "Native pathway title",
+                        "synonyms": [],
+                        "source": ready_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/Reactions/7": {
+                        "label": "1.2.3.4",
+                        "synonyms": ["Native substrate → native product"],
+                        "source": ready_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/ProteinComplex/8": {
+                        "label": "ProteinComplex/8",
+                        "synonyms": [],
+                        "source": ready_manifest["key"],
+                    },
+                    "CHEBI:15377": {"label": "water", "synonyms": [], "source": "chebi-obo"},
+                    "UniProtKB:P0A9T0": {
+                        "label": "D-3-phosphoglycerate dehydrogenase",
+                        "synonyms": [],
+                        "source": "uniprot-entries",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    ranked = rank_pathbank_archive_member_candidates(
+        archive_path,
+        [
+            ("PW9999993.owl", "SMP9999993"),
+            ("PW9999991.owl", "SMP9999991"),
+            ("PW9999992.owl", "SMP9999992"),
+        ],
+        snapshot_path,
+    )
+    assert [entry["pathway_id"] for entry in ranked] == [
+        "PathBank:SMP9999991",
+        "PathBank:SMP9999992",
+        "PathBank:SMP9999993",
+    ]
+    assert [entry["ready_for_check_identifiers"] for entry in ranked] == [True, False, False]
+    assert [entry["missing_external_xref_count"] for entry in ranked] == [0, 1, 2]
+    assert [entry["missing_native_term_count"] for entry in ranked] == [0, 3, 3]
+
+
+@pytest.mark.parametrize(
+    "candidates,match",
+    [
+        ([], "non-empty sequence"),
+        ("PW9999999.owl", "non-empty sequence"),
+        ([("PW9999999.owl",)], "2-element \\(member, root\\) string pairs"),
+        ([("PW9999999.owl", 123)], "2-element \\(member, root\\) string pairs"),
+        (
+            [("PW9999999.owl", "SMP9999999"), ("PW9999999.owl", "SMP9999998")],
+            "duplicate member: PW9999999.owl",
+        ),
+        (
+            [("PW9999999.owl", "SMP9999999"), ("PW9999998.owl", "SMP9999999")],
+            "duplicate root: SMP9999999",
+        ),
+    ],
+)
+def test_rank_pathbank_archive_member_candidates_rejects_invalid_candidates(
+    tmp_path, candidates, match
+):
+    path, _ = archive_fixture(tmp_path)
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(json.dumps({"sources": {}, "terms": {}}), encoding="utf-8")
+    with pytest.raises(ValueError, match=match):
+        rank_pathbank_archive_member_candidates(path, candidates, snapshot_path)
+
