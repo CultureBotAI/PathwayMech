@@ -1,0 +1,830 @@
+schema_version: 1.0.0
+review_id: 20261030T221500Z-cycle7-stage5-resolve-review-findings
+kind: batch
+repository: CultureBotAI/PathwayMech
+title: Cycle 7 Stage 5 Successor Review Resolving F-C7S4-001 and F-C7S4-002 Across
+  6 Maintained Pathway Records
+started_at: '2026-10-30T21:45:00Z'
+finished_at: '2026-10-30T22:15:00Z'
+reviewer:
+  identity: Antigravity (pathwaymech-resolve-reviews + review-yaml-category)
+  kind: agent
+  model: Claude Opus 4.6 (Thinking)
+  independence: self_review
+  independence_basis: 'Same agent session (a1d1e545-faee-4294-8a87-4c2d031a6538) implemented
+    the Cycle 7 Stage 5 curation fixes for GitHub issues #753 and #754 and verified
+    post-remediation records, rendered HTML pages, and KGX exports.'
+skill: pathwaymech-resolve-reviews
+completion: completed
+verdict: pass
+native_verdict: coherent
+scientific_review: true
+summary: 'Re-inspected and verified all 6 maintained pathway YAML records affected
+  by Cycle 7 Stage 4 findings F-C7S4-001 (bare-curie-literature-reference-titles-3-metacyc-records
+  across 3 maintained MetaCyc:* pathway records under root-cause group G-C7S5-001
+  and GitHub issue #753) and F-C7S4-002 (concrete-small-molecule-participants-typed-as-chemical-entity-3-metacyc-records
+  across 3 maintained MetaCyc:* pathway records under root-cause group G-C7S5-002
+  and GitHub issue #754). Remediated all 6 records via pathwaymech.curation.publish_curation:
+  (1) across the 3 MetaCyc pathway records in F-C7S4-001 (adenosine-nucleotides-degradation-ii.yaml,
+  amino-sugar-superpathway.yaml, and gallate-degradation-i.yaml), replaced all 16
+  literature bare CURIE title == id placeholders in references[] (15 PMID:* and 1
+  DOI:*) with verified peer-reviewed article titles from PubMed/EuropePMC and Crossref
+  (bringing bare CURIE reference titles to 0 / 404 across the 6 reassessed records
+  and 0 / 7,094 across all 162 reference-bearing records in the 276-record corpus);
+  and (2) across the 3 MetaCyc pathway records in F-C7S4-002 (gallate-degradation-ii.yaml,
+  pentose-phosphate-pathway-non-oxidative-branch-ii.yaml, and thioredoxin-pathway.yaml),
+  updated all 52 concrete small-molecule metabolites, cofactors, inorganic ions, and
+  inhibitors (39 CHEBI:*, 12 MetaCyc:*, and 1 PubChem:*) from category: chemical_entity
+  to category: small_molecule while preserving category: chemical_entity on generic
+  electron-carrier compound classes MetaCyc:Acceptor and MetaCyc:Donor-H2 at participants[8..9]
+  of thioredoxin-pathway.yaml (reducing corpus-wide chemical_entity participant declarations
+  from 120 to 68 and eliminating 17 dual-typed biolink:ChemicalEntity|biolink:SmallMolecule
+  KGX node merges from 59 to 42 across 5,456 KGX nodes in pages/downloads/nodes.tsv).
+  Recorded 6 append-only curation history files at history/records/<slug>/2026-10-30T221000Z-antigravity-a1d1e5.yaml,
+  regenerated rendered pages and KGX exports (.venv/bin/pathwaymech-render-pages),
+  and confirmed full pass across QC (276 pathway records, 938 history records, 22,794
+  evidence blocks, 33 source records) and pytest (8,118 passed, 3 skipped).'
+source:
+  git_revision: 37f8fcb1e21bc105dd7b187ecc3ad780f0ff37c8
+  state: working_tree
+  inputs:
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    sha256: d2cb1bc7e3dbe3c8eba7f6232113712be3b4d3de66112c873984550be29d5b1a
+    role: target
+  - path: data/pathways/amino-sugar-superpathway.yaml
+    sha256: 8cb2330ad4963f4c9a641c9d023f59cb928c8a2e5bf2ae69d71aa4e5364b60de
+    role: target
+  - path: data/pathways/gallate-degradation-i.yaml
+    sha256: 375aa600712d899f0c2b23b31d6a96e1f5bb87ceba5ade96b5d10a2fd7eee4ed
+    role: target
+  - path: data/pathways/gallate-degradation-ii.yaml
+    sha256: 0b983b787431a326580cf51621dacf38341257ee86067f19bff3b799bec6d67a
+    role: target
+  - path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+    sha256: 828076d310a64976bf416e52a9c5acc8ce9979807149c3cc171dfda3db009312
+    role: target
+  - path: data/pathways/thioredoxin-pathway.yaml
+    sha256: 565fbfe8ef69b7728ce8d720c53845071b90938cb845d2cd87db963b13f0080c
+    role: target
+  - path: pages/downloads/edges.tsv
+    sha256: 7f9066d4d91bed56fd7b00a546d32845bd08cf1524f9797c4f6d7624b8722799
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: a11d7ddec1368fecd0086149fc5d736dcc83e4a3ab17e66bea4ad8d571b7cc28
+    role: context
+  - path: pages/records/MetaCyc_GALLATE-DEGRADATION-I-PWY.html
+    sha256: 5f6c2929560197410955b997261e55fc148c842e4d8d5e9ff1977d6aea4ea06a
+    role: context
+  - path: pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html
+    sha256: 788fa752478d8d436f6b9efb17d597c6a696e8d561589612ea1804a86d3a501f
+    role: context
+  - path: pages/records/MetaCyc_GLCMANNANAUT-PWY.html
+    sha256: 9061f2f56fa0b3502e44007ef570e7c6831cbde54bc633d357bb3bddd3a0c419
+    role: context
+  - path: pages/records/MetaCyc_PWY-8178.html
+    sha256: a1a1cbaa9f065bd632cbc66c3e540fc32ff79387b90b20a21452cdb59acf362a
+    role: context
+  - path: pages/records/MetaCyc_SALVADEHYPOX-PWY.html
+    sha256: 278d0e38a1de809b5330832b2217d0eeeb86736254e455b28b322ffbdf476104
+    role: context
+  - path: pages/records/MetaCyc_THIOREDOX-PWY.html
+    sha256: 482a6f1836fd3475bc0a95026dea1a711cb24bee3f83f08500009d7174f9751f
+    role: context
+  - path: reviews/structured/20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review/review.yaml
+    sha256: 53ea8869dd4122968268bf11cc30d189f016f2d092b5e3d238b7946902507b65
+    role: context
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000007/stage-04/revision-0001/evidence.yaml
+    sha256: 9e2be6ca47e0482ecbb610f9ad0c9c318d24733929ce53bcdab15504d5ea9c76
+    role: context
+scope:
+  description: Complete post-remediation reassessment of the 6 maintained pathway
+    records in data/pathways/*.yaml (6 MetaCyc:*) that carried open findings (F-C7S4-001
+    and F-C7S4-002) in Cycle 7 Stage 4 review 20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review.
+  selection: All 6 maintained pathway records in CultureBotAI/PathwayMech carrying
+    open findings in reviews/structured/20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review/review.yaml
+    (100% of open Cycle 7 Stage 4 maintained-record findings).
+  coverage: full
+  population_size: 6
+  reviewed_target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  exclusions:
+  - target: Remaining 270 maintained pathway records in data/pathways/*.yaml
+    reason: Assessed with zero open findings in Cycle 7 Stage 4 review 20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review
+      and unchanged in Cycle 7 Stage 5.
+  - target: research/pathway_additions/*.yaml (6 withheld staging drafts)
+    reason: Non-maintained research staging drafts outside data/pathways/*.yaml; their
+      2 historical open findings (F01 in 20261010T090124Z-siroheme-pathway-addition-blocked-review
+      and F1 in 20261010T100956Z-ecoli-14dhna-octaprenyl-draft-review) remain untouched.
+targets:
+- target_id: MetaCyc:SALVADEHYPOX-PWY
+  path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+  label: adenosine nucleotides degradation II (MetaCyc:SALVADEHYPOX-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d2cb1bc7e3dbe3c8eba7f6232113712be3b4d3de66112c873984550be29d5b1a
+    description: 'Raw SHA-256 file digest of data/pathways/adenosine-nucleotides-degradation-ii.yaml
+      in Cycle 7 Stage 5 (issue #753).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLCMANNANAUT-PWY
+  path: data/pathways/amino-sugar-superpathway.yaml
+  label: superpathway of N-acetylglucosamine, N-acetylmannosamine and N-acetylneuraminate
+    degradation (MetaCyc:GLCMANNANAUT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 8cb2330ad4963f4c9a641c9d023f59cb928c8a2e5bf2ae69d71aa4e5364b60de
+    description: 'Raw SHA-256 file digest of data/pathways/amino-sugar-superpathway.yaml
+      in Cycle 7 Stage 5 (issue #753).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/amino-sugar-superpathway.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GALLATE-DEGRADATION-II-PWY
+  path: data/pathways/gallate-degradation-i.yaml
+  label: gallate degradation I (MetaCyc:GALLATE-DEGRADATION-II-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 375aa600712d899f0c2b23b31d6a96e1f5bb87ceba5ade96b5d10a2fd7eee4ed
+    description: 'Raw SHA-256 file digest of data/pathways/gallate-degradation-i.yaml
+      in Cycle 7 Stage 5 (issue #753).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GALLATE-DEGRADATION-I-PWY
+  path: data/pathways/gallate-degradation-ii.yaml
+  label: gallate degradation II (MetaCyc:GALLATE-DEGRADATION-I-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0b983b787431a326580cf51621dacf38341257ee86067f19bff3b799bec6d67a
+    description: 'Raw SHA-256 file digest of data/pathways/gallate-degradation-ii.yaml
+      in Cycle 7 Stage 5 (issue #754).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-8178
+  path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+  label: pentose phosphate pathway (non-oxidative branch) II (MetaCyc:PWY-8178)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 828076d310a64976bf416e52a9c5acc8ce9979807149c3cc171dfda3db009312
+    description: 'Raw SHA-256 file digest of data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+      in Cycle 7 Stage 5 (issue #754).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:THIOREDOX-PWY
+  path: data/pathways/thioredoxin-pathway.yaml
+  label: thioredoxin pathway (MetaCyc:THIOREDOX-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 565fbfe8ef69b7728ce8d720c53845071b90938cb845d2cd87db963b13f0080c
+    description: 'Raw SHA-256 file digest of data/pathways/thioredoxin-pathway.yaml
+      in Cycle 7 Stage 5 (issue #754).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thioredoxin-pathway.yaml
+    role: maintained pathway YAML
+checks:
+- check_id: validate
+  name: Repository QC and closed-schema validation (just validate)
+  status: passed
+  required: true
+  summary: Validated all 276 maintained pathway records (including the 6 remediated
+    records) against the closed LinkML schema, local identifier/label authority snapshots,
+    938 history records, 22,794 evidence blocks, 33 source records, and pages/ synchrony.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  command: .venv/bin/pathwaymech-run-qc
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C7S5-QC
+  scope_note: 'Full-repository QC gate after applying issues #753 and #754 fixes and
+    regenerating pages/.'
+- check_id: test
+  name: Pytest unit and integration test suite (just test)
+  status: passed
+  required: true
+  summary: All 8,118 tests passed (3 skipped) in pytest across schema, KGX export,
+    SSSOM, and record-review checks.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  command: .venv/bin/pytest -q
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C7S5-PYTEST
+  scope_note: Full pytest test suite (8,118 passed, 3 skipped).
+- check_id: lint
+  name: Ruff lint check (just lint)
+  status: passed
+  required: true
+  summary: Ruff check passed with 0 errors.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  command: .venv/bin/ruff check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C7S5-RUFF
+  scope_note: Repository-wide Python lint check.
+- check_id: git-diff-check
+  name: Git whitespace and conflict marker check
+  status: passed
+  required: true
+  summary: git diff --check exited 0 with no whitespace or conflict marker issues.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C7S5-GIT-DIFF
+  scope_note: Worktree diff check across all Cycle 7 Stage 5 edits.
+- check_id: review-check
+  name: Structured review bundle contract check (just review-check)
+  status: passed
+  required: true
+  summary: All 211 retained structured review bundles in reviews/structured/ passed
+    schema and append-only checks against main.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  command: .venv/bin/python scripts/record_review.py check --base main
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C7S5-REVIEW-CHECK
+  scope_note: Verifies append-only immutability of prior 210 bundles and validity
+    of current bundle.
+evidence:
+- evidence_id: EV-C7S4-PREDECESSOR
+  kind: prior_review
+  reference: reviews/structured/20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review/review.yaml
+  locator: findings[0] (F-C7S4-001) and findings[1] (F-C7S4-002)
+  accessed_at: '2026-10-30T21:45:00Z'
+  support: supports
+  summary: 'Predecessor Cycle 7 Stage 4 cohort review recorded two minor open representation
+    findings across 6 maintained pathway records: F-C7S4-001 (bare-curie-literature-reference-titles-3-metacyc-records
+    across 3 MetaCyc:* records) and F-C7S4-002 (concrete-small-molecule-participants-typed-as-chemical-entity-3-metacyc-records
+    across 3 MetaCyc:* records).'
+  snapshot_sha256: 53ea8869dd4122968268bf11cc30d189f016f2d092b5e3d238b7946902507b65
+- evidence_id: EV-C7S4-WORKFLOW-EVIDENCE
+  kind: prior_review
+  reference: reviews/workflow/mech-goal-sequence-20261019/cycle-000007/stage-04/revision-0001/evidence.yaml
+  locator: findings[0..1] (F-C7S4-001, F-C7S4-002)
+  accessed_at: '2026-10-30T21:45:00Z'
+  support: supports
+  summary: Cycle 7 Stage 4 workflow evidence manifest carried forward F-C7S4-001 and
+    F-C7S4-002 as open findings for Cycle 7 Stage 5 grouped remediation.
+  snapshot_sha256: 9e2be6ca47e0482ecbb610f9ad0c9c318d24733929ce53bcdab15504d5ea9c76
+- evidence_id: EV-C7S5-LITERATURE-REF-TITLES-FIXED-3
+  kind: record_content
+  reference: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+  locator: references[40..45] in adenosine-nucleotides-degradation-ii.yaml, references[52,53,56]
+    in amino-sugar-superpathway.yaml, and references[41,44..49] in gallate-degradation-i.yaml
+  accessed_at: '2026-10-30T22:10:00Z'
+  support: supports
+  summary: Across all 3 maintained MetaCyc pathway records in F-C7S4-001 (adenosine-nucleotides-degradation-ii.yaml,
+    amino-sugar-superpathway.yaml, and gallate-degradation-i.yaml), replaced all 16
+    literature bare CURIE title == id placeholders in references[] (15 PMID:* and
+    1 DOI:*) with verified peer-reviewed article titles via pathwaymech.curation.publish_curation,
+    leaving 0 / 7,094 bare CURIE reference titles corpus-wide.
+  quote: "- id: PMID:7559336\n  title: Identification and characterization of genes\
+    \ (xapA, xapB, and xapR) involved\n    in xanthosine catabolism in Escherichia\
+    \ coli.\n  url: https://pubmed.ncbi.nlm.nih.gov/7559336/"
+  snapshot_sha256: d2cb1bc7e3dbe3c8eba7f6232113712be3b4d3de66112c873984550be29d5b1a
+- evidence_id: EV-C7S5-SMALL-MOLECULE-CATEGORIES-FIXED-3
+  kind: record_content
+  reference: data/pathways/gallate-degradation-ii.yaml
+  locator: participants[51..62,65..74,78..81,83..87,89] in gallate-degradation-ii.yaml,
+    participants[5..16,32..35] in pentose-phosphate-pathway-non-oxidative-branch-ii.yaml,
+    and participants[32..35] in thioredoxin-pathway.yaml
+  accessed_at: '2026-10-30T22:10:00Z'
+  support: supports
+  summary: 'Across all 3 maintained MetaCyc pathway records in F-C7S4-002 (gallate-degradation-ii.yaml,
+    pentose-phosphate-pathway-non-oxidative-branch-ii.yaml, and thioredoxin-pathway.yaml),
+    updated all 52 concrete small-molecule metabolites, cofactors, inorganic ions,
+    and inhibitors (39 CHEBI:*, 12 MetaCyc:*, and 1 PubChem:*) from category: chemical_entity
+    to category: small_molecule via pathwaymech.curation.publish_curation while preserving
+    category: chemical_entity on generic electron-carrier compound classes MetaCyc:Acceptor
+    and MetaCyc:Donor-H2 at participants[8..9] of thioredoxin-pathway.yaml.'
+  quote: "- id: CHEBI:15356\n  label: cysteine\n  category: small_molecule\n- id:\
+    \ CHEBI:15422\n  label: ATP\n  category: small_molecule"
+  snapshot_sha256: 0b983b787431a326580cf51621dacf38341257ee86067f19bff3b799bec6d67a
+- evidence_id: EV-C7S5-RENDERED-PAGES-AND-KGX
+  kind: record_content
+  reference: pages/downloads/nodes.tsv
+  locator: CHEBI:15422, CHEBI:16526, CHEBI:16761, CHEBI:16763, CHEBI:16810, CHEBI:16856,
+    CHEBI:16947, CHEBI:18320, CHEBI:18407, CHEBI:29888, CHEBI:30616, CHEBI:31823,
+    CHEBI:36655, CHEBI:57499, MetaCyc:PPI, MetaCyc:PROTON, MetaCyc:Pi rows in pages/downloads/nodes.tsv
+    and rendered HTML pages in pages/records/
+  accessed_at: '2026-10-30T22:12:00Z'
+  support: supports
+  summary: After running .venv/bin/pathwaymech-render-pages, verified that pages/downloads/nodes.tsv
+    (5,456 nodes) eliminates 17 dual-typed biolink:ChemicalEntity|biolink:SmallMolecule
+    KGX node merges (reducing dual-typed ChemicalEntity|SmallMolecule merges from
+    59 to 42) and all 6 remediated record HTML pages are current.
+  quote: "CHEBI:15422\tATP\tbiolink:SmallMolecule\tinfores:pathwaymech\tsmall_molecule\n\
+    ...\nCHEBI:30616\tATP(4-)\tbiolink:SmallMolecule\tinfores:pathwaymech\tsmall_molecule"
+  snapshot_sha256: a11d7ddec1368fecd0086149fc5d736dcc83e4a3ab17e66bea4ad8d571b7cc28
+- evidence_id: EV-C7S5-QC
+  kind: validation
+  reference: .venv/bin/pathwaymech-run-qc
+  locator: stdout summary (276 pathway records, 938 history records, 22,794 evidence
+    blocks, 33 source records)
+  accessed_at: '2026-10-30T22:14:00Z'
+  support: supports
+  summary: 'Executed .venv/bin/pathwaymech-run-qc: validated 276 pathway records against
+    the closed LinkML schema, verified all identifiers and labels against local authority
+    snapshots, validated 938 history records (including 6 new Cycle 7 Stage 5 record
+    history entries referencing issues #753 and #754) and 22,794 evidence blocks,
+    and confirmed pages/ synchrony.'
+- evidence_id: EV-C7S5-PYTEST
+  kind: validation
+  reference: .venv/bin/pytest -q
+  locator: pytest suite execution across tests/
+  accessed_at: '2026-10-30T22:14:00Z'
+  support: supports
+  summary: Executed .venv/bin/pytest -q with 8,118 passed, 3 skipped.
+- evidence_id: EV-C7S5-RUFF
+  kind: validation
+  reference: .venv/bin/ruff check --no-cache .
+  locator: ruff check output
+  accessed_at: '2026-10-30T22:14:00Z'
+  support: supports
+  summary: Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks
+    passed).
+- evidence_id: EV-C7S5-GIT-DIFF
+  kind: validation
+  reference: git diff --check
+  locator: git worktree on feat/cycle7-stage5-resolve-review-findings
+  accessed_at: '2026-10-30T22:14:00Z'
+  support: supports
+  summary: Executed git diff --check with exit code 0; no whitespace errors or conflict
+    markers.
+- evidence_id: EV-C7S5-REVIEW-CHECK
+  kind: validation
+  reference: .venv/bin/python scripts/record_review.py check --base main
+  locator: reviews/structured/
+  accessed_at: '2026-10-30T22:14:00Z'
+  support: supports
+  summary: Validated all 211 retained structured review bundles in reviews/structured/
+    against schema/record_review.yaml and verified byte-for-byte append-only preservation
+    against main.
+assessments:
+- assessment_id: ASSESS-C7S5-LITERATURE-REF-TITLES-AND-SMALL-MOLECULE-HYGIENE-6
+  area: consistency
+  topic: Post-remediation elimination of all bare CURIE literature reference titles
+    (0 / 404 reassessed references and 0 / 7,094 corpus references) and small-molecule
+    participant chemical_entity typing across the 6 reassessed MetaCyc pathway records
+    (reducing dual-typed biolink:ChemicalEntity|biolink:SmallMolecule KGX node merges
+    from 59 to 42)
+  outcome: supported
+  summary: 'Replacing all 16 bare CURIE literature reference titles (15 PMID:* and
+    1 DOI:*) across the 3 F-C7S4-001 MetaCyc pathway records brings bare CURIE reference
+    titles to 0 / 404 across the 6 reassessed records and 0 / 7,094 corpus-wide, and
+    updating all 52 concrete small-molecule participants (39 CHEBI:*, 12 MetaCyc:*,
+    and 1 PubChem:*) across the 3 F-C7S4-002 MetaCyc pathway records from category:
+    chemical_entity to category: small_molecule (while preserving category: chemical_entity
+    on generic electron-carrier compound classes MetaCyc:Acceptor and MetaCyc:Donor-H2)
+    eliminates 17 dual-typed biolink:ChemicalEntity|biolink:SmallMolecule KGX node
+    merges in pages/downloads/nodes.tsv.'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  evidence_ids:
+  - EV-C7S4-PREDECESSOR
+  - EV-C7S5-LITERATURE-REF-TITLES-FIXED-3
+  - EV-C7S5-SMALL-MOLECULE-CATEGORIES-FIXED-3
+  - EV-C7S5-RENDERED-PAGES-AND-KGX
+  - EV-C7S5-QC
+  - EV-C7S5-PYTEST
+  metrics:
+  - name: bare_curie_reference_titles_across_reassessed_records
+    value: 0.0
+    unit: references
+    definition: Count of references[] entries with bare CURIE titles (title == id)
+      across the 6 reassessed pathway records (404 total references after updating
+      16 PMID/DOI entries; 0 / 7,094 corpus-wide).
+    denominator: 404
+    minimum: 0.0
+    maximum: 404.0
+  - name: concrete_small_molecule_participants_typed_as_chemical_entity_in_reassessed_records
+    value: 0.0
+    unit: participants
+    definition: 'Count of concrete small-molecule participants[] entries typed as
+      category: chemical_entity across the 6 reassessed pathway records after updating
+      52 entries to category: small_molecule (only generic electron-carrier classes
+      MetaCyc:Acceptor and MetaCyc:Donor-H2 retain chemical_entity).'
+    denominator: 373
+    minimum: 0.0
+    maximum: 373.0
+  dimensions:
+  - name: rendered_page_and_kgx_verification
+    value: All 16 updated PMID/DOI article titles rendered in MetaCyc_SALVADEHYPOX-PWY.html,
+      MetaCyc_GLCMANNANAUT-PWY.html, and MetaCyc_GALLATE-DEGRADATION-II-PWY.html;
+      all 52 updated small_molecule participants exported in pages/downloads/nodes.tsv
+      and MetaCyc_GALLATE-DEGRADATION-I-PWY.html, MetaCyc_PWY-8178.html, and MetaCyc_THIOREDOX-PWY.html
+    definition: Verified post-remediation rendered HTML pages and KGX exports in pages/.
+    evidence_ids:
+    - EV-C7S5-RENDERED-PAGES-AND-KGX
+    - EV-C7S5-QC
+- assessment_id: ASSESS-C7S5-SCIENTIFIC-INTEGRITY-6
+  area: evidence
+  topic: Preservation of pathway identity, taxon grounding, participant connectivity,
+    reaction directionality, stoichiometry, and edge-level evidence across the 6 remediated
+    pathway records
+  outcome: supported
+  summary: Structural verification across all 6 remediated pathway YAML files confirms
+    that all pathway IDs, taxon groundings, 7,843 connected participant entries (0
+    orphans), 1,628 reaction steps (729 RHEA:*), 14,713 non-reflexive mechanistic_edges,
+    1,060 source_mappings, and 22,794 structured evidence blocks remain 100% intact
+    and pass closed LinkML and authority snapshot checks.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  evidence_ids:
+  - EV-C7S5-LITERATURE-REF-TITLES-FIXED-3
+  - EV-C7S5-SMALL-MOLECULE-CATEGORIES-FIXED-3
+  - EV-C7S5-QC
+  - EV-C7S5-PYTEST
+  - EV-C7S5-GIT-DIFF
+findings:
+- finding_id: F-C7S4-001
+  issue_key: bare-curie-literature-reference-titles-3-metacyc-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: All 16 bare CURIE literature reference titles (15 PMID:* and 1 DOI:*) are
+    replaced with verified peer-reviewed article titles across 3 maintained MetaCyc
+    pathway records
+  description: Across all 3 maintained MetaCyc pathway records in F-C7S4-001 (MetaCyc:SALVADEHYPOX-PWY,
+    MetaCyc:GLCMANNANAUT-PWY, and MetaCyc:GALLATE-DEGRADATION-II-PWY), replaced all
+    16 literature bare CURIE title == id placeholders in references[] (15 PMID:* and
+    1 DOI:*) with verified peer-reviewed article titles from PubMed/EuropePMC and
+    Crossref via pathwaymech.curation.publish_curation, recorded 3 history/records/<slug>/2026-10-30T221000Z-antigravity-a1d1e5.yaml
+    files, and regenerated pages/ (bringing bare CURIE reference titles to 0 / 7,094
+    corpus-wide).
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  field_paths:
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#references[40].title (PMID:7559336)
+    (PMID:7559336 -> Identification and characterization of genes (xapA, xapB, and
+    xapR) involved in xanthosine catabolism in Escherichia coli.)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#references[41].title (PMID:10986234)
+    (PMID:10986234 -> Purine catabolism in Escherichia coli and function of xanthine
+    dehydrogenase in purine salvage.)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#references[42].title (PMID:19542235)
+    (PMID:19542235 -> MocA is a specific cytidylyltransferase involved in molybdopterin
+    cytosine dinucleotide biosynthesis in Escherichia coli.)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#references[43].title (PMID:41070194)
+    (PMID:41070194 -> A reductive uric acid degradation pathway in anaerobic bacteria.)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#references[44].title (PMID:31978345)
+    (PMID:31978345 -> FAMIN Is a Multifunctional Purine Enzyme Enabling the Purine
+    Nucleotide Cycle.)
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#references[45].title (PMID:40632566)
+    (PMID:40632566 -> A conserved editing mechanism for the fidelity of bacterial
+    cell wall biosynthesis.)
+  - data/pathways/amino-sugar-superpathway.yaml#references[52].title (PMID:33790291)
+    (PMID:33790291 -> Mechanism of NanR gene repression and allosteric induction of
+    bacterial sialic acid metabolism.)
+  - data/pathways/amino-sugar-superpathway.yaml#references[53].title (PMID:19700525)
+    (PMID:19700525 -> Allosteric regulation of glucosamine-6-phosphate deaminase (NagB)
+    and growth of Escherichia coli on glucosamine.)
+  - data/pathways/amino-sugar-superpathway.yaml#references[56].title (PMID:28634232)
+    (PMID:28634232 -> The phosphocarrier protein HPr of the bacterial phosphotransferase
+    system globally regulates energy metabolism by directly interacting with multiple
+    enzymes in Escherichia coli.)
+  - data/pathways/gallate-degradation-i.yaml#references[41].title (PMID:23977959)
+    (PMID:23977959 -> Characterizing the promiscuity of LigAB, a lignin catabolite
+    degrading extradiol dioxygenase from Sphingomonas paucimobilis SYK-6.)
+  - 'data/pathways/gallate-degradation-i.yaml#references[44].title (PMID:21219457)
+    (PMID:21219457 -> Unravelling the gallic acid degradation pathway in bacteria:
+    the gal cluster from Pseudomonas putida)'
+  - 'data/pathways/gallate-degradation-i.yaml#references[45].title (PMID:16030198)
+    (PMID:16030198 -> Characterization of the gallate dioxygenase gene: three distinct
+    ring cleavage dioxygenases are involved in syringate degradation by Sphingomonas
+    paucimobilis SYK-6.)'
+  - data/pathways/gallate-degradation-i.yaml#references[46].title (PMID:30346405)
+    (PMID:30346405 -> Anaerobic Protein Purification and Kinetic Analysis via Oxygen
+    Electrode for Studying DesB Dioxygenase Activity and Inhibition.)
+  - data/pathways/gallate-degradation-i.yaml#references[47].title (DOI:10.1016/j.procbio.2021.01.019)
+    (DOI:10.1016/j.procbio.2021.01.019 -> Identifying metabolic pathway intermediates
+    that modulate the gallate dioxygenase (DesB) from Sphingobium sp. strain SYK-6)
+  - data/pathways/gallate-degradation-i.yaml#references[48].title (PMID:26867578)
+    (PMID:26867578 -> Structural and Kinetic Characterization of the 4-Carboxy-2-hydroxymuconate
+    Hydratase from the Gallate and Protocatechuate 4,5-Cleavage Pathways of Pseudomonas
+    putida KT2440)
+  - data/pathways/gallate-degradation-i.yaml#references[49].title (PMID:24657997)
+    (PMID:24657997 -> Molecular mechanism of strict substrate specificity of an extradiol
+    dioxygenase, DesB, derived from Sphingobium sp. SYK-6.)
+  evidence_ids:
+  - EV-C7S4-PREDECESSOR
+  - EV-C7S4-WORKFLOW-EVIDENCE
+  - EV-C7S5-LITERATURE-REF-TITLES-FIXED-3
+  - EV-C7S5-RENDERED-PAGES-AND-KGX
+  - EV-C7S5-QC
+  - EV-C7S5-PYTEST
+  rule_id: CURATION:no-bare-curie-literature-reference-titles
+  native_severity: minor
+  normalization_reason: 'Native minor representation defect maps directly to minor
+    severity: replacing the 16 bare CURIE literature reference titles across the 3
+    affected MetaCyc records with verified peer-reviewed article titles eliminates
+    all remaining bare CURIE reference titles across the 276-record corpus (0 / 7,094).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/amino-sugar-superpathway.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #753 (group G-C7S5-001) by replacing
+    all 16 bare CURIE literature title == id placeholders in references[] (15 PMID:*
+    and 1 DOI:*) with verified peer-reviewed article titles across the 3 affected
+    MetaCyc pathway records via pathwaymech.curation.publish_curation, recording 3
+    history/records/<slug>/2026-10-30T221000Z-antigravity-a1d1e5.yaml provenance entries,
+    and regenerating pages/.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review
+    finding_id: F-C7S4-001
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/753
+  tags:
+  - cycle7-stage5-resolve-review-findings
+  - bare-curie-reference-title
+  - literature-reference-hygiene
+- finding_id: F-C7S4-002
+  issue_key: concrete-small-molecule-participants-typed-as-chemical-entity-3-metacyc-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: 'All 52 concrete small-molecule participants (39 CHEBI:*, 12 MetaCyc:*, and
+    1 PubChem:*) across 3 maintained MetaCyc pathway records are typed as category:
+    small_molecule'
+  description: 'Across all 3 maintained MetaCyc pathway records in F-C7S4-002 (MetaCyc:GALLATE-DEGRADATION-I-PWY,
+    MetaCyc:PWY-8178, and MetaCyc:THIOREDOX-PWY), updated all 52 concrete small-molecule
+    metabolites, cofactors, inorganic ions, and inhibitors (39 CHEBI:*, 12 MetaCyc:*,
+    and 1 PubChem:*) from category: chemical_entity to category: small_molecule via
+    pathwaymech.curation.publish_curation while preserving category: chemical_entity
+    on generic electron-carrier compound classes MetaCyc:Acceptor and MetaCyc:Donor-H2
+    at participants[8..9] of thioredoxin-pathway.yaml, recorded 3 history/records/<slug>/2026-10-30T221000Z-antigravity-a1d1e5.yaml
+    files, and regenerated pages/ and pages/downloads/nodes.tsv (eliminating 17 dual-typed
+    biolink:ChemicalEntity|biolink:SmallMolecule KGX node merges from 59 to 42 across
+    5,456 KGX nodes).'
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  field_paths:
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[51].category (CHEBI:15356
+    cysteine: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[52].category (CHEBI:15422
+    ATP: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[53].category (CHEBI:16526
+    carbon dioxide: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[54].category (CHEBI:16761
+    ADP: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[55].category (CHEBI:16763
+    2-oxobutanoate: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[56].category (CHEBI:16810
+    2-oxoglutarate(2-): chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[57].category (CHEBI:16856
+    glutathione: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[58].category (CHEBI:16947
+    citrate(3-): chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[59].category (CHEBI:173437
+    4-Hydroxy-2-oxobutanoic acid: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[60].category (CHEBI:17742
+    4-hydroxy-2-oxoglutarate(2-): chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[61].category (CHEBI:18320
+    1,4-dithiothreitol: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[62].category (CHEBI:22629
+    arsenate ion: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[65].category (CHEBI:29888
+    diphosphoric acid: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[66].category (CHEBI:30808
+    iron trichloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[67].category (CHEBI:31823
+    mercury dichloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[68].category (CHEBI:32139
+    sodium hydrogencarbonate: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[69].category (CHEBI:32588
+    potassium chloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[70].category (CHEBI:3312
+    calcium dichloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[71].category (CHEBI:34887
+    nickel dichloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[72].category (CHEBI:35780
+    phosphate ion: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[73].category (CHEBI:36655
+    glyoxylate: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[74].category (CHEBI:44976
+    phosphonic acid: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[78].category (CHEBI:53351
+    chromium(3+) trichloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[79].category (CHEBI:57499
+    2-oxoadipate(2-): chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[80].category (CHEBI:58222
+    4-hydroxy-2-oxopentanoate: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[81].category (CHEBI:58276
+    4-hydroxy-4-methyl-2-oxoglutarate(2-): chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[83].category (CHEBI:62843
+    beryllium dichloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[84].category (CHEBI:63317
+    barium chloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[85].category (CHEBI:747199
+    strontium sulfate: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[86].category (CHEBI:86228
+    dithionitrobenzoic acid: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[87].category (CHEBI:9532
+    thiamine(1+) diphosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/gallate-degradation-ii.yaml#participants[89].category (PubChem:6098323
+    Lithium potassium acetyl phosphate (1/1/1): chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[5].category
+    (MetaCyc:D-SEDOHEPTULOSE-1-7-P2 D-sedoheptulose 1,7-bisphosphate: chemical_entity
+    -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[6].category
+    (MetaCyc:D-SEDOHEPTULOSE-7-P D-sedoheptulose 7-phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[7].category
+    (MetaCyc:DIHYDROXY-ACETONE-PHOSPHATE glycerone phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[8].category
+    (MetaCyc:ERYTHROSE-4P D-erythrose 4-phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[9].category
+    (MetaCyc:FRUCTOSE-6P beta-D-fructofuranose 6-phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[10].category
+    (MetaCyc:GAP D-glyceraldehyde 3-phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[11].category
+    (MetaCyc:PPI diphosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[12].category
+    (MetaCyc:PROTON H+: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[13].category
+    (MetaCyc:Pi phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[14].category
+    (MetaCyc:RIBOSE-5P D-ribose 5-phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[15].category
+    (MetaCyc:RIBULOSE-5P D-ribulose 5-phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[16].category
+    (MetaCyc:XYLULOSE-5-PHOSPHATE D-xylulose 5-phosphate: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[32].category
+    (CHEBI:28938 ammonium: chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[33].category
+    (CHEBI:29103 potassium(1+): chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[34].category
+    (CHEBI:29105 zinc(2+): chemical_entity -> small_molecule)'
+  - 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml#participants[35].category
+    (CHEBI:30616 ATP(4-): chemical_entity -> small_molecule)'
+  - 'data/pathways/thioredoxin-pathway.yaml#participants[32].category (CHEBI:18407
+    hydrogen cyanide: chemical_entity -> small_molecule)'
+  - 'data/pathways/thioredoxin-pathway.yaml#participants[33].category (CHEBI:35456
+    cadmium dichloride: chemical_entity -> small_molecule)'
+  - 'data/pathways/thioredoxin-pathway.yaml#participants[34].category (CHEBI:20435
+    p-mercuribenzoate: chemical_entity -> small_molecule)'
+  - 'data/pathways/thioredoxin-pathway.yaml#participants[35].category (CHEBI:29242
+    arsenite(1-): chemical_entity -> small_molecule)'
+  evidence_ids:
+  - EV-C7S4-PREDECESSOR
+  - EV-C7S4-WORKFLOW-EVIDENCE
+  - EV-C7S5-SMALL-MOLECULE-CATEGORIES-FIXED-3
+  - EV-C7S5-RENDERED-PAGES-AND-KGX
+  - EV-C7S5-QC
+  - EV-C7S5-PYTEST
+  rule_id: CURATION:concrete-small-molecule-participant-category
+  native_severity: minor
+  normalization_reason: 'Native minor participant-category representation defect maps
+    directly to minor severity: updating the 52 concrete small-molecule participants
+    from chemical_entity to small_molecule across the 3 affected MetaCyc records aligns
+    their participant categories with their own in-record substrate/cofactor participants
+    and sibling records and eliminates 17 dual-typed biolink:ChemicalEntity|biolink:SmallMolecule
+    KGX node merges in pages/downloads/nodes.tsv.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thioredoxin-pathway.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #754 (group G-C7S5-002) by updating
+    all 52 concrete small-molecule participants (39 CHEBI:*, 12 MetaCyc:*, and 1 PubChem:*)
+    from category: chemical_entity to category: small_molecule across the 3 affected
+    MetaCyc pathway records via pathwaymech.curation.publish_curation (preserving
+    chemical_entity on generic classes MetaCyc:Acceptor and MetaCyc:Donor-H2), recording
+    3 history/records/<slug>/2026-10-30T221000Z-antigravity-a1d1e5.yaml provenance
+    entries, and regenerating pages/.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review
+    finding_id: F-C7S4-002
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/754
+  tags:
+  - cycle7-stage5-resolve-review-findings
+  - participant-category-hygiene
+  - kgx-category-hygiene
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:THIOREDOX-PWY
+  rationale: Retain all 6 remediated MetaCyc:* pathway records as distinct, non-duplicate
+    source-scoped pathway definitions with 0 bare CURIE reference titles and consistent
+    small_molecule participant typing.
+  evidence_ids:
+  - EV-C7S5-LITERATURE-REF-TITLES-FIXED-3
+  - EV-C7S5-SMALL-MOLECULE-CATEGORIES-FIXED-3
+  - EV-C7S5-QC
+limitations:
+- This Cycle 7 Stage 5 successor review is scoped to verifying the remediation of
+  Cycle 7 Stage 4 findings F-C7S4-001 and F-C7S4-002 across the 6 affected maintained
+  pathway records; the remaining 270 maintained records had zero findings in Cycle
+  7 Stage 4 and were verified via repository-wide QC and pytest gates.
+notes:
+- CLAW aggregator CLI (kg_microbe_reviews) is not installed in the local culturebotai-claw
+  environment; finding lineage (predecessor review_id 20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review,
+  finding_ids F-C7S4-001 and F-C7S4-002, exact issue_keys, 100% target_ids retention,
+  and absence of competing heads) was explicitly verified against reviews/structured/.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review
+  relationship: resolves_findings_from
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/753
+- https://github.com/CultureBotAI/PathwayMech/issues/754
+tags:
+- mech-goal-sequence-20261019
+- cycle-7
+- stage-5
+- resolve-review-findings
