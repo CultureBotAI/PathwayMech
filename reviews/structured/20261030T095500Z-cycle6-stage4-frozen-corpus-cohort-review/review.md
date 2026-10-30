@@ -336,7 +336,7 @@ In WikiPathways:WP5019 (data/pathways/acetogenesis.yaml), participants[28] (id: 
 
 minor / open / confirmed; issue key: bare-curie-reference-titles-5-metacyc-records.
 
-Across 5 maintained MetaCyc pathway records—data/pathways/5-prime-deoxyadenosine-degradation-i.yaml (MetaCyc:PWY-8130: references[1..3] MetaCyc:RXN-14304, MetaCyc:RXN-21315, MetaCyc:RXN-21316), data/pathways/adenosine-nucleotides-degradation-ii.yaml (MetaCyc:SALVADEHYPOX-PWY: references[27] EcoCyc:AMP-DEPHOSPHORYLATION-RXN and references[31..39] UniProtKB:P23841, EcoCyc:CPLX0-7681, EcoCyc:EG11146-MONOMER, EcoCyc:TU301, EcoCyc:TU0-45226, EcoCyc:G85, Entrez:946878, Entrez:945283, Entrez:945654), data/pathways/amino-sugar-superpathway.yaml (MetaCyc:GLCMANNANAUT-PWY: references[18] MetaCyc:GLCMANNANAUT-PWY), data/pathways/gallate-degradation-i.yaml (MetaCyc:GALLATE-DEGRADATION-II-PWY: references[42..43] MetaCyc:CPLX-7916, UniProtKB:P22636), and data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml (MetaCyc:PWY-8132: references[0,1,3,4,5,33,38] MetaCyc:5.3.1.23-RXN, MetaCyc:O-ACETYLHOMOSERINE-THIOL-LYASE-RXN, MetaCyc:RXN-21318, MetaCyc:RXN-21319, MetaCyc:RXN-21320, MetaCyc:CPLX-8242, MetaCyc:MONOMER-21153)—23 references[] entries store a bare CURIE string identical to id (title == id) as their title, even though descriptive labels are already present on the corresponding local reactions[], participants[], pathway label, or quoted authority fields.
+Across 5 maintained MetaCyc pathway records—data/pathways/5-prime-deoxyadenosine-degradation-i.yaml (MetaCyc:PWY-8130: references[1..3] MetaCyc:RXN-14304, MetaCyc:RXN-21315, MetaCyc:RXN-21316), data/pathways/adenosine-nucleotides-degradation-ii.yaml (MetaCyc:SALVADEHYPOX-PWY: references[27] EcoCyc:AMP-DEPHOSPHORYLATION-RXN and references[31..39] UniProtKB:P23841, EcoCyc:CPLX0-7681, EcoCyc:EG11146-MONOMER, EcoCyc:TU301, EcoCyc:TU0-45226, EcoCyc:G85, Entrez:946878, Entrez:945283, Entrez:945654), data/pathways/amino-sugar-superpathway.yaml (MetaCyc:GLCMANNANAUT-PWY: references[18] MetaCyc:GLCMANNANAUT-PWY), data/pathways/gallate-degradation-i.yaml (MetaCyc:GALLATE-DEGRADATION-II-PWY: references[42..43] MetaCyc:CPLX-7916, UniProtKB:P22636), and data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml (MetaCyc:PWY-8132: references[0,1,3,4,5,33,38] MetaCyc:5.3.1.23-RXN, MetaCyc:O-ACETYLHOMOSERINE-THIOL-LYASE-RXN, MetaCyc:RXN-21318, MetaCyc:RXN-21319, MetaCyc:RXN-21320, MetaCyc:CPLX-8242, MetaCyc:MONOMER-21153)—23 non-literature structured-database references[] entries store a bare CURIE string identical to id (title == id) as their title, even though descriptive labels are already present on the corresponding local reactions[], participants[], pathway label, or quoted authority fields (separate from 16 PMID:*/DOI:* literature references in adenosine-nucleotides-degradation-ii.yaml references[40..45], amino-sugar-superpathway.yaml references[52,53,56], and gallate-degradation-i.yaml references[41,44..49]).
 
 ## Recommended Actions And Acceptance Checks
 
@@ -352,7 +352,7 @@ In data/pathways/acetogenesis.yaml (WikiPathways:WP5019), change participants[28
 
 Across the 5 affected MetaCyc pathway records, replace all 23 bare CURIE title == id placeholders in references[] (11 MetaCyc:*, 7 EcoCyc:*, 3 Entrez:*, and 2 UniProtKB:*) with descriptive reaction, pathway, complex, transcription unit, gene, and protein titles, record curation history entries under history/records/&lt;slug&gt;/, and regenerate pages/.
 
-- Zero maintained records in data/pathways/*.yaml contain references[] entries with bare CURIE titles (title == id).
+- Zero maintained records in data/pathways/*.yaml contain non-literature structured-database references[] entries (MetaCyc:*, EcoCyc:*, Entrez:*, UniProtKB:*) with bare CURIE titles (title == id).
 - .venv/bin/pathwaymech-run-qc and .venv/bin/pytest -q exit 0.
 
 ## Category Boundaries
@@ -7388,7 +7388,8 @@ assessments:
   - name: bare_curie_reference_titles
     value: 23.0
     unit: references
-    definition: Count of references[] entries across all 275 maintained records (7,082
+    definition: Count of non-literature structured-database references[] entries (excluding
+      PMID:* and DOI:* literature entries) across all 275 maintained records (7,082
       total references) where title == id.
     denominator: 7082
     minimum: 0.0
@@ -7469,9 +7470,12 @@ findings:
     and data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
     (MetaCyc:PWY-8132: references[0,1,3,4,5,33,38] MetaCyc:5.3.1.23-RXN, MetaCyc:O-ACETYLHOMOSERINE-THIOL-LYASE-RXN,
     MetaCyc:RXN-21318, MetaCyc:RXN-21319, MetaCyc:RXN-21320, MetaCyc:CPLX-8242, MetaCyc:MONOMER-21153)—23
-    references[] entries store a bare CURIE string identical to id (title == id) as
-    their title, even though descriptive labels are already present on the corresponding
-    local reactions[], participants[], pathway label, or quoted authority fields.'
+    non-literature structured-database references[] entries store a bare CURIE string
+    identical to id (title == id) as their title, even though descriptive labels are
+    already present on the corresponding local reactions[], participants[], pathway
+    label, or quoted authority fields (separate from 16 PMID:*/DOI:* literature references
+    in adenosine-nucleotides-degradation-ii.yaml references[40..45], amino-sugar-superpathway.yaml
+    references[52,53,56], and gallate-degradation-i.yaml references[41,44..49]).'
   target_ids:
   - MetaCyc:PWY-8130
   - MetaCyc:SALVADEHYPOX-PWY
@@ -7514,10 +7518,10 @@ findings:
   rule_id: CURATION:no-bare-curie-reference-titles
   native_severity: minor
   normalization_reason: 'Native minor representation defect maps directly to minor
-    severity: replacing the 23 bare CURIE title == id placeholders across the 5 affected
-    MetaCyc records with descriptive reaction, pathway, complex, transcription unit,
-    gene, and protein titles eliminates all bare CURIE reference titles across the
-    275-record corpus.'
+    severity: replacing the 23 structured-database bare CURIE title == id placeholders
+    across the 5 affected MetaCyc records with descriptive reaction, pathway, complex,
+    transcription unit, gene, and protein titles eliminates all non-literature structured-database
+    bare CURIE reference titles across the 275-record corpus.'
   owner_paths:
   - repository: CultureBotAI/PathwayMech
     path: data/pathways/5-prime-deoxyadenosine-degradation-i.yaml
@@ -7589,8 +7593,9 @@ actions:
     path: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
     role: maintained pathway YAML
   acceptance_checks:
-  - Zero maintained records in data/pathways/*.yaml contain references[] entries with
-    bare CURIE titles (title == id).
+  - Zero maintained records in data/pathways/*.yaml contain non-literature structured-database
+    references[] entries (MetaCyc:*, EcoCyc:*, Entrez:*, UniProtKB:*) with bare CURIE
+    titles (title == id).
   - .venv/bin/pathwaymech-run-qc and .venv/bin/pytest -q exit 0.
 boundary_decisions:
 - action: retain
