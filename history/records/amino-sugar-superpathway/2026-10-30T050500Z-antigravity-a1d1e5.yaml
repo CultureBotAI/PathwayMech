@@ -1,0 +1,45 @@
+history_version: 1
+target:
+  kind: record
+  path: data/pathways/amino-sugar-superpathway.yaml
+  slug: amino-sugar-superpathway
+session:
+  id: 2026-10-30T050500Z-antigravity-a1d1e5
+  timestamp: '2026-10-30T05:05:00Z'
+  actors:
+  - type: ai_agent
+    name: antigravity
+    model: claude-opus-4-6
+    agent_tool: antigravity
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/675
+  - https://github.com/CultureBotAI/PathwayMech/issues/739
+  prs:
+  - https://github.com/CultureBotAI/PathwayMech/pull/738
+events:
+- type: EDIT
+  outcome: changed
+  sections:
+  - mechanistic_edges
+  summary: Populate Stage 6 causal-graph stoichiometry coefficients and structured evidence
+    qualifiers in MetaCyc:GLCMANNANAUT-PWY
+  details: 'Added typed MechanisticEdge.coefficient on 49 reaction and complex subunit edges
+    (coefficient: 1 on all 38 reaction substrate/product edges amino-003..006, 008..010, 012..016,
+    018..019, 021..024, 026..029, 031..034, and 035..046; coefficient: 4 on the NanA MetaCyc:ACNEULY-CPLX
+    and NagA MetaCyc:NAG6PDEACET-CPLX homotetramer subunit edges amino-050 and amino-052;
+    coefficient: 2 on the NanK MetaCyc:CPLX0-8588, Enzyme I MetaCyc:CPLX0-7938, ManX IIAB
+    MetaCyc:CPLX0-7921, NagE MetaCyc:CPLX-167, and CRP EcoCyc:PC00004 homodimer subunit edges
+    amino-051, amino-054, amino-055, amino-059, and amino-114; coefficient: 6 on the NagB
+    MetaCyc:GLUCOSAMINE-6-P-DEAMIN-CPLX homohexamer subunit edge amino-053; coefficient: 3
+    on the ManZ/ManY MetaCyc:CPLX-165 and GlnB MetaCyc:PIIPROTEIN-CPLX trimer subunit edges
+    amino-056, amino-057, and amino-060), populated structured EvidenceItem.eco_code on all
+    4 single-ECO UniProtKB:* evidence items (ECO:0000269 on amino-067[0] and amino-068[0]
+    for UniProtKB:P45424 and amino-097[0] for UniProtKB:P08839; ECO:0000305 on amino-096[0]
+    for UniProtKB:P45424; leaving amino-069[0] unset because it cites both ECO:0000305 and
+    ECO:0000255), and populated EvidenceItem.assay_taxon: NCBITaxon:83333 on all 21 Escherichia
+    coli K-12 UniProtKB:* evidence items across amino-050[1]..060[1], 061[0], 067[0]..070[0],
+    073[0], 088[0], 096[0]..097[0], and 104[0]. Complex assembly edges amino-058 (MetaCyc:CPLX-165
+    has_part UniProtKB:P69797, where ManYZ cryo-EM and ManX dimer annotations conflict with
+    a reconciled full-complex stoichiometry) and amino-112..113 (EcoCyc:CPLX0-226, where ECOLI
+    27.0 supplies no component coefficients) omit integer coefficients.'
