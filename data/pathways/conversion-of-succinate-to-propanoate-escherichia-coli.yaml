@@ -1,0 +1,607 @@
+id: PathBank:SMP0002070
+label: Conversion of Succinate to Propanoate
+description: 'PathBank SMP0002070 (native BioPAX archive member PW002058.owl) models the Escherichia
+  coli Sbm/ScpABC three-enzyme biochemical cycle that couples succinyl-CoA rearrangement, methylmalonyl-CoA
+  decarboxylation, and CoA transfer from propionyl-CoA to succinate to form propionate and regenerate
+  succinyl-CoA. In the first step of the cycle (RHEA:22890, right-to-left direction of RHEA:22888;
+  native Reactions/6008, EC 5.4.99.2), homodimeric methylmalonyl-CoA mutase Sbm (PathBank:SMP0002070/ProteinComplex/3725,
+  two copies of Protein/6463 cross-referenced to UniProtKB:P27253) rearranges succinyl-CoA(5-) (CHEBI:57292;
+  native Compound/PW_C000496 Succinyl-CoA, CHEBI:15380) to (R)-methylmalonyl-CoA(5-) (CHEBI:57326;
+  native Compound/PW_C002532 R-Methylmalonyl-CoA) using adenosylcobalamin (cobamamide, CHEBI:18408)
+  as cofactor. Native PAGE and size-exclusion chromatography show that apo-Sbm exists in vitro as a
+  mixture of monomer and homodimer and can also form an equimolar complex with the G-protein chaperone
+  YgfD (PMID:18950999).
+
+
+  In the second step (RHEA:27667, left-to-right direction of RHEA:27666; native Reactions/6006, EC
+  4.1.1.41), homohexameric methylmalonyl-CoA decarboxylase ScpB/YgfG (PathBank:SMP0002070/ProteinComplex/3726,
+  six copies of Protein/10202 cross-referenced to UniProtKB:P52045; crystal structure dimer of trimers
+  in PMID:10769118) decarboxylates (R)-methylmalonyl-CoA(5-) (CHEBI:57326) with hydron (CHEBI:15378;
+  native Compound/PW_C040034 Hydrogen Ion) to propionyl-CoA(4-) (CHEBI:57392; native Compound/PW_C001164
+  Propionyl-CoA, CHEBI:15539) and carbon dioxide (CHEBI:16526; native Compound/PW_C000702 Carbon Dioxide).
+  The graph retains the native PathBank PW002058.owl and reviewed Rhea/UniProt assignment of (R)-methylmalonyl-CoA
+  to ScpB while documenting the unresolved experimental stereospecificity conflict: Haller et al. (2000,
+  PMID:10769117) demonstrated coupled Sbm + YgfG conversion of succinyl-CoA to propionyl-CoA in vitro
+  without resolving methylmalonyl-CoA enantiomers, whereas Akawi et al. (2015/2017, PMID:28716098) reported
+  that engineered E. coli strains required heterologous methylmalonyl-CoA epimerase expression for propionate
+  production from glucose in minimal medium, and a 2019 direct MMCD-His6 assay (DOI:10.1021/jacs.9b00650.s001)
+  used a racemic (R/S)-methylmalonyl-CoA substrate mixture and observed competing thioester hydrolysis.
+  No unverified native epimerase or wild-type physiological flux is asserted.
+
+
+  In the third step (RHEA:28011, left-to-right direction of RHEA:28010; native Reactions/6009, EC
+  2.8.3.-), propanoyl-CoA:succinate CoA transferase ScpC/YgfH (UniProtKB:P52043; native Protein/7313
+  Propionyl-CoA:succinate CoA-transferase) transfers CoA from propionyl-CoA(4-) (CHEBI:57392) to succinate(2-)
+  (CHEBI:30031; native Compound/PW_C000249 Succinic acid, CHEBI:15741) to yield propionate (CHEBI:17272;
+  native Compound/PW_C000237 Propionic acid, CHEBI:30768) and regenerate succinyl-CoA(5-) (CHEBI:57292).
+  Native PW002058.owl assigns Species/3 to species-level Escherichia coli (NCBITaxon:562), while the
+  three reviewed UniProtKB entries and primary biochemical/structural studies characterize Escherichia
+  coli K-12 (NCBITaxon:83333).'
+pathway_type: proposed-succinate-decarboxylation-cycle
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:30031
+  label: succinate(2-)
+  category: small_molecule
+- id: CHEBI:57292
+  label: succinyl-CoA(5-)
+  category: small_molecule
+- id: CHEBI:57326
+  label: (R)-methylmalonyl-CoA(5-)
+  category: small_molecule
+- id: CHEBI:57392
+  label: propionyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:17272
+  label: propionate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:18408
+  label: cobamamide
+  category: cofactor
+- id: UniProtKB:P27253
+  label: Methylmalonyl-CoA mutase
+  category: protein
+- id: UniProtKB:P52045
+  label: Methylmalonyl-CoA decarboxylase
+  category: protein
+- id: UniProtKB:P52043
+  label: Propanoyl-CoA:succinate CoA transferase
+  category: protein
+- id: PathBank:SMP0002070/ProteinComplex/3725
+  label: methylmalonyl-CoA mutase
+  category: complex
+- id: PathBank:SMP0002070/ProteinComplex/3726
+  label: methylmalonyl-CoA decarboxylase
+  category: complex
+reactions:
+- id: RHEA:22890
+  label: succinyl-CoA => (R)-methylmalonyl-CoA
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:27667
+  label: (R)-methylmalonyl-CoA + H(+) => propanoyl-CoA + CO2
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:28011
+  label: propanoyl-CoA + succinate => propanoate + succinyl-CoA
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0002070-edge-001
+  subject: CHEBI:57292
+  predicate: consumes
+  object: RHEA:22890
+  coefficient: 1
+  description: Succinyl-CoA(5-) (CHEBI:57292, pH 7.3 major microspecies of native Compound/PW_C000496
+    Succinyl-CoA, CHEBI:15380) is consumed with stoichiometric coefficient 1 in the succinyl-CoA-to-(R)-methylmalonyl-CoA
+    direction of RHEA:22890 (reverse of native reversible Reactions/6008).
+  evidence:
+  - reference_id: RHEA:22890
+    source_assertion: Rhea RHEA:22890 assigns CHEBI:57292 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22890']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22888_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22888_compound_4684'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6008 (5.4.99.2, R-Methylmalonyl-CoA
+      <-> Succinyl-CoA, conversionDirection REVERSIBLE) includes Compound/PW_C000496 (Succinyl-CoA,
+      CompoundReference/PW_C000496 cross-referenced to ChEBI CHEBI:15380) on its right side with stoichiometricCoefficient
+      1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6008']/bp:right[@rdf:resource='#Compound/PW_C000496'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000496/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000496']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15380']
+- id: smp0002070-edge-002
+  subject: RHEA:22890
+  predicate: produces
+  object: CHEBI:57326
+  coefficient: 1
+  description: (R)-Methylmalonyl-CoA(5-) (CHEBI:57326, pH 7.3 major microspecies corresponding to native
+    Compound/PW_C002532 R-Methylmalonyl-CoA, which carries BioCyc R-METHYLMALONYL-COA and KEGG C01213
+    unification xrefs without a native ChEBI xref in PW002058.owl) is produced with stoichiometric coefficient
+    1 by RHEA:22890.
+  evidence:
+  - reference_id: RHEA:22890
+    source_assertion: Rhea RHEA:22890 assigns CHEBI:57326 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/22890']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/22888_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_22888_compound_1391'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6008 (5.4.99.2, R-Methylmalonyl-CoA
+      <-> Succinyl-CoA, conversionDirection REVERSIBLE) includes Compound/PW_C002532 (R-Methylmalonyl-CoA,
+      CompoundReference/PW_C002532 cross-referenced to BioCyc R-METHYLMALONYL-COA and KEGG C01213) on
+      its left side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6008']/bp:left[@rdf:resource='#Compound/PW_C002532'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C002532/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C002532']/bp:xref[@rdf:resource='#Reference/BioCyc_R-METHYLMALONYL-COA']
+- id: smp0002070-edge-003
+  subject: CHEBI:57326
+  predicate: consumes
+  object: RHEA:27667
+  coefficient: 1
+  description: This is the native PathBank PW002058.owl and Rhea/UniProt (R)-specific annotation, not
+    an enantiomer-resolved ScpB assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium
+    cultures; the conflict with the original coupled assay in PMID:10769117 remains unresolved and no
+    wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:57326 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_1391'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6006 (4.1.1.41, Hydrogen Ion
+      + R-Methylmalonyl-CoA -> Carbon Dioxide + Propionyl-CoA, conversionDirection LEFT_TO_RIGHT) consumes
+      Compound/PW_C002532 (R-Methylmalonyl-CoA) on its left side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6006']/bp:left[@rdf:resource='#Compound/PW_C002532'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C002532/Stoichiometry/1.0']
+- id: smp0002070-edge-004
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:27667
+  coefficient: 1
+  description: This is the native PathBank PW002058.owl and Rhea/UniProt (R)-specific annotation, not
+    an enantiomer-resolved ScpB assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium
+    cultures; the conflict with the original coupled assay in PMID:10769117 remains unresolved and no
+    wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_3249'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6006 consumes Compound/PW_C040034
+      (Hydrogen Ion, CompoundReference/PW_C040034 cross-referenced to ChEBI CHEBI:15378) on its left
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6006']/bp:left[@rdf:resource='#Compound/PW_C040034'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C040034']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15378']
+- id: smp0002070-edge-005
+  subject: RHEA:27667
+  predicate: produces
+  object: CHEBI:57392
+  coefficient: 1
+  description: This is the native PathBank PW002058.owl and Rhea/UniProt (R)-specific annotation, not
+    an enantiomer-resolved ScpB assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium
+    cultures; the conflict with the original coupled assay in PMID:10769117 remains unresolved and no
+    wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:57392 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_3421'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6006 produces Compound/PW_C001164
+      (Propionyl-CoA, CompoundReference/PW_C001164 cross-referenced to ChEBI CHEBI:15539) on its right
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6006']/bp:right[@rdf:resource='#Compound/PW_C001164'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001164/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C001164']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15539']
+- id: smp0002070-edge-006
+  subject: RHEA:27667
+  predicate: produces
+  object: CHEBI:16526
+  coefficient: 1
+  description: This is the native PathBank PW002058.owl and Rhea/UniProt (R)-specific annotation, not
+    an enantiomer-resolved ScpB assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium
+    cultures; the conflict with the original coupled assay in PMID:10769117 remains unresolved and no
+    wild-type flux is asserted.
+  evidence:
+  - reference_id: RHEA:27667
+    source_assertion: Rhea RHEA:27667 assigns CHEBI:16526 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27667']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27666_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27666_compound_4391'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6006 produces Compound/PW_C000702
+      (Carbon Dioxide, CompoundReference/PW_C000702 cross-referenced to ChEBI CHEBI:16526) on its right
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6006']/bp:right[@rdf:resource='#Compound/PW_C000702'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000702/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000702']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_16526']
+- id: smp0002070-edge-007
+  subject: CHEBI:57392
+  predicate: consumes
+  object: RHEA:28011
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:57392 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_3421'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6009 (2.8.3.-, Propionyl-CoA
+      + Succinic acid <-> Propionic acid + Succinyl-CoA, conversionDirection REVERSIBLE) includes Compound/PW_C001164
+      (Propionyl-CoA, CompoundReference/PW_C001164 cross-referenced to ChEBI CHEBI:15539) on its left
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6009']/bp:left[@rdf:resource='#Compound/PW_C001164'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001164/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C001164']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15539']
+- id: smp0002070-edge-008
+  subject: CHEBI:30031
+  predicate: consumes
+  object: RHEA:28011
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:30031 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_2501'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6009 includes Compound/PW_C000249
+      (Succinic acid, CompoundReference/PW_C000249 cross-referenced to ChEBI CHEBI:15741) on its left
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6009']/bp:left[@rdf:resource='#Compound/PW_C000249'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000249/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000249']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15741']
+- id: smp0002070-edge-009
+  subject: RHEA:28011
+  predicate: produces
+  object: CHEBI:17272
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:17272 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_4801'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6009 includes Compound/PW_C000237
+      (Propionic acid, CompoundReference/PW_C000237 cross-referenced to ChEBI CHEBI:30768) on its right
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6009']/bp:right[@rdf:resource='#Compound/PW_C000237'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000237/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000237']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_30768']
+- id: smp0002070-edge-010
+  subject: RHEA:28011
+  predicate: produces
+  object: CHEBI:57292
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:28011
+    source_assertion: Rhea RHEA:28011 assigns CHEBI:57292 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28011']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28010_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28010_compound_4684'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl BiochemicalReaction Reactions/6009 includes Compound/PW_C000496
+      (Succinyl-CoA, CompoundReference/PW_C000496 cross-referenced to ChEBI CHEBI:15380) on its right
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6009']/bp:right[@rdf:resource='#Compound/PW_C000496'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000496/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000496']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15380']
+- id: smp0002070-edge-011
+  subject: UniProtKB:P27253
+  predicate: part_of
+  object: PathBank:SMP0002070/ProteinComplex/3725
+  coefficient: 2
+  description: Membership represents the native PathBank ProteinComplex/3725 homodimer (stoichiometricCoefficient
+    2.0 of Protein/6463); native PAGE and size exclusion also detect apo-Sbm as a mixture of monomer and
+    dimer and a distinct YgfD-bound assembly (PMID:18950999).
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Complex ProteinComplex/3725 (methylmalonyl-CoA mutase) has
+      component Protein/6463 (Methylmalonyl-CoA mutase, ProteinReference/6463 cross-referenced to UniProt
+      P27253) with componentStoichiometry Protein/6463/Stoichiometry/2.0 (stoichiometricCoefficient 2.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3725']/bp:component[@rdf:resource='#Protein/6463'];
+      bp:componentStoichiometry[@rdf:resource='#Protein/6463/Stoichiometry/2.0']; bp:ProteinReference[@rdf:ID='ProteinReference/6463']/bp:xref[@rdf:resource='#Reference/UniProt_P27253']
+  - reference_id: PMID:18950999
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Native PAGE and size exclusion detected apo-Sbm as a mixture of monomer and dimer.
+    source_locator: Results, Interaction of YgfD and Sbm in vitro (P17); Figure 4B and Figure 4C, panel
+      2; Discussion
+- id: smp0002070-edge-012
+  subject: UniProtKB:P52045
+  predicate: part_of
+  object: PathBank:SMP0002070/ProteinComplex/3726
+  coefficient: 6
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Complex ProteinComplex/3726 (methylmalonyl-CoA decarboxylase)
+      has component Protein/10202 (Methylmalonyl-CoA decarboxylase, ProteinReference/10202 cross-referenced
+      to UniProt P52045) with componentStoichiometry Protein/10202/Stoichiometry/6.0 (stoichiometricCoefficient
+      6.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3726']/bp:component[@rdf:resource='#Protein/10202'];
+      bp:componentStoichiometry[@rdf:resource='#Protein/10202/Stoichiometry/6.0']; bp:ProteinReference[@rdf:ID='ProteinReference/10202']/bp:xref[@rdf:resource='#Reference/UniProt_P52045']
+  - reference_id: PMID:10769118
+    assay_taxon: NCBITaxon:83333
+    source_assertion: The E. coli decarboxylase crystal structure forms a hexamer arranged as two trimers.
+    source_locator: Indexed abstract; oligomeric architecture
+- id: smp0002070-edge-013
+  subject: PathBank:SMP0002070/ProteinComplex/3725
+  predicate: catalyzes
+  object: RHEA:22890
+  description: RHEA:22890 selects the succinyl-CoA-to-(R)-methylmalonyl-CoA direction of the reversible
+    mutase reaction (native Reactions/6008) for the proposed cycle.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Catalysis ReactionCatalysis/5974 assigns controller ProteinComplex/3725
+      (methylmalonyl-CoA mutase) to controlled BiochemicalReaction Reactions/6008 with controlType ACTIVATION
+      in BiochemicalPathwayStep PathwayEnzymeReaction/22431.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5974']/bp:controller[@rdf:resource='#ProteinComplex/3725'];
+      bp:controlled[@rdf:resource='#Reactions/6008']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22431']
+  - reference_id: UniProtKB:P27253
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Reviewed UniProt P27253 assigns (R)-methylmalonyl-CoA = succinyl-CoA (RHEA:22888;
+      ECO:0000269, PMID:10769117).
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - reference_id: PMID:10769117
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Adenosylcobalamin-reconstituted Sbm converted succinyl-CoA to propionyl-CoA in a
+      coupled assay containing excess YgfG/ScpB.
+    source_locator: pp. 4624-4625, Reconstitution and HPLC Assay of Sbm; p. 4627, Function of Sbm
+- id: smp0002070-edge-014
+  subject: PathBank:SMP0002070/ProteinComplex/3726
+  predicate: catalyzes
+  object: RHEA:27667
+  description: This is the native PathBank PW002058.owl and Rhea/UniProt (R)-specific annotation, not
+    an enantiomer-resolved ScpB assay. PMID:28716098 reports epimerase dependence in engineered glucose/minimal-medium
+    cultures. The conflict with the original coupled assay remains unresolved; no wild-type flux is asserted.
+    The 2019 assay used an R/S substrate mixture.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Catalysis ReactionCatalysis/5973 assigns controller ProteinComplex/3726
+      (methylmalonyl-CoA decarboxylase) to controlled BiochemicalReaction Reactions/6006 with controlType
+      ACTIVATION in BiochemicalPathwayStep PathwayEnzymeReaction/22430.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5973']/bp:controller[@rdf:resource='#ProteinComplex/3726'];
+      bp:controlled[@rdf:resource='#Reactions/6006']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22430']
+  - reference_id: UniProtKB:P52045
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Reviewed UniProt P52045 assigns (R)-methylmalonyl-CoA + H(+) = propanoyl-CoA + CO2
+      (RHEA:27666; ECO:0000269, PMID:10769117).
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - reference_id: PMID:10769117
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Purified YgfG/ScpB catalyzed methylmalonyl-CoA decarboxylation; coupled Sbm/YgfG
+      assays converted succinyl-CoA to propionyl-CoA.
+    source_locator: p. 4626, Function of YgfG and Table 1; p. 4627, Function of Sbm
+  - reference_id: PMID:28716098
+    assay_taxon: NCBITaxon:562
+    source_assertion: Engineered BL21 and DH5alpha cultures required heterologous methylmalonyl-CoA epimerase
+      for propionate production from glucose in minimal medium; the paper questions ScpB stereospecificity.
+    source_locator: Results, Heterologous PA production, epimerase co-expression; Discussion
+  - reference_id: DOI:10.1021/jacs.9b00650.s001
+    source_assertion: The 2019 MMCD-His6 assay used (R/S)-methylmalonyl-CoA and measured propionyl-CoA
+      and free CoA. It supports decarboxylation plus hydrolysis without resolving ScpB enantiomer specificity.
+    source_locator: Supporting Information, Section VIII pp. S14-S15; Figures S4-S5 pp. S27-S28
+- id: smp0002070-edge-015
+  subject: UniProtKB:P52043
+  predicate: catalyzes
+  object: RHEA:28011
+  description: RHEA:28011 selects the propionyl-CoA plus succinate direction of the reversible CoA transferase
+    reaction (native Reactions/6009); ScpC is represented directly by UniProtKB:P52043 (native Protein/7313)
+    without an unsupported oligomeric state.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Catalysis ReactionCatalysis/5975 assigns controller Protein/7313
+      (Propionyl-CoA:succinate CoA-transferase, ProteinReference/7313 cross-referenced to UniProt P52043)
+      to controlled BiochemicalReaction Reactions/6009 with controlType ACTIVATION in BiochemicalPathwayStep
+      PathwayEnzymeReaction/22433.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5975']/bp:controller[@rdf:resource='#Protein/7313'];
+      bp:controlled[@rdf:resource='#Reactions/6009']; bp:ProteinReference[@rdf:ID='ProteinReference/7313']/bp:xref[@rdf:resource='#Reference/UniProt_P52043']
+  - reference_id: UniProtKB:P52043
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Reviewed UniProt P52043 assigns propanoyl-CoA + succinate = propanoate + succinyl-CoA
+      (RHEA:28010; ECO:0000269, PMID:10769117).
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction
+  - reference_id: PMID:10769117
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Purified YgfH/ScpC transferred CoA from propionyl-CoA to succinate in an HPLC assay.
+    source_locator: p. 4624, HPLC Assay of YgfH; p. 4627, Function of YgfH
+- id: smp0002070-edge-016
+  subject: UniProtKB:P27253
+  predicate: has_cofactor
+  object: CHEBI:18408
+  description: CHEBI:18408 has canonical ChEBI label cobamamide; this is adenosylcobalamin, not a generic
+    vitamin B12 pool or a consumed pathway substrate.
+  evidence:
+  - reference_id: UniProtKB:P27253
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Reviewed UniProt P27253 assigns adenosylcob(III)alamin (CHEBI:18408) as cofactor
+      with ECO:0000269 citing PMID:10769117 and PMID:11955068.
+    source_locator: comments[commentType='COFACTOR'].cofactors
+  - reference_id: PMID:10769117
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Recombinant apo-Sbm was reconstituted with adenosylcobalamin before the mutase assay.
+    source_locator: p. 4624, Reconstitution and HPLC Assay of Sbm; p. 4627, Function of Sbm
+- id: smp0002070-edge-017
+  subject: RHEA:22890
+  predicate: part_of
+  object: PathBank:SMP0002070
+  description: Membership in the native PathBank SMP0002070 pathway definition does not assert operation
+    of a complete native cycle under unspecified wild-type growth conditions.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Pathway SMP0002070 (Conversion of Succinate to Propanoate) lists
+      Reactions/6008 in bp:pathwayComponent and PathwayEnzymeReaction/22431 (stepConversion Reactions/6008)
+      in bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002070']/bp:pathwayComponent[@rdf:resource='#Reactions/6008'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22431']
+- id: smp0002070-edge-018
+  subject: RHEA:27667
+  predicate: part_of
+  object: PathBank:SMP0002070
+  description: Membership in the native PathBank SMP0002070 pathway definition does not assert operation
+    of a complete native cycle under unspecified wild-type growth conditions.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Pathway SMP0002070 (Conversion of Succinate to Propanoate) lists
+      Reactions/6006 in bp:pathwayComponent and PathwayEnzymeReaction/22430 (stepConversion Reactions/6006)
+      in bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002070']/bp:pathwayComponent[@rdf:resource='#Reactions/6006'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22430']
+- id: smp0002070-edge-019
+  subject: RHEA:28011
+  predicate: part_of
+  object: PathBank:SMP0002070
+  description: Membership in the native PathBank SMP0002070 pathway definition does not assert operation
+    of a complete native cycle under unspecified wild-type growth conditions.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: Native PW002058.owl Pathway SMP0002070 (Conversion of Succinate to Propanoate) lists
+      Reactions/6009 in bp:pathwayComponent and PathwayEnzymeReaction/22433 (stepConversion Reactions/6009)
+      in bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002070']/bp:pathwayComponent[@rdf:resource='#Reactions/6009'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22433']
+- id: smp0002070-edge-020
+  subject: RHEA:22890
+  predicate: provides_input_for
+  object: RHEA:27667
+  description: This is the native PathBank PW002058.owl and Rhea/UniProt (R)-specific annotation via shared
+    Compound/PW_C002532 (R-Methylmalonyl-CoA), not an enantiomer-resolved ScpB assay. PMID:28716098 reports
+    epimerase dependence in engineered glucose/minimal-medium cultures; the conflict with the original
+    coupled assay in PMID:10769117 remains unresolved and no wild-type flux is asserted.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: In PW002058.owl, Reactions/6008 and Reactions/6006 are coupled via shared metabolite
+      Compound/PW_C002532 (R-Methylmalonyl-CoA), which is produced in the succinyl-CoA rearrangement direction
+      of Reactions/6008 and consumed on the left of Reactions/6006.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6008']/bp:left[@rdf:resource='#Compound/PW_C002532'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6006']/bp:left[@rdf:resource='#Compound/PW_C002532']
+  - reference_id: PMID:10769117
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Adenosylcobalamin-reconstituted Sbm and purified YgfG/ScpB converted succinyl-CoA
+      to propionyl-CoA in a coupled in vitro assay.
+    source_locator: pp. 4624-4625, Reconstitution and HPLC Assay of Sbm; p. 4627, Function of Sbm
+- id: smp0002070-edge-021
+  subject: RHEA:27667
+  predicate: provides_input_for
+  object: RHEA:28011
+  description: This edge records the native biochemical-cycle metabolite handoff via propionyl-CoA, not
+    measured wild-type flux or an additional physiological inference.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: In PW002058.owl, Reactions/6006 produces Compound/PW_C001164 (Propionyl-CoA) on
+      its right side and Reactions/6009 consumes Compound/PW_C001164 on its left side.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6006']/bp:right[@rdf:resource='#Compound/PW_C001164'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6009']/bp:left[@rdf:resource='#Compound/PW_C001164']
+- id: smp0002070-edge-022
+  subject: RHEA:28011
+  predicate: provides_input_for
+  object: RHEA:22890
+  description: This edge records the native biochemical-cycle metabolite handoff via regenerated succinyl-CoA,
+    not measured wild-type flux or an additional physiological inference.
+  evidence:
+  - reference_id: PathBank:SMP0002070
+    source_assertion: In PW002058.owl, Reactions/6009 produces Compound/PW_C000496 (Succinyl-CoA) on its
+      right side, regenerating the substrate of Reactions/6008 in the succinate-to-propanoate cycle.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6009']/bp:right[@rdf:resource='#Compound/PW_C000496'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6008']/bp:right[@rdf:resource='#Compound/PW_C000496']
+source_mappings:
+- subject_id: UniProt:P27253
+  subject_label: Methylmalonyl-CoA mutase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P27253
+  object_label: Methylmalonyl-CoA mutase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002070
+  source_element_id: ProteinReference/6463
+- subject_id: UniProt:P52045
+  subject_label: Methylmalonyl-CoA decarboxylase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P52045
+  object_label: Methylmalonyl-CoA decarboxylase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002070
+  source_element_id: ProteinReference/10202
+- subject_id: UniProt:P52043
+  subject_label: Propionyl-CoA:succinate CoA-transferase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P52043
+  object_label: Propanoyl-CoA:succinate CoA transferase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002070
+  source_element_id: ProteinReference/7313
+references:
+- id: PathBank:SMP0002070
+  title: PathBank SMP0002070 Conversion of Succinate to Propanoate (PW002058.owl)
+  url: https://pathbank.org/view/SMP0002070
+  source_version: 2019-08-16 primary BioPAX archive member PW002058.owl
+  source_sha256: a01b8e8f275be2d6f655d65a308ca88ffb92b4c757320db579ddba7235292f74
+- id: UniProtKB:P27253
+  title: Reviewed UniProtKB P27253
+  url: https://rest.uniprot.org/uniprotkb/P27253.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: d0dae7669ab2c19e766695ac9f68754f8666c959e01219b8322513c34c27729d
+- id: UniProtKB:P52045
+  title: Reviewed UniProtKB P52045
+  url: https://rest.uniprot.org/uniprotkb/P52045.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: 49fb11dae7a00530346b65c5997b3cb23e9aa5603894b9e7d0b50f88a879fac1
+- id: UniProtKB:P52043
+  title: Reviewed UniProtKB P52043
+  url: https://rest.uniprot.org/uniprotkb/P52043.json
+  source_version: 2026_03; retrieved 2026-10-10
+  source_sha256: 6cc26a29ea9bac230e4e9a20d83e89cdb2d483619b627355ee983cac89e0bb05
+- id: RHEA:22890
+  title: Rhea 22890 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:27667
+  title: Rhea 27667 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28011
+  title: Rhea 28011 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:10769117
+  title: 'Discovering new enzymes and metabolic pathways: conversion of succinate to propionate by Escherichia
+    coli.'
+  url: https://static.igem.org/mediawiki/2013/c/c1/HUST-4.pdf
+  source_version: Primary full text; DOI 10.1021/bi992888d; retrieved 2026-10-10
+  source_sha256: d7a629eba85789aacbd57a4b813867c68f16e28d9ac9ef603ff40a4da9a40492
+- id: PMID:18950999
+  title: Sleeping beauty mutase (sbm) is expressed and interacts with ygfD in Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2741639/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: dfda3e02e329753cf3db0d38473e24b0c7a97555f411de1ee91a8a7bd308e013
+- id: PMID:10769118
+  title: 'New reactions in the crotonase superfamily: structure of methylmalonyl CoA decarboxylase from
+    Escherichia coli.'
+  url: https://pubmed.ncbi.nlm.nih.gov/10769118/
+  source_version: Europe PMC core metadata and complete indexed abstract; retrieved 2026-10-10
+  source_sha256: d9ccd88e2de20db134af2d13aee3d42b8c86262c58db485f4f863722dc49fd33
+- id: PMID:28716098
+  title: 'Awakening sleeping beauty: production of propionic acid in Escherichia coli through the sbm
+    operon requires the activity of a methylmalonyl-CoA epimerase.'
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5512728/fullTextXML
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 65cdfdcf56021b9e915e3013da82cc731379455e71df92a9e35ab35c167113cf
+- id: DOI:10.1021/jacs.9b00650.s001
+  title: 'Supporting Information: Sulfonate/Nitro Bearing Methylmalonyl-Thioester Isosteres Applied to
+    Methylmalonyl-CoA Decarboxylase Structure-Function Studies.'
+  url: https://ndownloader.figshare.com/files/14641211
+  source_version: ACS Figshare article 7863569, file 14641211; retrieved 2026-10-10
+  source_sha256: b979ec82a7ffc27790053dac5949f67c4bb99d91db827f6445bfb788b79aa1b2
+curation_history:
+- timestamp: '2026-10-30T15:40:00Z'
+  curator: antigravity
+  action: CREATE
+  changes: Curated Escherichia coli Conversion of Succinate to Propanoate (PathBank:SMP0002070, PW002058.owl)
+    with Stage 6 causal-graph schema compliance (coefficients, eco_code, assay_taxon, molecular_activity
+    reaction categories, and SSSOM source_mappings).
+  llm_assisted: true
