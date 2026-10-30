@@ -4,7 +4,7 @@
 - **Run / Cycle / Stage / Revision**: `mech-goal-sequence-20261019` / Cycle `6` / Stage `5` (`resolve_review_findings`) / Revision `1`
 - **Source Git Base (`main`)**: `a117b04488ca922f3fbb3491600958947a528dfa`
 - **GitHub Issues**: [CultureBotAI/PathwayMech#744](https://github.com/CultureBotAI/PathwayMech/issues/744), [CultureBotAI/PathwayMech#745](https://github.com/CultureBotAI/PathwayMech/issues/745)
-- **Successor Structured Review Bundle**: `reviews/structured/20261030T120000Z-cycle6-stage5-resolve-review-findings/review.yaml` (`sha256: ce1f0f7fff6a01cf6345206e3f4b3d48f0b2c8e6019df2e8c90e20d8ccfeafbd`)
+- **Successor Structured Review Bundle**: `reviews/structured/20261030T120000Z-cycle6-stage5-resolve-review-findings/review.yaml` (`sha256: 3a40bc991839f2b9bed79d38c2ce08cb855cf7a810b02791be321ef3e8fba71f`)
 
 ## 1. Focused Acceptance Verification for `F-C6S4-001` & `F-C6S4-002`
 
