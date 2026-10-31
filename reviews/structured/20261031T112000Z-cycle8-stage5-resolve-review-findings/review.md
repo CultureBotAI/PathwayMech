@@ -1,0 +1,929 @@
+# Cycle 8 Stage 5 Successor Review Resolving F-C8S4-001 and F-C8S4-002 Across 8 Maintained Pathway Records
+
+- Review: 20261031T112000Z-cycle8-stage5-resolve-review-findings
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-31T10:50:00Z
+- Finished UTC: 2026-10-31T11:20:00Z
+- Reviewer: Antigravity (pathwaymech-resolve-reviews + review-yaml-category) (self_review)
+- Completion: completed
+- Verdict: pass
+- Scientific review: true
+
+## Summary
+
+Re-inspected and verified all 8 maintained pathway YAML records affected by Cycle 8 Stage 4 findings F-C8S4-001 (concrete-small-molecule-effector-participants-typed-as-chemical-entity-4-metacyc-records across 4 maintained MetaCyc:* pathway records under root-cause group G-C8S5-001 and GitHub issue #761) and F-C8S4-002 (raw-frame-id-reference-titles-17-metacyc-references-4-records across 4 maintained MetaCyc:* pathway records under root-cause group G-C8S5-002 and GitHub issue #762). Remediated all 8 records via pathwaymech.curation.publish_curation: (1) across the 4 MetaCyc pathway records in F-C8S4-001 (adenosine-nucleotides-degradation-ii.yaml, protocatechuate-meta-cleavage.yaml, protocatechuate-para-cleavage.yaml, and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml), updated all 4 concrete CHEBI:* small-molecule effector participants with defined molecular formulas (CHEBI:59640 N-acetylglucosamine at participants[62] of MetaCyc:SALVADEHYPOX-PWY, CHEBI:22651 ascorbate at participants[61] of MetaCyc:P184-PWY and participants[24] of MetaCyc:PWY-6336, and CHEBI:203056 Microcin J25 at participants[27] of MetaCyc:PWY-7545) from category: chemical_entity to category: small_molecule while preserving category: chemical_entity on generic compound class CHEBI:18274 2'-deoxyribonucleoside at participants[64] of MetaCyc:SALVADEHYPOX-PWY (reducing corpus-wide chemical_entity participant declarations from 68 to 64 and bringing concrete CHEBI:* small-molecule participants with defined molecular formulas typed as chemical_entity to 0 / 301 across the 8 reassessed records and 0 / 7,851 corpus-wide); and (2) across the 4 MetaCyc pathway records in F-C8S4-002 (guanine-and-guanosine-salvage.yaml, sulfoquinovose-degradation-i.yaml, sulfoquinovose-degradation-ii.yaml, and nitrate-reduction-i-denitrification.yaml), replaced all 17 structured MetaCyc:* reaction and enzyme-complex references[] titles that retained raw unprefixed database frame IDs (title == local_id) with descriptive reaction equations and enzyme complex names (bringing raw frame-ID reference titles to 0 / 421 across the 8 reassessed records and 0 / 7,099 across all 163 reference-bearing records in the 277-record corpus). Recorded 8 append-only curation history files at history/records/&lt;slug&gt;/2026-10-31T111000Z-antigravity-a1d1e5.yaml, regenerated rendered pages and KGX exports (.venv/bin/pathwaymech-render-pages), and confirmed full pass across QC (277 pathway records, 963 history records, 22,832 evidence blocks, 33 source records) and pytest (8,096 passed, 3 skipped).
+
+## Scope And Provenance
+
+Complete post-remediation reassessment of the 8 maintained pathway records in data/pathways/*.yaml (8 MetaCyc:*) that carried open findings (F-C8S4-001 and F-C8S4-002) in Cycle 8 Stage 4 review 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review.
+
+Selection: All 8 maintained pathway records in CultureBotAI/PathwayMech carrying open findings in reviews/structured/20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review/review.yaml (100% of open Cycle 8 Stage 4 maintained-record findings).
+Coverage: full; 8 reviewed / 8 in the declared population.
+Source: working_tree at Git base f61a3ffbada676e10d3bcb89f07f364446d636aa.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:SALVADEHYPOX-PWY | data/pathways/adenosine-nucleotides-degradation-ii.yaml | maintained | adenosine nucleotides degradation II (MetaCyc:SALVADEHYPOX-PWY) |
+| MetaCyc:P184-PWY | data/pathways/protocatechuate-meta-cleavage.yaml | maintained | protocatechuate degradation I (meta-cleavage pathway) (MetaCyc:P184-PWY) |
+| MetaCyc:PWY-6336 | data/pathways/protocatechuate-para-cleavage.yaml | maintained | protocatechuate degradation III (para-cleavage pathway) (MetaCyc:PWY-6336) |
+| MetaCyc:PWY-7545 | data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml | maintained | pyruvate to cytochrome bd oxidase electron transfer (MetaCyc:PWY-7545) |
+| MetaCyc:PWY-6579 | data/pathways/guanine-and-guanosine-salvage.yaml | maintained | guanine and guanosine salvage (MetaCyc:PWY-6579) |
+| MetaCyc:PWY-7446 | data/pathways/sulfoquinovose-degradation-i.yaml | maintained | sulfoquinovose degradation I (sulfo-Embden-Meyerhof-Parnas pathway) (MetaCyc:PWY-7446) |
+| MetaCyc:PWY-7722 | data/pathways/sulfoquinovose-degradation-ii.yaml | maintained | sulfoquinovose degradation II (MetaCyc:PWY-7722) |
+| MetaCyc:DENITRIFICATION-PWY | data/pathways/nitrate-reduction-i-denitrification.yaml | maintained | nitrate reduction I (denitrification) (MetaCyc:DENITRIFICATION-PWY) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Repository QC and closed-schema validation (just validate) | passed | True | MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY | Validated all 277 maintained pathway records (including the 8 remediated records) against the closed LinkML schema, local identifier/label authority snapshots, 963 history records, 22,832 evidence blocks, 33 source records, and pages/ synchrony. |
+| Pytest unit and integration test suite (just test) | passed | True | MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY | All 8,096 tests passed (3 skipped) in pytest across schema, KGX export, SSSOM, and record-review checks. |
+| Ruff lint check (just lint) | passed | True | MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY | Ruff check passed with 0 errors. |
+| Git whitespace and conflict marker check | passed | True | MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY | git diff --check exited 0 with no whitespace or conflict marker issues. |
+| Structured review bundle contract check (just review-check) | passed | True | MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY | All 213 retained structured review bundles in reviews/structured/ passed schema and append-only checks against main. |
+
+## Scientific And Domain Assessments
+
+### Post-remediation elimination of concrete CHEBI:* small-molecule effector participants typed as chemical_entity (0 / 301 reassessed participants and 0 / 7,851 corpus participants) and raw unprefixed MetaCyc frame-ID reference titles (0 / 421 reassessed references and 0 / 7,099 corpus references) across the 8 reassessed MetaCyc pathway records
+
+consistency: supported. Targets: MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY.
+
+Updating all 4 concrete CHEBI:* small-molecule effector participants with defined molecular formulas (CHEBI:59640 N-acetylglucosamine, CHEBI:22651 ascorbate in two records, and CHEBI:203056 Microcin J25) across the 4 F-C8S4-001 MetaCyc pathway records from category: chemical_entity to category: small_molecule (while preserving category: chemical_entity on generic compound class CHEBI:18274 2'-deoxyribonucleoside) reduces corpus-wide chemical_entity participant declarations from 68 to 64 and brings concrete CHEBI:* small-molecule participants with defined molecular formulas typed as chemical_entity to 0 / 301 across the 8 reassessed records and 0 / 7,851 corpus-wide, and replacing all 17 raw unprefixed MetaCyc frame-ID reference titles (title == local_id) across the 4 F-C8S4-002 MetaCyc pathway records brings raw frame-ID reference titles to 0 / 421 across the 8 reassessed records and 0 / 7,099 corpus-wide.
+
+### Preservation of pathway identity, taxon grounding, participant connectivity, reaction directionality, stoichiometry, and edge-level evidence across the 8 remediated pathway records
+
+evidence: supported. Targets: MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY.
+
+Structural verification across all 8 remediated pathway YAML files confirms that all pathway IDs, taxon groundings, 7,851 connected participant entries (0 orphans), 1,630 reaction steps (731 RHEA:*), 14,730 non-reflexive mechanistic_edges, 1,061 source_mappings, and 22,832 structured evidence blocks remain 100% intact and pass closed LinkML and authority snapshot checks.
+
+## Findings
+
+### F-C8S4-001: All 4 concrete CHEBI:* small-molecule effector participants (CHEBI:59640, CHEBI:22651 in two records, and CHEBI:203056) across 4 maintained MetaCyc pathway records are typed as category: small_molecule
+
+minor / resolved / confirmed; issue key: concrete-small-molecule-effector-participants-typed-as-chemical-entity-4-metacyc-records.
+
+Across all 4 maintained MetaCyc pathway records in F-C8S4-001 (MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, and MetaCyc:PWY-7545), updated all 4 concrete CHEBI:* small-molecule effector participants with defined molecular formulas (CHEBI:59640 N-acetylglucosamine at participants[62] of MetaCyc:SALVADEHYPOX-PWY, CHEBI:22651 ascorbate at participants[61] of MetaCyc:P184-PWY and participants[24] of MetaCyc:PWY-6336, and CHEBI:203056 Microcin J25 at participants[27] of MetaCyc:PWY-7545) from category: chemical_entity to category: small_molecule via pathwaymech.curation.publish_curation while preserving category: chemical_entity on generic compound class CHEBI:18274 2'-deoxyribonucleoside at participants[64] of MetaCyc:SALVADEHYPOX-PWY, recorded 4 history/records/&lt;slug&gt;/2026-10-31T111000Z-antigravity-a1d1e5.yaml files, and regenerated pages/ and pages/downloads/nodes.tsv (reducing corpus-wide chemical_entity participant declarations from 68 to 64 and bringing concrete CHEBI:* small-molecule participants with defined molecular formulas typed as chemical_entity to 0 / 7,851).
+
+Disposition: Resolved under GitHub issue #761 (group G-C8S5-001) by updating all 4 concrete CHEBI:* small-molecule effector participants with defined molecular formulas (CHEBI:59640, CHEBI:22651 in two records, and CHEBI:203056) from category: chemical_entity to category: small_molecule across the 4 affected MetaCyc pathway records via pathwaymech.curation.publish_curation (preserving chemical_entity on generic compound class CHEBI:18274 2'-deoxyribonucleoside), recording 4 history/records/&lt;slug&gt;/2026-10-31T111000Z-antigravity-a1d1e5.yaml provenance entries, and regenerating pages/.
+
+### F-C8S4-002: All 17 structured MetaCyc:* reaction and enzyme-complex references carrying raw unprefixed database frame IDs (title == local_id) are replaced with descriptive reaction equations and enzyme complex names across 4 maintained MetaCyc pathway records
+
+minor / resolved / confirmed; issue key: raw-frame-id-reference-titles-17-metacyc-references-4-records.
+
+Across all 4 maintained MetaCyc pathway records in F-C8S4-002 (MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, and MetaCyc:DENITRIFICATION-PWY), replaced all 17 structured MetaCyc:* reaction and enzyme-complex references[] entries carrying raw unprefixed database frame IDs (title == local_id) with descriptive reaction equations and enzyme complex names via pathwaymech.curation.publish_curation, recorded 4 history/records/&lt;slug&gt;/2026-10-31T111000Z-antigravity-a1d1e5.yaml files, and regenerated pages/ (bringing raw frame-ID reference titles to 0 / 7,099 corpus-wide).
+
+Disposition: Resolved under GitHub issue #762 (group G-C8S5-002) by replacing all 17 structured MetaCyc:* reaction and enzyme-complex references[] entries carrying raw unprefixed database frame IDs (title == local_id) with descriptive reaction equations and enzyme complex names across the 4 affected MetaCyc pathway records via pathwaymech.curation.publish_curation, recording 4 history/records/&lt;slug&gt;/2026-10-31T111000Z-antigravity-a1d1e5.yaml provenance entries, and regenerating pages/.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+- retain: MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY. Retain all 8 remediated MetaCyc:* pathway records as distinct, non-duplicate source-scoped pathway definitions with consistent small_molecule participant typing and 0 raw database frame-ID reference titles.
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| EV-C8S4-PREDECESSOR | reviews/structured/20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review/review.yaml; findings[0] (F-C8S4-001) and findings[1] (F-C8S4-002) | supports | Predecessor Cycle 8 Stage 4 cohort review recorded two minor open representation findings across 8 maintained pathway records: F-C8S4-001 (concrete-small-molecule-effector-participants-typed-as-chemical-entity-4-metacyc-records across 4 MetaCyc:* records) and F-C8S4-002 (raw-frame-id-reference-titles-17-metacyc-references-4-records across 4 MetaCyc:* records). |
+| EV-C8S4-WORKFLOW-EVIDENCE | reviews/workflow/mech-goal-sequence-20261019/cycle-000008/stage-04/revision-0001/evidence.yaml; findings[0..1] (F-C8S4-001, F-C8S4-002) | supports | Cycle 8 Stage 4 workflow evidence manifest carried forward F-C8S4-001 and F-C8S4-002 as open findings for Cycle 8 Stage 5 grouped remediation. |
+| EV-C8S5-SMALL-MOLECULE-CATEGORIES-FIXED-4 | data/pathways/adenosine-nucleotides-degradation-ii.yaml; participants[62] in adenosine-nucleotides-degradation-ii.yaml, participants[61] in protocatechuate-meta-cleavage.yaml, participants[24] in protocatechuate-para-cleavage.yaml, and participants[27] in pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml | supports | Across all 4 maintained MetaCyc pathway records in F-C8S4-001 (adenosine-nucleotides-degradation-ii.yaml, protocatechuate-meta-cleavage.yaml, protocatechuate-para-cleavage.yaml, and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml), updated all 4 concrete CHEBI:* small-molecule effector participants with defined molecular formulas (CHEBI:59640 N-acetylglucosamine, CHEBI:22651 ascorbate in two records, and CHEBI:203056 Microcin J25) from category: chemical_entity to category: small_molecule via pathwaymech.curation.publish_curation while preserving category: chemical_entity on generic compound class CHEBI:18274 2'-deoxyribonucleoside at participants[64] of adenosine-nucleotides-degradation-ii.yaml. |
+| EV-C8S5-RAW-FRAME-ID-TITLES-FIXED-4 | data/pathways/guanine-and-guanosine-salvage.yaml; references[3..5] in guanine-and-guanosine-salvage.yaml, references[1..4] in sulfoquinovose-degradation-i.yaml, references[1..5] in sulfoquinovose-degradation-ii.yaml, and references[1,3,4,5,63] in nitrate-reduction-i-denitrification.yaml | supports | Across all 4 maintained MetaCyc pathway records in F-C8S4-002 (guanine-and-guanosine-salvage.yaml, sulfoquinovose-degradation-i.yaml, sulfoquinovose-degradation-ii.yaml, and nitrate-reduction-i-denitrification.yaml), replaced all 17 structured MetaCyc:* reaction and enzyme-complex references[] entries carrying raw unprefixed database frame ID titles (title == local_id) with descriptive reaction equations and enzyme complex names via pathwaymech.curation.publish_curation, leaving 0 / 7,099 raw frame-ID reference titles corpus-wide. |
+| EV-C8S5-RENDERED-PAGES-AND-KGX | pages/downloads/nodes.tsv; CHEBI:59640, CHEBI:22651, and CHEBI:203056 rows in pages/downloads/nodes.tsv and rendered HTML pages in pages/records/ | supports | After running .venv/bin/pathwaymech-render-pages, verified that pages/downloads/nodes.tsv (5,458 nodes) exports CHEBI:59640, CHEBI:22651, and CHEBI:203056 as biolink:SmallMolecule (with generic compound class CHEBI:18274 2'-deoxyribonucleoside retained as biolink:ChemicalEntity) and all 8 remediated record HTML pages are current. |
+| EV-C8S5-QC | .venv/bin/pathwaymech-run-qc; stdout summary (277 pathway records, 963 history records, 22,832 evidence blocks, 33 source records) | supports | Executed .venv/bin/pathwaymech-run-qc: validated 277 pathway records against the closed LinkML schema, verified all identifiers and labels against local authority snapshots, validated 963 history records (including 8 new Cycle 8 Stage 5 record history entries referencing issues #761 and #762) and 22,832 evidence blocks, and confirmed pages/ synchrony. |
+| EV-C8S5-PYTEST | .venv/bin/pytest -q; pytest suite execution across tests/ | supports | Executed .venv/bin/pytest -q with 8,096 passed, 3 skipped. |
+| EV-C8S5-RUFF | .venv/bin/ruff check --no-cache .; ruff check output | supports | Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks passed). |
+| EV-C8S5-GIT-DIFF | git diff --check; git worktree on feat/cycle8-stage5-resolve-review-findings | supports | Executed git diff --check with exit code 0; no whitespace errors or conflict markers. |
+| EV-C8S5-REVIEW-CHECK | .venv/bin/python scripts/record_review.py check --base main; reviews/structured/ | supports | Validated all 213 retained structured review bundles in reviews/structured/ against schema/record_review.yaml and verified byte-for-byte append-only preservation against main. |
+
+## Limits And Additional Notes
+
+- This Cycle 8 Stage 5 successor review is scoped to verifying the remediation of Cycle 8 Stage 4 findings F-C8S4-001 and F-C8S4-002 across the 8 affected maintained pathway records; the remaining 269 maintained records had zero findings in Cycle 8 Stage 4 and were verified via repository-wide QC and pytest gates.
+- CLAW aggregator CLI (kg_microbe_reviews) is not installed in the local culturebotai-claw environment; finding lineage (predecessor review_id 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review, finding_ids F-C8S4-001 and F-C8S4-002, exact issue_keys, 100% target_ids retention, and absence of competing heads) was explicitly verified against reviews/structured/.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261031T112000Z-cycle8-stage5-resolve-review-findings
+kind: batch
+repository: CultureBotAI/PathwayMech
+title: Cycle 8 Stage 5 Successor Review Resolving F-C8S4-001 and F-C8S4-002 Across
+  8 Maintained Pathway Records
+started_at: '2026-10-31T10:50:00Z'
+finished_at: '2026-10-31T11:20:00Z'
+reviewer:
+  identity: Antigravity (pathwaymech-resolve-reviews + review-yaml-category)
+  kind: agent
+  model: Claude Opus 4.6 (Thinking)
+  independence: self_review
+  independence_basis: 'Same agent session (a1d1e545-faee-4294-8a87-4c2d031a6538) implemented
+    the Cycle 8 Stage 5 curation fixes for GitHub issues #761 and #762 and verified
+    post-remediation records, rendered HTML pages, and KGX exports.'
+skill: pathwaymech-resolve-reviews
+completion: completed
+verdict: pass
+native_verdict: coherent
+scientific_review: true
+summary: 'Re-inspected and verified all 8 maintained pathway YAML records affected
+  by Cycle 8 Stage 4 findings F-C8S4-001 (concrete-small-molecule-effector-participants-typed-as-chemical-entity-4-metacyc-records
+  across 4 maintained MetaCyc:* pathway records under root-cause group G-C8S5-001
+  and GitHub issue #761) and F-C8S4-002 (raw-frame-id-reference-titles-17-metacyc-references-4-records
+  across 4 maintained MetaCyc:* pathway records under root-cause group G-C8S5-002
+  and GitHub issue #762). Remediated all 8 records via pathwaymech.curation.publish_curation:
+  (1) across the 4 MetaCyc pathway records in F-C8S4-001 (adenosine-nucleotides-degradation-ii.yaml,
+  protocatechuate-meta-cleavage.yaml, protocatechuate-para-cleavage.yaml, and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml),
+  updated all 4 concrete CHEBI:* small-molecule effector participants with defined
+  molecular formulas (CHEBI:59640 N-acetylglucosamine at participants[62] of MetaCyc:SALVADEHYPOX-PWY,
+  CHEBI:22651 ascorbate at participants[61] of MetaCyc:P184-PWY and participants[24]
+  of MetaCyc:PWY-6336, and CHEBI:203056 Microcin J25 at participants[27] of MetaCyc:PWY-7545)
+  from category: chemical_entity to category: small_molecule while preserving category:
+  chemical_entity on generic compound class CHEBI:18274 2''-deoxyribonucleoside at
+  participants[64] of MetaCyc:SALVADEHYPOX-PWY (reducing corpus-wide chemical_entity
+  participant declarations from 68 to 64 and bringing concrete CHEBI:* small-molecule
+  participants with defined molecular formulas typed as chemical_entity to 0 / 301
+  across the 8 reassessed records and 0 / 7,851 corpus-wide); and (2) across the 4
+  MetaCyc pathway records in F-C8S4-002 (guanine-and-guanosine-salvage.yaml, sulfoquinovose-degradation-i.yaml,
+  sulfoquinovose-degradation-ii.yaml, and nitrate-reduction-i-denitrification.yaml),
+  replaced all 17 structured MetaCyc:* reaction and enzyme-complex references[] titles
+  that retained raw unprefixed database frame IDs (title == local_id) with descriptive
+  reaction equations and enzyme complex names (bringing raw frame-ID reference titles
+  to 0 / 421 across the 8 reassessed records and 0 / 7,099 across all 163 reference-bearing
+  records in the 277-record corpus). Recorded 8 append-only curation history files
+  at history/records/<slug>/2026-10-31T111000Z-antigravity-a1d1e5.yaml, regenerated
+  rendered pages and KGX exports (.venv/bin/pathwaymech-render-pages), and confirmed
+  full pass across QC (277 pathway records, 963 history records, 22,832 evidence blocks,
+  33 source records) and pytest (8,096 passed, 3 skipped).'
+source:
+  git_revision: f61a3ffbada676e10d3bcb89f07f364446d636aa
+  state: working_tree
+  inputs:
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    sha256: 2511d773f233d9bdf20b5bc5df55e87f940b1ae62f97286cf531a8475fc9d21b
+    role: target
+  - path: data/pathways/guanine-and-guanosine-salvage.yaml
+    sha256: 47178a121694b3a7faa8035a4af63a6a9a601768ed053ccfc9dbf69aec72540c
+    role: target
+  - path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    sha256: 1938806cd84045f23d713a9c586782f12f63d955c2886529e38cc2202f764978
+    role: target
+  - path: data/pathways/protocatechuate-meta-cleavage.yaml
+    sha256: 62565582f4af768767fa2f5519f9c9001213983554c8882fe385250b8ab47f85
+    role: target
+  - path: data/pathways/protocatechuate-para-cleavage.yaml
+    sha256: 0fa65c8a49b9c977283a8b1e9f63a4be39c9ad4576cb29ab65823c70f6c72706
+    role: target
+  - path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    sha256: 08884edf95974a98a5dd9cc2583638b730fc0a8de687ab6b0e24461b68a50a7d
+    role: target
+  - path: data/pathways/sulfoquinovose-degradation-i.yaml
+    sha256: d17aec24d1e182de3435512c8f527881937540304dea0396b2a20f82fc8f0220
+    role: target
+  - path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    sha256: 6d3534721d26bcd72eced48fe466881f2077670d33e496609876a0b7cb0397a8
+    role: target
+  - path: pages/downloads/edges.tsv
+    sha256: 95d20b276f323fb43b5b03528128e39cf863ee4b9416492f2ee6d504b2a3bc3c
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 39cc021f23d947aa3e4da019f0701d1ff473f7a5a0715816d6b683c976e7c589
+    role: context
+  - path: pages/records/MetaCyc_DENITRIFICATION-PWY.html
+    sha256: a966f6cabc26d8f3873c39523fd7e6c7baa1654f05851bf4a20d3af0baee8b62
+    role: context
+  - path: pages/records/MetaCyc_P184-PWY.html
+    sha256: 8269ba751f830b4bdbc843d7a9fad3f7e7352e9062cf426fd17e51971796aa75
+    role: context
+  - path: pages/records/MetaCyc_PWY-6336.html
+    sha256: b0eee9d7b79df781b4363618c1c2b6d37e5e3ab687455167670853007f24c82b
+    role: context
+  - path: pages/records/MetaCyc_PWY-6579.html
+    sha256: 685c8119c97ef5cb8dfb9486369b32ee3ac51f241f2b88d6264bb6c2af94bddf
+    role: context
+  - path: pages/records/MetaCyc_PWY-7446.html
+    sha256: a6b1024bcfc97b7b08a659d4a57d55606a6ed097b26fe767c64c8736f72341d2
+    role: context
+  - path: pages/records/MetaCyc_PWY-7545.html
+    sha256: 5674ed1108eaa18bf9399c9fecc40095947f324c3e68dee7ce37ac9f958c47e7
+    role: context
+  - path: pages/records/MetaCyc_PWY-7722.html
+    sha256: fc9b3c09e19da0bd11b521cbb3c49486e71f0eb8cc6a4db7669bfe42d450a996
+    role: context
+  - path: pages/records/MetaCyc_SALVADEHYPOX-PWY.html
+    sha256: 7b2af414f9330deaab62e672b01d711157c3260985b91149b613df440e802d2f
+    role: context
+  - path: reviews/structured/20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review/review.yaml
+    sha256: cddd8690b03dff36b5b2c5b60fd75022c84cc928c30dafea8d75513aa82304f8
+    role: context
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000008/stage-04/revision-0001/evidence.yaml
+    sha256: a12be0d8f5be2210a34ae49160b12c8b3a764e722ce6c6251cb798d2965c0e7b
+    role: context
+scope:
+  description: Complete post-remediation reassessment of the 8 maintained pathway
+    records in data/pathways/*.yaml (8 MetaCyc:*) that carried open findings (F-C8S4-001
+    and F-C8S4-002) in Cycle 8 Stage 4 review 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review.
+  selection: All 8 maintained pathway records in CultureBotAI/PathwayMech carrying
+    open findings in reviews/structured/20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review/review.yaml
+    (100% of open Cycle 8 Stage 4 maintained-record findings).
+  coverage: full
+  population_size: 8
+  reviewed_target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  exclusions:
+  - target: Remaining 269 maintained pathway records in data/pathways/*.yaml
+    reason: Assessed with zero open findings in Cycle 8 Stage 4 review 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review
+      and unchanged in Cycle 8 Stage 5.
+  - target: research/pathway_additions/*.yaml (6 withheld staging drafts)
+    reason: Non-maintained research staging drafts outside data/pathways/*.yaml; their
+      2 historical open findings (F01 in 20261010T090124Z-siroheme-pathway-addition-blocked-review
+      and F1 in 20261010T100956Z-ecoli-14dhna-octaprenyl-draft-review) remain untouched.
+targets:
+- target_id: MetaCyc:SALVADEHYPOX-PWY
+  path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+  label: adenosine nucleotides degradation II (MetaCyc:SALVADEHYPOX-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2511d773f233d9bdf20b5bc5df55e87f940b1ae62f97286cf531a8475fc9d21b
+    description: 'Raw SHA-256 file digest of data/pathways/adenosine-nucleotides-degradation-ii.yaml
+      in Cycle 8 Stage 5 (issue #761).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:P184-PWY
+  path: data/pathways/protocatechuate-meta-cleavage.yaml
+  label: protocatechuate degradation I (meta-cleavage pathway) (MetaCyc:P184-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 62565582f4af768767fa2f5519f9c9001213983554c8882fe385250b8ab47f85
+    description: 'Raw SHA-256 file digest of data/pathways/protocatechuate-meta-cleavage.yaml
+      in Cycle 8 Stage 5 (issue #761).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6336
+  path: data/pathways/protocatechuate-para-cleavage.yaml
+  label: protocatechuate degradation III (para-cleavage pathway) (MetaCyc:PWY-6336)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0fa65c8a49b9c977283a8b1e9f63a4be39c9ad4576cb29ab65823c70f6c72706
+    description: 'Raw SHA-256 file digest of data/pathways/protocatechuate-para-cleavage.yaml
+      in Cycle 8 Stage 5 (issue #761).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7545
+  path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+  label: pyruvate to cytochrome bd oxidase electron transfer (MetaCyc:PWY-7545)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 08884edf95974a98a5dd9cc2583638b730fc0a8de687ab6b0e24461b68a50a7d
+    description: 'Raw SHA-256 file digest of data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+      in Cycle 8 Stage 5 (issue #761).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6579
+  path: data/pathways/guanine-and-guanosine-salvage.yaml
+  label: guanine and guanosine salvage (MetaCyc:PWY-6579)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 47178a121694b3a7faa8035a4af63a6a9a601768ed053ccfc9dbf69aec72540c
+    description: 'Raw SHA-256 file digest of data/pathways/guanine-and-guanosine-salvage.yaml
+      in Cycle 8 Stage 5 (issue #762).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/guanine-and-guanosine-salvage.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7446
+  path: data/pathways/sulfoquinovose-degradation-i.yaml
+  label: sulfoquinovose degradation I (sulfo-Embden-Meyerhof-Parnas pathway) (MetaCyc:PWY-7446)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d17aec24d1e182de3435512c8f527881937540304dea0396b2a20f82fc8f0220
+    description: 'Raw SHA-256 file digest of data/pathways/sulfoquinovose-degradation-i.yaml
+      in Cycle 8 Stage 5 (issue #762).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7722
+  path: data/pathways/sulfoquinovose-degradation-ii.yaml
+  label: sulfoquinovose degradation II (MetaCyc:PWY-7722)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6d3534721d26bcd72eced48fe466881f2077670d33e496609876a0b7cb0397a8
+    description: 'Raw SHA-256 file digest of data/pathways/sulfoquinovose-degradation-ii.yaml
+      in Cycle 8 Stage 5 (issue #762).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:DENITRIFICATION-PWY
+  path: data/pathways/nitrate-reduction-i-denitrification.yaml
+  label: nitrate reduction I (denitrification) (MetaCyc:DENITRIFICATION-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1938806cd84045f23d713a9c586782f12f63d955c2886529e38cc2202f764978
+    description: 'Raw SHA-256 file digest of data/pathways/nitrate-reduction-i-denitrification.yaml
+      in Cycle 8 Stage 5 (issue #762).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    role: maintained pathway YAML
+checks:
+- check_id: validate
+  name: Repository QC and closed-schema validation (just validate)
+  status: passed
+  required: true
+  summary: Validated all 277 maintained pathway records (including the 8 remediated
+    records) against the closed LinkML schema, local identifier/label authority snapshots,
+    963 history records, 22,832 evidence blocks, 33 source records, and pages/ synchrony.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  command: .venv/bin/pathwaymech-run-qc
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8S5-QC
+  scope_note: 'Full-repository QC gate after applying issues #761 and #762 fixes and
+    regenerating pages/.'
+- check_id: test
+  name: Pytest unit and integration test suite (just test)
+  status: passed
+  required: true
+  summary: All 8,096 tests passed (3 skipped) in pytest across schema, KGX export,
+    SSSOM, and record-review checks.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  command: .venv/bin/pytest -q
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8S5-PYTEST
+  scope_note: Full pytest test suite (8,096 passed, 3 skipped).
+- check_id: lint
+  name: Ruff lint check (just lint)
+  status: passed
+  required: true
+  summary: Ruff check passed with 0 errors.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  command: .venv/bin/ruff check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8S5-RUFF
+  scope_note: Repository-wide Python lint check.
+- check_id: git-diff-check
+  name: Git whitespace and conflict marker check
+  status: passed
+  required: true
+  summary: git diff --check exited 0 with no whitespace or conflict marker issues.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8S5-GIT-DIFF
+  scope_note: Worktree diff check across all Cycle 8 Stage 5 edits.
+- check_id: review-check
+  name: Structured review bundle contract check (just review-check)
+  status: passed
+  required: true
+  summary: All 213 retained structured review bundles in reviews/structured/ passed
+    schema and append-only checks against main.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  command: .venv/bin/python scripts/record_review.py check --base main
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8S5-REVIEW-CHECK
+  scope_note: Verifies append-only immutability of prior 212 bundles and validity
+    of current bundle.
+evidence:
+- evidence_id: EV-C8S4-PREDECESSOR
+  kind: prior_review
+  reference: reviews/structured/20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review/review.yaml
+  locator: findings[0] (F-C8S4-001) and findings[1] (F-C8S4-002)
+  accessed_at: '2026-10-31T10:50:00Z'
+  support: supports
+  summary: 'Predecessor Cycle 8 Stage 4 cohort review recorded two minor open representation
+    findings across 8 maintained pathway records: F-C8S4-001 (concrete-small-molecule-effector-participants-typed-as-chemical-entity-4-metacyc-records
+    across 4 MetaCyc:* records) and F-C8S4-002 (raw-frame-id-reference-titles-17-metacyc-references-4-records
+    across 4 MetaCyc:* records).'
+  snapshot_sha256: cddd8690b03dff36b5b2c5b60fd75022c84cc928c30dafea8d75513aa82304f8
+- evidence_id: EV-C8S4-WORKFLOW-EVIDENCE
+  kind: prior_review
+  reference: reviews/workflow/mech-goal-sequence-20261019/cycle-000008/stage-04/revision-0001/evidence.yaml
+  locator: findings[0..1] (F-C8S4-001, F-C8S4-002)
+  accessed_at: '2026-10-31T10:50:00Z'
+  support: supports
+  summary: Cycle 8 Stage 4 workflow evidence manifest carried forward F-C8S4-001 and
+    F-C8S4-002 as open findings for Cycle 8 Stage 5 grouped remediation.
+  snapshot_sha256: a12be0d8f5be2210a34ae49160b12c8b3a764e722ce6c6251cb798d2965c0e7b
+- evidence_id: EV-C8S5-SMALL-MOLECULE-CATEGORIES-FIXED-4
+  kind: record_content
+  reference: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+  locator: participants[62] in adenosine-nucleotides-degradation-ii.yaml, participants[61]
+    in protocatechuate-meta-cleavage.yaml, participants[24] in protocatechuate-para-cleavage.yaml,
+    and participants[27] in pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+  accessed_at: '2026-10-31T11:10:00Z'
+  support: supports
+  summary: 'Across all 4 maintained MetaCyc pathway records in F-C8S4-001 (adenosine-nucleotides-degradation-ii.yaml,
+    protocatechuate-meta-cleavage.yaml, protocatechuate-para-cleavage.yaml, and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml),
+    updated all 4 concrete CHEBI:* small-molecule effector participants with defined
+    molecular formulas (CHEBI:59640 N-acetylglucosamine, CHEBI:22651 ascorbate in
+    two records, and CHEBI:203056 Microcin J25) from category: chemical_entity to
+    category: small_molecule via pathwaymech.curation.publish_curation while preserving
+    category: chemical_entity on generic compound class CHEBI:18274 2''-deoxyribonucleoside
+    at participants[64] of adenosine-nucleotides-degradation-ii.yaml.'
+  quote: "- id: CHEBI:59640\n  label: N-acetylglucosamine\n  category: small_molecule\n\
+    - id: CHEBI:16750\n  label: guanosine\n  category: small_molecule\n- id: CHEBI:18274\n\
+    \  label: 2'-deoxyribonucleoside\n  category: chemical_entity"
+  snapshot_sha256: 2511d773f233d9bdf20b5bc5df55e87f940b1ae62f97286cf531a8475fc9d21b
+- evidence_id: EV-C8S5-RAW-FRAME-ID-TITLES-FIXED-4
+  kind: record_content
+  reference: data/pathways/guanine-and-guanosine-salvage.yaml
+  locator: references[3..5] in guanine-and-guanosine-salvage.yaml, references[1..4]
+    in sulfoquinovose-degradation-i.yaml, references[1..5] in sulfoquinovose-degradation-ii.yaml,
+    and references[1,3,4,5,63] in nitrate-reduction-i-denitrification.yaml
+  accessed_at: '2026-10-31T11:10:00Z'
+  support: supports
+  summary: Across all 4 maintained MetaCyc pathway records in F-C8S4-002 (guanine-and-guanosine-salvage.yaml,
+    sulfoquinovose-degradation-i.yaml, sulfoquinovose-degradation-ii.yaml, and nitrate-reduction-i-denitrification.yaml),
+    replaced all 17 structured MetaCyc:* reaction and enzyme-complex references[]
+    entries carrying raw unprefixed database frame ID titles (title == local_id) with
+    descriptive reaction equations and enzyme complex names via pathwaymech.curation.publish_curation,
+    leaving 0 / 7,099 raw frame-ID reference titles corpus-wide.
+  quote: "- id: MetaCyc:RXN0-5199\n  title: 'MetaCyc RXN0-5199 (guanosine phosphorylase\
+    \ reaction: guanosine + phosphate = alpha-D-ribose\n    1-phosphate + guanine)'\n\
+    \  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5199"
+  snapshot_sha256: 47178a121694b3a7faa8035a4af63a6a9a601768ed053ccfc9dbf69aec72540c
+- evidence_id: EV-C8S5-RENDERED-PAGES-AND-KGX
+  kind: record_content
+  reference: pages/downloads/nodes.tsv
+  locator: CHEBI:59640, CHEBI:22651, and CHEBI:203056 rows in pages/downloads/nodes.tsv
+    and rendered HTML pages in pages/records/
+  accessed_at: '2026-10-31T11:12:00Z'
+  support: supports
+  summary: After running .venv/bin/pathwaymech-render-pages, verified that pages/downloads/nodes.tsv
+    (5,458 nodes) exports CHEBI:59640, CHEBI:22651, and CHEBI:203056 as biolink:SmallMolecule
+    (with generic compound class CHEBI:18274 2'-deoxyribonucleoside retained as biolink:ChemicalEntity)
+    and all 8 remediated record HTML pages are current.
+  quote: "CHEBI:59640\tN-acetylglucosamine\tbiolink:SmallMolecule\tinfores:pathwaymech\t\
+    small_molecule\n...\nCHEBI:22651\tascorbate\tbiolink:SmallMolecule\tinfores:pathwaymech\t\
+    small_molecule\n...\nCHEBI:203056\tMicrocin J25\tbiolink:SmallMolecule\tinfores:pathwaymech\t\
+    small_molecule"
+  snapshot_sha256: 39cc021f23d947aa3e4da019f0701d1ff473f7a5a0715816d6b683c976e7c589
+- evidence_id: EV-C8S5-QC
+  kind: validation
+  reference: .venv/bin/pathwaymech-run-qc
+  locator: stdout summary (277 pathway records, 963 history records, 22,832 evidence
+    blocks, 33 source records)
+  accessed_at: '2026-10-31T11:18:00Z'
+  support: supports
+  summary: 'Executed .venv/bin/pathwaymech-run-qc: validated 277 pathway records against
+    the closed LinkML schema, verified all identifiers and labels against local authority
+    snapshots, validated 963 history records (including 8 new Cycle 8 Stage 5 record
+    history entries referencing issues #761 and #762) and 22,832 evidence blocks,
+    and confirmed pages/ synchrony.'
+- evidence_id: EV-C8S5-PYTEST
+  kind: validation
+  reference: .venv/bin/pytest -q
+  locator: pytest suite execution across tests/
+  accessed_at: '2026-10-31T11:18:00Z'
+  support: supports
+  summary: Executed .venv/bin/pytest -q with 8,096 passed, 3 skipped.
+- evidence_id: EV-C8S5-RUFF
+  kind: validation
+  reference: .venv/bin/ruff check --no-cache .
+  locator: ruff check output
+  accessed_at: '2026-10-31T11:18:00Z'
+  support: supports
+  summary: Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks
+    passed).
+- evidence_id: EV-C8S5-GIT-DIFF
+  kind: validation
+  reference: git diff --check
+  locator: git worktree on feat/cycle8-stage5-resolve-review-findings
+  accessed_at: '2026-10-31T11:18:00Z'
+  support: supports
+  summary: Executed git diff --check with exit code 0; no whitespace errors or conflict
+    markers.
+- evidence_id: EV-C8S5-REVIEW-CHECK
+  kind: validation
+  reference: .venv/bin/python scripts/record_review.py check --base main
+  locator: reviews/structured/
+  accessed_at: '2026-10-31T11:18:00Z'
+  support: supports
+  summary: Validated all 213 retained structured review bundles in reviews/structured/
+    against schema/record_review.yaml and verified byte-for-byte append-only preservation
+    against main.
+assessments:
+- assessment_id: ASSESS-C8S5-SMALL-MOLECULE-AND-RAW-FRAME-ID-HYGIENE-8
+  area: consistency
+  topic: Post-remediation elimination of concrete CHEBI:* small-molecule effector
+    participants typed as chemical_entity (0 / 301 reassessed participants and 0 /
+    7,851 corpus participants) and raw unprefixed MetaCyc frame-ID reference titles
+    (0 / 421 reassessed references and 0 / 7,099 corpus references) across the 8 reassessed
+    MetaCyc pathway records
+  outcome: supported
+  summary: 'Updating all 4 concrete CHEBI:* small-molecule effector participants with
+    defined molecular formulas (CHEBI:59640 N-acetylglucosamine, CHEBI:22651 ascorbate
+    in two records, and CHEBI:203056 Microcin J25) across the 4 F-C8S4-001 MetaCyc
+    pathway records from category: chemical_entity to category: small_molecule (while
+    preserving category: chemical_entity on generic compound class CHEBI:18274 2''-deoxyribonucleoside)
+    reduces corpus-wide chemical_entity participant declarations from 68 to 64 and
+    brings concrete CHEBI:* small-molecule participants with defined molecular formulas
+    typed as chemical_entity to 0 / 301 across the 8 reassessed records and 0 / 7,851
+    corpus-wide, and replacing all 17 raw unprefixed MetaCyc frame-ID reference titles
+    (title == local_id) across the 4 F-C8S4-002 MetaCyc pathway records brings raw
+    frame-ID reference titles to 0 / 421 across the 8 reassessed records and 0 / 7,099
+    corpus-wide.'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  evidence_ids:
+  - EV-C8S4-PREDECESSOR
+  - EV-C8S5-SMALL-MOLECULE-CATEGORIES-FIXED-4
+  - EV-C8S5-RAW-FRAME-ID-TITLES-FIXED-4
+  - EV-C8S5-RENDERED-PAGES-AND-KGX
+  - EV-C8S5-QC
+  - EV-C8S5-PYTEST
+  metrics:
+  - name: concrete_chebi_small_molecule_participants_typed_as_chemical_entity_in_reassessed_records
+    value: 0.0
+    unit: participants
+    definition: 'Count of concrete CHEBI:* small-molecule participants[] entries with
+      defined molecular formulas typed as category: chemical_entity across the 8 reassessed
+      pathway records after updating 4 entries to category: small_molecule (0 / 301
+      in reassessed records; 0 / 7,851 corpus-wide; only generic compound class CHEBI:18274
+      2''-deoxyribonucleoside retains chemical_entity).'
+    denominator: 301
+    minimum: 0.0
+    maximum: 301.0
+  - name: raw_frame_id_reference_titles_across_reassessed_records
+    value: 0.0
+    unit: references
+    definition: Count of structured references[] entries carrying raw unprefixed database
+      frame IDs (title == local_id) across the 8 reassessed pathway records after
+      updating 17 MetaCyc:* reaction and enzyme-complex entries (0 / 421 in reassessed
+      records; 0 / 7,099 corpus-wide).
+    denominator: 421
+    minimum: 0.0
+    maximum: 421.0
+  dimensions:
+  - name: rendered_page_and_kgx_verification
+    value: CHEBI:59640, CHEBI:22651, and CHEBI:203056 exported as biolink:SmallMolecule
+      in pages/downloads/nodes.tsv and rendered in MetaCyc_SALVADEHYPOX-PWY.html,
+      MetaCyc_P184-PWY.html, MetaCyc_PWY-6336.html, and MetaCyc_PWY-7545.html; all
+      17 updated MetaCyc reaction and enzyme-complex reference titles rendered in
+      MetaCyc_PWY-6579.html, MetaCyc_PWY-7446.html, MetaCyc_PWY-7722.html, and MetaCyc_DENITRIFICATION-PWY.html
+    definition: Verified post-remediation rendered HTML pages and KGX exports in pages/.
+    evidence_ids:
+    - EV-C8S5-RENDERED-PAGES-AND-KGX
+    - EV-C8S5-QC
+- assessment_id: ASSESS-C8S5-SCIENTIFIC-INTEGRITY-8
+  area: evidence
+  topic: Preservation of pathway identity, taxon grounding, participant connectivity,
+    reaction directionality, stoichiometry, and edge-level evidence across the 8 remediated
+    pathway records
+  outcome: supported
+  summary: Structural verification across all 8 remediated pathway YAML files confirms
+    that all pathway IDs, taxon groundings, 7,851 connected participant entries (0
+    orphans), 1,630 reaction steps (731 RHEA:*), 14,730 non-reflexive mechanistic_edges,
+    1,061 source_mappings, and 22,832 structured evidence blocks remain 100% intact
+    and pass closed LinkML and authority snapshot checks.
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  evidence_ids:
+  - EV-C8S5-SMALL-MOLECULE-CATEGORIES-FIXED-4
+  - EV-C8S5-RAW-FRAME-ID-TITLES-FIXED-4
+  - EV-C8S5-QC
+  - EV-C8S5-PYTEST
+  - EV-C8S5-GIT-DIFF
+findings:
+- finding_id: F-C8S4-001
+  issue_key: concrete-small-molecule-effector-participants-typed-as-chemical-entity-4-metacyc-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: 'All 4 concrete CHEBI:* small-molecule effector participants (CHEBI:59640,
+    CHEBI:22651 in two records, and CHEBI:203056) across 4 maintained MetaCyc pathway
+    records are typed as category: small_molecule'
+  description: 'Across all 4 maintained MetaCyc pathway records in F-C8S4-001 (MetaCyc:SALVADEHYPOX-PWY,
+    MetaCyc:P184-PWY, MetaCyc:PWY-6336, and MetaCyc:PWY-7545), updated all 4 concrete
+    CHEBI:* small-molecule effector participants with defined molecular formulas (CHEBI:59640
+    N-acetylglucosamine at participants[62] of MetaCyc:SALVADEHYPOX-PWY, CHEBI:22651
+    ascorbate at participants[61] of MetaCyc:P184-PWY and participants[24] of MetaCyc:PWY-6336,
+    and CHEBI:203056 Microcin J25 at participants[27] of MetaCyc:PWY-7545) from category:
+    chemical_entity to category: small_molecule via pathwaymech.curation.publish_curation
+    while preserving category: chemical_entity on generic compound class CHEBI:18274
+    2''-deoxyribonucleoside at participants[64] of MetaCyc:SALVADEHYPOX-PWY, recorded
+    4 history/records/<slug>/2026-10-31T111000Z-antigravity-a1d1e5.yaml files, and
+    regenerated pages/ and pages/downloads/nodes.tsv (reducing corpus-wide chemical_entity
+    participant declarations from 68 to 64 and bringing concrete CHEBI:* small-molecule
+    participants with defined molecular formulas typed as chemical_entity to 0 / 7,851).'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  field_paths:
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#participants[62].category
+    (CHEBI:59640, N-acetylglucosamine) (chemical_entity -> small_molecule)
+  - data/pathways/protocatechuate-meta-cleavage.yaml#participants[61].category (CHEBI:22651,
+    ascorbate) (chemical_entity -> small_molecule)
+  - data/pathways/protocatechuate-para-cleavage.yaml#participants[24].category (CHEBI:22651,
+    ascorbate) (chemical_entity -> small_molecule)
+  - data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml#participants[27].category
+    (CHEBI:203056, Microcin J25) (chemical_entity -> small_molecule)
+  evidence_ids:
+  - EV-C8S4-PREDECESSOR
+  - EV-C8S4-WORKFLOW-EVIDENCE
+  - EV-C8S5-SMALL-MOLECULE-CATEGORIES-FIXED-4
+  - EV-C8S5-RENDERED-PAGES-AND-KGX
+  - EV-C8S5-QC
+  - EV-C8S5-PYTEST
+  rule_id: CURATION:concrete-small-molecule-participant-category
+  native_severity: minor
+  normalization_reason: 'Native minor participant-category representation defect maps
+    directly to minor severity: updating the 4 concrete CHEBI:* small-molecule effector
+    participants from chemical_entity to small_molecule across the 4 affected MetaCyc
+    records aligns their participant categories with their own in-record small-molecule
+    substrates/cofactors and exports CHEBI:59640, CHEBI:22651, and CHEBI:203056 as
+    biolink:SmallMolecule in pages/downloads/nodes.tsv.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #761 (group G-C8S5-001) by updating
+    all 4 concrete CHEBI:* small-molecule effector participants with defined molecular
+    formulas (CHEBI:59640, CHEBI:22651 in two records, and CHEBI:203056) from category:
+    chemical_entity to category: small_molecule across the 4 affected MetaCyc pathway
+    records via pathwaymech.curation.publish_curation (preserving chemical_entity
+    on generic compound class CHEBI:18274 2''-deoxyribonucleoside), recording 4 history/records/<slug>/2026-10-31T111000Z-antigravity-a1d1e5.yaml
+    provenance entries, and regenerating pages/.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review
+    finding_id: F-C8S4-001
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/761
+  tags:
+  - cycle8-stage5-resolve-review-findings
+  - participant-category-hygiene
+  - kgx-category-hygiene
+- finding_id: F-C8S4-002
+  issue_key: raw-frame-id-reference-titles-17-metacyc-references-4-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: All 17 structured MetaCyc:* reaction and enzyme-complex references carrying
+    raw unprefixed database frame IDs (title == local_id) are replaced with descriptive
+    reaction equations and enzyme complex names across 4 maintained MetaCyc pathway
+    records
+  description: Across all 4 maintained MetaCyc pathway records in F-C8S4-002 (MetaCyc:PWY-6579,
+    MetaCyc:PWY-7446, MetaCyc:PWY-7722, and MetaCyc:DENITRIFICATION-PWY), replaced
+    all 17 structured MetaCyc:* reaction and enzyme-complex references[] entries carrying
+    raw unprefixed database frame IDs (title == local_id) with descriptive reaction
+    equations and enzyme complex names via pathwaymech.curation.publish_curation,
+    recorded 4 history/records/<slug>/2026-10-31T111000Z-antigravity-a1d1e5.yaml files,
+    and regenerated pages/ (bringing raw frame-ID reference titles to 0 / 7,099 corpus-wide).
+  target_ids:
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  field_paths:
+  - 'data/pathways/guanine-and-guanosine-salvage.yaml#references[3].title (MetaCyc:RXN0-5199)
+    (RXN0-5199 -> MetaCyc RXN0-5199 (guanosine phosphorylase reaction: guanosine +
+    phosphate = alpha-D-ribose 1-phosphate + guanine))'
+  - 'data/pathways/guanine-and-guanosine-salvage.yaml#references[4].title (MetaCyc:GUANPRIBOSYLTRAN-RXN)
+    (GUANPRIBOSYLTRAN-RXN -> MetaCyc GUANPRIBOSYLTRAN-RXN (guanine phosphoribosyltransferase
+    reaction: guanine + 5-phospho-alpha-D-ribose 1-diphosphate -> GMP + diphosphate))'
+  - 'data/pathways/guanine-and-guanosine-salvage.yaml#references[5].title (MetaCyc:GUANOSINEKIN-RXN)
+    (GUANOSINEKIN-RXN -> MetaCyc GUANOSINEKIN-RXN (guanosine kinase reaction: guanosine
+    + ATP -> GMP + ADP + H+))'
+  - 'data/pathways/sulfoquinovose-degradation-i.yaml#references[1].title (MetaCyc:RXN-15296)
+    (RXN-15296 -> MetaCyc RXN-15296 (sulfoquinovose isomerase reaction: 6-sulfo-beta-D-quinovose
+    -> 6-deoxy-6-sulfo-D-fructose))'
+  - 'data/pathways/sulfoquinovose-degradation-i.yaml#references[2].title (MetaCyc:RXN-15297)
+    (RXN-15297 -> MetaCyc RXN-15297 (sulfofructose kinase reaction: 6-deoxy-6-sulfo-D-fructose
+    + ATP -> 6-deoxy-6-sulfo-D-fructose 1-phosphate + ADP + H+))'
+  - 'data/pathways/sulfoquinovose-degradation-i.yaml#references[3].title (MetaCyc:RXN-15298)
+    (RXN-15298 -> MetaCyc RXN-15298 (sulfofructosephosphate aldolase reaction: 6-deoxy-6-sulfo-D-fructose
+    1-phosphate -> (2S)-3-sulfolactaldehyde + dihydroxyacetone phosphate))'
+  - 'data/pathways/sulfoquinovose-degradation-i.yaml#references[4].title (MetaCyc:RXN-15299)
+    (RXN-15299 -> MetaCyc RXN-15299 (3-sulfolactaldehyde reductase reaction: (2S)-3-sulfolactaldehyde
+    + NADH + H+ -> (2S)-2,3-dihydroxypropane-1-sulfonate + NAD+))'
+  - 'data/pathways/sulfoquinovose-degradation-ii.yaml#references[1].title (MetaCyc:RXN-17096)
+    (RXN-17096 -> MetaCyc RXN-17096 (sulfoquinovose 1-dehydrogenase reaction: 6-sulfo-D-quinovose
+    + NAD+ -> 6-deoxy-6-sulfo-D-glucono-1,5-lactone + NADH + H+))'
+  - 'data/pathways/sulfoquinovose-degradation-ii.yaml#references[2].title (MetaCyc:RXN-17095)
+    (RXN-17095 -> MetaCyc RXN-17095 (6-deoxy-6-sulfogluconolactonase reaction: 6-deoxy-6-sulfo-D-glucono-1,5-lactone
+    + H2O -> 6-deoxy-6-sulfo-D-gluconate + H+))'
+  - 'data/pathways/sulfoquinovose-degradation-ii.yaml#references[3].title (MetaCyc:RXN-17097)
+    (RXN-17097 -> MetaCyc RXN-17097 (6-deoxy-6-sulfo-D-gluconate dehydratase reaction:
+    6-deoxy-6-sulfo-D-gluconate -> 2-dehydro-3,6-dideoxy-6-sulfo-D-gluconate + H2O))'
+  - 'data/pathways/sulfoquinovose-degradation-ii.yaml#references[4].title (MetaCyc:RXN-17098)
+    (RXN-17098 -> MetaCyc RXN-17098 (2-dehydro-3,6-dideoxy-6-sulfogluconate aldolase
+    reaction: 2-dehydro-3,6-dideoxy-6-sulfo-D-gluconate -> (2S)-3-sulfolactaldehyde
+    + pyruvate))'
+  - 'data/pathways/sulfoquinovose-degradation-ii.yaml#references[5].title (MetaCyc:RXN-17101)
+    (RXN-17101 -> MetaCyc RXN-17101 (3-sulfolactaldehyde dehydrogenase reaction: (2S)-3-sulfolactaldehyde
+    + NAD(P)+ + H2O -> (2S)-3-sulfolactate + NAD(P)H + 2 H+))'
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[1].title (MetaCyc:RXN-11236)
+    (RXN-11236 -> nitrate + an electron-transfer quinol[inner membrane] + 2 H+ nitrite
+    + an electron-transfer quinone[inner membrane] + 2 H+[periplasm] + H2O)
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[3].title (MetaCyc:RXN-15838)
+    (RXN-15838 -> nitrite[periplasm] + a reduced cytochrome c551[periplasm] + 2 H+[periplasm]
+    nitric oxide[periplasm] + an oxidized cytochrome c551[periplasm] + H2O[periplasm])
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[4].title (MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN)
+    (NITRIC-OXIDE-REDUCTASE-RXN -> 2 a reduced c-type cytochrome[periplasm] + 2 nitric
+    oxide[periplasm] + 2 H+[periplasm] -> nitrous oxide[periplasm] + 2 an oxidized
+    c-type cytochrome[periplasm] + H2O[periplasm])
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[5].title (MetaCyc:RXN-12130)
+    (RXN-12130 -> 2 a reduced c-type cytochrome[periplasm] + nitrous oxide[periplasm]
+    + 2 H+[periplasm] -> 2 an oxidized c-type cytochrome[periplasm] + N2[periplasm]
+    + H2O[periplasm])
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[63].title (MetaCyc:CPLX-1701)
+    (CPLX-1701 -> nitrite reductase (NO-forming) homodimer (MetaCyc CPLX-1701))
+  evidence_ids:
+  - EV-C8S4-PREDECESSOR
+  - EV-C8S4-WORKFLOW-EVIDENCE
+  - EV-C8S5-RAW-FRAME-ID-TITLES-FIXED-4
+  - EV-C8S5-RENDERED-PAGES-AND-KGX
+  - EV-C8S5-QC
+  - EV-C8S5-PYTEST
+  rule_id: CURATION:no-raw-frame-id-reference-titles
+  native_severity: minor
+  normalization_reason: 'Native minor representation defect maps directly to minor
+    severity: replacing the 17 raw unprefixed MetaCyc frame-ID reference titles across
+    the 4 affected MetaCyc records with descriptive reaction equations and enzyme
+    complex names eliminates all remaining raw database frame-ID reference titles
+    across the 277-record corpus (0 / 7,099).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/guanine-and-guanosine-salvage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #762 (group G-C8S5-002) by replacing
+    all 17 structured MetaCyc:* reaction and enzyme-complex references[] entries carrying
+    raw unprefixed database frame IDs (title == local_id) with descriptive reaction
+    equations and enzyme complex names across the 4 affected MetaCyc pathway records
+    via pathwaymech.curation.publish_curation, recording 4 history/records/<slug>/2026-10-31T111000Z-antigravity-a1d1e5.yaml
+    provenance entries, and regenerating pages/.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review
+    finding_id: F-C8S4-002
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/762
+  tags:
+  - cycle8-stage5-resolve-review-findings
+  - raw-frame-id-reference-title
+  - reference-hygiene
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  rationale: Retain all 8 remediated MetaCyc:* pathway records as distinct, non-duplicate
+    source-scoped pathway definitions with consistent small_molecule participant typing
+    and 0 raw database frame-ID reference titles.
+  evidence_ids:
+  - EV-C8S5-SMALL-MOLECULE-CATEGORIES-FIXED-4
+  - EV-C8S5-RAW-FRAME-ID-TITLES-FIXED-4
+  - EV-C8S5-QC
+limitations:
+- This Cycle 8 Stage 5 successor review is scoped to verifying the remediation of
+  Cycle 8 Stage 4 findings F-C8S4-001 and F-C8S4-002 across the 8 affected maintained
+  pathway records; the remaining 269 maintained records had zero findings in Cycle
+  8 Stage 4 and were verified via repository-wide QC and pytest gates.
+notes:
+- CLAW aggregator CLI (kg_microbe_reviews) is not installed in the local culturebotai-claw
+  environment; finding lineage (predecessor review_id 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review,
+  finding_ids F-C8S4-001 and F-C8S4-002, exact issue_keys, 100% target_ids retention,
+  and absence of competing heads) was explicitly verified against reviews/structured/.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review
+  relationship: resolves_findings_from
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/761
+- https://github.com/CultureBotAI/PathwayMech/issues/762
+tags:
+- mech-goal-sequence-20261019
+- cycle-8
+- stage-5
+- resolve-review-findings
+```
