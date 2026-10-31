@@ -1,0 +1,454 @@
+id: PathBank:SMP0001910
+label: Curcumin Degradation
+description: 'PathBank SMP0001910 (native BioPAX archive member PW001896.owl) models the two-step
+  NADPH-dependent reductive degradation of curcumin through dihydrocurcumin to tetrahydrocurcumin in
+  Escherichia coli, catalyzed by the homodimeric NADPH-dependent curcumin/dihydrocurcumin reductase
+  CurA (PathBank:SMP0001910/ProteinComplex/3920, two copies of Protein/10350 cross-referenced to
+  UniProtKB:P76113). In the first step (RHEA:34821, right-to-left direction of RHEA:34819; native
+  Reactions/5204, EC 1.3.1.n3, conversionDirection LEFT_TO_RIGHT), homodimeric CurA reduces curcumin
+  (CHEBI:3962; native Compound/PW_C001532 Curcumin) with NADPH(4-) (CHEBI:57783; pH 7.3 major
+  microspecies of native Compound/PW_C000146 NADPH, CHEBI:16474) and hydron (CHEBI:15378; native
+  Compound/PW_C040034 Hydrogen Ion) to dihydrocurcumin (CHEBI:67262; native Compound/PW_C012734
+  Dihydrocurcumin) and NADP(3-) (CHEBI:58349; pH 7.3 major microspecies of native Compound/PW_C000143
+  NADP, CHEBI:18009).
+
+
+  In the second step (RHEA:34813, right-to-left direction of RHEA:34811; native Reactions/5205,
+  conversionDirection LEFT_TO_RIGHT), the same CurA homodimer reduces the dihydrocurcumin intermediate
+  (CHEBI:67262) with a second equivalent of NADPH(4-) (CHEBI:57783) and hydron (CHEBI:15378) to yield
+  tetrahydrocurcumin (CHEBI:67263; native Compound/PW_C002561 Tetrahydrocurcumin) and NADP(3-)
+  (CHEBI:58349). Hassaninasab et al. (2011, PMID:21467222) first identified curcumin-converting
+  activity in a human fecal Escherichia coli isolate (strain Ni2, NCBITaxon:562), purified the native
+  82 kDa homodimer and identified the curA (yncB) gene in Escherichia coli K-12 strain DH10B
+  (NCBITaxon:83333; reviewed UniProtKB:P76113), and characterized recombinant CurA expressed in E. coli
+  BL21 (NCBITaxon:562). Both double-bond reductions and their shared dihydrocurcumin intermediate are
+  retained from PW001896.owl; the redundant two-step overall Rhea reaction (RHEA:34815) is excluded.
+  Tetrahydrocurcumin is the demonstrated endpoint of CurA catalysis without complete mineralization,
+  downstream cleavage, or a dedicated curcumin transporter, and PW001896.owl does not assert a
+  cellular compartment.'
+pathway_type: curcumin-degradation
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:3962
+  label: curcumin
+  category: small_molecule
+- id: CHEBI:67262
+  label: dihydrocurcumin
+  category: small_molecule
+- id: CHEBI:67263
+  label: tetrahydrocurcumin
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: cofactor
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: UniProtKB:P76113
+  label: NADPH-dependent curcumin reductase
+  category: protein
+- id: PathBank:SMP0001910/ProteinComplex/3920
+  label: NADPH-dependent curcumin/dihydrocurcumin reductase
+  category: complex
+reactions:
+- id: RHEA:34821
+  label: curcumin + NADPH + H(+) => dihydrocurcumin + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:34813
+  label: dihydrocurcumin + NADPH + H(+) => tetrahydrocurcumin + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0001910-edge-001
+  subject: CHEBI:3962
+  predicate: consumes
+  object: RHEA:34821
+  coefficient: 1
+  description: Curcumin (CHEBI:3962; native Compound/PW_C001532 Curcumin) is consumed with stoichiometric
+    coefficient 1 in the first C=C reduction step (RHEA:34821; native Reactions/5204).
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:3962 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_7627'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5204 (1.3.1.n3, Curcumin + Hydrogen
+      Ion + NADPH -> Dihydrocurcumin + NADP, conversionDirection LEFT_TO_RIGHT) consumes Compound/PW_C001532
+      (Curcumin, CompoundReference/PW_C001532 cross-referenced to ChEBI CHEBI:3962) on its left side with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5204']/bp:left[@rdf:resource='#Compound/PW_C001532'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001532/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C001532']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_3962']
+- id: smp0001910-edge-002
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:34821
+  coefficient: 1
+  description: NADPH(4-) (CHEBI:57783, pH 7.3 major microspecies of native Compound/PW_C000146 NADPH,
+    CHEBI:16474) is consumed with stoichiometric coefficient 1 in the first C=C reduction step (RHEA:34821;
+    native Reactions/5204).
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:57783 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_3438'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5204 consumes Compound/PW_C000146
+      (NADPH, CompoundReference/PW_C000146 cross-referenced to ChEBI CHEBI:16474) on its left side with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5204']/bp:left[@rdf:resource='#Compound/PW_C000146'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000146/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000146']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_16474']
+- id: smp0001910-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:34821
+  coefficient: 1
+  description: Hydron (CHEBI:15378; native Compound/PW_C040034 Hydrogen Ion) is consumed with stoichiometric
+    coefficient 1 in the first C=C reduction step (RHEA:34821; native Reactions/5204).
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_3249'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5204 consumes Compound/PW_C040034
+      (Hydrogen Ion, CompoundReference/PW_C040034 cross-referenced to ChEBI CHEBI:15378) on its left side
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5204']/bp:left[@rdf:resource='#Compound/PW_C040034'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C040034']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15378']
+- id: smp0001910-edge-004
+  subject: RHEA:34821
+  predicate: produces
+  object: CHEBI:67262
+  coefficient: 1
+  description: Dihydrocurcumin (CHEBI:67262; native Compound/PW_C012734 Dihydrocurcumin) is produced with
+    stoichiometric coefficient 1 by the first C=C reduction step (RHEA:34821; native Reactions/5204).
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:67262 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_7626'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5204 produces Compound/PW_C012734
+      (Dihydrocurcumin, CompoundReference/PW_C012734 cross-referenced to ChEBI CHEBI:67262) on its right
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5204']/bp:right[@rdf:resource='#Compound/PW_C012734'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C012734/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C012734']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_67262']
+- id: smp0001910-edge-005
+  subject: RHEA:34821
+  predicate: produces
+  object: CHEBI:58349
+  coefficient: 1
+  description: NADP(3-) (CHEBI:58349, pH 7.3 major microspecies of native Compound/PW_C000143 NADP,
+    CHEBI:18009) is produced with stoichiometric coefficient 1 by the first C=C reduction step (RHEA:34821;
+    native Reactions/5204).
+  evidence:
+  - reference_id: RHEA:34821
+    source_assertion: Rhea RHEA:34821 assigns CHEBI:58349 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34819_compound_5188'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5204 produces Compound/PW_C000143
+      (NADP, CompoundReference/PW_C000143 cross-referenced to ChEBI CHEBI:18009) on its right side with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5204']/bp:right[@rdf:resource='#Compound/PW_C000143'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000143/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000143']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_18009']
+- id: smp0001910-edge-006
+  subject: CHEBI:67262
+  predicate: consumes
+  object: RHEA:34813
+  coefficient: 1
+  description: Dihydrocurcumin (CHEBI:67262; native Compound/PW_C012734 Dihydrocurcumin) is consumed with
+    stoichiometric coefficient 1 in the second C=C reduction step (RHEA:34813; native Reactions/5205).
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:67262 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_7626'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5205 (Reaction5205, Dihydrocurcumin
+      + Hydrogen Ion + NADPH -> NADP + Tetrahydrocurcumin, conversionDirection LEFT_TO_RIGHT) consumes
+      Compound/PW_C012734 (Dihydrocurcumin, CompoundReference/PW_C012734 cross-referenced to ChEBI
+      CHEBI:67262) on its left side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5205']/bp:left[@rdf:resource='#Compound/PW_C012734'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C012734/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C012734']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_67262']
+- id: smp0001910-edge-007
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:34813
+  coefficient: 1
+  description: NADPH(4-) (CHEBI:57783, pH 7.3 major microspecies of native Compound/PW_C000146 NADPH,
+    CHEBI:16474) is consumed with stoichiometric coefficient 1 in the second C=C reduction step (RHEA:34813;
+    native Reactions/5205).
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:57783 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_3438'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5205 consumes Compound/PW_C000146
+      (NADPH, CompoundReference/PW_C000146 cross-referenced to ChEBI CHEBI:16474) on its left side with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5205']/bp:left[@rdf:resource='#Compound/PW_C000146'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000146/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000146']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_16474']
+- id: smp0001910-edge-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:34813
+  coefficient: 1
+  description: Hydron (CHEBI:15378; native Compound/PW_C040034 Hydrogen Ion) is consumed with stoichiometric
+    coefficient 1 in the second C=C reduction step (RHEA:34813; native Reactions/5205).
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_3249'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5205 consumes Compound/PW_C040034
+      (Hydrogen Ion, CompoundReference/PW_C040034 cross-referenced to ChEBI CHEBI:15378) on its left side
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5205']/bp:left[@rdf:resource='#Compound/PW_C040034'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C040034']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15378']
+- id: smp0001910-edge-009
+  subject: RHEA:34813
+  predicate: produces
+  object: CHEBI:67263
+  coefficient: 1
+  description: Tetrahydrocurcumin (CHEBI:67263; native Compound/PW_C002561 Tetrahydrocurcumin) is produced
+    with stoichiometric coefficient 1 by the second C=C reduction step (RHEA:34813; native Reactions/5205).
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:67263 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_7625'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5205 produces Compound/PW_C002561
+      (Tetrahydrocurcumin, CompoundReference/PW_C002561 cross-referenced to ChEBI CHEBI:67263) on its right
+      side with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5205']/bp:right[@rdf:resource='#Compound/PW_C002561'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C002561/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C002561']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_67263']
+- id: smp0001910-edge-010
+  subject: RHEA:34813
+  predicate: produces
+  object: CHEBI:58349
+  coefficient: 1
+  description: NADP(3-) (CHEBI:58349, pH 7.3 major microspecies of native Compound/PW_C000143 NADP,
+    CHEBI:18009) is produced with stoichiometric coefficient 1 by the second C=C reduction step (RHEA:34813;
+    native Reactions/5205).
+  evidence:
+  - reference_id: RHEA:34813
+    source_assertion: Rhea RHEA:34813 assigns CHEBI:58349 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_34811_compound_5188'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl BiochemicalReaction Reactions/5205 produces Compound/PW_C000143
+      (NADP, CompoundReference/PW_C000143 cross-referenced to ChEBI CHEBI:18009) on its right side with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5205']/bp:right[@rdf:resource='#Compound/PW_C000143'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000143/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000143']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_18009']
+- id: smp0001910-edge-011
+  subject: UniProtKB:P76113
+  predicate: part_of
+  object: PathBank:SMP0001910/ProteinComplex/3920
+  coefficient: 2
+  description: Native PW001896.owl ProteinComplex/3920 membership (stoichiometricCoefficient 2.0 of
+    Protein/10350) matches the gel-filtration and SDS-PAGE 82 kDa homodimer determination in PMID:21467222;
+    the monomer node is not asserted to act as a standalone catalyst.
+  evidence:
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl Complex ProteinComplex/3920 (NADPH-dependent curcumin/dihydrocurcumin
+      reductase) has component Protein/10350 (NADPH-dependent curcumin/dihydrocurcumin reductase,
+      ProteinReference/10350 cross-referenced to UniProt P76113) with componentStoichiometry
+      Protein/10350/Stoichiometry/2.0 (stoichiometricCoefficient 2.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3920']/bp:component[@rdf:resource='#Protein/10350'];
+      bp:componentStoichiometry[@rdf:resource='#Protein/10350/Stoichiometry/2.0']; bp:ProteinReference[@rdf:ID='ProteinReference/10350']/bp:xref[@rdf:resource='#Reference/UniProt_P76113']
+  - reference_id: UniProtKB:P76113
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Reviewed K-12 CurA (UniProtKB:P76113) is annotated as a homodimer citing ECO:0000269
+      PMID:21467222.
+    source_locator: /comments/6
+  - reference_id: PMID:21467222
+    assay_taxon: NCBITaxon:83333
+    quote: the enzyme consists of two identical subunits.
+    source_locator: 'PMC3080977: Results, Molecular mass, UV-Absorption of the Curcumin-Converting Enzyme'
+- id: smp0001910-edge-012
+  subject: PathBank:SMP0001910/ProteinComplex/3920
+  predicate: catalyzes
+  object: RHEA:34821
+  description: The same CurA homodimer catalyzes both double-bond reductions; RHEA:34821 represents the
+    first reduction of curcumin to dihydrocurcumin (native Reactions/5204).
+  evidence:
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl Catalysis ReactionCatalysis/5165 assigns controller ProteinComplex/3920
+      (NADPH-dependent curcumin/dihydrocurcumin reductase) to controlled BiochemicalReaction Reactions/5204
+      with controlType ACTIVATION in BiochemicalPathwayStep PathwayEnzymeReaction/19778.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5165']/bp:controller[@rdf:resource='#ProteinComplex/3920'];
+      bp:controlled[@rdf:resource='#Reactions/5204']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/19778']
+  - reference_id: UniProtKB:P76113
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Reviewed K-12 CurA assigns curcumin to dihydrocurcumin reduction to physiological
+      RHEA:34821, citing ECO:0000269 PMID:21467222.
+    source_locator: /comments/3/reaction; /comments/3/physiologicalReactions; /comments/6
+  - reference_id: PMID:21467222
+    assay_taxon: NCBITaxon:83333
+    source_assertion: The study detected curcumin-converting activity in Escherichia coli K-12 DH10B and
+      used it for enzyme purification and curA (yncB) gene identification; purified CurA converted curcumin
+      to dihydrocurcumin and tetrahydrocurcumin identified by mass spectrometry and UV-visible spectra.
+    source_locator: 'PMC3080977: Results, Discovery of Curcumin-Converting Microorganisms; Cloning of the
+      Gene Encoding the Curcumin-Converting Enzyme; Identification of the Reaction Products; Figures 2,
+      3 and 4'
+  - reference_id: PMID:21467222
+    assay_taxon: NCBITaxon:562
+    source_assertion: Curcumin-converting activity was initially isolated from human fecal Escherichia coli
+      strain Ni2 and detailed kinetic/cofactor characterization used recombinant CurA overexpressed in E.
+      coli BL21.
+    source_locator: 'PMC3080977: Results, Discovery of Curcumin-Converting Microorganisms; Overexpression
+      and Purification'
+- id: smp0001910-edge-013
+  subject: PathBank:SMP0001910/ProteinComplex/3920
+  predicate: catalyzes
+  object: RHEA:34813
+  description: The same CurA homodimer catalyzes both double-bond reductions; RHEA:34813 represents the
+    second reduction of dihydrocurcumin to tetrahydrocurcumin (native Reactions/5205).
+  evidence:
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl Catalysis ReactionCatalysis/5166 assigns controller ProteinComplex/3920
+      (NADPH-dependent curcumin/dihydrocurcumin reductase) to controlled BiochemicalReaction Reactions/5205
+      with controlType ACTIVATION in BiochemicalPathwayStep PathwayEnzymeReaction/19777.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5166']/bp:controller[@rdf:resource='#ProteinComplex/3920'];
+      bp:controlled[@rdf:resource='#Reactions/5205']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/19777']
+  - reference_id: UniProtKB:P76113
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Reviewed K-12 CurA assigns dihydrocurcumin to tetrahydrocurcumin reduction to
+      physiological RHEA:34813, citing ECO:0000269 PMID:21467222.
+    source_locator: /comments/2/reaction; /comments/2/physiologicalReactions; /comments/6
+  - reference_id: PMID:21467222
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Purified CurA reduces dihydrocurcumin to tetrahydrocurcumin in an NADPH-dependent
+      reaction; time-course HPLC and MS analyses demonstrate conversion of dihydrocurcumin to
+      tetrahydrocurcumin.
+    source_locator: 'PMC3080977: Results, Identification of the Reaction Products; Discussion; Figures
+      2, 3 and 4'
+- id: smp0001910-edge-014
+  subject: PathBank:SMP0001910/ProteinComplex/3920
+  predicate: has_cofactor
+  object: CHEBI:57783
+  description: NADPH(4-) (CHEBI:57783) is the required diffusible redox cosubstrate consumed in both CurA
+    reduction steps rather than a permanently bound prosthetic group or metal ion cofactor.
+  evidence:
+  - reference_id: PMID:21467222
+    assay_taxon: NCBITaxon:83333
+    source_assertion: CurA activity lost upon dialysis was restored specifically by addition of NADPH,
+      whereas NADH, FAD, FMN, and metal ions did not restore activity.
+    source_locator: 'PMC3080977: Results, Addition of Various Cofactors to the Curcumin-Converting Enzyme;
+      Discussion'
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl Reactions/5204 and Reactions/5205 both require Compound/PW_C000146
+      (NADPH, CompoundReference/PW_C000146 cross-referenced to ChEBI CHEBI:16474) on their left sides.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5204']/bp:left[@rdf:resource='#Compound/PW_C000146'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5205']/bp:left[@rdf:resource='#Compound/PW_C000146']
+- id: smp0001910-edge-015
+  subject: RHEA:34821
+  predicate: part_of
+  object: PathBank:SMP0001910
+  evidence:
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl Pathway SMP0001910 (Curcumin Degradation) lists Reactions/5204 in
+      bp:pathwayComponent and PathwayEnzymeReaction/19778 (stepConversion Reactions/5204) in
+      bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0001910']/bp:pathwayComponent[@rdf:resource='#Reactions/5204'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/19778']
+  - reference_id: RHEA:34821
+    source_assertion: RHEA:34821 is the directed curcumin + NADPH + H(+) => dihydrocurcumin + NADP(+)
+      variant of master RHEA:34819 matching native Reactions/5204.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34819']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/34821']/rh:substrates; rh:products
+- id: smp0001910-edge-016
+  subject: RHEA:34813
+  predicate: part_of
+  object: PathBank:SMP0001910
+  evidence:
+  - reference_id: PathBank:SMP0001910
+    source_assertion: Native PW001896.owl Pathway SMP0001910 (Curcumin Degradation) lists Reactions/5205 in
+      bp:pathwayComponent and PathwayEnzymeReaction/19777 (stepConversion Reactions/5205) in
+      bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0001910']/bp:pathwayComponent[@rdf:resource='#Reactions/5205'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/19777']
+  - reference_id: RHEA:34813
+    source_assertion: RHEA:34813 is the directed dihydrocurcumin + NADPH + H(+) => tetrahydrocurcumin +
+      NADP(+) variant of master RHEA:34811 matching native Reactions/5205.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/34811']/rh:directionalReaction;
+      rdf:Description[@rdf:about='http://rdf.rhea-db.org/34813']/rh:substrates; rh:products
+- id: smp0001910-edge-017
+  subject: RHEA:34821
+  predicate: provides_input_for
+  object: RHEA:34813
+  description: Dihydrocurcumin (CHEBI:67262; native Compound/PW_C012734) produced by the first C=C
+    reduction (RHEA:34821; native Reactions/5204) is the substrate consumed by the second C=C reduction
+    (RHEA:34813; native Reactions/5205) to form tetrahydrocurcumin.
+  evidence:
+  - reference_id: PathBank:SMP0001910
+    source_assertion: In PW001896.owl, Reactions/5204 produces Compound/PW_C012734 (Dihydrocurcumin) on its
+      right side and Reactions/5205 consumes Compound/PW_C012734 on its left side.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5204']/bp:right[@rdf:resource='#Compound/PW_C012734'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5205']/bp:left[@rdf:resource='#Compound/PW_C012734']
+  - reference_id: PMID:21467222
+    assay_taxon: NCBITaxon:83333
+    source_assertion: Time-course assays of purified CurA show transient accumulation of dihydrocurcumin as
+      an intermediate between curcumin consumption and tetrahydrocurcumin formation.
+    source_locator: 'PMC3080977: Results, Identification of the Reaction Products; Discussion; Figures 2
+      and 4'
+source_mappings:
+- subject_id: UniProt:P76113
+  subject_label: NADPH-dependent curcumin/dihydrocurcumin reductase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P76113
+  object_label: NADPH-dependent curcumin reductase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0001910
+  source_element_id: ProteinReference/10350
+references:
+- id: PathBank:SMP0001910
+  title: PathBank SMP0001910 Curcumin Degradation (PW001896.owl)
+  url: https://pathbank.org/view/SMP0001910
+  source_version: 2019-08-16 primary BioPAX archive member PW001896.owl
+  source_sha256: becce110780d247444c98ee0ed16b36e4d5f5ab9a9e61ba4201f82d3b36ebcbe
+- id: UniProtKB:P76113
+  title: UniProtKB P76113, NADPH-dependent curcumin/dihydrocurcumin reductase
+  url: https://rest.uniprot.org/uniprotkb/P76113.json
+  source_version: '2026_03'
+  source_sha256: bd0d8f2a0e9532eb832736ca6bfbada22c279d412b0ac00c7f0384ee65e41a38
+- id: RHEA:34821
+  title: Rhea 34821, directed curcumin pathway reduction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 of exact gzip response body
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:34813
+  title: Rhea 34813, directed curcumin pathway reduction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02); SHA256 of exact gzip response body
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:21467222
+  title: Discovery of the curcumin metabolic pathway involving a unique enzyme in an intestinal microorganism.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3080977/?report=xml
+  source_version: 2011; full PMC article HTML retrieved 2026-10-11
+  source_sha256: 0087006dfbb589812da82459f7e09000d4d48eab7c537a13cce676d62fec2e65
+curation_history:
+- timestamp: '2026-10-31T01:38:00Z'
+  curator: antigravity
+  action: CREATE
+  changes: Curated Escherichia coli Curcumin Degradation (PathBank:SMP0001910, PW001896.owl) with Stage 6
+    causal-graph schema compliance (coefficients, eco_code, assay_taxon, molecular_activity reaction
+    categories, provides_input_for reaction chaining, and SSSOM source_mappings).
+  llm_assisted: true
