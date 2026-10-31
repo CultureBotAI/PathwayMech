@@ -25,6 +25,7 @@ from pathwaymech.pathbank_provenance import (
     inspect_pathbank_archive_member,
     rank_pathbank_archive_member_candidates,
     select_next_pathbank_archive_candidate,
+    summarize_pathbank_archive_candidate_frontier,
 )
 from scripts.build_source_identifier_snapshot import (
     build_snapshot,
@@ -1531,3 +1532,151 @@ def test_select_next_pathbank_archive_candidate_rejects_invalid_filters(
             **kwargs,
         )
 
+
+def test_summarize_pathbank_archive_candidate_frontier_aggregates_remaining_and_missing_xrefs(
+    tmp_path,
+):
+    archive_path = tmp_path / "candidates.zip"
+    root_registered = _member_root_for_accession("SMP9999991", uniprot_ids=("P0A9T0",))
+    root_one_missing = _member_root_for_accession("SMP9999992", uniprot_ids=("P0A9T0", "P00877"))
+    root_two_missing = _member_root_for_accession(
+        "SMP9999993", uniprot_ids=("P00877", "P0A6D7")
+    )
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr(
+            "PW9999993.owl", ET.tostring(root_two_missing, encoding="utf-8", xml_declaration=True)
+        )
+        archive.writestr(
+            "PW9999991.owl", ET.tostring(root_registered, encoding="utf-8", xml_declaration=True)
+        )
+        archive.writestr(
+            "PW9999992.owl", ET.tostring(root_one_missing, encoding="utf-8", xml_declaration=True)
+        )
+
+    registered_manifest = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999991.owl", "SMP9999991"
+    )
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "sources": {registered_manifest["key"]: registered_manifest},
+                "terms": {
+                    "PathBank:SMP9999991": {
+                        "label": "Native pathway title",
+                        "synonyms": [],
+                        "source": registered_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/Reactions/7": {
+                        "label": "1.2.3.4",
+                        "synonyms": ["Native substrate → native product"],
+                        "source": registered_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/ProteinComplex/8": {
+                        "label": "ProteinComplex/8",
+                        "synonyms": [],
+                        "source": registered_manifest["key"],
+                    },
+                    "CHEBI:15377": {"label": "water", "synonyms": [], "source": "chebi-obo"},
+                    "UniProtKB:P0A9T0": {
+                        "label": "D-3-phosphoglycerate dehydrogenase",
+                        "synonyms": [],
+                        "source": "uniprot-entries",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    candidates = [
+        ("PW9999993.owl", "SMP9999993"),
+        ("PW9999991.owl", "SMP9999991"),
+        ("PW9999992.owl", "SMP9999992"),
+    ]
+    frontier = summarize_pathbank_archive_candidate_frontier(
+        archive_path, candidates, snapshot_path
+    )
+    assert frontier["total_candidates"] == 3
+    assert frontier["registered_count"] == 1
+    assert frontier["registered_pathway_ids"] == ["PathBank:SMP9999991"]
+    assert frontier["excluded_pathway_ids"] == []
+    assert frontier["remaining_count"] == 2
+    assert frontier["next_candidate"] is not None
+    assert frontier["next_candidate"]["pathway_id"] == "PathBank:SMP9999992"
+    assert [entry["pathway_id"] for entry in frontier["remaining_candidates"]] == [
+        "PathBank:SMP9999992",
+        "PathBank:SMP9999993",
+    ]
+    assert frontier["missing_external_xrefs_union"] == {
+        "CHEBI": [],
+        "NCBITaxon": [],
+        "UniProtKB": ["UniProtKB:P00877", "UniProtKB:P0A6D7"],
+    }
+
+    frontier_after_exclusion = summarize_pathbank_archive_candidate_frontier(
+        archive_path,
+        candidates,
+        snapshot_path,
+        excluded_pathway_ids={"PathBank:SMP9999992"},
+    )
+    assert frontier_after_exclusion["excluded_pathway_ids"] == ["PathBank:SMP9999992"]
+    assert frontier_after_exclusion["remaining_count"] == 1
+    assert frontier_after_exclusion["next_candidate"] is not None
+    assert frontier_after_exclusion["next_candidate"]["pathway_id"] == "PathBank:SMP9999993"
+    assert frontier_after_exclusion["missing_external_xrefs_union"] == {
+        "CHEBI": [],
+        "NCBITaxon": [],
+        "UniProtKB": ["UniProtKB:P00877", "UniProtKB:P0A6D7"],
+    }
+
+    empty_frontier = summarize_pathbank_archive_candidate_frontier(
+        archive_path,
+        candidates,
+        snapshot_path,
+        excluded_pathway_ids=["PathBank:SMP9999992", "PathBank:SMP9999993"],
+    )
+    assert empty_frontier["remaining_count"] == 0
+    assert empty_frontier["next_candidate"] is None
+    assert empty_frontier["remaining_candidates"] == []
+    assert empty_frontier["missing_external_xrefs_union"] == {
+        "CHEBI": [],
+        "NCBITaxon": [],
+        "UniProtKB": [],
+    }
+
+
+@pytest.mark.parametrize(
+    "kwargs,match",
+    [
+        (
+            {"require_unregistered_manifest": "yes"},
+            "boolean require_unregistered_manifest flag",
+        ),
+        (
+            {"excluded_pathway_ids": "PathBank:SMP9999991"},
+            "collection of PathBank:SMP\\[0-9\\]\\+ CURIEs",
+        ),
+        (
+            {"excluded_pathway_ids": ["SMP9999991"]},
+            "entries to match PathBank:SMP\\[0-9\\]\\+",
+        ),
+        (
+            {"excluded_pathway_ids": [123]},
+            "entries to match PathBank:SMP\\[0-9\\]\\+",
+        ),
+    ],
+)
+def test_summarize_pathbank_archive_candidate_frontier_rejects_invalid_filters(
+    tmp_path, kwargs, match
+):
+    path, _ = archive_fixture(tmp_path)
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(json.dumps({"sources": {}, "terms": {}}), encoding="utf-8")
+    with pytest.raises(ValueError, match=match):
+        summarize_pathbank_archive_candidate_frontier(
+            path,
+            [("PW9999999.owl", "SMP9999999")],
+            snapshot_path,
+            **kwargs,
+        )

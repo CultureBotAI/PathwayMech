@@ -353,6 +353,33 @@ def rank_pathbank_archive_member_candidates(
     return ranked
 
 
+def _validate_candidate_selection_filters(
+    excluded_pathway_ids: set[str] | frozenset[str] | list[str] | tuple[str, ...],
+    require_unregistered_manifest: bool,
+) -> set[str]:
+    if not isinstance(require_unregistered_manifest, bool):
+        raise ValueError(
+            "PathBank candidate selection requires a boolean "
+            "require_unregistered_manifest flag"
+        )
+    if not isinstance(excluded_pathway_ids, (set, frozenset, list, tuple)):
+        raise ValueError(
+            "PathBank candidate selection requires excluded_pathway_ids to be "
+            "a collection of PathBank:SMP[0-9]+ CURIEs"
+        )
+    excluded: set[str] = set()
+    for pathway_id in excluded_pathway_ids:
+        if not isinstance(pathway_id, str) or not re.fullmatch(
+            r"PathBank:SMP[0-9]+", pathway_id
+        ):
+            raise ValueError(
+                "PathBank candidate selection requires excluded_pathway_ids "
+                "entries to match PathBank:SMP[0-9]+"
+            )
+        excluded.add(pathway_id)
+    return excluded
+
+
 def select_next_pathbank_archive_candidate(
     archive_path: Path,
     candidates: list[tuple[str, str]] | tuple[tuple[str, str], ...],
@@ -374,27 +401,9 @@ def select_next_pathbank_archive_candidate(
     is ``True``, and returns the first remaining candidate audit dictionary (or
     ``None`` when no eligible candidate remains).
     """
-    if not isinstance(require_unregistered_manifest, bool):
-        raise ValueError(
-            "PathBank candidate selection requires a boolean "
-            "require_unregistered_manifest flag"
-        )
-    if not isinstance(excluded_pathway_ids, (set, frozenset, list, tuple)):
-        raise ValueError(
-            "PathBank candidate selection requires excluded_pathway_ids to be "
-            "a collection of PathBank:SMP[0-9]+ CURIEs"
-        )
-    excluded: set[str] = set()
-    for pathway_id in excluded_pathway_ids:
-        if not isinstance(pathway_id, str) or not re.fullmatch(
-            r"PathBank:SMP[0-9]+", pathway_id
-        ):
-            raise ValueError(
-                "PathBank candidate selection requires excluded_pathway_ids "
-                "entries to match PathBank:SMP[0-9]+"
-            )
-        excluded.add(pathway_id)
-
+    excluded = _validate_candidate_selection_filters(
+        excluded_pathway_ids, require_unregistered_manifest
+    )
     ranked = rank_pathbank_archive_member_candidates(
         archive_path,
         candidates,
@@ -411,3 +420,63 @@ def select_next_pathbank_archive_candidate(
         return entry
     return None
 
+
+def summarize_pathbank_archive_candidate_frontier(
+    archive_path: Path,
+    candidates: list[tuple[str, str]] | tuple[tuple[str, str], ...],
+    authority_snapshot_path: Path,
+    *,
+    excluded_pathway_ids: set[str] | frozenset[str] | list[str] | tuple[str, ...] = (),
+    require_unregistered_manifest: bool = True,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> dict[str, Any]:
+    """Summarize the PathBank ZIP candidate frontier and aggregated missing external CURIEs.
+
+    Ranks ``candidates`` with :func:`rank_pathbank_archive_member_candidates`,
+    identifies already-registered pathway IDs and excluded pathway IDs, filters the
+    remaining eligible candidate slices, and computes the sorted deduplicated union of
+    missing external ``UnificationXref`` CURIEs (``CHEBI``, ``NCBITaxon``,
+    ``UniProtKB``) across the remaining candidate frontier.
+    """
+    excluded = _validate_candidate_selection_filters(
+        excluded_pathway_ids, require_unregistered_manifest
+    )
+    ranked = rank_pathbank_archive_member_candidates(
+        archive_path,
+        candidates,
+        authority_snapshot_path,
+        path=path,
+        version=version,
+        license=license,
+    )
+    registered_pathway_ids = [
+        entry["pathway_id"] for entry in ranked if entry["manifest_key_registered"]
+    ]
+    remaining_candidates: list[dict[str, Any]] = []
+    missing_union: dict[str, set[str]] = {
+        "CHEBI": set(),
+        "NCBITaxon": set(),
+        "UniProtKB": set(),
+    }
+    for entry in ranked:
+        if entry["pathway_id"] in excluded:
+            continue
+        if require_unregistered_manifest and entry["manifest_key_registered"]:
+            continue
+        remaining_candidates.append(entry)
+        for prefix, curies in entry["missing_external_xrefs"].items():
+            missing_union.setdefault(prefix, set()).update(curies)
+    return {
+        "total_candidates": len(ranked),
+        "registered_count": len(registered_pathway_ids),
+        "registered_pathway_ids": registered_pathway_ids,
+        "excluded_pathway_ids": sorted(excluded),
+        "remaining_count": len(remaining_candidates),
+        "next_candidate": remaining_candidates[0] if remaining_candidates else None,
+        "remaining_candidates": remaining_candidates,
+        "missing_external_xrefs_union": {
+            prefix: sorted(curies) for prefix, curies in missing_union.items()
+        },
+    }
