@@ -1,0 +1,8070 @@
+# Cycle 8 Stage 4 Full Frozen-Inventory Record and Cohort Review of 277 PathwayMech Maintained Records
+
+- Review: 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-31T09:10:00Z
+- Finished UTC: 2026-10-31T09:45:00Z
+- Reviewer: Antigravity (review-yaml-record + review-yaml-category) (self_review)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+Completed a full-coverage frozen-inventory scientific record and cohort review of all 277 maintained pathway YAML records in data/pathways/*.yaml at Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8 across all 8 identifier namespaces (MetaCyc: 140, gomodel: 86, PathBank: 17, WikiPathways: 12, GO: 10, Reactome: 6, KEGG: 3, MIBiG: 3; 7,851 participants including 972 UniProtKB:* protein participants across 157 records, 1,630 reactions including 731 RHEA:* reactions, 14,730 mechanistic_edges, 7,099 references, and 1,061 source_mappings across 218 records). All 277 records pass closed LinkML schema validation, authority snapshot identifier/label checks, history validation (955 records), and edge-level evidence verification (14,730 mechanistic edges, 22,624 edge/qualifier evidence items, 22,832 total evidence blocks), and all Cycle 7 Stage 4/5 findings (F-C7S4-001 16 bare CURIE literature reference titles across 3 MetaCyc records and F-C7S4-002 52 concrete small-molecule participants typed as chemical_entity across 3 MetaCyc records) remain 100% resolved (0 bare CURIE reference titles where title == id across all 7,099 references; 0 pure chemical_entity vs small_molecule biolink:ChemicalEntity&#124;biolink:SmallMolecule merges in pages/downloads/nodes.tsv). Identified 2 minor open representation findings across 8 MetaCyc:* records (F-C8S4-001: 4 concrete CHEBI:* small-molecule effector participants across 4 MetaCyc:* pathway records — CHEBI:59640 N-acetylglucosamine in MetaCyc:SALVADEHYPOX-PWY, CHEBI:22651 ascorbate in MetaCyc:P184-PWY and MetaCyc:PWY-6336, and CHEBI:203056 Microcin J25 in MetaCyc:PWY-7545 — are typed as generic category: chemical_entity instead of category: small_molecule; F-C8S4-002: 17 structured MetaCyc:* reaction and enzyme-complex references[] entries across 4 MetaCyc:* pathway records — 3 in MetaCyc:PWY-6579, 4 in MetaCyc:PWY-7446, 5 in MetaCyc:PWY-7722, and 5 in MetaCyc:DENITRIFICATION-PWY — store an unprefixed raw database frame identifier where title == local_id instead of a descriptive reaction or enzyme complex title), preserved unedited for Cycle 8 Stage 5 grouped remediation.
+
+## Scope And Provenance
+
+Full frozen-inventory record and category review of all 277 maintained pathway records in data/pathways/*.yaml at Git base 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+
+Selection: All files matching data/pathways/*.yaml in CultureBotAI/PathwayMech.
+Coverage: full; 277 reviewed / 277 in the declared population.
+Source: git_commit at Git base 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5901 | data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml | maintained | MetaCyc:PWY-5901 (MetaCyc:PWY-5901) |
+| MetaCyc:PWY0-42 | data/pathways/2-methylcitrate-cycle-i.yaml | maintained | MetaCyc:PWY0-42 (MetaCyc:PWY0-42) |
+| WikiPathways:WP5587 | data/pathways/2-phenylethanol-biosynthesis.yaml | maintained | WikiPathways:WP5587 (WikiPathways:WP5587) |
+| MetaCyc:PWY-2361 | data/pathways/3-oxoadipate-degradation.yaml | maintained | MetaCyc:PWY-2361 (MetaCyc:PWY-2361) |
+| MetaCyc:PWY-6543 | data/pathways/4-aminobenzoate-biosynthesis-i.yaml | maintained | MetaCyc:PWY-6543 (MetaCyc:PWY-6543) |
+| gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY | data/pathways/4-aminobutyrate-degradation.yaml | maintained | gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY (gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY) |
+| MetaCyc:PWY-6121 | data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-i.yaml | maintained | MetaCyc:PWY-6121 (MetaCyc:PWY-6121) |
+| MetaCyc:PWY-6122 | data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-ii.yaml | maintained | MetaCyc:PWY-6122 (MetaCyc:PWY-6122) |
+| MetaCyc:PWY-8130 | data/pathways/5-prime-deoxyadenosine-degradation-i.yaml | maintained | MetaCyc:PWY-8130 (MetaCyc:PWY-8130) |
+| MetaCyc:PWY-8131 | data/pathways/5-prime-deoxyadenosine-degradation-ii.yaml | maintained | MetaCyc:PWY-8131 (MetaCyc:PWY-8131) |
+| gomodel:YeastPathways_PWY-6147 | data/pathways/6-hydroxymethyl-dihydropterin-diphosphate-biosynthesis-i.yaml | maintained | gomodel:YeastPathways_PWY-6147 (gomodel:YeastPathways_PWY-6147) |
+| GO:0097288 | data/pathways/7-cyano-7-deazaguanine-biosynthesis.yaml | maintained | GO:0097288 (GO:0097288) |
+| MetaCyc:PWY0-1312 | data/pathways/acetate-and-atp-formation-from-acetyl-coa-i.yaml | maintained | MetaCyc:PWY0-1312 (MetaCyc:PWY0-1312) |
+| MetaCyc:ACETOACETATE-DEG-PWY | data/pathways/acetoacetate-degradation.yaml | maintained | MetaCyc:ACETOACETATE-DEG-PWY (MetaCyc:ACETOACETATE-DEG-PWY) |
+| WikiPathways:WP5019 | data/pathways/acetogenesis.yaml | maintained | WikiPathways:WP5019 (WikiPathways:WP5019) |
+| PathBank:SMP0002081 | data/pathways/adenine-and-adenosine-salvage-i-escherichia-coli.yaml | maintained | PathBank:SMP0002081 (PathBank:SMP0002081) |
+| MetaCyc:P121-PWY | data/pathways/adenine-and-adenosine-salvage-i.yaml | maintained | MetaCyc:P121-PWY (MetaCyc:P121-PWY) |
+| PathBank:SMP0002083 | data/pathways/adenine-and-adenosine-salvage-ii.yaml | maintained | PathBank:SMP0002083 (PathBank:SMP0002083) |
+| MetaCyc:PWY-6609 | data/pathways/adenine-and-adenosine-salvage-iii.yaml | maintained | MetaCyc:PWY-6609 (MetaCyc:PWY-6609) |
+| gomodel:YeastPathways_PWY-7220-1 | data/pathways/adenosine-deoxyribonucleotides-de-novo-biosynthesis-ii.yaml | maintained | gomodel:YeastPathways_PWY-7220-1 (gomodel:YeastPathways_PWY-7220-1) |
+| MetaCyc:SALVADEHYPOX-PWY | data/pathways/adenosine-nucleotides-degradation-ii.yaml | maintained | MetaCyc:SALVADEHYPOX-PWY (MetaCyc:SALVADEHYPOX-PWY) |
+| gomodel:YeastPathways_PWY-7219 | data/pathways/adenosine-ribonucleotides-de-novo-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-7219 (gomodel:YeastPathways_PWY-7219) |
+| MetaCyc:PWY-5509 | data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml | maintained | MetaCyc:PWY-5509 (MetaCyc:PWY-5509) |
+| MetaCyc:PWY-7971 | data/pathways/adenosylcobinamide-gdp-salvage-i.yaml | maintained | MetaCyc:PWY-7971 (MetaCyc:PWY-7971) |
+| MetaCyc:PWY0-1241 | data/pathways/adp-l-glycero-beta-d-manno-heptose-biosynthesis.yaml | maintained | MetaCyc:PWY0-1241 (MetaCyc:PWY0-1241) |
+| GO:0019270 | data/pathways/aerobactin-biosynthesis.yaml | maintained | GO:0019270 (GO:0019270) |
+| gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY | data/pathways/aerobic-glycerol-degradation.yaml | maintained | gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY (gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY) |
+| MetaCyc:PWY0-41 | data/pathways/allantoin-degradation-iv-anaerobic.yaml | maintained | MetaCyc:PWY0-41 (MetaCyc:PWY0-41) |
+| gomodel:YeastPathways_PWY-5694 | data/pathways/allantoin-degradation-to-glyoxylate-i.yaml | maintained | gomodel:YeastPathways_PWY-5694 (gomodel:YeastPathways_PWY-5694) |
+| MetaCyc:PWY-5705 | data/pathways/allantoin-degradation-to-glyoxylate-iii.yaml | maintained | MetaCyc:PWY-5705 (MetaCyc:PWY-5705) |
+| gomodel:YeastPathways_PWY-5697 | data/pathways/allantoin-degradation-to-ureidoglycolate-i.yaml | maintained | gomodel:YeastPathways_PWY-5697 (gomodel:YeastPathways_PWY-5697) |
+| MetaCyc:GLCMANNANAUT-PWY | data/pathways/amino-sugar-superpathway.yaml | maintained | MetaCyc:GLCMANNANAUT-PWY (MetaCyc:GLCMANNANAUT-PWY) |
+| gomodel:YeastPathways_ASPBIO-PWY | data/pathways/aspartate-biosynthesis.yaml | maintained | gomodel:YeastPathways_ASPBIO-PWY (gomodel:YeastPathways_ASPBIO-PWY) |
+| gomodel:YeastPathways_SO4ASSIM-PWY | data/pathways/assimilatory-sulfate-reduction.yaml | maintained | gomodel:YeastPathways_SO4ASSIM-PWY (gomodel:YeastPathways_SO4ASSIM-PWY) |
+| MetaCyc:PWY-5903 | data/pathways/bacillibactin-biosynthesis.yaml | maintained | MetaCyc:PWY-5903 (MetaCyc:PWY-5903) |
+| PathBank:SMP0002123 | data/pathways/baesr-two-component-signal-transduction.yaml | maintained | PathBank:SMP0002123 (PathBank:SMP0002123) |
+| MetaCyc:PWY-2503 | data/pathways/benzoate-degradation-i-aerobic.yaml | maintained | MetaCyc:PWY-2503 (MetaCyc:PWY-2503) |
+| MetaCyc:PWY-1361 | data/pathways/benzoyl-coa-degradation-i-aerobic.yaml | maintained | MetaCyc:PWY-1361 (MetaCyc:PWY-1361) |
+| MetaCyc:CENTBENZCOA-PWY | data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml | maintained | MetaCyc:CENTBENZCOA-PWY (MetaCyc:CENTBENZCOA-PWY) |
+| MetaCyc:P321-PWY | data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml | maintained | MetaCyc:P321-PWY (MetaCyc:P321-PWY) |
+| gomodel:YeastPathways_PWY-5760-1 | data/pathways/beta-alanine-biosynthesis-iv.yaml | maintained | gomodel:YeastPathways_PWY-5760-1 (gomodel:YeastPathways_PWY-5760-1) |
+| MetaCyc:BIOTIN-BIOSYNTHESIS-PWY | data/pathways/biotin-biosynthesis-i.yaml | maintained | MetaCyc:BIOTIN-BIOSYNTHESIS-PWY (MetaCyc:BIOTIN-BIOSYNTHESIS-PWY) |
+| MetaCyc:CALVIN-PWY | data/pathways/calvin-cycle.yaml | maintained | MetaCyc:CALVIN-PWY (MetaCyc:CALVIN-PWY) |
+| GO:0043427 | data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml | maintained | GO:0043427 (GO:0043427) |
+| gomodel:YeastPathways_PWY3O-4 | data/pathways/carnitine-shuttle.yaml | maintained | gomodel:YeastPathways_PWY3O-4 (gomodel:YeastPathways_PWY3O-4) |
+| MetaCyc:PWY-5415 | data/pathways/catechol-degradation-i.yaml | maintained | MetaCyc:PWY-5415 (MetaCyc:PWY-5415) |
+| MetaCyc:PWY-5420 | data/pathways/catechol-degradation-ii.yaml | maintained | MetaCyc:PWY-5420 (MetaCyc:PWY-5420) |
+| MetaCyc:PWY-5417 | data/pathways/catechol-degradation-iii.yaml | maintained | MetaCyc:PWY-5417 (MetaCyc:PWY-5417) |
+| MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY | data/pathways/catechol-degradation-to-beta-ketoadipate.yaml | maintained | MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY (MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY) |
+| gomodel:YeastPathways_PWY3O-15 | data/pathways/chitin-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-15 (gomodel:YeastPathways_PWY3O-15) |
+| MetaCyc:ARO-PWY | data/pathways/chorismate-biosynthesis-i.yaml | maintained | MetaCyc:ARO-PWY (MetaCyc:ARO-PWY) |
+| MIBiG:BGC0000829 | data/pathways/chromobacterium-violaceum-violacein-biosynthetic-gene-cluster.yaml | maintained | MIBiG:BGC0000829 (MIBiG:BGC0000829) |
+| MetaCyc:P2-PWY | data/pathways/citrate-lyase-activation.yaml | maintained | MetaCyc:P2-PWY (MetaCyc:P2-PWY) |
+| gomodel:YeastPathways_CITRUL-BIO2-PWY | data/pathways/citrulline-biosynthesis.yaml | maintained | gomodel:YeastPathways_CITRUL-BIO2-PWY (gomodel:YeastPathways_CITRUL-BIO2-PWY) |
+| MetaCyc:COA-PWY | data/pathways/coenzyme-a-biosynthesis-i-prokaryotic.yaml | maintained | MetaCyc:COA-PWY (MetaCyc:COA-PWY) |
+| PathBank:SMP0002070 | data/pathways/conversion-of-succinate-to-propanoate-escherichia-coli.yaml | maintained | PathBank:SMP0002070 (PathBank:SMP0002070) |
+| PathBank:SMP0001910 | data/pathways/curcumin-degradation-escherichia-coli.yaml | maintained | PathBank:SMP0001910 (PathBank:SMP0001910) |
+| GO:0036040 | data/pathways/curcumin-degradation.yaml | maintained | GO:0036040 (GO:0036040) |
+| MetaCyc:CYANCAT-PWY | data/pathways/cyanate-degradation.yaml | maintained | MetaCyc:CYANCAT-PWY (MetaCyc:CYANCAT-PWY) |
+| PathBank:SMP0000993 | data/pathways/cysteine-biosynthesis-from-serine-escherichia-coli.yaml | maintained | PathBank:SMP0000993 (PathBank:SMP0000993) |
+| MetaCyc:DARABCAT-PWY | data/pathways/d-arabinose-degradation-i.yaml | maintained | MetaCyc:DARABCAT-PWY (MetaCyc:DARABCAT-PWY) |
+| MetaCyc:GALACTARDEG-PWY | data/pathways/d-galactarate-degradation-i.yaml | maintained | MetaCyc:GALACTARDEG-PWY (MetaCyc:GALACTARDEG-PWY) |
+| MetaCyc:GALACTCAT-PWY | data/pathways/d-galactonate-degradation.yaml | maintained | MetaCyc:GALACTCAT-PWY (MetaCyc:GALACTCAT-PWY) |
+| MetaCyc:GALACTUROCAT-PWY | data/pathways/d-galacturonate-degradation-i.yaml | maintained | MetaCyc:GALACTUROCAT-PWY (MetaCyc:GALACTUROCAT-PWY) |
+| MetaCyc:GLUCARDEG-PWY | data/pathways/d-glucarate-degradation-i.yaml | maintained | MetaCyc:GLUCARDEG-PWY (MetaCyc:GLUCARDEG-PWY) |
+| MetaCyc:XYLCAT-PWY | data/pathways/d-xylose-degradation-i.yaml | maintained | MetaCyc:XYLCAT-PWY (MetaCyc:XYLCAT-PWY) |
+| MetaCyc:PWY-6376 | data/pathways/desferrioxamine-b-biosynthesis.yaml | maintained | MetaCyc:PWY-6376 (MetaCyc:PWY-6376) |
+| KEGG:M00374 | data/pathways/dicarboxylate-hydroxybutyrate-cycle.yaml | maintained | KEGG:M00374 (KEGG:M00374) |
+| gomodel:YeastPathways_PWY3O-1565 | data/pathways/dolichyl-glucosyl-phosphate-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-1565 (gomodel:YeastPathways_PWY3O-1565) |
+| gomodel:YeastPathways_PWY3O-123 | data/pathways/dolichyl-phosphate-d-mannose-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-123 (gomodel:YeastPathways_PWY3O-123) |
+| GO:0019305 | data/pathways/dtdp-l-rhamnose-biosynthesis.yaml | maintained | GO:0019305 (GO:0019305) |
+| MetaCyc:P101-PWY | data/pathways/ectoine-biosynthesis.yaml | maintained | MetaCyc:P101-PWY (MetaCyc:P101-PWY) |
+| KEGG:M00008 | data/pathways/entner-doudoroff-pathway.yaml | maintained | KEGG:M00008 (KEGG:M00008) |
+| gomodel:YeastPathways_PWY-5670-1 | data/pathways/epoxysqualene-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-5670-1 (gomodel:YeastPathways_PWY-5670-1) |
+| gomodel:YeastPathways_PWY-6075-1 | data/pathways/ergosterol-biosynthesis-i.yaml | maintained | gomodel:YeastPathways_PWY-6075-1 (gomodel:YeastPathways_PWY-6075-1) |
+| MetaCyc:PWY-7255 | data/pathways/ergothioneine-biosynthesis-i.yaml | maintained | MetaCyc:PWY-7255 (MetaCyc:PWY-7255) |
+| gomodel:YeastPathways_PWY3O-4300 | data/pathways/ethanol-degradation.yaml | maintained | gomodel:YeastPathways_PWY3O-4300 (gomodel:YeastPathways_PWY3O-4300) |
+| MetaCyc:PWY0-1477 | data/pathways/ethanolamine-utilization.yaml | maintained | MetaCyc:PWY0-1477 (MetaCyc:PWY0-1477) |
+| MetaCyc:PWY0-1280 | data/pathways/ethylene-glycol-degradation.yaml | maintained | MetaCyc:PWY0-1280 (MetaCyc:PWY0-1280) |
+| KEGG:M00373 | data/pathways/ethylmalonyl-coa-pathway.yaml | maintained | KEGG:M00373 (KEGG:M00373) |
+| gomodel:YeastPathways_FASYN-ELONG2-PWY | data/pathways/fatty-acid-elongation.yaml | maintained | gomodel:YeastPathways_FASYN-ELONG2-PWY (gomodel:YeastPathways_FASYN-ELONG2-PWY) |
+| gomodel:YeastPathways_YEAST-FAO-PWY | data/pathways/fatty-acid-oxidation-pathway.yaml | maintained | gomodel:YeastPathways_YEAST-FAO-PWY (gomodel:YeastPathways_YEAST-FAO-PWY) |
+| MetaCyc:RIBOSYN2-PWY | data/pathways/flavin-biosynthesis-i.yaml | maintained | MetaCyc:RIBOSYN2-PWY (MetaCyc:RIBOSYN2-PWY) |
+| gomodel:YeastPathways_PWY3O-697 | data/pathways/folate-interconversions.yaml | maintained | gomodel:YeastPathways_PWY3O-697 (gomodel:YeastPathways_PWY3O-697) |
+| gomodel:YeastPathways_PWY-1801-1 | data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml | maintained | gomodel:YeastPathways_PWY-1801-1 (gomodel:YeastPathways_PWY-1801-1) |
+| MetaCyc:PWY0-521 | data/pathways/fructoselysine-and-psicoselysine-degradation.yaml | maintained | MetaCyc:PWY0-521 (MetaCyc:PWY0-521) |
+| GO:1901281 | data/pathways/fructoselysine-catabolic-process.yaml | maintained | GO:1901281 (GO:1901281) |
+| gomodel:YeastPathways_YEAST-GALACT-METAB-PWY | data/pathways/galactose-degradation.yaml | maintained | gomodel:YeastPathways_YEAST-GALACT-METAB-PWY (gomodel:YeastPathways_YEAST-GALACT-METAB-PWY) |
+| MetaCyc:GALLATE-DEGRADATION-II-PWY | data/pathways/gallate-degradation-i.yaml | maintained | MetaCyc:GALLATE-DEGRADATION-II-PWY (MetaCyc:GALLATE-DEGRADATION-II-PWY) |
+| MetaCyc:GALLATE-DEGRADATION-I-PWY | data/pathways/gallate-degradation-ii.yaml | maintained | MetaCyc:GALLATE-DEGRADATION-I-PWY (MetaCyc:GALLATE-DEGRADATION-I-PWY) |
+| MetaCyc:PWY-6223 | data/pathways/gentisate-degradation-i.yaml | maintained | MetaCyc:PWY-6223 (MetaCyc:PWY-6223) |
+| gomodel:YeastPathways_GLUCONEO-PWY-1 | data/pathways/gluconeogenesis-i.yaml | maintained | gomodel:YeastPathways_GLUCONEO-PWY-1 (gomodel:YeastPathways_GLUCONEO-PWY-1) |
+| WikiPathways:WP556 | data/pathways/glutamate-degradation-i.yaml | maintained | WikiPathways:WP556 (WikiPathways:WP556) |
+| MetaCyc:PWY-5177 | data/pathways/glutaryl-coa-degradation.yaml | maintained | MetaCyc:PWY-5177 (MetaCyc:PWY-5177) |
+| MetaCyc:GLUTATHIONESYN-PWY | data/pathways/glutathione-biosynthesis.yaml | maintained | MetaCyc:GLUTATHIONESYN-PWY (MetaCyc:GLUTATHIONESYN-PWY) |
+| gomodel:YeastPathways_PWYQT-4432 | data/pathways/glutathione-degradation.yaml | maintained | gomodel:YeastPathways_PWYQT-4432 (gomodel:YeastPathways_PWYQT-4432) |
+| WikiPathways:WP392 | data/pathways/glutathione-glutaredoxin-redox-reaction.yaml | maintained | WikiPathways:WP392 (WikiPathways:WP392) |
+| gomodel:YeastPathways_PWY3O-48 | data/pathways/glycerol-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-48 (gomodel:YeastPathways_PWY3O-48) |
+| MetaCyc:GLYCEROLMETAB-PWY | data/pathways/glycerol-degradation-v.yaml | maintained | MetaCyc:GLYCEROLMETAB-PWY (MetaCyc:GLYCEROLMETAB-PWY) |
+| gomodel:YeastPathways_GLYCLEAV-PWY | data/pathways/glycine-cleavage.yaml | maintained | gomodel:YeastPathways_GLYCLEAV-PWY (gomodel:YeastPathways_GLYCLEAV-PWY) |
+| WikiPathways:WP478 | data/pathways/glycogen-catabolism.yaml | maintained | WikiPathways:WP478 (WikiPathways:WP478) |
+| gomodel:YeastPathways_GLYCOLYSIS | data/pathways/glycolysis-i-from-glucose-6-phosphate.yaml | maintained | gomodel:YeastPathways_GLYCOLYSIS (gomodel:YeastPathways_GLYCOLYSIS) |
+| MetaCyc:PWY-5744 | data/pathways/glyoxylate-assimilation.yaml | maintained | MetaCyc:PWY-5744 (MetaCyc:PWY-5744) |
+| MetaCyc:GLYOXYLATE-BYPASS | data/pathways/glyoxylate-cycle.yaml | maintained | MetaCyc:GLYOXYLATE-BYPASS (MetaCyc:GLYOXYLATE-BYPASS) |
+| MetaCyc:PWY-6579 | data/pathways/guanine-and-guanosine-salvage.yaml | maintained | MetaCyc:PWY-6579 (MetaCyc:PWY-6579) |
+| gomodel:YeastPathways_PWY-7221 | data/pathways/guanosine-ribonucleotides-de-novo-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-7221 (gomodel:YeastPathways_PWY-7221) |
+| gomodel:YeastPathways_HEME-BIOSYNTHESIS-II | data/pathways/heme-biosynthesis-i-aerobic.yaml | maintained | gomodel:YeastPathways_HEME-BIOSYNTHESIS-II (gomodel:YeastPathways_HEME-BIOSYNTHESIS-II) |
+| gomodel:YeastPathways_HEXPPSYN-PWY-2 | data/pathways/hexaprenyl-diphosphate-biosynthesis.yaml | maintained | gomodel:YeastPathways_HEXPPSYN-PWY-2 (gomodel:YeastPathways_HEXPPSYN-PWY-2) |
+| gomodel:YeastPathways_HOMOCYS-CYS-CONVERT | data/pathways/homocysteine-and-cysteine-interconversion.yaml | maintained | gomodel:YeastPathways_HOMOCYS-CYS-CONVERT (gomodel:YeastPathways_HOMOCYS-CYS-CONVERT) |
+| GO:1902000 | data/pathways/homogentisate-degradation.yaml | maintained | GO:1902000 (GO:1902000) |
+| MetaCyc:PWY-5789 | data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml | maintained | MetaCyc:PWY-5789 (MetaCyc:PWY-5789) |
+| MetaCyc:PWY-6123 | data/pathways/inosine-5-phosphate-biosynthesis-i.yaml | maintained | MetaCyc:PWY-6123 (MetaCyc:PWY-6123) |
+| MetaCyc:PWY-6124 | data/pathways/inosine-5-phosphate-biosynthesis-ii.yaml | maintained | MetaCyc:PWY-6124 (MetaCyc:PWY-6124) |
+| gomodel:YeastPathways_PWY3O-402 | data/pathways/inositol-phosphate-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-402 (gomodel:YeastPathways_PWY3O-402) |
+| WikiPathways:WP178 | data/pathways/isoleucine-degradation.yaml | maintained | WikiPathways:WP178 (WikiPathways:WP178) |
+| PathBank:SMP0000991 | data/pathways/isoprenoid-biosynthesis-nonmevalonate-pathway-escherichia-coli.yaml | maintained | PathBank:SMP0000991 (PathBank:SMP0000991) |
+| MetaCyc:PWY0-1338 | data/pathways/l-ara4n-modified-lipid-a-biosynthesis.yaml | maintained | MetaCyc:PWY0-1338 (MetaCyc:PWY0-1338) |
+| MetaCyc:ARABCAT-PWY | data/pathways/l-arabinose-degradation-i.yaml | maintained | MetaCyc:ARABCAT-PWY (MetaCyc:ARABCAT-PWY) |
+| MetaCyc:ARGSYN-PWY | data/pathways/l-arginine-biosynthesis-i.yaml | maintained | MetaCyc:ARGSYN-PWY (MetaCyc:ARGSYN-PWY) |
+| gomodel:YeastPathways_ARGSYNBSUB-PWY | data/pathways/l-arginine-biosynthesis-ii-acetyl-cycle.yaml | maintained | gomodel:YeastPathways_ARGSYNBSUB-PWY (gomodel:YeastPathways_ARGSYNBSUB-PWY) |
+| MetaCyc:AST-PWY | data/pathways/l-arginine-degradation-ii-ast-pathway.yaml | maintained | MetaCyc:AST-PWY (MetaCyc:AST-PWY) |
+| MetaCyc:ARGDEG-III-PWY | data/pathways/l-arginine-degradation-iv.yaml | maintained | MetaCyc:ARGDEG-III-PWY (MetaCyc:ARGDEG-III-PWY) |
+| MetaCyc:ARGDEGRAD-PWY | data/pathways/l-arginine-degradation-v.yaml | maintained | MetaCyc:ARGDEGRAD-PWY (MetaCyc:ARGDEGRAD-PWY) |
+| MetaCyc:PWY0-301 | data/pathways/l-ascorbate-degradation-i.yaml | maintained | MetaCyc:PWY0-301 (MetaCyc:PWY0-301) |
+| gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1 | data/pathways/l-asparagine-biosynthesis-i.yaml | maintained | gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1 (gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1) |
+| gomodel:YeastPathways_ASPARAGINE-DEG2-PWY | data/pathways/l-asparagine-degradation.yaml | maintained | gomodel:YeastPathways_ASPARAGINE-DEG2-PWY (gomodel:YeastPathways_ASPARAGINE-DEG2-PWY) |
+| PathBank:SMP0002051 | data/pathways/l-carnitine-degradation-i.yaml | maintained | PathBank:SMP0002051 (PathBank:SMP0002051) |
+| MetaCyc:CYSTSYN-PWY | data/pathways/l-cysteine-biosynthesis-i.yaml | maintained | MetaCyc:CYSTSYN-PWY (MetaCyc:CYSTSYN-PWY) |
+| gomodel:YeastPathways_HOMOCYSDEGR-PWY-1 | data/pathways/l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml | maintained | gomodel:YeastPathways_HOMOCYSDEGR-PWY-1 (gomodel:YeastPathways_HOMOCYSDEGR-PWY-1) |
+| MetaCyc:FUCCAT-PWY | data/pathways/l-fucose-degradation-i.yaml | maintained | MetaCyc:FUCCAT-PWY (MetaCyc:FUCCAT-PWY) |
+| MetaCyc:HISTSYN-PWY | data/pathways/l-histidine-biosynthesis.yaml | maintained | MetaCyc:HISTSYN-PWY (MetaCyc:HISTSYN-PWY) |
+| gomodel:YeastPathways_PWY-5344 | data/pathways/l-homocysteine-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-5344 (gomodel:YeastPathways_PWY-5344) |
+| MetaCyc:HOMOSERSYN-PWY | data/pathways/l-homoserine-biosynthesis.yaml | maintained | MetaCyc:HOMOSERSYN-PWY (MetaCyc:HOMOSERSYN-PWY) |
+| MetaCyc:ILEUSYN-PWY | data/pathways/l-isoleucine-biosynthesis-i-from-threonine.yaml | maintained | MetaCyc:ILEUSYN-PWY (MetaCyc:ILEUSYN-PWY) |
+| MetaCyc:LEUSYN-PWY | data/pathways/l-leucine-biosynthesis.yaml | maintained | MetaCyc:LEUSYN-PWY (MetaCyc:LEUSYN-PWY) |
+| MetaCyc:DAPLYSINESYN-PWY | data/pathways/l-lysine-biosynthesis-i.yaml | maintained | MetaCyc:DAPLYSINESYN-PWY (MetaCyc:DAPLYSINESYN-PWY) |
+| gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2 | data/pathways/l-lysine-biosynthesis-iv.yaml | maintained | gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2 (gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2) |
+| MetaCyc:LYXMET-PWY | data/pathways/l-lyxose-degradation.yaml | maintained | MetaCyc:LYXMET-PWY (MetaCyc:LYXMET-PWY) |
+| MetaCyc:HOMOSER-METSYN-PWY | data/pathways/l-methionine-biosynthesis-i.yaml | maintained | MetaCyc:HOMOSER-METSYN-PWY (MetaCyc:HOMOSER-METSYN-PWY) |
+| MetaCyc:GLUTORN-PWY | data/pathways/l-ornithine-biosynthesis-i.yaml | maintained | MetaCyc:GLUTORN-PWY (MetaCyc:GLUTORN-PWY) |
+| MetaCyc:PHESYN | data/pathways/l-phenylalanine-biosynthesis-i.yaml | maintained | MetaCyc:PHESYN (MetaCyc:PHESYN) |
+| MetaCyc:PROSYN-PWY | data/pathways/l-proline-biosynthesis-i-from-l-glutamate.yaml | maintained | MetaCyc:PROSYN-PWY (MetaCyc:PROSYN-PWY) |
+| gomodel:YeastPathways_PROUT-PWY | data/pathways/l-proline-degradation.yaml | maintained | gomodel:YeastPathways_PROUT-PWY (gomodel:YeastPathways_PROUT-PWY) |
+| MetaCyc:RHAMCAT-PWY | data/pathways/l-rhamnose-degradation-i.yaml | maintained | MetaCyc:RHAMCAT-PWY (MetaCyc:RHAMCAT-PWY) |
+| MetaCyc:SERSYN-PWY | data/pathways/l-serine-biosynthesis-i.yaml | maintained | MetaCyc:SERSYN-PWY (MetaCyc:SERSYN-PWY) |
+| MetaCyc:HOMOSER-THRESYN-PWY | data/pathways/l-threonine-biosynthesis.yaml | maintained | MetaCyc:HOMOSER-THRESYN-PWY (MetaCyc:HOMOSER-THRESYN-PWY) |
+| MetaCyc:THRDLCTCAT-PWY | data/pathways/l-threonine-degradation-iii.yaml | maintained | MetaCyc:THRDLCTCAT-PWY (MetaCyc:THRDLCTCAT-PWY) |
+| MetaCyc:TRPSYN-PWY | data/pathways/l-tryptophan-biosynthesis.yaml | maintained | MetaCyc:TRPSYN-PWY (MetaCyc:TRPSYN-PWY) |
+| gomodel:YeastPathways_PWY-5651 | data/pathways/l-tryptophan-degradation-to-2-amino-3-carboxymuconate-semialdehyde.yaml | maintained | gomodel:YeastPathways_PWY-5651 (gomodel:YeastPathways_PWY-5651) |
+| MetaCyc:TYRSYN | data/pathways/l-tyrosine-biosynthesis-i.yaml | maintained | MetaCyc:TYRSYN (MetaCyc:TYRSYN) |
+| gomodel:YeastPathways_PWY3O-4108 | data/pathways/l-tyrosine-degradation-iii.yaml | maintained | gomodel:YeastPathways_PWY3O-4108 (gomodel:YeastPathways_PWY3O-4108) |
+| MetaCyc:VALSYN-PWY | data/pathways/l-valine-biosynthesis.yaml | maintained | MetaCyc:VALSYN-PWY (MetaCyc:VALSYN-PWY) |
+| gomodel:YeastPathways_PWY3O-4112 | data/pathways/leucine-degradation.yaml | maintained | gomodel:YeastPathways_PWY3O-4112 (gomodel:YeastPathways_PWY3O-4112) |
+| MIBiG:BGC0002072 | data/pathways/linearmycin-biosynthetic-gene-cluster.yaml | maintained | MIBiG:BGC0002072 (MIBiG:BGC0002072) |
+| gomodel:6882d2b800000609 | data/pathways/lipid-iva-biosynthesis.yaml | maintained | gomodel:6882d2b800000609 (gomodel:6882d2b800000609) |
+| MetaCyc:PWY0-501 | data/pathways/lipoate-biosynthesis-and-incorporation-i.yaml | maintained | MetaCyc:PWY0-501 (MetaCyc:PWY0-501) |
+| gomodel:YeastPathways_PWY3O-1743 | data/pathways/mannose-degradation.yaml | maintained | gomodel:YeastPathways_PWY3O-1743 (gomodel:YeastPathways_PWY3O-1743) |
+| MetaCyc:PWY0-1300 | data/pathways/mannosylglycerate-degradation.yaml | maintained | MetaCyc:PWY0-1300 (MetaCyc:PWY0-1300) |
+| MetaCyc:METH-ACETATE-PWY | data/pathways/methanogenesis-from-acetate.yaml | maintained | MetaCyc:METH-ACETATE-PWY (MetaCyc:METH-ACETATE-PWY) |
+| MetaCyc:METHANOGENESIS-PWY | data/pathways/methanogenesis-from-h2-and-co2.yaml | maintained | MetaCyc:METHANOGENESIS-PWY (MetaCyc:METHANOGENESIS-PWY) |
+| gomodel:YeastPathways_PWY3O-64 | data/pathways/methionine-salvage-pathway.yaml | maintained | gomodel:YeastPathways_PWY3O-64 (gomodel:YeastPathways_PWY3O-64) |
+| MetaCyc:NONMEVIPP-PWY | data/pathways/methylerythritol-phosphate-pathway-i.yaml | maintained | MetaCyc:NONMEVIPP-PWY (MetaCyc:NONMEVIPP-PWY) |
+| gomodel:YeastPathways_PWY-901 | data/pathways/methylglyoxal-catabolism.yaml | maintained | gomodel:YeastPathways_PWY-901 (gomodel:YeastPathways_PWY-901) |
+| MetaCyc:PWY-5386 | data/pathways/methylglyoxal-degradation-i.yaml | maintained | MetaCyc:PWY-5386 (MetaCyc:PWY-5386) |
+| MetaCyc:PWY-5453 | data/pathways/methylglyoxal-degradation-iii.yaml | maintained | MetaCyc:PWY-5453 (MetaCyc:PWY-5453) |
+| PathBank:SMP0002077 | data/pathways/methylphosphonate-degradation-i.yaml | maintained | PathBank:SMP0002077 (PathBank:SMP0002077) |
+| MetaCyc:PWY-6048 | data/pathways/methylthiopropanoate-degradation-i.yaml | maintained | MetaCyc:PWY-6048 (MetaCyc:PWY-6048) |
+| gomodel:YeastPathways_IPPSYN-PWY | data/pathways/mevalonate-pathway.yaml | maintained | gomodel:YeastPathways_IPPSYN-PWY (gomodel:YeastPathways_IPPSYN-PWY) |
+| MetaCyc:PWY-6823 | data/pathways/molybdenum-cofactor-biosynthesis.yaml | maintained | MetaCyc:PWY-6823 (MetaCyc:PWY-6823) |
+| Reactome:R-MTU-936721 | data/pathways/mycobacterium-cysteine-synthesis-from-o-acetylserine.yaml | maintained | Reactome:R-MTU-936721 (Reactome:R-MTU-936721) |
+| Reactome:R-MTU-936654 | data/pathways/mycobacterium-cysteine-synthesis-from-o-phosphoserine.yaml | maintained | Reactome:R-MTU-936654 (Reactome:R-MTU-936654) |
+| Reactome:R-MTU-936635 | data/pathways/mycobacterium-sulfate-assimilation.yaml | maintained | Reactome:R-MTU-936635 (Reactome:R-MTU-936635) |
+| Reactome:R-MTU-868688 | data/pathways/mycobacterium-trehalose-biosynthesis.yaml | maintained | Reactome:R-MTU-868688 (Reactome:R-MTU-868688) |
+| Reactome:R-MTU-879299 | data/pathways/mycothiol-biosynthesis.yaml | maintained | Reactome:R-MTU-879299 (Reactome:R-MTU-879299) |
+| Reactome:R-MTU-879325 | data/pathways/mycothiol-catabolism.yaml | maintained | Reactome:R-MTU-879325 (Reactome:R-MTU-879325) |
+| gomodel:YeastPathways_PWY-2301 | data/pathways/myo-inositol-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-2301 (gomodel:YeastPathways_PWY-2301) |
+| MetaCyc:PWY-8383 | data/pathways/myxochelin-a-and-b-biosynthesis.yaml | maintained | MetaCyc:PWY-8383 (MetaCyc:PWY-8383) |
+| MetaCyc:GLUAMCAT-PWY | data/pathways/n-acetylglucosamine-degradation-i.yaml | maintained | MetaCyc:GLUAMCAT-PWY (MetaCyc:GLUAMCAT-PWY) |
+| gomodel:YeastPathways_PWY-5653 | data/pathways/nad-biosynthesis-from-2-amino-3-carboxymuconate-semialdehyde.yaml | maintained | gomodel:YeastPathways_PWY-5653 (gomodel:YeastPathways_PWY-5653) |
+| MetaCyc:PYRIDNUCSYN-PWY | data/pathways/nad-de-novo-biosynthesis-i-from-aspartate.yaml | maintained | MetaCyc:PYRIDNUCSYN-PWY (MetaCyc:PYRIDNUCSYN-PWY) |
+| MetaCyc:NADPHOS-DEPHOS-PWY | data/pathways/nad-phosphorylation-and-dephosphorylation.yaml | maintained | MetaCyc:NADPHOS-DEPHOS-PWY (MetaCyc:NADPHOS-DEPHOS-PWY) |
+| MetaCyc:PYRIDNUCSAL-PWY | data/pathways/nad-salvage-pathway-i-pnc-vi-cycle.yaml | maintained | MetaCyc:PYRIDNUCSAL-PWY (MetaCyc:PYRIDNUCSAL-PWY) |
+| gomodel:YeastPathways_PWY3O-4106 | data/pathways/nad-salvage-pathway-iv-from-nicotinamide-riboside.yaml | maintained | gomodel:YeastPathways_PWY3O-4106 (gomodel:YeastPathways_PWY3O-4106) |
+| WikiPathways:WP171 | data/pathways/nad-salvage-pathway-v.yaml | maintained | WikiPathways:WP171 (WikiPathways:WP171) |
+| MetaCyc:PWY-6993 | data/pathways/nicotine-degradation-ii.yaml | maintained | MetaCyc:PWY-6993 (MetaCyc:PWY-6993) |
+| MetaCyc:DENITRIFICATION-PWY | data/pathways/nitrate-reduction-i-denitrification.yaml | maintained | MetaCyc:DENITRIFICATION-PWY (MetaCyc:DENITRIFICATION-PWY) |
+| MetaCyc:PWY0-1352 | data/pathways/nitrate-reduction-viii.yaml | maintained | MetaCyc:PWY0-1352 (MetaCyc:PWY0-1352) |
+| gomodel:YeastPathways_PWY3O-5268 | data/pathways/oleate-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-5268 (gomodel:YeastPathways_PWY3O-5268) |
+| gomodel:YeastPathways_PWY3O-1801 | data/pathways/palmitoleate-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-1801 (gomodel:YeastPathways_PWY3O-1801) |
+| MetaCyc:NONOXIPENT-PWY | data/pathways/pentose-phosphate-pathway-non-oxidative-branch-i.yaml | maintained | MetaCyc:NONOXIPENT-PWY (MetaCyc:NONOXIPENT-PWY) |
+| MetaCyc:PWY-8178 | data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml | maintained | MetaCyc:PWY-8178 (MetaCyc:PWY-8178) |
+| MetaCyc:OXIDATIVEPENT-PWY | data/pathways/pentose-phosphate-pathway-oxidative-branch-i.yaml | maintained | MetaCyc:OXIDATIVEPENT-PWY (MetaCyc:OXIDATIVEPENT-PWY) |
+| WikiPathways:WP5060 | data/pathways/peptidoglycan-cytoplasmic-synthesis-and-recycling-pathways.yaml | maintained | WikiPathways:WP5060 (WikiPathways:WP5060) |
+| gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION | data/pathways/periplasmic-nad-degradation.yaml | maintained | gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION (gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION) |
+| MetaCyc:PWY-6289 | data/pathways/petrobactin-biosynthesis.yaml | maintained | MetaCyc:PWY-6289 (MetaCyc:PWY-6289) |
+| MetaCyc:PWY0-321 | data/pathways/phenylacetate-degradation-i-aerobic.yaml | maintained | MetaCyc:PWY0-321 (MetaCyc:PWY0-321) |
+| gomodel:YeastPathways_PWY3O-4153 | data/pathways/phenylalanine-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-4153 (gomodel:YeastPathways_PWY3O-4153) |
+| MetaCyc:2PHENDEG-PWY | data/pathways/phenylethylamine-degradation-i.yaml | maintained | MetaCyc:2PHENDEG-PWY (MetaCyc:2PHENDEG-PWY) |
+| MetaCyc:PWY-6534 | data/pathways/phenylethylamine-degradation-ii.yaml | maintained | MetaCyc:PWY-6534 (MetaCyc:PWY-6534) |
+| MetaCyc:PWY0-1277 | data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml | maintained | MetaCyc:PWY0-1277 (MetaCyc:PWY0-1277) |
+| gomodel:YeastPathways_PWY3O-6407 | data/pathways/phosphatidate-biosynthesis-i-the-dihydroxyacetone-pathway.yaml | maintained | gomodel:YeastPathways_PWY3O-6407 (gomodel:YeastPathways_PWY3O-6407) |
+| gomodel:YeastPathways_PWY3O-6499 | data/pathways/phosphatidate-biosynthesis-ii-the-glycerol-3-phosphate-pathway.yaml | maintained | gomodel:YeastPathways_PWY3O-6499 (gomodel:YeastPathways_PWY3O-6499) |
+| gomodel:YeastPathways_PWY3O-450 | data/pathways/phosphatidylcholine-biosynthesis-i.yaml | maintained | gomodel:YeastPathways_PWY3O-450 (gomodel:YeastPathways_PWY3O-450) |
+| gomodel:YeastPathways_PWY-5669 | data/pathways/phosphatidylethanolamine-biosynthesis-i.yaml | maintained | gomodel:YeastPathways_PWY-5669 (gomodel:YeastPathways_PWY-5669) |
+| gomodel:YeastPathways_PWY3O-242 | data/pathways/phosphatidylinositol-phosphate-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-242 (gomodel:YeastPathways_PWY3O-242) |
+| gomodel:YeastPathways_PWY3O-259 | data/pathways/phospholipid-biosynthesis-ii-kennedy-pathway.yaml | maintained | gomodel:YeastPathways_PWY3O-259 (gomodel:YeastPathways_PWY3O-259) |
+| gomodel:YeastPathways_PHOSLIPSYN2-PWY-1 | data/pathways/phospholipid-biosynthesis.yaml | maintained | gomodel:YeastPathways_PHOSLIPSYN2-PWY-1 (gomodel:YeastPathways_PHOSLIPSYN2-PWY-1) |
+| WikiPathways:WP71 | data/pathways/phospholipids-degradation.yaml | maintained | WikiPathways:WP71 (WikiPathways:WP71) |
+| MetaCyc:PANTO-PWY | data/pathways/phosphopantothenate-biosynthesis-i.yaml | maintained | MetaCyc:PANTO-PWY (MetaCyc:PANTO-PWY) |
+| MetaCyc:PWY1-3 | data/pathways/polyhydroxybutanoate-biosynthesis.yaml | maintained | MetaCyc:PWY1-3 (MetaCyc:PWY1-3) |
+| MetaCyc:PPGPPMET-PWY | data/pathways/ppgpp-metabolism.yaml | maintained | MetaCyc:PPGPPMET-PWY (MetaCyc:PPGPPMET-PWY) |
+| MetaCyc:P184-PWY | data/pathways/protocatechuate-meta-cleavage.yaml | maintained | MetaCyc:P184-PWY (MetaCyc:P184-PWY) |
+| GO:0019618 | data/pathways/protocatechuate-ortho-cleavage.yaml | maintained | GO:0019618 (GO:0019618) |
+| MetaCyc:PWY-6336 | data/pathways/protocatechuate-para-cleavage.yaml | maintained | MetaCyc:PWY-6336 (MetaCyc:PWY-6336) |
+| MetaCyc:PWY-6019 | data/pathways/pseudouridine-degradation.yaml | maintained | MetaCyc:PWY-6019 (MetaCyc:PWY-6019) |
+| PathBank:SMP0002089 | data/pathways/purine-deoxyribonucleosides-degradation.yaml | maintained | PathBank:SMP0002089 (PathBank:SMP0002089) |
+| PathBank:SMP0002067 | data/pathways/putrescine-degradation-ii.yaml | maintained | PathBank:SMP0002067 (PathBank:SMP0002067) |
+| GO:0042864 | data/pathways/pyochelin-biosynthesis.yaml | maintained | GO:0042864 (GO:0042864) |
+| MetaCyc:PYRIDOXSYN-PWY | data/pathways/pyridoxal-5-phosphate-biosynthesis-i.yaml | maintained | MetaCyc:PYRIDOXSYN-PWY (MetaCyc:PYRIDOXSYN-PWY) |
+| MetaCyc:PLPSAL-PWY | data/pathways/pyridoxal-5-phosphate-salvage-i.yaml | maintained | MetaCyc:PLPSAL-PWY (MetaCyc:PLPSAL-PWY) |
+| MetaCyc:PWY-7181 | data/pathways/pyrimidine-deoxyribonucleosides-degradation.yaml | maintained | MetaCyc:PWY-7181 (MetaCyc:PWY-7181) |
+| GO:0010139 | data/pathways/pyrimidine-deoxyribonucleotide-salvage.yaml | maintained | GO:0010139 (GO:0010139) |
+| PathBank:SMP0002038 | data/pathways/pyrimidine-ribonucleosides-degradation.yaml | maintained | PathBank:SMP0002038 (PathBank:SMP0002038) |
+| gomodel:YeastPathways_PYRUVDEHYD-PWY | data/pathways/pyruvate-decarboxylation-to-acetyl-coa.yaml | maintained | gomodel:YeastPathways_PYRUVDEHYD-PWY (gomodel:YeastPathways_PYRUVDEHYD-PWY) |
+| gomodel:YeastPathways_PWY3O-440 | data/pathways/pyruvate-fermentation-to-acetoin-iii.yaml | maintained | gomodel:YeastPathways_PWY3O-440 (gomodel:YeastPathways_PWY3O-440) |
+| MetaCyc:PWY-7545 | data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml | maintained | MetaCyc:PWY-7545 (MetaCyc:PWY-7545) |
+| MetaCyc:QUINATEDEG-PWY | data/pathways/quinate-degradation-i.yaml | maintained | MetaCyc:QUINATEDEG-PWY (MetaCyc:QUINATEDEG-PWY) |
+| MetaCyc:PWY-6416 | data/pathways/quinate-degradation-ii.yaml | maintained | MetaCyc:PWY-6416 (MetaCyc:PWY-6416) |
+| PathBank:SMP0002406 | data/pathways/riboneogenesis.yaml | maintained | PathBank:SMP0002406 (PathBank:SMP0002406) |
+| MetaCyc:RIBOKIN-PWY | data/pathways/ribose-phosphorylation.yaml | maintained | MetaCyc:RIBOKIN-PWY (MetaCyc:RIBOKIN-PWY) |
+| MetaCyc:PWY-6151 | data/pathways/s-adenosyl-l-methionine-cycle-i.yaml | maintained | MetaCyc:PWY-6151 (MetaCyc:PWY-6151) |
+| gomodel:YeastPathways_PWY-5041 | data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml | maintained | gomodel:YeastPathways_PWY-5041 (gomodel:YeastPathways_PWY-5041) |
+| MetaCyc:PWY-8132 | data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml | maintained | MetaCyc:PWY-8132 (MetaCyc:PWY-8132) |
+| gomodel:YeastPathways_YEAST-RNT-SALV | data/pathways/salvage-pathways-of-pyrimidine-ribonucleotides.yaml | maintained | gomodel:YeastPathways_YEAST-RNT-SALV (gomodel:YeastPathways_YEAST-RNT-SALV) |
+| MetaCyc:PWY0-1517 | data/pathways/sedoheptulose-bisphosphate-bypass.yaml | maintained | MetaCyc:PWY0-1517 (MetaCyc:PWY0-1517) |
+| MetaCyc:SHIKIMATEDEG-PWY | data/pathways/shikimate-degradation-i.yaml | maintained | MetaCyc:SHIKIMATEDEG-PWY (MetaCyc:SHIKIMATEDEG-PWY) |
+| MetaCyc:PWY-6419 | data/pathways/shikimate-degradation-ii.yaml | maintained | MetaCyc:PWY-6419 (MetaCyc:PWY-6419) |
+| gomodel:YeastPathways_PWY-5194-1 | data/pathways/siroheme-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-5194-1 (gomodel:YeastPathways_PWY-5194-1) |
+| PathBank:SMP0002097 | data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml | maintained | PathBank:SMP0002097 (PathBank:SMP0002097) |
+| gomodel:YeastPathways_BSUBPOLYAMSYN-PWY | data/pathways/spermidine-biosynthesis-i.yaml | maintained | gomodel:YeastPathways_BSUBPOLYAMSYN-PWY (gomodel:YeastPathways_BSUBPOLYAMSYN-PWY) |
+| gomodel:YeastPathways_ARGSPECAT-PWY | data/pathways/spermine-biosynthesis.yaml | maintained | gomodel:YeastPathways_ARGSPECAT-PWY (gomodel:YeastPathways_ARGSPECAT-PWY) |
+| gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1 | data/pathways/sphingolipid-biosynthesis-yeast.yaml | maintained | gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1 (gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1) |
+| MIBiG:BGC0000852 | data/pathways/sporosarcina-pasteurii-ectoine-biosynthetic-gene-cluster.yaml | maintained | MIBiG:BGC0000852 (MIBiG:BGC0000852) |
+| MetaCyc:PWY-7990 | data/pathways/staphyloferrin-a-biosynthesis.yaml | maintained | MetaCyc:PWY-7990 (MetaCyc:PWY-7990) |
+| MetaCyc:PWY-8008 | data/pathways/staphyloferrin-b-biosynthesis.yaml | maintained | MetaCyc:PWY-8008 (MetaCyc:PWY-8008) |
+| MetaCyc:PWY0-43 | data/pathways/succinate-to-propanoate.yaml | maintained | MetaCyc:PWY0-43 (MetaCyc:PWY0-43) |
+| gomodel:YeastPathways_PWY-5340 | data/pathways/sulfate-activation-for-sulfonation.yaml | maintained | gomodel:YeastPathways_PWY-5340 (gomodel:YeastPathways_PWY-5340) |
+| MetaCyc:PWY-7446 | data/pathways/sulfoquinovose-degradation-i.yaml | maintained | MetaCyc:PWY-7446 (MetaCyc:PWY-7446) |
+| MetaCyc:PWY-7722 | data/pathways/sulfoquinovose-degradation-ii.yaml | maintained | MetaCyc:PWY-7722 (MetaCyc:PWY-7722) |
+| gomodel:YeastPathways_DETOX1-PWY | data/pathways/superoxide-radicals-degradation.yaml | maintained | gomodel:YeastPathways_DETOX1-PWY (gomodel:YeastPathways_DETOX1-PWY) |
+| MetaCyc:PWY-5838 | data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml | maintained | MetaCyc:PWY-5838 (MetaCyc:PWY-5838) |
+| WikiPathways:WP296 | data/pathways/tca-cycle-detailed.yaml | maintained | WikiPathways:WP296 (WikiPathways:WP296) |
+| gomodel:YeastPathways_PWY-6614 | data/pathways/tetrahydrofolate-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-6614 (gomodel:YeastPathways_PWY-6614) |
+| MetaCyc:PWY0-1433 | data/pathways/tetrahydromonapterin-biosynthesis.yaml | maintained | MetaCyc:PWY0-1433 (MetaCyc:PWY0-1433) |
+| gomodel:YeastPathways_PWY3O-50 | data/pathways/tetrapyrrole-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-50 (gomodel:YeastPathways_PWY3O-50) |
+| PathBank:SMP0002042 | data/pathways/thiamin-diphosphate-biosynthesis-escherichia-coli.yaml | maintained | PathBank:SMP0002042 (PathBank:SMP0002042) |
+| gomodel:YeastPathways_PWY3O-17 | data/pathways/thiamine-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-17 (gomodel:YeastPathways_PWY3O-17) |
+| MetaCyc:THISYN-PWY | data/pathways/thiamine-diphosphate-biosynthesis-i.yaml | maintained | MetaCyc:THISYN-PWY (MetaCyc:THISYN-PWY) |
+| PathBank:SMP0002055 | data/pathways/thiazole-biosynthesis-i-escherichia-coli.yaml | maintained | PathBank:SMP0002055 (PathBank:SMP0002055) |
+| MetaCyc:THIOREDOX-PWY | data/pathways/thioredoxin-pathway.yaml | maintained | MetaCyc:THIOREDOX-PWY (MetaCyc:THIOREDOX-PWY) |
+| PathBank:SMP0000992 | data/pathways/threonine-biosynthesis-from-aspartate-escherichia-coli.yaml | maintained | PathBank:SMP0000992 (PathBank:SMP0000992) |
+| gomodel:YeastPathways_THREOCAT2-PWY | data/pathways/threonine-degradation.yaml | maintained | gomodel:YeastPathways_THREOCAT2-PWY (gomodel:YeastPathways_THREOCAT2-PWY) |
+| gomodel:YeastPathways_PWY-5123 | data/pathways/trans-trans-farnesyl-diphosphate-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-5123 (gomodel:YeastPathways_PWY-5123) |
+| MetaCyc:TRESYN-PWY | data/pathways/trehalose-biosynthesis-i.yaml | maintained | MetaCyc:TRESYN-PWY (MetaCyc:TRESYN-PWY) |
+| WikiPathways:WP266 | data/pathways/triglyceride-biosynthesis.yaml | maintained | WikiPathways:WP266 (WikiPathways:WP266) |
+| gomodel:YeastPathways_PWY3O-214 | data/pathways/tryptophan-degradation.yaml | maintained | gomodel:YeastPathways_PWY3O-214 (gomodel:YeastPathways_PWY3O-214) |
+| gomodel:YeastPathways_PWY3O-4120 | data/pathways/tyrosine-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY3O-4120 (gomodel:YeastPathways_PWY3O-4120) |
+| WikiPathways:WP287 | data/pathways/ubiquinol-6-biosynthesis-from-4-hydroxybenzoate.yaml | maintained | WikiPathways:WP287 (WikiPathways:WP287) |
+| gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY | data/pathways/udp-n-acetylglucosamine-biosynthesis.yaml | maintained | gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY (gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY) |
+| MetaCyc:PWY-5686 | data/pathways/ump-biosynthesis-i.yaml | maintained | MetaCyc:PWY-5686 (MetaCyc:PWY-5686) |
+| MetaCyc:PWY0-1471 | data/pathways/uracil-degradation-iii.yaml | maintained | MetaCyc:PWY0-1471 (MetaCyc:PWY0-1471) |
+| gomodel:YeastPathways_PWY-5703 | data/pathways/urea-degradation-i.yaml | maintained | gomodel:YeastPathways_PWY-5703 (gomodel:YeastPathways_PWY-5703) |
+| gomodel:YeastPathways_PWY-7176 | data/pathways/utp-and-ctp-de-novo-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-7176 (gomodel:YeastPathways_PWY-7176) |
+| gomodel:YeastPathways_PWY3O-4105 | data/pathways/valine-degradation.yaml | maintained | gomodel:YeastPathways_PWY3O-4105 (gomodel:YeastPathways_PWY3O-4105) |
+| gomodel:YeastPathways_PWY-5080-1 | data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-5080-1 (gomodel:YeastPathways_PWY-5080-1) |
+| gomodel:YeastPathways_PWY3O-8 | data/pathways/xylose-metabolism.yaml | maintained | gomodel:YeastPathways_PWY3O-8 (gomodel:YeastPathways_PWY3O-8) |
+| gomodel:YeastPathways_PWY-6074-1 | data/pathways/zymosterol-biosynthesis.yaml | maintained | gomodel:YeastPathways_PWY-6074-1 (gomodel:YeastPathways_PWY-6074-1) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Repository QC and closed-schema validation (just validate) | passed | True | MetaCyc:PWY-5901, MetaCyc:PWY0-42, WikiPathways:WP5587, MetaCyc:PWY-2361, MetaCyc:PWY-6543, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-8130, MetaCyc:PWY-8131, gomodel:YeastPathways_PWY-6147, GO:0097288, MetaCyc:PWY0-1312, MetaCyc:ACETOACETATE-DEG-PWY, WikiPathways:WP5019, PathBank:SMP0002081, MetaCyc:P121-PWY, PathBank:SMP0002083, MetaCyc:PWY-6609, gomodel:YeastPathways_PWY-7220-1, MetaCyc:SALVADEHYPOX-PWY, gomodel:YeastPathways_PWY-7219, MetaCyc:PWY-5509, MetaCyc:PWY-7971, MetaCyc:PWY0-1241, GO:0019270, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, MetaCyc:PWY0-41, gomodel:YeastPathways_PWY-5694, MetaCyc:PWY-5705, gomodel:YeastPathways_PWY-5697, MetaCyc:GLCMANNANAUT-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, MetaCyc:PWY-5903, PathBank:SMP0002123, MetaCyc:PWY-2503, MetaCyc:PWY-1361, MetaCyc:CENTBENZCOA-PWY, MetaCyc:P321-PWY, gomodel:YeastPathways_PWY-5760-1, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, GO:0043427, gomodel:YeastPathways_PWY3O-4, MetaCyc:PWY-5415, MetaCyc:PWY-5420, MetaCyc:PWY-5417, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, gomodel:YeastPathways_PWY3O-15, MetaCyc:ARO-PWY, MIBiG:BGC0000829, MetaCyc:P2-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, MetaCyc:COA-PWY, PathBank:SMP0002070, PathBank:SMP0001910, GO:0036040, MetaCyc:CYANCAT-PWY, PathBank:SMP0000993, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:PWY-6376, KEGG:M00374, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-123, GO:0019305, MetaCyc:P101-PWY, KEGG:M00008, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-6075-1, MetaCyc:PWY-7255, gomodel:YeastPathways_PWY3O-4300, MetaCyc:PWY0-1477, MetaCyc:PWY0-1280, KEGG:M00373, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, MetaCyc:RIBOSYN2-PWY, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, MetaCyc:PWY0-521, GO:1901281, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:PWY-6223, gomodel:YeastPathways_GLUCONEO-PWY-1, WikiPathways:WP556, MetaCyc:PWY-5177, MetaCyc:GLUTATHIONESYN-PWY, gomodel:YeastPathways_PWYQT-4432, WikiPathways:WP392, gomodel:YeastPathways_PWY3O-48, MetaCyc:GLYCEROLMETAB-PWY, gomodel:YeastPathways_GLYCLEAV-PWY, WikiPathways:WP478, gomodel:YeastPathways_GLYCOLYSIS, MetaCyc:PWY-5744, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, GO:1902000, MetaCyc:PWY-5789, MetaCyc:PWY-6123, MetaCyc:PWY-6124, gomodel:YeastPathways_PWY3O-402, WikiPathways:WP178, PathBank:SMP0000991, MetaCyc:PWY0-1338, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:PWY0-301, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, PathBank:SMP0002051, MetaCyc:CYSTSYN-PWY, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, gomodel:YeastPathways_PWY-5344, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, MetaCyc:LYXMET-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, gomodel:YeastPathways_PROUT-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRPSYN-PWY, gomodel:YeastPathways_PWY-5651, MetaCyc:TYRSYN, gomodel:YeastPathways_PWY3O-4108, MetaCyc:VALSYN-PWY, gomodel:YeastPathways_PWY3O-4112, MIBiG:BGC0002072, gomodel:6882d2b800000609, MetaCyc:PWY0-501, gomodel:YeastPathways_PWY3O-1743, MetaCyc:PWY0-1300, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, gomodel:YeastPathways_PWY3O-64, MetaCyc:NONMEVIPP-PWY, gomodel:YeastPathways_PWY-901, MetaCyc:PWY-5386, MetaCyc:PWY-5453, PathBank:SMP0002077, MetaCyc:PWY-6048, gomodel:YeastPathways_IPPSYN-PWY, MetaCyc:PWY-6823, Reactome:R-MTU-936721, Reactome:R-MTU-936654, Reactome:R-MTU-936635, Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, gomodel:YeastPathways_PWY-2301, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, gomodel:YeastPathways_PWY-5653, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:PYRIDNUCSAL-PWY, gomodel:YeastPathways_PWY3O-4106, WikiPathways:WP171, MetaCyc:PWY-6993, MetaCyc:DENITRIFICATION-PWY, MetaCyc:PWY0-1352, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-1801, MetaCyc:NONOXIPENT-PWY, MetaCyc:PWY-8178, MetaCyc:OXIDATIVEPENT-PWY, WikiPathways:WP5060, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, MetaCyc:PWY-6289, MetaCyc:PWY0-321, gomodel:YeastPathways_PWY3O-4153, MetaCyc:2PHENDEG-PWY, MetaCyc:PWY-6534, MetaCyc:PWY0-1277, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, WikiPathways:WP71, MetaCyc:PANTO-PWY, MetaCyc:PWY1-3, MetaCyc:PPGPPMET-PWY, MetaCyc:P184-PWY, GO:0019618, MetaCyc:PWY-6336, MetaCyc:PWY-6019, PathBank:SMP0002089, PathBank:SMP0002067, GO:0042864, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-7181, GO:0010139, PathBank:SMP0002038, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_PWY3O-440, MetaCyc:PWY-7545, MetaCyc:QUINATEDEG-PWY, MetaCyc:PWY-6416, PathBank:SMP0002406, MetaCyc:RIBOKIN-PWY, MetaCyc:PWY-6151, gomodel:YeastPathways_PWY-5041, MetaCyc:PWY-8132, gomodel:YeastPathways_YEAST-RNT-SALV, MetaCyc:PWY0-1517, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:PWY-6419, gomodel:YeastPathways_PWY-5194-1, PathBank:SMP0002097, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, MIBiG:BGC0000852, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY0-43, gomodel:YeastPathways_PWY-5340, MetaCyc:PWY-7446, MetaCyc:PWY-7722, gomodel:YeastPathways_DETOX1-PWY, MetaCyc:PWY-5838, WikiPathways:WP296, gomodel:YeastPathways_PWY-6614, MetaCyc:PWY0-1433, gomodel:YeastPathways_PWY3O-50, PathBank:SMP0002042, gomodel:YeastPathways_PWY3O-17, MetaCyc:THISYN-PWY, PathBank:SMP0002055, MetaCyc:THIOREDOX-PWY, PathBank:SMP0000992, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY-5123, MetaCyc:TRESYN-PWY, WikiPathways:WP266, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-4120, WikiPathways:WP287, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, MetaCyc:PWY-5686, MetaCyc:PWY0-1471, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWY-6074-1 | Validated all 277 maintained pathway records against the closed LinkML schema, local identifier/label authority snapshots, 955 history records, 22,832 evidence blocks, 33 source records, and pages/ synchrony. |
+| Pytest unit and corpus test suite (just test) | passed | True | MetaCyc:PWY-5901, MetaCyc:PWY0-42, WikiPathways:WP5587, MetaCyc:PWY-2361, MetaCyc:PWY-6543, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-8130, MetaCyc:PWY-8131, gomodel:YeastPathways_PWY-6147, GO:0097288, MetaCyc:PWY0-1312, MetaCyc:ACETOACETATE-DEG-PWY, WikiPathways:WP5019, PathBank:SMP0002081, MetaCyc:P121-PWY, PathBank:SMP0002083, MetaCyc:PWY-6609, gomodel:YeastPathways_PWY-7220-1, MetaCyc:SALVADEHYPOX-PWY, gomodel:YeastPathways_PWY-7219, MetaCyc:PWY-5509, MetaCyc:PWY-7971, MetaCyc:PWY0-1241, GO:0019270, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, MetaCyc:PWY0-41, gomodel:YeastPathways_PWY-5694, MetaCyc:PWY-5705, gomodel:YeastPathways_PWY-5697, MetaCyc:GLCMANNANAUT-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, MetaCyc:PWY-5903, PathBank:SMP0002123, MetaCyc:PWY-2503, MetaCyc:PWY-1361, MetaCyc:CENTBENZCOA-PWY, MetaCyc:P321-PWY, gomodel:YeastPathways_PWY-5760-1, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, GO:0043427, gomodel:YeastPathways_PWY3O-4, MetaCyc:PWY-5415, MetaCyc:PWY-5420, MetaCyc:PWY-5417, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, gomodel:YeastPathways_PWY3O-15, MetaCyc:ARO-PWY, MIBiG:BGC0000829, MetaCyc:P2-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, MetaCyc:COA-PWY, PathBank:SMP0002070, PathBank:SMP0001910, GO:0036040, MetaCyc:CYANCAT-PWY, PathBank:SMP0000993, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:PWY-6376, KEGG:M00374, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-123, GO:0019305, MetaCyc:P101-PWY, KEGG:M00008, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-6075-1, MetaCyc:PWY-7255, gomodel:YeastPathways_PWY3O-4300, MetaCyc:PWY0-1477, MetaCyc:PWY0-1280, KEGG:M00373, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, MetaCyc:RIBOSYN2-PWY, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, MetaCyc:PWY0-521, GO:1901281, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:PWY-6223, gomodel:YeastPathways_GLUCONEO-PWY-1, WikiPathways:WP556, MetaCyc:PWY-5177, MetaCyc:GLUTATHIONESYN-PWY, gomodel:YeastPathways_PWYQT-4432, WikiPathways:WP392, gomodel:YeastPathways_PWY3O-48, MetaCyc:GLYCEROLMETAB-PWY, gomodel:YeastPathways_GLYCLEAV-PWY, WikiPathways:WP478, gomodel:YeastPathways_GLYCOLYSIS, MetaCyc:PWY-5744, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, GO:1902000, MetaCyc:PWY-5789, MetaCyc:PWY-6123, MetaCyc:PWY-6124, gomodel:YeastPathways_PWY3O-402, WikiPathways:WP178, PathBank:SMP0000991, MetaCyc:PWY0-1338, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:PWY0-301, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, PathBank:SMP0002051, MetaCyc:CYSTSYN-PWY, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, gomodel:YeastPathways_PWY-5344, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, MetaCyc:LYXMET-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, gomodel:YeastPathways_PROUT-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRPSYN-PWY, gomodel:YeastPathways_PWY-5651, MetaCyc:TYRSYN, gomodel:YeastPathways_PWY3O-4108, MetaCyc:VALSYN-PWY, gomodel:YeastPathways_PWY3O-4112, MIBiG:BGC0002072, gomodel:6882d2b800000609, MetaCyc:PWY0-501, gomodel:YeastPathways_PWY3O-1743, MetaCyc:PWY0-1300, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, gomodel:YeastPathways_PWY3O-64, MetaCyc:NONMEVIPP-PWY, gomodel:YeastPathways_PWY-901, MetaCyc:PWY-5386, MetaCyc:PWY-5453, PathBank:SMP0002077, MetaCyc:PWY-6048, gomodel:YeastPathways_IPPSYN-PWY, MetaCyc:PWY-6823, Reactome:R-MTU-936721, Reactome:R-MTU-936654, Reactome:R-MTU-936635, Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, gomodel:YeastPathways_PWY-2301, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, gomodel:YeastPathways_PWY-5653, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:PYRIDNUCSAL-PWY, gomodel:YeastPathways_PWY3O-4106, WikiPathways:WP171, MetaCyc:PWY-6993, MetaCyc:DENITRIFICATION-PWY, MetaCyc:PWY0-1352, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-1801, MetaCyc:NONOXIPENT-PWY, MetaCyc:PWY-8178, MetaCyc:OXIDATIVEPENT-PWY, WikiPathways:WP5060, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, MetaCyc:PWY-6289, MetaCyc:PWY0-321, gomodel:YeastPathways_PWY3O-4153, MetaCyc:2PHENDEG-PWY, MetaCyc:PWY-6534, MetaCyc:PWY0-1277, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, WikiPathways:WP71, MetaCyc:PANTO-PWY, MetaCyc:PWY1-3, MetaCyc:PPGPPMET-PWY, MetaCyc:P184-PWY, GO:0019618, MetaCyc:PWY-6336, MetaCyc:PWY-6019, PathBank:SMP0002089, PathBank:SMP0002067, GO:0042864, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-7181, GO:0010139, PathBank:SMP0002038, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_PWY3O-440, MetaCyc:PWY-7545, MetaCyc:QUINATEDEG-PWY, MetaCyc:PWY-6416, PathBank:SMP0002406, MetaCyc:RIBOKIN-PWY, MetaCyc:PWY-6151, gomodel:YeastPathways_PWY-5041, MetaCyc:PWY-8132, gomodel:YeastPathways_YEAST-RNT-SALV, MetaCyc:PWY0-1517, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:PWY-6419, gomodel:YeastPathways_PWY-5194-1, PathBank:SMP0002097, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, MIBiG:BGC0000852, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY0-43, gomodel:YeastPathways_PWY-5340, MetaCyc:PWY-7446, MetaCyc:PWY-7722, gomodel:YeastPathways_DETOX1-PWY, MetaCyc:PWY-5838, WikiPathways:WP296, gomodel:YeastPathways_PWY-6614, MetaCyc:PWY0-1433, gomodel:YeastPathways_PWY3O-50, PathBank:SMP0002042, gomodel:YeastPathways_PWY3O-17, MetaCyc:THISYN-PWY, PathBank:SMP0002055, MetaCyc:THIOREDOX-PWY, PathBank:SMP0000992, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY-5123, MetaCyc:TRESYN-PWY, WikiPathways:WP266, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-4120, WikiPathways:WP287, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, MetaCyc:PWY-5686, MetaCyc:PWY0-1471, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWY-6074-1 | Executed the full pytest suite (8096 passed, 3 skipped) verifying schema, authority, KGX, SSSOM, and record-review invariants across all 277 records. |
+| Ruff linter check (just lint) | passed | True | MetaCyc:PWY-5901, MetaCyc:PWY0-42, WikiPathways:WP5587, MetaCyc:PWY-2361, MetaCyc:PWY-6543, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-8130, MetaCyc:PWY-8131, gomodel:YeastPathways_PWY-6147, GO:0097288, MetaCyc:PWY0-1312, MetaCyc:ACETOACETATE-DEG-PWY, WikiPathways:WP5019, PathBank:SMP0002081, MetaCyc:P121-PWY, PathBank:SMP0002083, MetaCyc:PWY-6609, gomodel:YeastPathways_PWY-7220-1, MetaCyc:SALVADEHYPOX-PWY, gomodel:YeastPathways_PWY-7219, MetaCyc:PWY-5509, MetaCyc:PWY-7971, MetaCyc:PWY0-1241, GO:0019270, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, MetaCyc:PWY0-41, gomodel:YeastPathways_PWY-5694, MetaCyc:PWY-5705, gomodel:YeastPathways_PWY-5697, MetaCyc:GLCMANNANAUT-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, MetaCyc:PWY-5903, PathBank:SMP0002123, MetaCyc:PWY-2503, MetaCyc:PWY-1361, MetaCyc:CENTBENZCOA-PWY, MetaCyc:P321-PWY, gomodel:YeastPathways_PWY-5760-1, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, GO:0043427, gomodel:YeastPathways_PWY3O-4, MetaCyc:PWY-5415, MetaCyc:PWY-5420, MetaCyc:PWY-5417, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, gomodel:YeastPathways_PWY3O-15, MetaCyc:ARO-PWY, MIBiG:BGC0000829, MetaCyc:P2-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, MetaCyc:COA-PWY, PathBank:SMP0002070, PathBank:SMP0001910, GO:0036040, MetaCyc:CYANCAT-PWY, PathBank:SMP0000993, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:PWY-6376, KEGG:M00374, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-123, GO:0019305, MetaCyc:P101-PWY, KEGG:M00008, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-6075-1, MetaCyc:PWY-7255, gomodel:YeastPathways_PWY3O-4300, MetaCyc:PWY0-1477, MetaCyc:PWY0-1280, KEGG:M00373, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, MetaCyc:RIBOSYN2-PWY, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, MetaCyc:PWY0-521, GO:1901281, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:PWY-6223, gomodel:YeastPathways_GLUCONEO-PWY-1, WikiPathways:WP556, MetaCyc:PWY-5177, MetaCyc:GLUTATHIONESYN-PWY, gomodel:YeastPathways_PWYQT-4432, WikiPathways:WP392, gomodel:YeastPathways_PWY3O-48, MetaCyc:GLYCEROLMETAB-PWY, gomodel:YeastPathways_GLYCLEAV-PWY, WikiPathways:WP478, gomodel:YeastPathways_GLYCOLYSIS, MetaCyc:PWY-5744, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, GO:1902000, MetaCyc:PWY-5789, MetaCyc:PWY-6123, MetaCyc:PWY-6124, gomodel:YeastPathways_PWY3O-402, WikiPathways:WP178, PathBank:SMP0000991, MetaCyc:PWY0-1338, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:PWY0-301, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, PathBank:SMP0002051, MetaCyc:CYSTSYN-PWY, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, gomodel:YeastPathways_PWY-5344, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, MetaCyc:LYXMET-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, gomodel:YeastPathways_PROUT-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRPSYN-PWY, gomodel:YeastPathways_PWY-5651, MetaCyc:TYRSYN, gomodel:YeastPathways_PWY3O-4108, MetaCyc:VALSYN-PWY, gomodel:YeastPathways_PWY3O-4112, MIBiG:BGC0002072, gomodel:6882d2b800000609, MetaCyc:PWY0-501, gomodel:YeastPathways_PWY3O-1743, MetaCyc:PWY0-1300, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, gomodel:YeastPathways_PWY3O-64, MetaCyc:NONMEVIPP-PWY, gomodel:YeastPathways_PWY-901, MetaCyc:PWY-5386, MetaCyc:PWY-5453, PathBank:SMP0002077, MetaCyc:PWY-6048, gomodel:YeastPathways_IPPSYN-PWY, MetaCyc:PWY-6823, Reactome:R-MTU-936721, Reactome:R-MTU-936654, Reactome:R-MTU-936635, Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, gomodel:YeastPathways_PWY-2301, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, gomodel:YeastPathways_PWY-5653, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:PYRIDNUCSAL-PWY, gomodel:YeastPathways_PWY3O-4106, WikiPathways:WP171, MetaCyc:PWY-6993, MetaCyc:DENITRIFICATION-PWY, MetaCyc:PWY0-1352, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-1801, MetaCyc:NONOXIPENT-PWY, MetaCyc:PWY-8178, MetaCyc:OXIDATIVEPENT-PWY, WikiPathways:WP5060, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, MetaCyc:PWY-6289, MetaCyc:PWY0-321, gomodel:YeastPathways_PWY3O-4153, MetaCyc:2PHENDEG-PWY, MetaCyc:PWY-6534, MetaCyc:PWY0-1277, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, WikiPathways:WP71, MetaCyc:PANTO-PWY, MetaCyc:PWY1-3, MetaCyc:PPGPPMET-PWY, MetaCyc:P184-PWY, GO:0019618, MetaCyc:PWY-6336, MetaCyc:PWY-6019, PathBank:SMP0002089, PathBank:SMP0002067, GO:0042864, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-7181, GO:0010139, PathBank:SMP0002038, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_PWY3O-440, MetaCyc:PWY-7545, MetaCyc:QUINATEDEG-PWY, MetaCyc:PWY-6416, PathBank:SMP0002406, MetaCyc:RIBOKIN-PWY, MetaCyc:PWY-6151, gomodel:YeastPathways_PWY-5041, MetaCyc:PWY-8132, gomodel:YeastPathways_YEAST-RNT-SALV, MetaCyc:PWY0-1517, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:PWY-6419, gomodel:YeastPathways_PWY-5194-1, PathBank:SMP0002097, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, MIBiG:BGC0000852, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY0-43, gomodel:YeastPathways_PWY-5340, MetaCyc:PWY-7446, MetaCyc:PWY-7722, gomodel:YeastPathways_DETOX1-PWY, MetaCyc:PWY-5838, WikiPathways:WP296, gomodel:YeastPathways_PWY-6614, MetaCyc:PWY0-1433, gomodel:YeastPathways_PWY3O-50, PathBank:SMP0002042, gomodel:YeastPathways_PWY3O-17, MetaCyc:THISYN-PWY, PathBank:SMP0002055, MetaCyc:THIOREDOX-PWY, PathBank:SMP0000992, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY-5123, MetaCyc:TRESYN-PWY, WikiPathways:WP266, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-4120, WikiPathways:WP287, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, MetaCyc:PWY-5686, MetaCyc:PWY0-1471, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWY-6074-1 | Ruff static analysis passed with zero findings across the repository. |
+| Git diff whitespace and conflict marker check | passed | True | MetaCyc:PWY-5901, MetaCyc:PWY0-42, WikiPathways:WP5587, MetaCyc:PWY-2361, MetaCyc:PWY-6543, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-8130, MetaCyc:PWY-8131, gomodel:YeastPathways_PWY-6147, GO:0097288, MetaCyc:PWY0-1312, MetaCyc:ACETOACETATE-DEG-PWY, WikiPathways:WP5019, PathBank:SMP0002081, MetaCyc:P121-PWY, PathBank:SMP0002083, MetaCyc:PWY-6609, gomodel:YeastPathways_PWY-7220-1, MetaCyc:SALVADEHYPOX-PWY, gomodel:YeastPathways_PWY-7219, MetaCyc:PWY-5509, MetaCyc:PWY-7971, MetaCyc:PWY0-1241, GO:0019270, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, MetaCyc:PWY0-41, gomodel:YeastPathways_PWY-5694, MetaCyc:PWY-5705, gomodel:YeastPathways_PWY-5697, MetaCyc:GLCMANNANAUT-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, MetaCyc:PWY-5903, PathBank:SMP0002123, MetaCyc:PWY-2503, MetaCyc:PWY-1361, MetaCyc:CENTBENZCOA-PWY, MetaCyc:P321-PWY, gomodel:YeastPathways_PWY-5760-1, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, GO:0043427, gomodel:YeastPathways_PWY3O-4, MetaCyc:PWY-5415, MetaCyc:PWY-5420, MetaCyc:PWY-5417, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, gomodel:YeastPathways_PWY3O-15, MetaCyc:ARO-PWY, MIBiG:BGC0000829, MetaCyc:P2-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, MetaCyc:COA-PWY, PathBank:SMP0002070, PathBank:SMP0001910, GO:0036040, MetaCyc:CYANCAT-PWY, PathBank:SMP0000993, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:PWY-6376, KEGG:M00374, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-123, GO:0019305, MetaCyc:P101-PWY, KEGG:M00008, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-6075-1, MetaCyc:PWY-7255, gomodel:YeastPathways_PWY3O-4300, MetaCyc:PWY0-1477, MetaCyc:PWY0-1280, KEGG:M00373, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, MetaCyc:RIBOSYN2-PWY, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, MetaCyc:PWY0-521, GO:1901281, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:PWY-6223, gomodel:YeastPathways_GLUCONEO-PWY-1, WikiPathways:WP556, MetaCyc:PWY-5177, MetaCyc:GLUTATHIONESYN-PWY, gomodel:YeastPathways_PWYQT-4432, WikiPathways:WP392, gomodel:YeastPathways_PWY3O-48, MetaCyc:GLYCEROLMETAB-PWY, gomodel:YeastPathways_GLYCLEAV-PWY, WikiPathways:WP478, gomodel:YeastPathways_GLYCOLYSIS, MetaCyc:PWY-5744, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, GO:1902000, MetaCyc:PWY-5789, MetaCyc:PWY-6123, MetaCyc:PWY-6124, gomodel:YeastPathways_PWY3O-402, WikiPathways:WP178, PathBank:SMP0000991, MetaCyc:PWY0-1338, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:PWY0-301, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, PathBank:SMP0002051, MetaCyc:CYSTSYN-PWY, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, gomodel:YeastPathways_PWY-5344, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, MetaCyc:LYXMET-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, gomodel:YeastPathways_PROUT-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRPSYN-PWY, gomodel:YeastPathways_PWY-5651, MetaCyc:TYRSYN, gomodel:YeastPathways_PWY3O-4108, MetaCyc:VALSYN-PWY, gomodel:YeastPathways_PWY3O-4112, MIBiG:BGC0002072, gomodel:6882d2b800000609, MetaCyc:PWY0-501, gomodel:YeastPathways_PWY3O-1743, MetaCyc:PWY0-1300, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, gomodel:YeastPathways_PWY3O-64, MetaCyc:NONMEVIPP-PWY, gomodel:YeastPathways_PWY-901, MetaCyc:PWY-5386, MetaCyc:PWY-5453, PathBank:SMP0002077, MetaCyc:PWY-6048, gomodel:YeastPathways_IPPSYN-PWY, MetaCyc:PWY-6823, Reactome:R-MTU-936721, Reactome:R-MTU-936654, Reactome:R-MTU-936635, Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, gomodel:YeastPathways_PWY-2301, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, gomodel:YeastPathways_PWY-5653, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:PYRIDNUCSAL-PWY, gomodel:YeastPathways_PWY3O-4106, WikiPathways:WP171, MetaCyc:PWY-6993, MetaCyc:DENITRIFICATION-PWY, MetaCyc:PWY0-1352, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-1801, MetaCyc:NONOXIPENT-PWY, MetaCyc:PWY-8178, MetaCyc:OXIDATIVEPENT-PWY, WikiPathways:WP5060, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, MetaCyc:PWY-6289, MetaCyc:PWY0-321, gomodel:YeastPathways_PWY3O-4153, MetaCyc:2PHENDEG-PWY, MetaCyc:PWY-6534, MetaCyc:PWY0-1277, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, WikiPathways:WP71, MetaCyc:PANTO-PWY, MetaCyc:PWY1-3, MetaCyc:PPGPPMET-PWY, MetaCyc:P184-PWY, GO:0019618, MetaCyc:PWY-6336, MetaCyc:PWY-6019, PathBank:SMP0002089, PathBank:SMP0002067, GO:0042864, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-7181, GO:0010139, PathBank:SMP0002038, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_PWY3O-440, MetaCyc:PWY-7545, MetaCyc:QUINATEDEG-PWY, MetaCyc:PWY-6416, PathBank:SMP0002406, MetaCyc:RIBOKIN-PWY, MetaCyc:PWY-6151, gomodel:YeastPathways_PWY-5041, MetaCyc:PWY-8132, gomodel:YeastPathways_YEAST-RNT-SALV, MetaCyc:PWY0-1517, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:PWY-6419, gomodel:YeastPathways_PWY-5194-1, PathBank:SMP0002097, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, MIBiG:BGC0000852, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY0-43, gomodel:YeastPathways_PWY-5340, MetaCyc:PWY-7446, MetaCyc:PWY-7722, gomodel:YeastPathways_DETOX1-PWY, MetaCyc:PWY-5838, WikiPathways:WP296, gomodel:YeastPathways_PWY-6614, MetaCyc:PWY0-1433, gomodel:YeastPathways_PWY3O-50, PathBank:SMP0002042, gomodel:YeastPathways_PWY3O-17, MetaCyc:THISYN-PWY, PathBank:SMP0002055, MetaCyc:THIOREDOX-PWY, PathBank:SMP0000992, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY-5123, MetaCyc:TRESYN-PWY, WikiPathways:WP266, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-4120, WikiPathways:WP287, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, MetaCyc:PWY-5686, MetaCyc:PWY0-1471, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWY-6074-1 | Clean worktree diff check with zero whitespace or conflict errors. |
+| Structured record-review bundle validator | passed | True | MetaCyc:PWY-5901, MetaCyc:PWY0-42, WikiPathways:WP5587, MetaCyc:PWY-2361, MetaCyc:PWY-6543, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-8130, MetaCyc:PWY-8131, gomodel:YeastPathways_PWY-6147, GO:0097288, MetaCyc:PWY0-1312, MetaCyc:ACETOACETATE-DEG-PWY, WikiPathways:WP5019, PathBank:SMP0002081, MetaCyc:P121-PWY, PathBank:SMP0002083, MetaCyc:PWY-6609, gomodel:YeastPathways_PWY-7220-1, MetaCyc:SALVADEHYPOX-PWY, gomodel:YeastPathways_PWY-7219, MetaCyc:PWY-5509, MetaCyc:PWY-7971, MetaCyc:PWY0-1241, GO:0019270, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, MetaCyc:PWY0-41, gomodel:YeastPathways_PWY-5694, MetaCyc:PWY-5705, gomodel:YeastPathways_PWY-5697, MetaCyc:GLCMANNANAUT-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, MetaCyc:PWY-5903, PathBank:SMP0002123, MetaCyc:PWY-2503, MetaCyc:PWY-1361, MetaCyc:CENTBENZCOA-PWY, MetaCyc:P321-PWY, gomodel:YeastPathways_PWY-5760-1, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, GO:0043427, gomodel:YeastPathways_PWY3O-4, MetaCyc:PWY-5415, MetaCyc:PWY-5420, MetaCyc:PWY-5417, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, gomodel:YeastPathways_PWY3O-15, MetaCyc:ARO-PWY, MIBiG:BGC0000829, MetaCyc:P2-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, MetaCyc:COA-PWY, PathBank:SMP0002070, PathBank:SMP0001910, GO:0036040, MetaCyc:CYANCAT-PWY, PathBank:SMP0000993, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:PWY-6376, KEGG:M00374, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-123, GO:0019305, MetaCyc:P101-PWY, KEGG:M00008, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-6075-1, MetaCyc:PWY-7255, gomodel:YeastPathways_PWY3O-4300, MetaCyc:PWY0-1477, MetaCyc:PWY0-1280, KEGG:M00373, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, MetaCyc:RIBOSYN2-PWY, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, MetaCyc:PWY0-521, GO:1901281, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:PWY-6223, gomodel:YeastPathways_GLUCONEO-PWY-1, WikiPathways:WP556, MetaCyc:PWY-5177, MetaCyc:GLUTATHIONESYN-PWY, gomodel:YeastPathways_PWYQT-4432, WikiPathways:WP392, gomodel:YeastPathways_PWY3O-48, MetaCyc:GLYCEROLMETAB-PWY, gomodel:YeastPathways_GLYCLEAV-PWY, WikiPathways:WP478, gomodel:YeastPathways_GLYCOLYSIS, MetaCyc:PWY-5744, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, GO:1902000, MetaCyc:PWY-5789, MetaCyc:PWY-6123, MetaCyc:PWY-6124, gomodel:YeastPathways_PWY3O-402, WikiPathways:WP178, PathBank:SMP0000991, MetaCyc:PWY0-1338, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:PWY0-301, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, PathBank:SMP0002051, MetaCyc:CYSTSYN-PWY, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, gomodel:YeastPathways_PWY-5344, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, MetaCyc:LYXMET-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, gomodel:YeastPathways_PROUT-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRPSYN-PWY, gomodel:YeastPathways_PWY-5651, MetaCyc:TYRSYN, gomodel:YeastPathways_PWY3O-4108, MetaCyc:VALSYN-PWY, gomodel:YeastPathways_PWY3O-4112, MIBiG:BGC0002072, gomodel:6882d2b800000609, MetaCyc:PWY0-501, gomodel:YeastPathways_PWY3O-1743, MetaCyc:PWY0-1300, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, gomodel:YeastPathways_PWY3O-64, MetaCyc:NONMEVIPP-PWY, gomodel:YeastPathways_PWY-901, MetaCyc:PWY-5386, MetaCyc:PWY-5453, PathBank:SMP0002077, MetaCyc:PWY-6048, gomodel:YeastPathways_IPPSYN-PWY, MetaCyc:PWY-6823, Reactome:R-MTU-936721, Reactome:R-MTU-936654, Reactome:R-MTU-936635, Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, gomodel:YeastPathways_PWY-2301, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, gomodel:YeastPathways_PWY-5653, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:PYRIDNUCSAL-PWY, gomodel:YeastPathways_PWY3O-4106, WikiPathways:WP171, MetaCyc:PWY-6993, MetaCyc:DENITRIFICATION-PWY, MetaCyc:PWY0-1352, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-1801, MetaCyc:NONOXIPENT-PWY, MetaCyc:PWY-8178, MetaCyc:OXIDATIVEPENT-PWY, WikiPathways:WP5060, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, MetaCyc:PWY-6289, MetaCyc:PWY0-321, gomodel:YeastPathways_PWY3O-4153, MetaCyc:2PHENDEG-PWY, MetaCyc:PWY-6534, MetaCyc:PWY0-1277, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, WikiPathways:WP71, MetaCyc:PANTO-PWY, MetaCyc:PWY1-3, MetaCyc:PPGPPMET-PWY, MetaCyc:P184-PWY, GO:0019618, MetaCyc:PWY-6336, MetaCyc:PWY-6019, PathBank:SMP0002089, PathBank:SMP0002067, GO:0042864, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-7181, GO:0010139, PathBank:SMP0002038, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_PWY3O-440, MetaCyc:PWY-7545, MetaCyc:QUINATEDEG-PWY, MetaCyc:PWY-6416, PathBank:SMP0002406, MetaCyc:RIBOKIN-PWY, MetaCyc:PWY-6151, gomodel:YeastPathways_PWY-5041, MetaCyc:PWY-8132, gomodel:YeastPathways_YEAST-RNT-SALV, MetaCyc:PWY0-1517, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:PWY-6419, gomodel:YeastPathways_PWY-5194-1, PathBank:SMP0002097, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, MIBiG:BGC0000852, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY0-43, gomodel:YeastPathways_PWY-5340, MetaCyc:PWY-7446, MetaCyc:PWY-7722, gomodel:YeastPathways_DETOX1-PWY, MetaCyc:PWY-5838, WikiPathways:WP296, gomodel:YeastPathways_PWY-6614, MetaCyc:PWY0-1433, gomodel:YeastPathways_PWY3O-50, PathBank:SMP0002042, gomodel:YeastPathways_PWY3O-17, MetaCyc:THISYN-PWY, PathBank:SMP0002055, MetaCyc:THIOREDOX-PWY, PathBank:SMP0000992, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY-5123, MetaCyc:TRESYN-PWY, WikiPathways:WP266, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-4120, WikiPathways:WP287, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, MetaCyc:PWY-5686, MetaCyc:PWY0-1471, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWY-6074-1 | Validated 211 retained structured review bundles under reviews/structured/. |
+
+## Scientific And Domain Assessments
+
+### Pathway identity, taxon grounding, authority-verified CURIEs, causal graph connectivity, participant/reaction typing, RHEA directionality, and edge-level evidence across all 277 maintained records
+
+identity: supported. Targets: MetaCyc:PWY-5901, MetaCyc:PWY0-42, WikiPathways:WP5587, MetaCyc:PWY-2361, MetaCyc:PWY-6543, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-8130, MetaCyc:PWY-8131, gomodel:YeastPathways_PWY-6147, GO:0097288, MetaCyc:PWY0-1312, MetaCyc:ACETOACETATE-DEG-PWY, WikiPathways:WP5019, PathBank:SMP0002081, MetaCyc:P121-PWY, PathBank:SMP0002083, MetaCyc:PWY-6609, gomodel:YeastPathways_PWY-7220-1, MetaCyc:SALVADEHYPOX-PWY, gomodel:YeastPathways_PWY-7219, MetaCyc:PWY-5509, MetaCyc:PWY-7971, MetaCyc:PWY0-1241, GO:0019270, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, MetaCyc:PWY0-41, gomodel:YeastPathways_PWY-5694, MetaCyc:PWY-5705, gomodel:YeastPathways_PWY-5697, MetaCyc:GLCMANNANAUT-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, MetaCyc:PWY-5903, PathBank:SMP0002123, MetaCyc:PWY-2503, MetaCyc:PWY-1361, MetaCyc:CENTBENZCOA-PWY, MetaCyc:P321-PWY, gomodel:YeastPathways_PWY-5760-1, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, GO:0043427, gomodel:YeastPathways_PWY3O-4, MetaCyc:PWY-5415, MetaCyc:PWY-5420, MetaCyc:PWY-5417, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, gomodel:YeastPathways_PWY3O-15, MetaCyc:ARO-PWY, MIBiG:BGC0000829, MetaCyc:P2-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, MetaCyc:COA-PWY, PathBank:SMP0002070, PathBank:SMP0001910, GO:0036040, MetaCyc:CYANCAT-PWY, PathBank:SMP0000993, MetaCyc:DARABCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:XYLCAT-PWY, MetaCyc:PWY-6376, KEGG:M00374, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-123, GO:0019305, MetaCyc:P101-PWY, KEGG:M00008, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-6075-1, MetaCyc:PWY-7255, gomodel:YeastPathways_PWY3O-4300, MetaCyc:PWY0-1477, MetaCyc:PWY0-1280, KEGG:M00373, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, MetaCyc:RIBOSYN2-PWY, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY-1801-1, MetaCyc:PWY0-521, GO:1901281, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:PWY-6223, gomodel:YeastPathways_GLUCONEO-PWY-1, WikiPathways:WP556, MetaCyc:PWY-5177, MetaCyc:GLUTATHIONESYN-PWY, gomodel:YeastPathways_PWYQT-4432, WikiPathways:WP392, gomodel:YeastPathways_PWY3O-48, MetaCyc:GLYCEROLMETAB-PWY, gomodel:YeastPathways_GLYCLEAV-PWY, WikiPathways:WP478, gomodel:YeastPathways_GLYCOLYSIS, MetaCyc:PWY-5744, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:PWY-6579, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, GO:1902000, MetaCyc:PWY-5789, MetaCyc:PWY-6123, MetaCyc:PWY-6124, gomodel:YeastPathways_PWY3O-402, WikiPathways:WP178, PathBank:SMP0000991, MetaCyc:PWY0-1338, MetaCyc:ARABCAT-PWY, MetaCyc:ARGSYN-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, MetaCyc:AST-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:PWY0-301, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, PathBank:SMP0002051, MetaCyc:CYSTSYN-PWY, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, MetaCyc:FUCCAT-PWY, MetaCyc:HISTSYN-PWY, gomodel:YeastPathways_PWY-5344, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, MetaCyc:LYXMET-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:PHESYN, MetaCyc:PROSYN-PWY, gomodel:YeastPathways_PROUT-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:SERSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRPSYN-PWY, gomodel:YeastPathways_PWY-5651, MetaCyc:TYRSYN, gomodel:YeastPathways_PWY3O-4108, MetaCyc:VALSYN-PWY, gomodel:YeastPathways_PWY3O-4112, MIBiG:BGC0002072, gomodel:6882d2b800000609, MetaCyc:PWY0-501, gomodel:YeastPathways_PWY3O-1743, MetaCyc:PWY0-1300, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, gomodel:YeastPathways_PWY3O-64, MetaCyc:NONMEVIPP-PWY, gomodel:YeastPathways_PWY-901, MetaCyc:PWY-5386, MetaCyc:PWY-5453, PathBank:SMP0002077, MetaCyc:PWY-6048, gomodel:YeastPathways_IPPSYN-PWY, MetaCyc:PWY-6823, Reactome:R-MTU-936721, Reactome:R-MTU-936654, Reactome:R-MTU-936635, Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, gomodel:YeastPathways_PWY-2301, MetaCyc:PWY-8383, MetaCyc:GLUAMCAT-PWY, gomodel:YeastPathways_PWY-5653, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:PYRIDNUCSAL-PWY, gomodel:YeastPathways_PWY3O-4106, WikiPathways:WP171, MetaCyc:PWY-6993, MetaCyc:DENITRIFICATION-PWY, MetaCyc:PWY0-1352, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-1801, MetaCyc:NONOXIPENT-PWY, MetaCyc:PWY-8178, MetaCyc:OXIDATIVEPENT-PWY, WikiPathways:WP5060, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, MetaCyc:PWY-6289, MetaCyc:PWY0-321, gomodel:YeastPathways_PWY3O-4153, MetaCyc:2PHENDEG-PWY, MetaCyc:PWY-6534, MetaCyc:PWY0-1277, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, WikiPathways:WP71, MetaCyc:PANTO-PWY, MetaCyc:PWY1-3, MetaCyc:PPGPPMET-PWY, MetaCyc:P184-PWY, GO:0019618, MetaCyc:PWY-6336, MetaCyc:PWY-6019, PathBank:SMP0002089, PathBank:SMP0002067, GO:0042864, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:PLPSAL-PWY, MetaCyc:PWY-7181, GO:0010139, PathBank:SMP0002038, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_PWY3O-440, MetaCyc:PWY-7545, MetaCyc:QUINATEDEG-PWY, MetaCyc:PWY-6416, PathBank:SMP0002406, MetaCyc:RIBOKIN-PWY, MetaCyc:PWY-6151, gomodel:YeastPathways_PWY-5041, MetaCyc:PWY-8132, gomodel:YeastPathways_YEAST-RNT-SALV, MetaCyc:PWY0-1517, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:PWY-6419, gomodel:YeastPathways_PWY-5194-1, PathBank:SMP0002097, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, MIBiG:BGC0000852, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY0-43, gomodel:YeastPathways_PWY-5340, MetaCyc:PWY-7446, MetaCyc:PWY-7722, gomodel:YeastPathways_DETOX1-PWY, MetaCyc:PWY-5838, WikiPathways:WP296, gomodel:YeastPathways_PWY-6614, MetaCyc:PWY0-1433, gomodel:YeastPathways_PWY3O-50, PathBank:SMP0002042, gomodel:YeastPathways_PWY3O-17, MetaCyc:THISYN-PWY, PathBank:SMP0002055, MetaCyc:THIOREDOX-PWY, PathBank:SMP0000992, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_PWY-5123, MetaCyc:TRESYN-PWY, WikiPathways:WP266, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-4120, WikiPathways:WP287, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, MetaCyc:PWY-5686, MetaCyc:PWY0-1471, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWY-6074-1.
+
+All 277 maintained pathway records in data/pathways/*.yaml (including PathBank:SMP0001910 added in Cycle 8 Stage 1, 8 records enriched in Cycle 8 Stage 2, and 6 records enriched in Cycle 8 Stage 3) pass closed LinkML schema validation, authority snapshot checks, 100% explicit reaction category typing (1,630/1,630: 1,592 molecular_activity, 36 pathway, 2 biological_process), 100% explicit RHEA:* directionality (731/731 with 0 cross-record direction conflicts), 100% concrete participant category typing (7,846/7,846 concrete participants + 5 contract-verified generic gomodel:* physical participant instances), 100% participant graph connectivity (0 orphan participants across 7,851 entries), 0 reflexive self-loops (0/14,730), 0 biolink:Protein&#124;biolink:SmallMolecule category conflicts in pages/downloads/nodes.tsv (0/5,457), 0 pure chemical_entity vs small_molecule biolink:ChemicalEntity&#124;biolink:SmallMolecule merges in pages/downloads/nodes.tsv (0/5,457), 0 bare CURIE reference titles where title == id (0/7,099), and 100% edge-level evidence grounding (14,730 mechanistic_edges, 22,624 edge/qualifier evidence items, 22,832 total evidence blocks).
+
+### 4 concrete CHEBI:* small-molecule effector participants typed as generic category: chemical_entity across 4 MetaCyc records and 17 structured MetaCyc:* reaction/complex references[] entries with raw local-ID titles (title == local_id) across 4 MetaCyc records
+
+representation: concern. Targets: MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, MetaCyc:PWY-7545, MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, MetaCyc:DENITRIFICATION-PWY.
+
+Across 4 maintained MetaCyc pathway records (MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, and MetaCyc:PWY-7545), 4 concrete CHEBI:* small-molecule effector participants (CHEBI:59640 N-acetylglucosamine, CHEBI:22651 ascorbate in two pathways, and CHEBI:203056 Microcin J25) with defined molecular formulas participating in activates or inhibits edges are typed as generic category: chemical_entity instead of category: small_molecule (F-C8S4-001). Across 4 maintained MetaCyc pathway records (MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, and MetaCyc:DENITRIFICATION-PWY), 17 structured MetaCyc:* reaction and enzyme-complex references[] entries store an unprefixed raw database frame identifier where title == local_id instead of a descriptive reaction or enzyme complex title (F-C8S4-002).
+
+## Findings
+
+### F-C8S4-001: Four maintained MetaCyc pathway records type 4 concrete CHEBI:* small-molecule effector participants as generic category: chemical_entity instead of category: small_molecule
+
+minor / open / confirmed; issue key: concrete-chebi-small-molecule-participants-typed-as-chemical-entity-4-metacyc-records.
+
+Across all 68 category: chemical_entity participant entries in the 277-record corpus, 64 represent genuine chemical classes, generic electron/methyl donors or acceptors, carrier-protein conjugates, or amino-acid residues, whereas the remaining 4 CHEBI:* participant entries across 4 maintained MetaCyc pathway records—data/pathways/adenosine-nucleotides-degradation-ii.yaml (MetaCyc:SALVADEHYPOX-PWY: participants[62] CHEBI:59640 N-acetylglucosamine, formula C8H15NO6, activates Entrez:945283 in salvadehypox-edge-087), data/pathways/protocatechuate-meta-cleavage.yaml (MetaCyc:P184-PWY: participants[61] CHEBI:22651 ascorbate, formula C6H7O6-, activates MetaCyc:CPLX-2701 in protocatechuate-meta-edge-075), data/pathways/protocatechuate-para-cleavage.yaml (MetaCyc:PWY-6336: participants[24] CHEBI:22651 ascorbate, formula C6H7O6-, activates MetaCyc:CPLX-7915 in protocatechuate-para-edge-035), and data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml (MetaCyc:PWY-7545: participants[27] CHEBI:203056 Microcin J25, formula C100H139N23O27, inhibits EcoCyc:CYT-D-UBIOX-CPLX in pyruvate-bd-edge-030)—are concrete small-molecule effectors typed as generic category: chemical_entity instead of category: small_molecule, causing CHEBI:59640, CHEBI:22651, and CHEBI:203056 to export as generic biolink:ChemicalEntity instead of biolink:SmallMolecule in pages/downloads/nodes.tsv.
+
+### F-C8S4-002: Four maintained MetaCyc pathway records retain 17 structured MetaCyc:* reaction and enzyme-complex references[] entries with raw unprefixed database frame ID titles (title == local_id) instead of descriptive titles
+
+minor / open / confirmed; issue key: raw-local-id-structured-reference-titles-4-metacyc-records.
+
+Across 4 maintained MetaCyc pathway records—data/pathways/guanine-and-guanosine-salvage.yaml (MetaCyc:PWY-6579: references[3..5] MetaCyc:RXN0-5199, MetaCyc:GUANPRIBOSYLTRAN-RXN, MetaCyc:GUANOSINEKIN-RXN), data/pathways/sulfoquinovose-degradation-i.yaml (MetaCyc:PWY-7446: references[1..4] MetaCyc:RXN-15296, MetaCyc:RXN-15297, MetaCyc:RXN-15298, MetaCyc:RXN-15299), data/pathways/sulfoquinovose-degradation-ii.yaml (MetaCyc:PWY-7722: references[1..5] MetaCyc:RXN-17096, MetaCyc:RXN-17095, MetaCyc:RXN-17097, MetaCyc:RXN-17098, MetaCyc:RXN-17101), and data/pathways/nitrate-reduction-i-denitrification.yaml (MetaCyc:DENITRIFICATION-PWY: references[1, 3, 4, 5, 63] MetaCyc:RXN-11236, MetaCyc:RXN-15838, MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN, MetaCyc:RXN-12130, and MetaCyc:CPLX-1701)—17 structured MetaCyc:* reaction and enzyme-complex references[] entries store their unprefixed raw database frame identifier (title == local_id) instead of a descriptive reaction or enzyme complex title.
+
+## Recommended Actions And Acceptance Checks
+
+### A-C8S4-001
+
+Across the 4 affected MetaCyc pathway records (data/pathways/adenosine-nucleotides-degradation-ii.yaml participants[62] CHEBI:59640, data/pathways/protocatechuate-meta-cleavage.yaml participants[61] CHEBI:22651, data/pathways/protocatechuate-para-cleavage.yaml participants[24] CHEBI:22651, and data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml participants[27] CHEBI:203056), change category from chemical_entity to small_molecule on all 4 concrete CHEBI:* small-molecule effector participants, record curation history entries under history/records/&lt;slug&gt;/, and regenerate pages/ and output/kgx/.
+
+- Zero CHEBI:* concrete small-molecule participants with defined molecular formulas are typed as category: chemical_entity across data/pathways/*.yaml.
+- CHEBI:59640, CHEBI:22651, and CHEBI:203056 export with category biolink:SmallMolecule in pages/downloads/nodes.tsv.
+- .venv/bin/pathwaymech-run-qc and .venv/bin/pytest -q exit 0.
+
+### A-C8S4-002
+
+Across the 4 affected MetaCyc pathway records (data/pathways/guanine-and-guanosine-salvage.yaml references[3..5], data/pathways/sulfoquinovose-degradation-i.yaml references[1..4], data/pathways/sulfoquinovose-degradation-ii.yaml references[1..5], and data/pathways/nitrate-reduction-i-denitrification.yaml references[1, 3, 4, 5, 63]), replace all 17 raw unprefixed database frame ID titles (title == local_id) on structured MetaCyc:* reaction and enzyme-complex references[] entries with descriptive MetaCyc reaction and enzyme-complex titles, record curation history entries under history/records/&lt;slug&gt;/, and regenerate pages/.
+
+- Zero structured MetaCyc:* reaction or enzyme-complex references[] entries in data/pathways/*.yaml have raw unprefixed frame ID titles (title == local_id).
+- .venv/bin/pathwaymech-run-qc and .venv/bin/pytest -q exit 0.
+
+## Category Boundaries
+
+- retain: GO:0010139, GO:0019270, GO:0019305, GO:0019618, GO:0036040, GO:0042864, GO:0043427, GO:0097288, GO:1901281, GO:1902000. Retain all 10 maintained GO:* biological process pathway records as distinct, non-duplicate source-scoped pathway definitions verified against GO authority snapshots and docs/HARMONIZATION.md.
+- retain: KEGG:M00008, KEGG:M00373, KEGG:M00374. Retain all 3 maintained KEGG:* pathway records as distinct, non-duplicate source-scoped pathway definitions verified against KEGG authority snapshots and docs/HARMONIZATION.md.
+- retain: MIBiG:BGC0000829, MIBiG:BGC0000852, MIBiG:BGC0002072. Retain all 3 maintained MIBiG:* biosynthetic gene cluster pathway records as distinct, non-duplicate source-scoped pathway definitions verified against MIBiG authority snapshots and docs/HARMONIZATION.md.
+- retain: MetaCyc:2PHENDEG-PWY, MetaCyc:ACETOACETATE-DEG-PWY, MetaCyc:ARABCAT-PWY, MetaCyc:ARGDEG-III-PWY, MetaCyc:ARGDEGRAD-PWY, MetaCyc:ARGSYN-PWY, MetaCyc:ARO-PWY, MetaCyc:AST-PWY, MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:CALVIN-PWY, MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY, MetaCyc:CENTBENZCOA-PWY, MetaCyc:COA-PWY, MetaCyc:CYANCAT-PWY, MetaCyc:CYSTSYN-PWY, MetaCyc:DAPLYSINESYN-PWY, MetaCyc:DARABCAT-PWY, MetaCyc:DENITRIFICATION-PWY, MetaCyc:FUCCAT-PWY, MetaCyc:GALACTARDEG-PWY, MetaCyc:GALACTCAT-PWY, MetaCyc:GALACTUROCAT-PWY, MetaCyc:GALLATE-DEGRADATION-I-PWY, MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:GLCMANNANAUT-PWY, MetaCyc:GLUAMCAT-PWY, MetaCyc:GLUCARDEG-PWY, MetaCyc:GLUTATHIONESYN-PWY, MetaCyc:GLUTORN-PWY, MetaCyc:GLYCEROLMETAB-PWY, MetaCyc:GLYOXYLATE-BYPASS, MetaCyc:HISTSYN-PWY, MetaCyc:HOMOSER-METSYN-PWY, MetaCyc:HOMOSER-THRESYN-PWY, MetaCyc:HOMOSERSYN-PWY, MetaCyc:ILEUSYN-PWY, MetaCyc:LEUSYN-PWY, MetaCyc:LYXMET-PWY, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, MetaCyc:NADPHOS-DEPHOS-PWY, MetaCyc:NONMEVIPP-PWY, MetaCyc:NONOXIPENT-PWY, MetaCyc:OXIDATIVEPENT-PWY, MetaCyc:P101-PWY, MetaCyc:P121-PWY, MetaCyc:P184-PWY, MetaCyc:P2-PWY, MetaCyc:P321-PWY, MetaCyc:PANTO-PWY, MetaCyc:PHESYN, MetaCyc:PLPSAL-PWY, MetaCyc:PPGPPMET-PWY, MetaCyc:PROSYN-PWY, MetaCyc:PWY-1361, MetaCyc:PWY-2361, MetaCyc:PWY-2503, MetaCyc:PWY-5177, MetaCyc:PWY-5386, MetaCyc:PWY-5415, MetaCyc:PWY-5417, MetaCyc:PWY-5420, MetaCyc:PWY-5453, MetaCyc:PWY-5509, MetaCyc:PWY-5686, MetaCyc:PWY-5705, MetaCyc:PWY-5744, MetaCyc:PWY-5789, MetaCyc:PWY-5838, MetaCyc:PWY-5901, MetaCyc:PWY-5903, MetaCyc:PWY-6019, MetaCyc:PWY-6048, MetaCyc:PWY-6121, MetaCyc:PWY-6122, MetaCyc:PWY-6123, MetaCyc:PWY-6124, MetaCyc:PWY-6151, MetaCyc:PWY-6223, MetaCyc:PWY-6289, MetaCyc:PWY-6336, MetaCyc:PWY-6376, MetaCyc:PWY-6416, MetaCyc:PWY-6419, MetaCyc:PWY-6534, MetaCyc:PWY-6543, MetaCyc:PWY-6579, MetaCyc:PWY-6609, MetaCyc:PWY-6823, MetaCyc:PWY-6993, MetaCyc:PWY-7181, MetaCyc:PWY-7255, MetaCyc:PWY-7446, MetaCyc:PWY-7545, MetaCyc:PWY-7722, MetaCyc:PWY-7971, MetaCyc:PWY-7990, MetaCyc:PWY-8008, MetaCyc:PWY-8130, MetaCyc:PWY-8131, MetaCyc:PWY-8132, MetaCyc:PWY-8178, MetaCyc:PWY-8383, MetaCyc:PWY0-1241, MetaCyc:PWY0-1277, MetaCyc:PWY0-1280, MetaCyc:PWY0-1300, MetaCyc:PWY0-1312, MetaCyc:PWY0-1338, MetaCyc:PWY0-1352, MetaCyc:PWY0-1433, MetaCyc:PWY0-1471, MetaCyc:PWY0-1477, MetaCyc:PWY0-1517, MetaCyc:PWY0-301, MetaCyc:PWY0-321, MetaCyc:PWY0-41, MetaCyc:PWY0-42, MetaCyc:PWY0-43, MetaCyc:PWY0-501, MetaCyc:PWY0-521, MetaCyc:PWY1-3, MetaCyc:PYRIDNUCSAL-PWY, MetaCyc:PYRIDNUCSYN-PWY, MetaCyc:PYRIDOXSYN-PWY, MetaCyc:QUINATEDEG-PWY, MetaCyc:RHAMCAT-PWY, MetaCyc:RIBOKIN-PWY, MetaCyc:RIBOSYN2-PWY, MetaCyc:SALVADEHYPOX-PWY, MetaCyc:SERSYN-PWY, MetaCyc:SHIKIMATEDEG-PWY, MetaCyc:THIOREDOX-PWY, MetaCyc:THISYN-PWY, MetaCyc:THRDLCTCAT-PWY, MetaCyc:TRESYN-PWY, MetaCyc:TRPSYN-PWY, MetaCyc:TYRSYN, MetaCyc:VALSYN-PWY, MetaCyc:XYLCAT-PWY. Retain all 140 maintained MetaCyc:* pathway records as distinct, non-duplicate source-scoped pathway definitions verified against MetaCyc authority snapshots and docs/HARMONIZATION.md.
+- retain: PathBank:SMP0000991, PathBank:SMP0000992, PathBank:SMP0000993, PathBank:SMP0001910, PathBank:SMP0002038, PathBank:SMP0002042, PathBank:SMP0002051, PathBank:SMP0002055, PathBank:SMP0002067, PathBank:SMP0002070, PathBank:SMP0002077, PathBank:SMP0002081, PathBank:SMP0002083, PathBank:SMP0002089, PathBank:SMP0002097, PathBank:SMP0002123, PathBank:SMP0002406. Retain all 17 maintained PathBank:* pathway records (including PathBank:SMP0001910 added in Cycle 8 Stage 1) as distinct, non-duplicate source-scoped pathway definitions verified against PathBank authority snapshots and docs/HARMONIZATION.md.
+- retain: Reactome:R-MTU-868688, Reactome:R-MTU-879299, Reactome:R-MTU-879325, Reactome:R-MTU-936635, Reactome:R-MTU-936654, Reactome:R-MTU-936721. Retain all 6 maintained Reactome:* pathway records as distinct, non-duplicate source-scoped pathway definitions verified against Reactome authority snapshots and docs/HARMONIZATION.md.
+- retain: WikiPathways:WP171, WikiPathways:WP178, WikiPathways:WP266, WikiPathways:WP287, WikiPathways:WP296, WikiPathways:WP392, WikiPathways:WP478, WikiPathways:WP5019, WikiPathways:WP5060, WikiPathways:WP556, WikiPathways:WP5587, WikiPathways:WP71. Retain all 12 maintained WikiPathways:* pathway records as distinct, non-duplicate source-scoped pathway definitions verified against WikiPathways authority snapshots and docs/HARMONIZATION.md.
+- retain: gomodel:6882d2b800000609, gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY, gomodel:YeastPathways_ARGSPECAT-PWY, gomodel:YeastPathways_ARGSYNBSUB-PWY, gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1, gomodel:YeastPathways_ASPARAGINE-DEG2-PWY, gomodel:YeastPathways_ASPBIO-PWY, gomodel:YeastPathways_BSUBPOLYAMSYN-PWY, gomodel:YeastPathways_CITRUL-BIO2-PWY, gomodel:YeastPathways_DETOX1-PWY, gomodel:YeastPathways_FASYN-ELONG2-PWY, gomodel:YeastPathways_GLUCONEO-PWY-1, gomodel:YeastPathways_GLYCLEAV-PWY, gomodel:YeastPathways_GLYCOLYSIS, gomodel:YeastPathways_HEME-BIOSYNTHESIS-II, gomodel:YeastPathways_HEXPPSYN-PWY-2, gomodel:YeastPathways_HOMOCYS-CYS-CONVERT, gomodel:YeastPathways_HOMOCYSDEGR-PWY-1, gomodel:YeastPathways_IPPSYN-PWY, gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2, gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION, gomodel:YeastPathways_PHOSLIPSYN2-PWY-1, gomodel:YeastPathways_PROUT-PWY, gomodel:YeastPathways_PWY-1801-1, gomodel:YeastPathways_PWY-2301, gomodel:YeastPathways_PWY-5041, gomodel:YeastPathways_PWY-5080-1, gomodel:YeastPathways_PWY-5123, gomodel:YeastPathways_PWY-5194-1, gomodel:YeastPathways_PWY-5340, gomodel:YeastPathways_PWY-5344, gomodel:YeastPathways_PWY-5651, gomodel:YeastPathways_PWY-5653, gomodel:YeastPathways_PWY-5669, gomodel:YeastPathways_PWY-5670-1, gomodel:YeastPathways_PWY-5694, gomodel:YeastPathways_PWY-5697, gomodel:YeastPathways_PWY-5703, gomodel:YeastPathways_PWY-5760-1, gomodel:YeastPathways_PWY-6074-1, gomodel:YeastPathways_PWY-6075-1, gomodel:YeastPathways_PWY-6147, gomodel:YeastPathways_PWY-6614, gomodel:YeastPathways_PWY-7176, gomodel:YeastPathways_PWY-7219, gomodel:YeastPathways_PWY-7220-1, gomodel:YeastPathways_PWY-7221, gomodel:YeastPathways_PWY-901, gomodel:YeastPathways_PWY3O-123, gomodel:YeastPathways_PWY3O-15, gomodel:YeastPathways_PWY3O-1565, gomodel:YeastPathways_PWY3O-17, gomodel:YeastPathways_PWY3O-1743, gomodel:YeastPathways_PWY3O-1801, gomodel:YeastPathways_PWY3O-214, gomodel:YeastPathways_PWY3O-242, gomodel:YeastPathways_PWY3O-259, gomodel:YeastPathways_PWY3O-4, gomodel:YeastPathways_PWY3O-402, gomodel:YeastPathways_PWY3O-4105, gomodel:YeastPathways_PWY3O-4106, gomodel:YeastPathways_PWY3O-4108, gomodel:YeastPathways_PWY3O-4112, gomodel:YeastPathways_PWY3O-4120, gomodel:YeastPathways_PWY3O-4153, gomodel:YeastPathways_PWY3O-4300, gomodel:YeastPathways_PWY3O-440, gomodel:YeastPathways_PWY3O-450, gomodel:YeastPathways_PWY3O-48, gomodel:YeastPathways_PWY3O-50, gomodel:YeastPathways_PWY3O-5268, gomodel:YeastPathways_PWY3O-64, gomodel:YeastPathways_PWY3O-6407, gomodel:YeastPathways_PWY3O-6499, gomodel:YeastPathways_PWY3O-697, gomodel:YeastPathways_PWY3O-8, gomodel:YeastPathways_PWYQT-4432, gomodel:YeastPathways_PYRUVDEHYD-PWY, gomodel:YeastPathways_SO4ASSIM-PWY, gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1, gomodel:YeastPathways_THREOCAT2-PWY, gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY, gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY, gomodel:YeastPathways_YEAST-FAO-PWY, gomodel:YeastPathways_YEAST-GALACT-METAB-PWY, gomodel:YeastPathways_YEAST-RNT-SALV. Retain all 86 maintained gomodel:* pathway records as distinct, non-duplicate source-scoped pathway definitions verified against gomodel authority snapshots and docs/HARMONIZATION.md.
+- retain: GO:0036040, PathBank:SMP0001910. Retain PathBank:SMP0001910 (curcumin-degradation-escherichia-coli.yaml, added in Cycle 8 Stage 1) alongside GO:0036040 (curcumin-degradation.yaml, curcumin catabolic process) as distinct authority-scoped pathway definitions: PathBank:SMP0001910 captures the native PathBank PW001896.owl BioPAX boundary in Escherichia coli (including explicit BioPAX homodimeric CurA PathBank:SMP0001910/ProteinComplex/3920 assembly, directional Rhea reactions RHEA:34821 and RHEA:34813, and SSSOM source_mappings) per docs/HARMONIZATION.md.
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| EV-C8-QC-VALIDATE | .venv/bin/pathwaymech-run-qc; stdout summary (277 pathway records, 955 history records, 22,832 evidence blocks, 33 source records) | supports | Executed .venv/bin/pathwaymech-run-qc across the frozen working tree at 2cf03ac05f40abb493c82adee36be1de3ea17ad8: validated 277 pathway records against the closed LinkML schema, verified all identifiers and labels against local authority snapshots, validated 955 history records and 22,832 evidence blocks, validated 33 source records, and confirmed pages/ synchrony with 277 pathway records. |
+| EV-C8-PYTEST | .venv/bin/pytest -q; pytest suite execution across tests/ (8096 passed, 3 skipped) | supports | Executed the full pytest suite (8096 passed, 3 skipped), verifying closed LinkML schema validation, identifier policy, KGX export, SSSOM export, source registry, and structured record-review contract invariants. |
+| EV-C8-RUFF | .venv/bin/ruff check --no-cache .; ruff check output | supports | Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks passed!). |
+| EV-C8-GIT-DIFF | git diff --check; git worktree at 2cf03ac05f40abb493c82adee36be1de3ea17ad8 | supports | Executed git diff --check with exit code 0; no whitespace errors or conflict markers. |
+| EV-C8-REVIEW-CHECK | reviews/structured/20261030T221500Z-cycle7-stage5-resolve-review-findings/review.yaml; 211 retained structured review bundles including Cycle 7 Stage 5 remediation review | supports | Validated all 211 previously retained structured review bundles under reviews/structured/ via scripts/record_review.py check; confirmed Cycle 7 Stage 4 findings (F-C7S4-001 16 bare CURIE literature reference titles across 3 MetaCyc records and F-C7S4-002 52 concrete small-molecule participants typed as chemical_entity across 3 MetaCyc records) were resolved in 20261030T221500Z-cycle7-stage5-resolve-review-findings and remain 100% resolved in Cycle 8 (zero bare CURIE reference titles where title == id across all 7,099 references; zero pure chemical_entity vs small_molecule biolink:ChemicalEntity&#124;biolink:SmallMolecule merges across all 5,457 nodes in pages/downloads/nodes.tsv). |
+| EV-C8-CORPUS-INSPECTION | data/pathways/; 277 maintained pathway YAML files (7,851 participants, 1,630 reactions including 731 RHEA:* reactions, 14,730 mechanistic_edges, 7,099 references, 1,061 source_mappings across 218 records) | supports | Inspected all 277 maintained pathway records in data/pathways/*.yaml (including PathBank:SMP0001910 added in Cycle 8 Stage 1, 8 records enriched in Cycle 8 Stage 2 with 248 stoichiometric coefficients, 62 ECO codes, and 62 assay taxa, and 6 records enriched in Cycle 8 Stage 3 across 38 UniProtKB:* mechanistic_edges and 16 reference titles): 100% declare valid pathway_type, 100% of 14,730 mechanistic_edges carry structured evidence blocks (21,706 on mechanistic_edges + 918 on endpoint_qualifiers = 22,624 edge/qualifier evidence items; plus 208 reaction_mechanisms evidence items = 22,832 total evidence blocks), 100% of 1,630 reactions carry explicit category (1,592 molecular_activity, 36 pathway, 2 biological_process), 100% of 7,846 concrete participants carry explicit category (plus 5 contract-verified generic gomodel:* physical participant instances per src/pathwaymech/gocam_native.py:30-32 and tests/test_kgx_export.py:142-159), 100% of 7,851 participants are connected by at least one mechanistic_edges entry (0 orphans), and 100% of 731 RHEA:* reaction nodes declare explicit direction with zero cross-record direction conflicts. |
+| EV-C8-CONCRETE-CHEBI-SMALL-MOLECULE-CHEMICAL-ENTITY-4 | data/pathways/protocatechuate-meta-cleavage.yaml; 4 concrete CHEBI:* small-molecule effector participants typed as category: chemical_entity across adenosine-nucleotides-degradation-ii.yaml, protocatechuate-meta-cleavage.yaml, protocatechuate-para-cleavage.yaml, and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml | supports | Across all 68 category: chemical_entity participant entries in the 277-record corpus, 64 represent genuine chemical classes, generic electron/methyl donors or acceptors, carrier-protein conjugates, or amino-acid residues, whereas the remaining 4 CHEBI:* entries across 4 maintained MetaCyc:* pathway records — CHEBI:59640 N-acetylglucosamine (formula C8H15NO6, activates Entrez:945283 in salvadehypox-edge-087) at adenosine-nucleotides-degradation-ii.yaml#participants[62], CHEBI:22651 ascorbate (formula C6H7O6-, activates MetaCyc:CPLX-2701 in protocatechuate-meta-edge-075) at protocatechuate-meta-cleavage.yaml#participants[61], CHEBI:22651 ascorbate (formula C6H7O6-, activates MetaCyc:CPLX-7915 in protocatechuate-para-edge-035) at protocatechuate-para-cleavage.yaml#participants[24], and CHEBI:203056 Microcin J25 (formula C100H139N23O27, inhibits EcoCyc:CYT-D-UBIOX-CPLX in pyruvate-bd-edge-030) at pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml#participants[27] — are concrete small-molecule effectors typed as generic category: chemical_entity instead of category: small_molecule. |
+| EV-C8-RAW-LOCAL-ID-STRUCTURED-REFERENCE-TITLES-4 | data/pathways/sulfoquinovose-degradation-i.yaml; 17 structured MetaCyc:* reaction and enzyme-complex references[] entries across guanine-and-guanosine-salvage.yaml (3), sulfoquinovose-degradation-i.yaml (4), sulfoquinovose-degradation-ii.yaml (5), and nitrate-reduction-i-denitrification.yaml (5) where title == local_id | supports | Across 4 maintained MetaCyc pathway records — MetaCyc:PWY-6579 (guanine-and-guanosine-salvage.yaml references[3..5]: MetaCyc:RXN0-5199, MetaCyc:GUANPRIBOSYLTRAN-RXN, MetaCyc:GUANOSINEKIN-RXN), MetaCyc:PWY-7446 (sulfoquinovose-degradation-i.yaml references[1..4]: MetaCyc:RXN-15296, MetaCyc:RXN-15297, MetaCyc:RXN-15298, MetaCyc:RXN-15299), MetaCyc:PWY-7722 (sulfoquinovose-degradation-ii.yaml references[1..5]: MetaCyc:RXN-17096, MetaCyc:RXN-17095, MetaCyc:RXN-17097, MetaCyc:RXN-17098, MetaCyc:RXN-17101), and MetaCyc:DENITRIFICATION-PWY (nitrate-reduction-i-denitrification.yaml references[1, 3, 4, 5, 63]: MetaCyc:RXN-11236, MetaCyc:RXN-15838, MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN, MetaCyc:RXN-12130, MetaCyc:CPLX-1701) — 17 structured MetaCyc:* reaction and enzyme-complex references[] entries store an unprefixed raw database frame identifier (title == local_id) instead of a descriptive reaction or enzyme complex title. |
+
+## Limits And Additional Notes
+
+- Four maintained MetaCyc:* records (MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY, MetaCyc:PWY-6336, and MetaCyc:PWY-7545) type 4 concrete CHEBI:* small-molecule effector participants as generic category: chemical_entity instead of category: small_molecule (F-C8S4-001), and four maintained MetaCyc:* records (MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722, and MetaCyc:DENITRIFICATION-PWY) retain 17 structured MetaCyc:* reaction and enzyme-complex references[] entries with raw unprefixed frame ID titles (title == local_id) (F-C8S4-002); both are recorded as open minor findings for Cycle 8 Stage 5 grouped remediation.
+- Verification of literature-backed evidence blocks relied on the repository's local authority snapshots and curated evidence quotes/abstracts at frozen commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8 without re-fetching external publisher full texts over the network.
+- Per Cycle 8 Stage 4 (record_review) workflow policy, no edits were made to data/pathways/*.yaml during this stage; open findings F-C8S4-001 and F-C8S4-002 are carried forward to Cycle 8 Stage 5 (record_remediation).
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261031T094500Z-cycle8-stage4-frozen-corpus-cohort-review
+kind: category
+repository: CultureBotAI/PathwayMech
+title: Cycle 8 Stage 4 Full Frozen-Inventory Record and Cohort Review of 277 PathwayMech
+  Maintained Records
+started_at: '2026-10-31T09:10:00Z'
+finished_at: '2026-10-31T09:45:00Z'
+reviewer:
+  identity: Antigravity (review-yaml-record + review-yaml-category)
+  kind: agent
+  model: Claude Opus 4.6 (Thinking)
+  independence: self_review
+  independence_basis: Same agent session (a1d1e545-faee-4294-8a87-4c2d031a6538) executed
+    Cycle 8 Stages 1-3 curation in CultureBotAI/PathwayMech prior to running this
+    Cycle 8 Stage 4 frozen-inventory review.
+skill: review-yaml-category
+completion: completed
+verdict: pass_with_limitations
+native_verdict: coherent
+scientific_review: true
+summary: 'Completed a full-coverage frozen-inventory scientific record and cohort
+  review of all 277 maintained pathway YAML records in data/pathways/*.yaml at Git
+  commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8 across all 8 identifier namespaces
+  (MetaCyc: 140, gomodel: 86, PathBank: 17, WikiPathways: 12, GO: 10, Reactome: 6,
+  KEGG: 3, MIBiG: 3; 7,851 participants including 972 UniProtKB:* protein participants
+  across 157 records, 1,630 reactions including 731 RHEA:* reactions, 14,730 mechanistic_edges,
+  7,099 references, and 1,061 source_mappings across 218 records). All 277 records
+  pass closed LinkML schema validation, authority snapshot identifier/label checks,
+  history validation (955 records), and edge-level evidence verification (14,730 mechanistic
+  edges, 22,624 edge/qualifier evidence items, 22,832 total evidence blocks), and
+  all Cycle 7 Stage 4/5 findings (F-C7S4-001 16 bare CURIE literature reference titles
+  across 3 MetaCyc records and F-C7S4-002 52 concrete small-molecule participants
+  typed as chemical_entity across 3 MetaCyc records) remain 100% resolved (0 bare
+  CURIE reference titles where title == id across all 7,099 references; 0 pure chemical_entity
+  vs small_molecule biolink:ChemicalEntity|biolink:SmallMolecule merges in pages/downloads/nodes.tsv).
+  Identified 2 minor open representation findings across 8 MetaCyc:* records (F-C8S4-001:
+  4 concrete CHEBI:* small-molecule effector participants across 4 MetaCyc:* pathway
+  records — CHEBI:59640 N-acetylglucosamine in MetaCyc:SALVADEHYPOX-PWY, CHEBI:22651
+  ascorbate in MetaCyc:P184-PWY and MetaCyc:PWY-6336, and CHEBI:203056 Microcin J25
+  in MetaCyc:PWY-7545 — are typed as generic category: chemical_entity instead of
+  category: small_molecule; F-C8S4-002: 17 structured MetaCyc:* reaction and enzyme-complex
+  references[] entries across 4 MetaCyc:* pathway records — 3 in MetaCyc:PWY-6579,
+  4 in MetaCyc:PWY-7446, 5 in MetaCyc:PWY-7722, and 5 in MetaCyc:DENITRIFICATION-PWY
+  — store an unprefixed raw database frame identifier where title == local_id instead
+  of a descriptive reaction or enzyme complex title), preserved unedited for Cycle
+  8 Stage 5 grouped remediation.'
+source:
+  git_revision: 2cf03ac05f40abb493c82adee36be1de3ea17ad8
+  state: git_commit
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: 4836f2ecdec689c8ddec07e848b77dc120096b62dae6119e2a3948348adae4b8
+    role: context
+  - path: .claude/skills/review-yaml-category/SKILL.md
+    sha256: 6b407a3b3f3c4679e49b14843d274e95693a23a6cb3916062a8d3ad07bb13c76
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: AGENTS.md
+    sha256: 2a721bf820a369f5007c4f05fb04d0dffa32791fa25e1701e7f6be49cf997934
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml
+    sha256: 533c753687b16280d4341242b578c2d9924cfd83fa629050745cb46fa537c83f
+    role: target
+  - path: data/pathways/2-methylcitrate-cycle-i.yaml
+    sha256: a157294b1af53ece431ef55c79bdd78ebb24c93564dee28090a0a8f30b0c0c6a
+    role: target
+  - path: data/pathways/2-phenylethanol-biosynthesis.yaml
+    sha256: 70936b88da1b369d40b0b68205cc3b31ab67df9df7b003aa0fad049594128798
+    role: target
+  - path: data/pathways/3-oxoadipate-degradation.yaml
+    sha256: 91e69d8984ae3629434bfa3579b5f86677efa4d0f26ce5222cdff54c2e2f5501
+    role: target
+  - path: data/pathways/4-aminobenzoate-biosynthesis-i.yaml
+    sha256: 1bcbbb29986a8c2a9a571b2cbfbe487a283e62593e28d241b75cdfe333861f05
+    role: target
+  - path: data/pathways/4-aminobutyrate-degradation.yaml
+    sha256: e953a88e595f3446060152fa7cf2060859dc88b1693138768854c767bece6dda
+    role: target
+  - path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-i.yaml
+    sha256: 1cf4d91de8aee93cca10ca1fd4e05bb4cd7019007d7ca4e5873c67827d137d76
+    role: target
+  - path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-ii.yaml
+    sha256: 3db6e5a3cd88efae704233fe0c85c9aff3e5b88d480a2a0194b15339812b6ebc
+    role: target
+  - path: data/pathways/5-prime-deoxyadenosine-degradation-i.yaml
+    sha256: e46d6bb469af398c42278603eb02a68deecee7bb99d4b97a31114854300c7948
+    role: target
+  - path: data/pathways/5-prime-deoxyadenosine-degradation-ii.yaml
+    sha256: c6084b617411343240fd2965ce53094c886829f510879297b9d4232ee0f3a842
+    role: target
+  - path: data/pathways/6-hydroxymethyl-dihydropterin-diphosphate-biosynthesis-i.yaml
+    sha256: 5d6d425f52d44d54819deed6bedf672322a09a2333db5305601003376bd327b3
+    role: target
+  - path: data/pathways/7-cyano-7-deazaguanine-biosynthesis.yaml
+    sha256: cc5d9f376c9815f085958ce63f8fd3a9c59ee606e2d8a3ab949e4cdbf630ebf2
+    role: target
+  - path: data/pathways/acetate-and-atp-formation-from-acetyl-coa-i.yaml
+    sha256: a80b0ade43ca551f64478574affea5c8c8a4664ac91f20af22dd29e7ca0c3a52
+    role: target
+  - path: data/pathways/acetoacetate-degradation.yaml
+    sha256: 233b3b864987d0d4bd5434236eb7289624137abbaaa194e936766ebe344d92e4
+    role: target
+  - path: data/pathways/acetogenesis.yaml
+    sha256: fdb19112a2c0e7f9ed80146367f380562896493d7b3d3a71903c83ce25a126f7
+    role: target
+  - path: data/pathways/adenine-and-adenosine-salvage-i-escherichia-coli.yaml
+    sha256: 11725db09e52dcd4de50dd62370510ce85319943078778485e8345ce3bd9b02c
+    role: target
+  - path: data/pathways/adenine-and-adenosine-salvage-i.yaml
+    sha256: f40adb1ef782eec92b3938b31339a709ff8c0030c7a38c33b28577dab4625419
+    role: target
+  - path: data/pathways/adenine-and-adenosine-salvage-ii.yaml
+    sha256: ceac8c379a61f80a5b532e0c05834e5839cd9511b3446d386748c444092f8c57
+    role: target
+  - path: data/pathways/adenine-and-adenosine-salvage-iii.yaml
+    sha256: c2912590c871443cf13190c5e962e1a12d2c4643b02ee7c2e1050f5a31190cdc
+    role: target
+  - path: data/pathways/adenosine-deoxyribonucleotides-de-novo-biosynthesis-ii.yaml
+    sha256: f3124264faafda7584fe6a5169bd9c70cace38fb8a1454565cb43ec25158483b
+    role: target
+  - path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    sha256: d2cb1bc7e3dbe3c8eba7f6232113712be3b4d3de66112c873984550be29d5b1a
+    role: target
+  - path: data/pathways/adenosine-ribonucleotides-de-novo-biosynthesis.yaml
+    sha256: 027459e5a871dcdb8f394ba6b30f2a6e01b92c4f98c8b6f9f232dfc12dbfb010
+    role: target
+  - path: data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml
+    sha256: ff49665e60eb298e40b1ff8b3e3d40031916f314b3be7660e6990b4aa021a64c
+    role: target
+  - path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+    sha256: 62dbc41e9e0b6a583bf290111884fbd673bc12e414392634f1a37382fdae2631
+    role: target
+  - path: data/pathways/adp-l-glycero-beta-d-manno-heptose-biosynthesis.yaml
+    sha256: 03a96e6d64062187955d9e66afc5fe1530880ec64f0f44bfc011675ec48546d6
+    role: target
+  - path: data/pathways/aerobactin-biosynthesis.yaml
+    sha256: 3e4e50965749a9fa9dfe6319fd1462cc8329c10b7f4ab5363e7b486f2f32e3d4
+    role: target
+  - path: data/pathways/aerobic-glycerol-degradation.yaml
+    sha256: 89d0c0e1202bcc20bdc120764d454b4a1fa4112d14d82aa61bebbc46dcf92699
+    role: target
+  - path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+    sha256: 444f6ee3aee2780c3b4827d23093abeab21f89c180bbeac9535f79f6aec243d8
+    role: target
+  - path: data/pathways/allantoin-degradation-to-glyoxylate-i.yaml
+    sha256: 20a2143fca48392111bbf273148db8cd7128139ade7a74c00e1b8c26e3f4e58b
+    role: target
+  - path: data/pathways/allantoin-degradation-to-glyoxylate-iii.yaml
+    sha256: 46d7361452387c017e0a66460ea2cce8edbfa5a7ddad17333890b9fc47482bd0
+    role: target
+  - path: data/pathways/allantoin-degradation-to-ureidoglycolate-i.yaml
+    sha256: 962f07ce5ea3130396bc51df0bab3892ceb8bbfc45326a76a50f7a82579168d0
+    role: target
+  - path: data/pathways/amino-sugar-superpathway.yaml
+    sha256: 8cb2330ad4963f4c9a641c9d023f59cb928c8a2e5bf2ae69d71aa4e5364b60de
+    role: target
+  - path: data/pathways/aspartate-biosynthesis.yaml
+    sha256: 20016b7d818f0dc7e4cb17610ef76abfba9265db8d24b0af5b3fab496685bf87
+    role: target
+  - path: data/pathways/assimilatory-sulfate-reduction.yaml
+    sha256: 0f335f68be3212861d2ca9152b0eed4e5428fea2d6531d39e5d7e1cb3606e3ac
+    role: target
+  - path: data/pathways/bacillibactin-biosynthesis.yaml
+    sha256: aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa
+    role: target
+  - path: data/pathways/baesr-two-component-signal-transduction.yaml
+    sha256: e826a431a7b5c43a825544a4e82deb154b06b80f90156b3b4c0feafd9edf7bc0
+    role: target
+  - path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    sha256: 82b5ebd128c07ef4b5041fdbb047890c4c91cb5fa099dc0735fadb5dd1964b24
+    role: target
+  - path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    sha256: 91552e9b4f36ece175f6cee1ff384423f11ddfbb76ce2ec1dd4b4b87cc2d7f08
+    role: target
+  - path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+    sha256: 45b132d52f255bc06c2c3892d6d225c920b10469febc474ecb94bb16441fbd3c
+    role: target
+  - path: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+    sha256: 32f3d830f2932266bd3fff36fae2e08e738929c282ad46ed4b97f32fa726636d
+    role: target
+  - path: data/pathways/beta-alanine-biosynthesis-iv.yaml
+    sha256: 0b24a16ea8a7fb91fe1ead37cb5868d9ce4c8b8d36f04e788e2e9030da6b8972
+    role: target
+  - path: data/pathways/biotin-biosynthesis-i.yaml
+    sha256: 96ef911aa3e61f888318443a3414158c041f66ea1db8e3895630c7317a729f0d
+    role: target
+  - path: data/pathways/calvin-cycle.yaml
+    sha256: afbdd8f0562e83d0556f6171b1f5812e82575d53c5baf536c31322280c13adcc
+    role: target
+  - path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    sha256: 92e0c1a1a4f2ae4ebf5986a711a51788116037953a76e5ae0681097dcc5c4100
+    role: target
+  - path: data/pathways/carnitine-shuttle.yaml
+    sha256: b30ce5a608752d19a0f22de39a50c261be96e4d8f7cd5940759a4de49eff8e28
+    role: target
+  - path: data/pathways/catechol-degradation-i.yaml
+    sha256: da702e94061eefb56de41d4539232e059d5e4e6fa1513fa8b8f6125d82e277f5
+    role: target
+  - path: data/pathways/catechol-degradation-ii.yaml
+    sha256: e549a17f5d1a9434acc87b091d1799f79bb8c7b9268e16ea3debc58ddcf9eb3c
+    role: target
+  - path: data/pathways/catechol-degradation-iii.yaml
+    sha256: 4d60fd0cb356ba9e9612a0acfe77f154d970193bc3f37e1dc91d96fa360c4952
+    role: target
+  - path: data/pathways/catechol-degradation-to-beta-ketoadipate.yaml
+    sha256: 2e666ecee36cddac380818d0f4972206b91a54846a4ccc924e294b8be5d661a1
+    role: target
+  - path: data/pathways/chitin-biosynthesis.yaml
+    sha256: af4878e7f38ab7e24bbf1a2cc3b479e00573162eaaa283efe718b62ece157efa
+    role: target
+  - path: data/pathways/chorismate-biosynthesis-i.yaml
+    sha256: ecc59655916bc2496dfa2f2888fcf5453569326a96a890447b2d5692c3e32053
+    role: target
+  - path: data/pathways/chromobacterium-violaceum-violacein-biosynthetic-gene-cluster.yaml
+    sha256: a2c389bdea0ba8574ded73b47ae67cc5011105f4579401661197ffcb0e689d0a
+    role: target
+  - path: data/pathways/citrate-lyase-activation.yaml
+    sha256: e59b9d81c54fa1682340477c9e01ceec821cc02e3d1dff011f4ea366d901eb84
+    role: target
+  - path: data/pathways/citrulline-biosynthesis.yaml
+    sha256: 6c5712838679062f4135385472fddf04fa0e671174a5fa6f8f992111bfb39a65
+    role: target
+  - path: data/pathways/coenzyme-a-biosynthesis-i-prokaryotic.yaml
+    sha256: e8a71c7499b3684d208ad964caa060e3df9735625ca4b607bd6a85bbcf20975d
+    role: target
+  - path: data/pathways/conversion-of-succinate-to-propanoate-escherichia-coli.yaml
+    sha256: b898590d8ac46b434466e88dc63d499b99778551f5e74f3045ebd33b7c3ebc4c
+    role: target
+  - path: data/pathways/curcumin-degradation-escherichia-coli.yaml
+    sha256: d29886dff14b80ca1ba1f876a2028b33535ce94167fc9e502a0cce1ed9c2f8ad
+    role: target
+  - path: data/pathways/curcumin-degradation.yaml
+    sha256: 169fa541ddf32cef797ae64723b8b2ca58686ce454c295cc9b1cdbbb9f73b6a5
+    role: target
+  - path: data/pathways/cyanate-degradation.yaml
+    sha256: a9839719374edea383b2fb65c1bb4cd5d4021eee5b6b28d5d41e8be51df6e9d7
+    role: target
+  - path: data/pathways/cysteine-biosynthesis-from-serine-escherichia-coli.yaml
+    sha256: 1ab9412e8f4f1f5a0773f3289041df13f906d0beb1e33f566b2f9958b966c900
+    role: target
+  - path: data/pathways/d-arabinose-degradation-i.yaml
+    sha256: 0bf9ffd31ebe2fcd98a34b8b9de8d87aa4d2ca009c03067a507a1c52a3fcb3dc
+    role: target
+  - path: data/pathways/d-galactarate-degradation-i.yaml
+    sha256: 255a54c1a0d212502065f0b88cc26b7599026d5dfc80621c504a6436cbee66ad
+    role: target
+  - path: data/pathways/d-galactonate-degradation.yaml
+    sha256: 4a8c65462e953ff8ff301ba25eb6eb717f153731d9bde35f4b36448f557b333b
+    role: target
+  - path: data/pathways/d-galacturonate-degradation-i.yaml
+    sha256: bcba6b22043e2476b3becc03472ac7fcd95287ca643ec5d561404982fedf59db
+    role: target
+  - path: data/pathways/d-glucarate-degradation-i.yaml
+    sha256: 7a16ccac6f89910cc214a8660964ab093c36ee9ebec9599abd8f67fbe89c40ac
+    role: target
+  - path: data/pathways/d-xylose-degradation-i.yaml
+    sha256: dcea294990af98ec62667a1432f4970279eae2758776a8d27447e0860c237df4
+    role: target
+  - path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    sha256: ab6b7808c564fc2bbddaa1fea159f0927e2ec2f73b9890e7ab360c5e3718a9dd
+    role: target
+  - path: data/pathways/dicarboxylate-hydroxybutyrate-cycle.yaml
+    sha256: bf5316958e94eae4e2e09a864dca8e45d8997b041d7e26c991c9633f24449209
+    role: target
+  - path: data/pathways/dolichyl-glucosyl-phosphate-biosynthesis.yaml
+    sha256: 1fe23e30c0e1d0e14fff70678f966812c1c1a4bc602441076ad041c232190ef8
+    role: target
+  - path: data/pathways/dolichyl-phosphate-d-mannose-biosynthesis.yaml
+    sha256: 6fa9f8a6697af1bb35b060943f7b16c0d350366bbaa8ae9268456c45683f5c62
+    role: target
+  - path: data/pathways/dtdp-l-rhamnose-biosynthesis.yaml
+    sha256: 7b915dc9eab89c57ac0a1775a90c80caaddcc60616726d43cebf8f45acb42ee0
+    role: target
+  - path: data/pathways/ectoine-biosynthesis.yaml
+    sha256: c72a482e72bd403d0b2b8c1018a1c277ac75b1560dd36182cc7695eb2b575428
+    role: target
+  - path: data/pathways/entner-doudoroff-pathway.yaml
+    sha256: 8c28d060864a319e17fc2d05e3e3d6c75c2180a19369b6791423c86805d2ce4e
+    role: target
+  - path: data/pathways/epoxysqualene-biosynthesis.yaml
+    sha256: da3b71fd30801bc13f92ba2226badc86c1376f40b78bd622c9b8a4ff132d1fd2
+    role: target
+  - path: data/pathways/ergosterol-biosynthesis-i.yaml
+    sha256: b8f7c7cd77268474d0b3d17f2109c0f4da9131eb2e040907a188127ed7b98bc6
+    role: target
+  - path: data/pathways/ergothioneine-biosynthesis-i.yaml
+    sha256: 6d2fb20f5a664a6b7e43e9efb48ac1b65fd59a3e5c5daa1aa95b6bae35184dec
+    role: target
+  - path: data/pathways/ethanol-degradation.yaml
+    sha256: fc50f4fe0251b9a24c2c0be359c4349ef12194556f510f390132dc556094031a
+    role: target
+  - path: data/pathways/ethanolamine-utilization.yaml
+    sha256: f1fd9402cab31bf3c62d53ef630abc52308c2c0e2d7b61d7ad6b9c0aaba8fb1e
+    role: target
+  - path: data/pathways/ethylene-glycol-degradation.yaml
+    sha256: c969108f6e4d2912c67051410713741616cd40a6d85a02c286f39f9c774cdac1
+    role: target
+  - path: data/pathways/ethylmalonyl-coa-pathway.yaml
+    sha256: 8c4d525a0285213cbc92bed1045a3c69125135abede0b66fed548dcab8e8913d
+    role: target
+  - path: data/pathways/fatty-acid-elongation.yaml
+    sha256: b62921d961d820d8ff589720e08dd002e146b9989aee2c82b045d810bf0351b3
+    role: target
+  - path: data/pathways/fatty-acid-oxidation-pathway.yaml
+    sha256: bfde333f007a3a73eb3172619e731d189e131a628653ad171bf4252798ed593e
+    role: target
+  - path: data/pathways/flavin-biosynthesis-i.yaml
+    sha256: 9f89b3813fe7db7b32ef674f7163a512ebe7840c0803852614401404931e5b8d
+    role: target
+  - path: data/pathways/folate-interconversions.yaml
+    sha256: 05f87cd9ee50e16cbacb738c54b87ec1c404fdf9d1d481139016d8dec6101753
+    role: target
+  - path: data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml
+    sha256: cad662956612f880a1fa23e5dd729af944a7cee3c09d93eb8abce7b2a2aceebb
+    role: target
+  - path: data/pathways/fructoselysine-and-psicoselysine-degradation.yaml
+    sha256: cf7f6eb1070dafb5865ea48dadcf79936b114e4a44f275019e1d0efb45fd59bc
+    role: target
+  - path: data/pathways/fructoselysine-catabolic-process.yaml
+    sha256: 6ed6d86ba86373fd0a29f5346098686a46c7387952a82071c7833eb8dc8f7186
+    role: target
+  - path: data/pathways/galactose-degradation.yaml
+    sha256: afb4d246ee5305b34e0d960cabb3a25e30d6289e0899133cf5eb5cd6aaba2860
+    role: target
+  - path: data/pathways/gallate-degradation-i.yaml
+    sha256: 375aa600712d899f0c2b23b31d6a96e1f5bb87ceba5ade96b5d10a2fd7eee4ed
+    role: target
+  - path: data/pathways/gallate-degradation-ii.yaml
+    sha256: 0b983b787431a326580cf51621dacf38341257ee86067f19bff3b799bec6d67a
+    role: target
+  - path: data/pathways/gentisate-degradation-i.yaml
+    sha256: 272e475b3bb872475bba938c5e5016b52b63e21dc8c9dea772e25ba78524c064
+    role: target
+  - path: data/pathways/gluconeogenesis-i.yaml
+    sha256: ed359fc88a819b1ff6c51b8b2e10cf399b184cbe25df7c74883d560311296a15
+    role: target
+  - path: data/pathways/glutamate-degradation-i.yaml
+    sha256: 5bfde8cb993cedc9cfc1534157d0c63121bcdbcc75b1c915274e381ada8524ce
+    role: target
+  - path: data/pathways/glutaryl-coa-degradation.yaml
+    sha256: 3c2ac2ae8443a7bdac87bd8ca9e612eee869fb479f3625231fadf84658e16317
+    role: target
+  - path: data/pathways/glutathione-biosynthesis.yaml
+    sha256: 4d71f1634ba3f875ddfdb547e856f83d2ed773390cc1e78bfdc972e13a4b7599
+    role: target
+  - path: data/pathways/glutathione-degradation.yaml
+    sha256: 90700db818d7b32cf46b41e4bf53c234f070829e779a5b80ee8537b32f4a808a
+    role: target
+  - path: data/pathways/glutathione-glutaredoxin-redox-reaction.yaml
+    sha256: cbee4a5a80e9340376ae64bdd05ccc7a3aa6096630f24324af11fca9eca97977
+    role: target
+  - path: data/pathways/glycerol-biosynthesis.yaml
+    sha256: ac0ea900a57b2147297dc7bde6c767bda334664a92c406cc367b6f6ee8430cbc
+    role: target
+  - path: data/pathways/glycerol-degradation-v.yaml
+    sha256: a8e36da3e055cd299c7501923fc54324c46882cd13d32314c30af8a23d7c9aea
+    role: target
+  - path: data/pathways/glycine-cleavage.yaml
+    sha256: 74b9d679808b3950cd1bd0bf2ed8574e4abf9f61f203c8b5538e5e4b46a483db
+    role: target
+  - path: data/pathways/glycogen-catabolism.yaml
+    sha256: 72b8e29697334f849212bd9827055265fb375fbc3f2847b7b062d6a9705e6cce
+    role: target
+  - path: data/pathways/glycolysis-i-from-glucose-6-phosphate.yaml
+    sha256: 0a9fd40d1eaa77a75af58968732d361457618636d5d81775200f3cf88c88193d
+    role: target
+  - path: data/pathways/glyoxylate-assimilation.yaml
+    sha256: d0df038ad2114f8f5a27dae2a208764180c45f5f370c6a6a7a6cc4ad7980c22d
+    role: target
+  - path: data/pathways/glyoxylate-cycle.yaml
+    sha256: 47adf43fa2ebc9560c6fd6d516df9e1a351efcbf93aea23a675a92d6a23d2db4
+    role: target
+  - path: data/pathways/guanine-and-guanosine-salvage.yaml
+    sha256: 1ee8a4fe53989c51c626ef92747e0ae07bcb0978291c1c439b0f2bbc15f929d6
+    role: target
+  - path: data/pathways/guanosine-ribonucleotides-de-novo-biosynthesis.yaml
+    sha256: 2d1a05f95a978e13f16c2fb551b60633b34b8bd5397de9214411b99c95e090be
+    role: target
+  - path: data/pathways/heme-biosynthesis-i-aerobic.yaml
+    sha256: a82d6893480d683143a1d54350b3f183de5a0d1fcb4ff59a16d146f054d9fa66
+    role: target
+  - path: data/pathways/hexaprenyl-diphosphate-biosynthesis.yaml
+    sha256: e97493175ab78edaaa100e8e0924f5c8ad4ef3d31ce7b13368c9ca067707a02e
+    role: target
+  - path: data/pathways/homocysteine-and-cysteine-interconversion.yaml
+    sha256: 0c37a4a06ecb68d0c327980f8f3d9fb91e705d762181f9a2654ccf1fd45deed2
+    role: target
+  - path: data/pathways/homogentisate-degradation.yaml
+    sha256: f3577e26db76f0eee6f23ff8fc8dfac6f833d9b04e010a9865d340e587702c32
+    role: target
+  - path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    sha256: 446563402748efc0a853cc56f17e22c6dea37d553d7977790ac73dbe6d3a09d7
+    role: target
+  - path: data/pathways/inosine-5-phosphate-biosynthesis-i.yaml
+    sha256: c1bca2158d83b620b5adb23991cc11b10e3d655c9c241707badaf43392141b39
+    role: target
+  - path: data/pathways/inosine-5-phosphate-biosynthesis-ii.yaml
+    sha256: 5734789b52538aff83d5cb3d54933fffeef31d70527b572e9ce89befdf54c930
+    role: target
+  - path: data/pathways/inositol-phosphate-biosynthesis.yaml
+    sha256: 2fe2d2ba88e85693135d52e2bb72ab7ca37cf41d2e9f879fdb602241d63a6fc3
+    role: target
+  - path: data/pathways/isoleucine-degradation.yaml
+    sha256: 8d93b27c9181bb58990868d80e7443b52c161f5878909d0ff70f0c7147b1857b
+    role: target
+  - path: data/pathways/isoprenoid-biosynthesis-nonmevalonate-pathway-escherichia-coli.yaml
+    sha256: 19a63ab0d85ed28df9e22212b9681c986c10e56f2fbe7ea26f5cffe0e3dfe9f5
+    role: target
+  - path: data/pathways/l-ara4n-modified-lipid-a-biosynthesis.yaml
+    sha256: 6c9f87fc7a7b6ae411092a5e34330df52f18bb574a09b25eae79fc48182d3955
+    role: target
+  - path: data/pathways/l-arabinose-degradation-i.yaml
+    sha256: e3c1a570eb11080fb319921e3ae7cc49a6eb5b63d2b222c386f46049da2740a3
+    role: target
+  - path: data/pathways/l-arginine-biosynthesis-i.yaml
+    sha256: cdd664d6d5edc54c7952a39052ed543e3d8f30bbfe5aeae2c82338f1cb96925a
+    role: target
+  - path: data/pathways/l-arginine-biosynthesis-ii-acetyl-cycle.yaml
+    sha256: cce1353fcdd659940db26fec1dd8dce7df198977f01837354798ac91756f5ac4
+    role: target
+  - path: data/pathways/l-arginine-degradation-ii-ast-pathway.yaml
+    sha256: b907fb463572d194082918506e9c5514c0d7e87eea65a1ec2054a90c9c9fec77
+    role: target
+  - path: data/pathways/l-arginine-degradation-iv.yaml
+    sha256: 10fa2975a9b5111f13c52b9b6422d168860e15d2333fff01be361a653b644ba6
+    role: target
+  - path: data/pathways/l-arginine-degradation-v.yaml
+    sha256: 3a15c891af34a6281c08eda94a38f3dba4b1c79453836f51ba25315367dfc105
+    role: target
+  - path: data/pathways/l-ascorbate-degradation-i.yaml
+    sha256: fbd52a2c7fdf4cee6091b65b6dc744fc50f0c4e53c42992e750c013839850b26
+    role: target
+  - path: data/pathways/l-asparagine-biosynthesis-i.yaml
+    sha256: 4c2ab031a5eec78aa751ddf4dc8753fc9523b1c18209abee6c237fd96d48628b
+    role: target
+  - path: data/pathways/l-asparagine-degradation.yaml
+    sha256: 427034ee8a5311f807010c76d58368f822040bdec093c44c8638211b3a4cc1ef
+    role: target
+  - path: data/pathways/l-carnitine-degradation-i.yaml
+    sha256: e8aa88babc1107f5dc64445c885aae2ecfa22fbdf6fd2bdfe35c47ad1191d779
+    role: target
+  - path: data/pathways/l-cysteine-biosynthesis-i.yaml
+    sha256: 3f14ac2ae1ac38489081f029c533951c33716c51e78ba616da5cbd00a07bb6da
+    role: target
+  - path: data/pathways/l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml
+    sha256: 853d2e8062004300c7c87cca636911806facac50e2aa01def7f9c4074e8a8f6b
+    role: target
+  - path: data/pathways/l-fucose-degradation-i.yaml
+    sha256: 6335ac444b2f78b24d76b1f5d13a688bc659111ead39bca0c197b8f4f5d6d30e
+    role: target
+  - path: data/pathways/l-histidine-biosynthesis.yaml
+    sha256: 754447e37e8a7c25acc9cc23c6eb3553ba5daeb90cc5182825640838f7fea5f3
+    role: target
+  - path: data/pathways/l-homocysteine-biosynthesis.yaml
+    sha256: ba66c588436c87397735f545b7e85accde4ae1e836f617b4041926e07f155f17
+    role: target
+  - path: data/pathways/l-homoserine-biosynthesis.yaml
+    sha256: d493a96e57449ad2165e22387dc19b8c9210995c0d3743d8467e3bac2e5ad488
+    role: target
+  - path: data/pathways/l-isoleucine-biosynthesis-i-from-threonine.yaml
+    sha256: eeb3fb3becfca15fb139f6b784af05420fd7792f4bd7c7abdf75160b8d4d1d48
+    role: target
+  - path: data/pathways/l-leucine-biosynthesis.yaml
+    sha256: 502da5c5afe05a3b596e2d2aa7aa4135b5a29b30a4273612130934cb5bfa1b7f
+    role: target
+  - path: data/pathways/l-lysine-biosynthesis-i.yaml
+    sha256: 856af3e5889aff74c0ff2516799caba121e251051cb16bdbaffabf9203ec4958
+    role: target
+  - path: data/pathways/l-lysine-biosynthesis-iv.yaml
+    sha256: 1677f106fb798345712261c31d55df8175810494d8988bcf6ad6cf5f28debf28
+    role: target
+  - path: data/pathways/l-lyxose-degradation.yaml
+    sha256: 670f274094b5e3e472c77c253451eec2e8ebb9b5b6d8fea7ae145299cc2cdf28
+    role: target
+  - path: data/pathways/l-methionine-biosynthesis-i.yaml
+    sha256: 1e8cfbfc2ebeae0c6021245852c4c7b1df9368d25e97aaaaff70b3c76f020967
+    role: target
+  - path: data/pathways/l-ornithine-biosynthesis-i.yaml
+    sha256: 65ab69722307785f2e70bdf2ba80f1aa63168f95137ab99aa2121426a9a49765
+    role: target
+  - path: data/pathways/l-phenylalanine-biosynthesis-i.yaml
+    sha256: 69f717d7426f4bd97da52e3d3fe16f19c636ef0b5c247aee25c5d6af7329d2dc
+    role: target
+  - path: data/pathways/l-proline-biosynthesis-i-from-l-glutamate.yaml
+    sha256: 53dafe3e5606df60948b55be8474f25b46c89a8ea4b9ea24e124cc703a457694
+    role: target
+  - path: data/pathways/l-proline-degradation.yaml
+    sha256: 219603aea97d72075b8af5b9127026b3b397438b4fcaa4729e7a231f346c4160
+    role: target
+  - path: data/pathways/l-rhamnose-degradation-i.yaml
+    sha256: d57c0cb5e9d5d85ac5573f15b9037ea9c6036bb163ae0b8544b28b3800212914
+    role: target
+  - path: data/pathways/l-serine-biosynthesis-i.yaml
+    sha256: 56bf93aad394eac694332ef0ca6eedc181a4e5e02617e09e3f7ad71978c1f098
+    role: target
+  - path: data/pathways/l-threonine-biosynthesis.yaml
+    sha256: 3de07e08b92218b31b25157650f7a0a8bc0d166dfd5e623afde22e1e786d79a7
+    role: target
+  - path: data/pathways/l-threonine-degradation-iii.yaml
+    sha256: 604b8cea7c0b80b266aa672b31d93ee53f657c527efd86d91adaa33ad4a37afd
+    role: target
+  - path: data/pathways/l-tryptophan-biosynthesis.yaml
+    sha256: e605be4366c2b31d473dbad32a6c71b2205b2ed34bf4bbdd91380662a70a95fe
+    role: target
+  - path: data/pathways/l-tryptophan-degradation-to-2-amino-3-carboxymuconate-semialdehyde.yaml
+    sha256: 7c69e4796385026c8d9f6fd0746183965cfa757a93b397e1fc6ae4cbfc40ab78
+    role: target
+  - path: data/pathways/l-tyrosine-biosynthesis-i.yaml
+    sha256: e296e282c11af5a73e9e106db27ccf934a9baf7de7d15dfb61fbece102418de5
+    role: target
+  - path: data/pathways/l-tyrosine-degradation-iii.yaml
+    sha256: e284eb14b32872c68b2914eebf0a511d6c6793803a2b7fb464dc5b65d6436f17
+    role: target
+  - path: data/pathways/l-valine-biosynthesis.yaml
+    sha256: c34ad6e367d954ee2a340fc1978debc89a2c6a2fa041756b5a4a181fbeaf815c
+    role: target
+  - path: data/pathways/leucine-degradation.yaml
+    sha256: 970f3bd13ea75cf742fc23a5410e4fe2e8f728e07e9d64049575e17480296b31
+    role: target
+  - path: data/pathways/linearmycin-biosynthetic-gene-cluster.yaml
+    sha256: a5a908285f06357add5292777ea7be2226263c1448097361f9b3d87be0001cbe
+    role: target
+  - path: data/pathways/lipid-iva-biosynthesis.yaml
+    sha256: b52d719a33fa00fd67cdd13eaab8dd81c8e92a3604918daaab48d9b4488e8318
+    role: target
+  - path: data/pathways/lipoate-biosynthesis-and-incorporation-i.yaml
+    sha256: e42978564168731759bd4d8ee2b6686773aa4b756c3375403f7e0b2fc9cdff69
+    role: target
+  - path: data/pathways/mannose-degradation.yaml
+    sha256: 28b58d00df8bc90ca2167213378d240f784502ee3d38cd044f0b9f708645d17a
+    role: target
+  - path: data/pathways/mannosylglycerate-degradation.yaml
+    sha256: dd80af1d972798683b03189a50a5f5d39b5a63ccf9dd74a3380bf5b3cd71948e
+    role: target
+  - path: data/pathways/methanogenesis-from-acetate.yaml
+    sha256: 47d1c71951ce5806e5c9570ee00b2ab9f8634158251ee06821a0f77017b0eca3
+    role: target
+  - path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+    sha256: 553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e
+    role: target
+  - path: data/pathways/methionine-salvage-pathway.yaml
+    sha256: 7d9173433d90f1344b909cbd4d147923e5acf5acd18c2132df357c892c68f503
+    role: target
+  - path: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+    sha256: 09de4d42a144f61a5c00af9577655170f473448d2632232e3461f9e31e11b7b2
+    role: target
+  - path: data/pathways/methylglyoxal-catabolism.yaml
+    sha256: d1409031c98be3795d39fc4d2e5362d951cbd86c8b4c2868810a70c61582947a
+    role: target
+  - path: data/pathways/methylglyoxal-degradation-i.yaml
+    sha256: 273066a3324e879f25bf888a5ecbe72d30f3014ab57aa4a768e1376b87f7c6cc
+    role: target
+  - path: data/pathways/methylglyoxal-degradation-iii.yaml
+    sha256: 49ca68c20b674103c554963bb86f50b46fa8fbb9ef491b5476d2ec7df6fd2e4d
+    role: target
+  - path: data/pathways/methylphosphonate-degradation-i.yaml
+    sha256: 057158f94d834a61c836371a522c9c776d36122674ce04b0b886c9a1df1e17b5
+    role: target
+  - path: data/pathways/methylthiopropanoate-degradation-i.yaml
+    sha256: ec7c8759d23b9baa4ecfe2d4f1092a3f849361ff065d10b9e0954937c8ac4143
+    role: target
+  - path: data/pathways/mevalonate-pathway.yaml
+    sha256: 1a3aaaf143564f9f1d345596cff4b961219716288a656791de7bf51bdba0307c
+    role: target
+  - path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+    sha256: be34e968a813d3542e42036d4b56f0b17a94de1e365f09e160fb95a636fa6eb8
+    role: target
+  - path: data/pathways/mycobacterium-cysteine-synthesis-from-o-acetylserine.yaml
+    sha256: cdbfd2cae9e281dc1a1722f65b2f019841b0a84b6e53e755bce049d495ed7f44
+    role: target
+  - path: data/pathways/mycobacterium-cysteine-synthesis-from-o-phosphoserine.yaml
+    sha256: 99b0c6d3e04ab2d3c310bbe8099cd5fa716f251632e5320ba83444bd7ebff82d
+    role: target
+  - path: data/pathways/mycobacterium-sulfate-assimilation.yaml
+    sha256: aecb344e6ec330b48884cafd9bab879f5e3c623f66e315d90ad93910da12f931
+    role: target
+  - path: data/pathways/mycobacterium-trehalose-biosynthesis.yaml
+    sha256: 7c3915665fbbe8cfe1d695354f471a1c832ccf972d2302c0910a96144ec1cd49
+    role: target
+  - path: data/pathways/mycothiol-biosynthesis.yaml
+    sha256: 35dfb77de4fcc447aeb649bb478c6a840e78ab39f5921469a154ec3768c32f4f
+    role: target
+  - path: data/pathways/mycothiol-catabolism.yaml
+    sha256: 9d1f2496015cee969712712da363456ac0cac63dcd5cb46cfa5ace763f8388b1
+    role: target
+  - path: data/pathways/myo-inositol-biosynthesis.yaml
+    sha256: 361f6547c51db754e8f9b68069e874d314ed2c7d0b2ee8c1716f6ac9fbcdff96
+    role: target
+  - path: data/pathways/myxochelin-a-and-b-biosynthesis.yaml
+    sha256: a30e8c37c07c1bd2d081da0fc68cdfb951e7f318e924773d2d54a3e682537e64
+    role: target
+  - path: data/pathways/n-acetylglucosamine-degradation-i.yaml
+    sha256: 546cc1115beab1bb0a8c22efc9568a9cec4c9b4a774da3196ac572d20d48f962
+    role: target
+  - path: data/pathways/nad-biosynthesis-from-2-amino-3-carboxymuconate-semialdehyde.yaml
+    sha256: bcd51a74589e80d1ff361bad234b690c487330acc238450bcd5e3215f25ea7cd
+    role: target
+  - path: data/pathways/nad-de-novo-biosynthesis-i-from-aspartate.yaml
+    sha256: 4f78aaa39819e9dc81c2228e4cc0eead0bfa604d5880bcefc93253e40b86a6b5
+    role: target
+  - path: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+    sha256: 76bd4caf5be98997fed5a09bf378ff2ec85c885a2db3f16005e9b50140bca73f
+    role: target
+  - path: data/pathways/nad-salvage-pathway-i-pnc-vi-cycle.yaml
+    sha256: df08cd758bbee6a31994b142eab11a9318e7bac63aaec489649b124924599cd6
+    role: target
+  - path: data/pathways/nad-salvage-pathway-iv-from-nicotinamide-riboside.yaml
+    sha256: 04f04356990ef06c793936970668528f4e4a3fadc52a32d161ab8c5175673101
+    role: target
+  - path: data/pathways/nad-salvage-pathway-v.yaml
+    sha256: 6f1e3a5883d8c6fba1aa10c90d089d3d8c19a54a6b7b9e1b1b0a4e24c2a0fdf8
+    role: target
+  - path: data/pathways/nicotine-degradation-ii.yaml
+    sha256: 02322c0f9fc96ca45d333c17b2dfb2ac0041d6e9f59d744090adbe6113679b29
+    role: target
+  - path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    sha256: f86583eaa558c5b2f89ef7a3152dfb3337905176f8409f19bfb34cbba3b69127
+    role: target
+  - path: data/pathways/nitrate-reduction-viii.yaml
+    sha256: 5243f546a62490581e35d29516f2ecb830b1284748d6b2b042b82e7d9f6303b7
+    role: target
+  - path: data/pathways/oleate-biosynthesis.yaml
+    sha256: 15992b5f8df117cec7bf73691cd2765cd60ea6db24aaa37b9b36861ee08909f7
+    role: target
+  - path: data/pathways/palmitoleate-biosynthesis.yaml
+    sha256: b19047b3b055d4f065267230e639742d344b7aabe2edaa8a64bc0bfda88320b8
+    role: target
+  - path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-i.yaml
+    sha256: ed22c55ef88a108b0b993196b06b3f0a487ba2c2f4b3e742c1f1cd811eb14370
+    role: target
+  - path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+    sha256: 828076d310a64976bf416e52a9c5acc8ce9979807149c3cc171dfda3db009312
+    role: target
+  - path: data/pathways/pentose-phosphate-pathway-oxidative-branch-i.yaml
+    sha256: 279a0a8c7f2f065e506c22d5bc2bfa3e3b4bbc40abeb8b1ecaedb027cba8be32
+    role: target
+  - path: data/pathways/peptidoglycan-cytoplasmic-synthesis-and-recycling-pathways.yaml
+    sha256: 41137e969f7960cddb59b6452079b9424b87b0bfaa8402172969c230965cb36a
+    role: target
+  - path: data/pathways/periplasmic-nad-degradation.yaml
+    sha256: b9186a25e2fe115e1f86d2d40024117d5424f5c1f1addd35d6d60fedd9c037bd
+    role: target
+  - path: data/pathways/petrobactin-biosynthesis.yaml
+    sha256: 7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a
+    role: target
+  - path: data/pathways/phenylacetate-degradation-i-aerobic.yaml
+    sha256: e99722d1ee920cf64aaeae7b00f1de9b59f939bd96a03a7ac5f2885933a72227
+    role: target
+  - path: data/pathways/phenylalanine-biosynthesis.yaml
+    sha256: b8903227908a29e6abaa9e8b9f9999b9f381aac31f8902702fa76591ae781f65
+    role: target
+  - path: data/pathways/phenylethylamine-degradation-i.yaml
+    sha256: caec88eac6f03f4e58ef30a198b16aa3a014e8c3f8be9adaf03d2f6f601f79fc
+    role: target
+  - path: data/pathways/phenylethylamine-degradation-ii.yaml
+    sha256: 3c9403535e818a16f7824a50ebefbf8efc0f408866b30e6b6e6426f0cef24104
+    role: target
+  - path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    sha256: 773dfb3337c3d1b95dfa0c0e032c8b746c6f2f5bf19b17e40bcf4f7a1239617e
+    role: target
+  - path: data/pathways/phosphatidate-biosynthesis-i-the-dihydroxyacetone-pathway.yaml
+    sha256: fc29837d25bb30779601d0cd011092833be57b2040370f5b656108c6351f3e5c
+    role: target
+  - path: data/pathways/phosphatidate-biosynthesis-ii-the-glycerol-3-phosphate-pathway.yaml
+    sha256: 3754f2cc7edc6996237b0bd5cdc96602bdb41c94abd1bd4ea010029d42ac51d7
+    role: target
+  - path: data/pathways/phosphatidylcholine-biosynthesis-i.yaml
+    sha256: 72b66339971241b0e2bf89a17bf5b9dc1297cdb82d01fc4857d0a5379ba03cb6
+    role: target
+  - path: data/pathways/phosphatidylethanolamine-biosynthesis-i.yaml
+    sha256: 48257f89bbe473bd0cb155f35cb5e8b5745d7cca8adb13f9f00c0d88018804f3
+    role: target
+  - path: data/pathways/phosphatidylinositol-phosphate-biosynthesis.yaml
+    sha256: 3e02f66d204a5b899920d7d45cec37f2a83bbe57a321b1a394716a247f5ada26
+    role: target
+  - path: data/pathways/phospholipid-biosynthesis-ii-kennedy-pathway.yaml
+    sha256: b9378fa6c051f50743bf57b8cf280cc44f702f4266470898a88aec0b3b222591
+    role: target
+  - path: data/pathways/phospholipid-biosynthesis.yaml
+    sha256: 417bf20d9ae6714e5055e015952829c2fd20f34c1f532dcc9116eb76983fa8e0
+    role: target
+  - path: data/pathways/phospholipids-degradation.yaml
+    sha256: 1623a953f29c91d49e189b163e6d91a21803e9d9176e53fcd7b76b9cb874ec30
+    role: target
+  - path: data/pathways/phosphopantothenate-biosynthesis-i.yaml
+    sha256: 5c4ec894fd396212313ec798adaf4ed09581a77c21f3414abf71e9408915492e
+    role: target
+  - path: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+    sha256: 31480b5959f3b596fa758d0272b7b2400a9b23b33b52af7349f999ae6dad8d45
+    role: target
+  - path: data/pathways/ppgpp-metabolism.yaml
+    sha256: 9fd22d5da0134ca3eca2b6cb127a1c12958076f5dde198d91f7d4dde44fc957f
+    role: target
+  - path: data/pathways/protocatechuate-meta-cleavage.yaml
+    sha256: c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49
+    role: target
+  - path: data/pathways/protocatechuate-ortho-cleavage.yaml
+    sha256: 03c1fced81d599136ea6577ef4ff314cc428aab9171c522f0334fa4ccba418d4
+    role: target
+  - path: data/pathways/protocatechuate-para-cleavage.yaml
+    sha256: fe0024f2064903578609314649be4fc0f2dd173eb0b8809664c550ead6bd66e6
+    role: target
+  - path: data/pathways/pseudouridine-degradation.yaml
+    sha256: 68698dd33a2d246cdb8440f6a74d6df0aa9081c1e0707542ebffc64d70bfe15a
+    role: target
+  - path: data/pathways/purine-deoxyribonucleosides-degradation.yaml
+    sha256: 7ba78f487af6467f030d8634b0faf6f982b31d5708ef82456dcc8bc5bd0f7510
+    role: target
+  - path: data/pathways/putrescine-degradation-ii.yaml
+    sha256: e7a7cf6dab08e3edcd0fa4709df1ddd28e51f006f37422a9d0d637760709b184
+    role: target
+  - path: data/pathways/pyochelin-biosynthesis.yaml
+    sha256: b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b
+    role: target
+  - path: data/pathways/pyridoxal-5-phosphate-biosynthesis-i.yaml
+    sha256: 0918993deb31b55454f225b663ce7982d3e2b37139b0c724e078787e47f49109
+    role: target
+  - path: data/pathways/pyridoxal-5-phosphate-salvage-i.yaml
+    sha256: 8899315e99e70be19d3ee6a57cb49dbddd916b95ca403b928c0291e89c5d6243
+    role: target
+  - path: data/pathways/pyrimidine-deoxyribonucleosides-degradation.yaml
+    sha256: c950a85cfb4472db24bf4cf7a442f85eae3b13975581f56dd3d7a1dec965b416
+    role: target
+  - path: data/pathways/pyrimidine-deoxyribonucleotide-salvage.yaml
+    sha256: 3954b251a4831937ec55414702a54e9e89cd26676c18de6c7cef6967d138c987
+    role: target
+  - path: data/pathways/pyrimidine-ribonucleosides-degradation.yaml
+    sha256: 6ae10dd0851078d00e31d845e3a2e321c75ab4ab2d1613a3375bbb358639f006
+    role: target
+  - path: data/pathways/pyruvate-decarboxylation-to-acetyl-coa.yaml
+    sha256: 78370a3d929d7580ff372192b4362e2a48c430e20e79066262a2aa5371b11baa
+    role: target
+  - path: data/pathways/pyruvate-fermentation-to-acetoin-iii.yaml
+    sha256: 6a91a3bcbe9679c27ae30c57357772f3ccd7fe98ec9ead2b6097c89e34f6a6a7
+    role: target
+  - path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    sha256: 1f4ea5bcf744449a6ad04d0da03b69c2e87e33dbfadc6db16a4de84d69407e31
+    role: target
+  - path: data/pathways/quinate-degradation-i.yaml
+    sha256: fb73865fd12cd0ad2934d65d058496aeada3e2b087e5aca80fc0b55030d8ad30
+    role: target
+  - path: data/pathways/quinate-degradation-ii.yaml
+    sha256: 42585b8a6d2b15cc6e31be7a29c33c636155beca8cbdf3ed122bf370caf10d08
+    role: target
+  - path: data/pathways/riboneogenesis.yaml
+    sha256: 55497469d6ffcbb962caee13ec4cb3d66d42c3f10547140dbfd17fac0f52f870
+    role: target
+  - path: data/pathways/ribose-phosphorylation.yaml
+    sha256: 4bd1cf5637fff3a247df438bf014c02fe5685fe912c5e015776851c9ff811076
+    role: target
+  - path: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+    sha256: 60ad394e590036fee8611b5e18297f72d8b19aa37cfef39d929af3b891c4455c
+    role: target
+  - path: data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml
+    sha256: 4907cf3e7dc0469ef74274da8f536c99a4bfced9a177938d793c448e1db7724c
+    role: target
+  - path: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+    sha256: 5aa35424ed5c8e99270b6defc3b2a5fb850350b157295149f477d2145c143c3b
+    role: target
+  - path: data/pathways/salvage-pathways-of-pyrimidine-ribonucleotides.yaml
+    sha256: c703f90bedcee65918e9dda8a322c76984eac65759b018811030c42557ba81ce
+    role: target
+  - path: data/pathways/sedoheptulose-bisphosphate-bypass.yaml
+    sha256: c9b46e76aa405a321ac9c4a79a96b263a9d63d28dbc27437cb58de5d0823259b
+    role: target
+  - path: data/pathways/shikimate-degradation-i.yaml
+    sha256: 19afc37cf2c8bbcf8eb19637f818a892e26a8380e083fb444323adb2e3037d9c
+    role: target
+  - path: data/pathways/shikimate-degradation-ii.yaml
+    sha256: 2e070f81e06a20c00f29901cc84b54c6f72eae0af9b0c892151faf313f25828b
+    role: target
+  - path: data/pathways/siroheme-biosynthesis.yaml
+    sha256: 266f51a79c6f909fb6179937bf4c367f1f1d1c3a6fa1d314bec790466955548e
+    role: target
+  - path: data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml
+    sha256: 85429c55e6da7ec720069cc442f902ae014ca6e7ad46d686280f5b88694c3da2
+    role: target
+  - path: data/pathways/spermidine-biosynthesis-i.yaml
+    sha256: 6d94af196efc361a35dc72c2f8ef30fdf7def3a9e2597bd8bba8a2daaf235260
+    role: target
+  - path: data/pathways/spermine-biosynthesis.yaml
+    sha256: da1f3ef31eb3d56e724b06474a42acb883f1947d17dd46415e36e0e99b5d3f56
+    role: target
+  - path: data/pathways/sphingolipid-biosynthesis-yeast.yaml
+    sha256: d7c01da786b8f7261fbf51f1b83cd3125d5dd9a3dbbd4945e8a195c1e8cab6b7
+    role: target
+  - path: data/pathways/sporosarcina-pasteurii-ectoine-biosynthetic-gene-cluster.yaml
+    sha256: 0c2e4ef99740885129888a71cf927b1ac8af45e7061c3e3b55ac0913d68dc224
+    role: target
+  - path: data/pathways/staphyloferrin-a-biosynthesis.yaml
+    sha256: 5b4cd8d7838a19de2ba9c623bd59d321def6fffca45553895df646852d780e42
+    role: target
+  - path: data/pathways/staphyloferrin-b-biosynthesis.yaml
+    sha256: 61bb5d7ce3c9d6ea9554599c0d42dc47e7792503fe060aa4713330f78b24505b
+    role: target
+  - path: data/pathways/succinate-to-propanoate.yaml
+    sha256: 38e383fadbfd7168156a8fdd68f8a48632f79cc888475b5a104492b7eb1cc19e
+    role: target
+  - path: data/pathways/sulfate-activation-for-sulfonation.yaml
+    sha256: bcfb1267bed7de24a78f54d271e10b5ad9251648adcdd73c6882c5fb203cf904
+    role: target
+  - path: data/pathways/sulfoquinovose-degradation-i.yaml
+    sha256: 91080feab4ba83987b59622257b6dccda70841e590cf1b4835236810189e691a
+    role: target
+  - path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    sha256: 20a95c209243399b88a90fbecb0d8d310ebfb3094fc6ee4487352fdc2185c596
+    role: target
+  - path: data/pathways/superoxide-radicals-degradation.yaml
+    sha256: f55995b9eac815491d9b7f5a57daa252e6111c9680612188fb1ff09a7a8698b9
+    role: target
+  - path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    sha256: 119bfbabd17f6079885d4c7894cb214766463726392089b85be54c1954bfb53f
+    role: target
+  - path: data/pathways/tca-cycle-detailed.yaml
+    sha256: c574f799eef6b8b793decf52b1934a9f65ddac42893bb56ed5ed9d4134f837fe
+    role: target
+  - path: data/pathways/tetrahydrofolate-biosynthesis.yaml
+    sha256: 926aeb5bbfafd09fa1e6d0599456545cfa89186f2f8bc88e5f6bb3a55d7b0d19
+    role: target
+  - path: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+    sha256: d76bf2e548f901bbecf826a33227d2a202f6e7eecbd12e0dfb08168236c83c15
+    role: target
+  - path: data/pathways/tetrapyrrole-biosynthesis.yaml
+    sha256: 75ebed65fc0c1f3a60cb1941f878481a38a5ad719cc4f2512930fd96cd1a7df7
+    role: target
+  - path: data/pathways/thiamin-diphosphate-biosynthesis-escherichia-coli.yaml
+    sha256: 504ff0ca8db2e9a6e0c1be99ba1208f3d0828ae2fb52a2821c60de763bcc42ec
+    role: target
+  - path: data/pathways/thiamine-biosynthesis.yaml
+    sha256: 21e9b0a3d9e6f00d36454acbed3f582919331587f8777a2f7f2ee7a19a16a7ea
+    role: target
+  - path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    sha256: bceec45211c8f3b0c39072d6d8e123944b28c35562bbe0f582a265e8d25ff296
+    role: target
+  - path: data/pathways/thiazole-biosynthesis-i-escherichia-coli.yaml
+    sha256: 33bbf1c04a7e5fbfe56c98c34ee2b64cf2e0f9f0c8e23d5b94151cec489a7b39
+    role: target
+  - path: data/pathways/thioredoxin-pathway.yaml
+    sha256: 565fbfe8ef69b7728ce8d720c53845071b90938cb845d2cd87db963b13f0080c
+    role: target
+  - path: data/pathways/threonine-biosynthesis-from-aspartate-escherichia-coli.yaml
+    sha256: a5dd94c6c00ce18f22ab027d4134387981691c7de136a17c897ec0374e2eb17c
+    role: target
+  - path: data/pathways/threonine-degradation.yaml
+    sha256: 1d6f4daad39854a6c62404c166df9c282bffc8c57f4a88b83bca6d7150e62d7c
+    role: target
+  - path: data/pathways/trans-trans-farnesyl-diphosphate-biosynthesis.yaml
+    sha256: 2c9a01d5a4cbf5dd9b5a4d165cbe64e705ea2d7570f385f0b8dbf242a980be77
+    role: target
+  - path: data/pathways/trehalose-biosynthesis-i.yaml
+    sha256: 9ad861caff0f6d6b4f48e6eb73cce8a460b39dcd3075a3b9a568648d193d905f
+    role: target
+  - path: data/pathways/triglyceride-biosynthesis.yaml
+    sha256: a6cf5919fcfd1d23095258909f13c819a81dbaf8fdae4d8f5aebb862428ac07a
+    role: target
+  - path: data/pathways/tryptophan-degradation.yaml
+    sha256: caeb051e798194e96fac5ae22959fd91b6c3314fe69d6c0175721e6c6250bb01
+    role: target
+  - path: data/pathways/tyrosine-biosynthesis.yaml
+    sha256: 97f352fdb43fa188391dc1a79702296c03c34fbdd8564cce53610528ca9793b0
+    role: target
+  - path: data/pathways/ubiquinol-6-biosynthesis-from-4-hydroxybenzoate.yaml
+    sha256: 2546ba7c2b4a4b8d1ec2ff21d48672a1d164a7caf987b71aa67763c67a013efd
+    role: target
+  - path: data/pathways/udp-n-acetylglucosamine-biosynthesis.yaml
+    sha256: 4e8b67155682a12a450182016df2250fb9ab3ea340f059b8a620998c38407cb5
+    role: target
+  - path: data/pathways/ump-biosynthesis-i.yaml
+    sha256: de743e1d8fca835e785e5a0d054e3081c8978316c9cb9e8699e7d99b3ba48c76
+    role: target
+  - path: data/pathways/uracil-degradation-iii.yaml
+    sha256: fc2ffd10d740ff4bea1b90b59f0d18ef3515c40ea6124667fd00555e9f200cee
+    role: target
+  - path: data/pathways/urea-degradation-i.yaml
+    sha256: 0c163d8fa329237abc323929210505f9f1051d0dcd5ae7756cdde96924236ab9
+    role: target
+  - path: data/pathways/utp-and-ctp-de-novo-biosynthesis.yaml
+    sha256: 9a13a458e243bec38a792d1b4f85346a6fd4ef9d53e531b3aaf02cc0b13ef831
+    role: target
+  - path: data/pathways/valine-degradation.yaml
+    sha256: f283194f16e064bff894a9d68eccff7bc79241495247561c4c10dd46aa0fcd1f
+    role: target
+  - path: data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml
+    sha256: 21b1b8c472788467007f47443a2d57bd00f47386f2f5222b5a8236a3e4e2681a
+    role: target
+  - path: data/pathways/xylose-metabolism.yaml
+    sha256: 9d940d5a968e3b77aa250ff035c84eeb897f51a7f125e8b42bc9993840da7fc9
+    role: target
+  - path: data/pathways/zymosterol-biosynthesis.yaml
+    sha256: 26595566a352af774f6529b5de553412cb754fa337c54ed09c25e30460c15152
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 9d0eab4e76b22c194614cb7d309f2726e16331e5a7552c660bd5075e7497d8b2
+    role: context
+  - path: docs/CURATION.md
+    sha256: 2a90c445177b52a179df6b4ee237dbff61e6bcf0e7918a798764dcb0e9292e0b
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 2d2c7d0a069f58fb74a9d44f5ccb8ecb61fee89360f9f0bca20798c801a02d16
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: e65b0669d8250acf6a69b4290c29e7f9b32f8b96645fada543be0f61385bb24c
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: output/sssom/source_mappings.sssom.tsv
+    sha256: f91ea1fd15e485781443fdf705d3d8ebc2ad48ad45fd0f92a885c8c0ad66e1cb
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 6a85c397ecab687cfad01b8f1a102e7e5f94995db178a6094409293c9d7a2758
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: f76aacaa9abeb4aab922b0b2f4c313e0c2d579e7318314deee235c72fa0418a4
+    role: context
+  - path: reviews/structured/20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review/review.yaml
+    sha256: 53ea8869dd4122968268bf11cc30d189f016f2d092b5e3d238b7946902507b65
+    role: context
+  - path: reviews/structured/20261030T221500Z-cycle7-stage5-resolve-review-findings/review.yaml
+    sha256: e5348ddc0624f8814a367b2a2f30129c34eae1f0d70cfc262946f1f073246fc5
+    role: context
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000007/stage-05/revision-0001/evidence.yaml
+    sha256: a6e2daa3ecbba006e1c180bf8404fc98f8e78fb7a688b28db565fef7a186c5e2
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 23296ae17aeeea4518a972ee140640a69bf00e6b09203d04a3e13f9e13fc4790
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 46b16aba7e33cce89083077f64403769e6d2a890d58d269dca3dd79eb4829f9d
+    role: context
+scope:
+  description: Full frozen-inventory record and category review of all 277 maintained
+    pathway records in data/pathways/*.yaml at Git base 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  selection: All files matching data/pathways/*.yaml in CultureBotAI/PathwayMech.
+  coverage: full
+  population_size: 277
+  reviewed_target_ids:
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY0-42
+  - WikiPathways:WP5587
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-6543
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - gomodel:YeastPathways_PWY-6147
+  - GO:0097288
+  - MetaCyc:PWY0-1312
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - WikiPathways:WP5019
+  - PathBank:SMP0002081
+  - MetaCyc:P121-PWY
+  - PathBank:SMP0002083
+  - MetaCyc:PWY-6609
+  - gomodel:YeastPathways_PWY-7220-1
+  - MetaCyc:SALVADEHYPOX-PWY
+  - gomodel:YeastPathways_PWY-7219
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-1241
+  - GO:0019270
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - MetaCyc:PWY0-41
+  - gomodel:YeastPathways_PWY-5694
+  - MetaCyc:PWY-5705
+  - gomodel:YeastPathways_PWY-5697
+  - MetaCyc:GLCMANNANAUT-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - MetaCyc:PWY-5903
+  - PathBank:SMP0002123
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:P321-PWY
+  - gomodel:YeastPathways_PWY-5760-1
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - GO:0043427
+  - gomodel:YeastPathways_PWY3O-4
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5417
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - gomodel:YeastPathways_PWY3O-15
+  - MetaCyc:ARO-PWY
+  - MIBiG:BGC0000829
+  - MetaCyc:P2-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - MetaCyc:COA-PWY
+  - PathBank:SMP0002070
+  - PathBank:SMP0001910
+  - GO:0036040
+  - MetaCyc:CYANCAT-PWY
+  - PathBank:SMP0000993
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:XYLCAT-PWY
+  - MetaCyc:PWY-6376
+  - KEGG:M00374
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-123
+  - GO:0019305
+  - MetaCyc:P101-PWY
+  - KEGG:M00008
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - MetaCyc:PWY-7255
+  - gomodel:YeastPathways_PWY3O-4300
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1280
+  - KEGG:M00373
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY-1801-1
+  - MetaCyc:PWY0-521
+  - GO:1901281
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-6223
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - WikiPathways:WP556
+  - MetaCyc:PWY-5177
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - gomodel:YeastPathways_PWYQT-4432
+  - WikiPathways:WP392
+  - gomodel:YeastPathways_PWY3O-48
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - WikiPathways:WP478
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - MetaCyc:PWY-5744
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:PWY-6579
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - GO:1902000
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - gomodel:YeastPathways_PWY3O-402
+  - WikiPathways:WP178
+  - PathBank:SMP0000991
+  - MetaCyc:PWY0-1338
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGSYN-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:PWY0-301
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - PathBank:SMP0002051
+  - MetaCyc:CYSTSYN-PWY
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:HISTSYN-PWY
+  - gomodel:YeastPathways_PWY-5344
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PROSYN-PWY
+  - gomodel:YeastPathways_PROUT-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRPSYN-PWY
+  - gomodel:YeastPathways_PWY-5651
+  - MetaCyc:TYRSYN
+  - gomodel:YeastPathways_PWY3O-4108
+  - MetaCyc:VALSYN-PWY
+  - gomodel:YeastPathways_PWY3O-4112
+  - MIBiG:BGC0002072
+  - gomodel:6882d2b800000609
+  - MetaCyc:PWY0-501
+  - gomodel:YeastPathways_PWY3O-1743
+  - MetaCyc:PWY0-1300
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - gomodel:YeastPathways_PWY3O-64
+  - MetaCyc:NONMEVIPP-PWY
+  - gomodel:YeastPathways_PWY-901
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5453
+  - PathBank:SMP0002077
+  - MetaCyc:PWY-6048
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - MetaCyc:PWY-6823
+  - Reactome:R-MTU-936721
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - gomodel:YeastPathways_PWY-2301
+  - MetaCyc:PWY-8383
+  - MetaCyc:GLUAMCAT-PWY
+  - gomodel:YeastPathways_PWY-5653
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - gomodel:YeastPathways_PWY3O-4106
+  - WikiPathways:WP171
+  - MetaCyc:PWY-6993
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:PWY0-1352
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-1801
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - WikiPathways:WP5060
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY0-321
+  - gomodel:YeastPathways_PWY3O-4153
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY0-1277
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - WikiPathways:WP71
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PWY1-3
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:P184-PWY
+  - GO:0019618
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6019
+  - PathBank:SMP0002089
+  - PathBank:SMP0002067
+  - GO:0042864
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PWY-7181
+  - GO:0010139
+  - PathBank:SMP0002038
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_PWY3O-440
+  - MetaCyc:PWY-7545
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:PWY-6416
+  - PathBank:SMP0002406
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:PWY-6151
+  - gomodel:YeastPathways_PWY-5041
+  - MetaCyc:PWY-8132
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  - MetaCyc:PWY0-1517
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:PWY-6419
+  - gomodel:YeastPathways_PWY-5194-1
+  - PathBank:SMP0002097
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - MIBiG:BGC0000852
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY0-43
+  - gomodel:YeastPathways_PWY-5340
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - gomodel:YeastPathways_DETOX1-PWY
+  - MetaCyc:PWY-5838
+  - WikiPathways:WP296
+  - gomodel:YeastPathways_PWY-6614
+  - MetaCyc:PWY0-1433
+  - gomodel:YeastPathways_PWY3O-50
+  - PathBank:SMP0002042
+  - gomodel:YeastPathways_PWY3O-17
+  - MetaCyc:THISYN-PWY
+  - PathBank:SMP0002055
+  - MetaCyc:THIOREDOX-PWY
+  - PathBank:SMP0000992
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_PWY-5123
+  - MetaCyc:TRESYN-PWY
+  - WikiPathways:WP266
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-4120
+  - WikiPathways:WP287
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY0-1471
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWY-6074-1
+  exclusions:
+  - target: research/pathway_additions/
+    reason: Withheld research draft pathways (GO:0033468 and MetaCyc:PWY-5875) are
+      not maintained records in data/pathways/*.yaml.
+  - target: reports/yaml_record_review/ and reports/yaml_category_review/
+    reason: Legacy prose reports remain historical evidence and are not maintained
+      pathway targets.
+targets:
+- target_id: MetaCyc:PWY-5901
+  path: data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml
+  label: MetaCyc:PWY-5901 (MetaCyc:PWY-5901)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 533c753687b16280d4341242b578c2d9924cfd83fa629050745cb46fa537c83f
+    description: Raw SHA-256 file digest of data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-42
+  path: data/pathways/2-methylcitrate-cycle-i.yaml
+  label: MetaCyc:PWY0-42 (MetaCyc:PWY0-42)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a157294b1af53ece431ef55c79bdd78ebb24c93564dee28090a0a8f30b0c0c6a
+    description: Raw SHA-256 file digest of data/pathways/2-methylcitrate-cycle-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/2-methylcitrate-cycle-i.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP5587
+  path: data/pathways/2-phenylethanol-biosynthesis.yaml
+  label: WikiPathways:WP5587 (WikiPathways:WP5587)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 70936b88da1b369d40b0b68205cc3b31ab67df9df7b003aa0fad049594128798
+    description: Raw SHA-256 file digest of data/pathways/2-phenylethanol-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/2-phenylethanol-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-2361
+  path: data/pathways/3-oxoadipate-degradation.yaml
+  label: MetaCyc:PWY-2361 (MetaCyc:PWY-2361)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 91e69d8984ae3629434bfa3579b5f86677efa4d0f26ce5222cdff54c2e2f5501
+    description: Raw SHA-256 file digest of data/pathways/3-oxoadipate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/3-oxoadipate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6543
+  path: data/pathways/4-aminobenzoate-biosynthesis-i.yaml
+  label: MetaCyc:PWY-6543 (MetaCyc:PWY-6543)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1bcbbb29986a8c2a9a571b2cbfbe487a283e62593e28d241b75cdfe333861f05
+    description: Raw SHA-256 file digest of data/pathways/4-aminobenzoate-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/4-aminobenzoate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  path: data/pathways/4-aminobutyrate-degradation.yaml
+  label: gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY (gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e953a88e595f3446060152fa7cf2060859dc88b1693138768854c767bece6dda
+    description: Raw SHA-256 file digest of data/pathways/4-aminobutyrate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/4-aminobutyrate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6121
+  path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-i.yaml
+  label: MetaCyc:PWY-6121 (MetaCyc:PWY-6121)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1cf4d91de8aee93cca10ca1fd4e05bb4cd7019007d7ca4e5873c67827d137d76
+    description: Raw SHA-256 file digest of data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6122
+  path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-ii.yaml
+  label: MetaCyc:PWY-6122 (MetaCyc:PWY-6122)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3db6e5a3cd88efae704233fe0c85c9aff3e5b88d480a2a0194b15339812b6ebc
+    description: Raw SHA-256 file digest of data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-8130
+  path: data/pathways/5-prime-deoxyadenosine-degradation-i.yaml
+  label: MetaCyc:PWY-8130 (MetaCyc:PWY-8130)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e46d6bb469af398c42278603eb02a68deecee7bb99d4b97a31114854300c7948
+    description: Raw SHA-256 file digest of data/pathways/5-prime-deoxyadenosine-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/5-prime-deoxyadenosine-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-8131
+  path: data/pathways/5-prime-deoxyadenosine-degradation-ii.yaml
+  label: MetaCyc:PWY-8131 (MetaCyc:PWY-8131)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c6084b617411343240fd2965ce53094c886829f510879297b9d4232ee0f3a842
+    description: Raw SHA-256 file digest of data/pathways/5-prime-deoxyadenosine-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/5-prime-deoxyadenosine-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-6147
+  path: data/pathways/6-hydroxymethyl-dihydropterin-diphosphate-biosynthesis-i.yaml
+  label: gomodel:YeastPathways_PWY-6147 (gomodel:YeastPathways_PWY-6147)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 5d6d425f52d44d54819deed6bedf672322a09a2333db5305601003376bd327b3
+    description: Raw SHA-256 file digest of data/pathways/6-hydroxymethyl-dihydropterin-diphosphate-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/6-hydroxymethyl-dihydropterin-diphosphate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: GO:0097288
+  path: data/pathways/7-cyano-7-deazaguanine-biosynthesis.yaml
+  label: GO:0097288 (GO:0097288)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cc5d9f376c9815f085958ce63f8fd3a9c59ee606e2d8a3ab949e4cdbf630ebf2
+    description: Raw SHA-256 file digest of data/pathways/7-cyano-7-deazaguanine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/7-cyano-7-deazaguanine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1312
+  path: data/pathways/acetate-and-atp-formation-from-acetyl-coa-i.yaml
+  label: MetaCyc:PWY0-1312 (MetaCyc:PWY0-1312)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a80b0ade43ca551f64478574affea5c8c8a4664ac91f20af22dd29e7ca0c3a52
+    description: Raw SHA-256 file digest of data/pathways/acetate-and-atp-formation-from-acetyl-coa-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/acetate-and-atp-formation-from-acetyl-coa-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ACETOACETATE-DEG-PWY
+  path: data/pathways/acetoacetate-degradation.yaml
+  label: MetaCyc:ACETOACETATE-DEG-PWY (MetaCyc:ACETOACETATE-DEG-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 233b3b864987d0d4bd5434236eb7289624137abbaaa194e936766ebe344d92e4
+    description: Raw SHA-256 file digest of data/pathways/acetoacetate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/acetoacetate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP5019
+  path: data/pathways/acetogenesis.yaml
+  label: WikiPathways:WP5019 (WikiPathways:WP5019)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: fdb19112a2c0e7f9ed80146367f380562896493d7b3d3a71903c83ce25a126f7
+    description: Raw SHA-256 file digest of data/pathways/acetogenesis.yaml at frozen
+      Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/acetogenesis.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002081
+  path: data/pathways/adenine-and-adenosine-salvage-i-escherichia-coli.yaml
+  label: PathBank:SMP0002081 (PathBank:SMP0002081)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 11725db09e52dcd4de50dd62370510ce85319943078778485e8345ce3bd9b02c
+    description: Raw SHA-256 file digest of data/pathways/adenine-and-adenosine-salvage-i-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenine-and-adenosine-salvage-i-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:P121-PWY
+  path: data/pathways/adenine-and-adenosine-salvage-i.yaml
+  label: MetaCyc:P121-PWY (MetaCyc:P121-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f40adb1ef782eec92b3938b31339a709ff8c0030c7a38c33b28577dab4625419
+    description: Raw SHA-256 file digest of data/pathways/adenine-and-adenosine-salvage-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenine-and-adenosine-salvage-i.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002083
+  path: data/pathways/adenine-and-adenosine-salvage-ii.yaml
+  label: PathBank:SMP0002083 (PathBank:SMP0002083)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ceac8c379a61f80a5b532e0c05834e5839cd9511b3446d386748c444092f8c57
+    description: Raw SHA-256 file digest of data/pathways/adenine-and-adenosine-salvage-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenine-and-adenosine-salvage-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6609
+  path: data/pathways/adenine-and-adenosine-salvage-iii.yaml
+  label: MetaCyc:PWY-6609 (MetaCyc:PWY-6609)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c2912590c871443cf13190c5e962e1a12d2c4643b02ee7c2e1050f5a31190cdc
+    description: Raw SHA-256 file digest of data/pathways/adenine-and-adenosine-salvage-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenine-and-adenosine-salvage-iii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-7220-1
+  path: data/pathways/adenosine-deoxyribonucleotides-de-novo-biosynthesis-ii.yaml
+  label: gomodel:YeastPathways_PWY-7220-1 (gomodel:YeastPathways_PWY-7220-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f3124264faafda7584fe6a5169bd9c70cace38fb8a1454565cb43ec25158483b
+    description: Raw SHA-256 file digest of data/pathways/adenosine-deoxyribonucleotides-de-novo-biosynthesis-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-deoxyribonucleotides-de-novo-biosynthesis-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:SALVADEHYPOX-PWY
+  path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+  label: MetaCyc:SALVADEHYPOX-PWY (MetaCyc:SALVADEHYPOX-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d2cb1bc7e3dbe3c8eba7f6232113712be3b4d3de66112c873984550be29d5b1a
+    description: Raw SHA-256 file digest of data/pathways/adenosine-nucleotides-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-7219
+  path: data/pathways/adenosine-ribonucleotides-de-novo-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-7219 (gomodel:YeastPathways_PWY-7219)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 027459e5a871dcdb8f394ba6b30f2a6e01b92c4f98c8b6f9f232dfc12dbfb010
+    description: Raw SHA-256 file digest of data/pathways/adenosine-ribonucleotides-de-novo-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-ribonucleotides-de-novo-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5509
+  path: data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml
+  label: MetaCyc:PWY-5509 (MetaCyc:PWY-5509)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ff49665e60eb298e40b1ff8b3e3d40031916f314b3be7660e6990b4aa021a64c
+    description: Raw SHA-256 file digest of data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7971
+  path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+  label: MetaCyc:PWY-7971 (MetaCyc:PWY-7971)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 62dbc41e9e0b6a583bf290111884fbd673bc12e414392634f1a37382fdae2631
+    description: Raw SHA-256 file digest of data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1241
+  path: data/pathways/adp-l-glycero-beta-d-manno-heptose-biosynthesis.yaml
+  label: MetaCyc:PWY0-1241 (MetaCyc:PWY0-1241)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 03a96e6d64062187955d9e66afc5fe1530880ec64f0f44bfc011675ec48546d6
+    description: Raw SHA-256 file digest of data/pathways/adp-l-glycero-beta-d-manno-heptose-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adp-l-glycero-beta-d-manno-heptose-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: GO:0019270
+  path: data/pathways/aerobactin-biosynthesis.yaml
+  label: GO:0019270 (GO:0019270)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3e4e50965749a9fa9dfe6319fd1462cc8329c10b7f4ab5363e7b486f2f32e3d4
+    description: Raw SHA-256 file digest of data/pathways/aerobactin-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/aerobactin-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  path: data/pathways/aerobic-glycerol-degradation.yaml
+  label: gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY (gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 89d0c0e1202bcc20bdc120764d454b4a1fa4112d14d82aa61bebbc46dcf92699
+    description: Raw SHA-256 file digest of data/pathways/aerobic-glycerol-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/aerobic-glycerol-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-41
+  path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+  label: MetaCyc:PWY0-41 (MetaCyc:PWY0-41)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 444f6ee3aee2780c3b4827d23093abeab21f89c180bbeac9535f79f6aec243d8
+    description: Raw SHA-256 file digest of data/pathways/allantoin-degradation-iv-anaerobic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5694
+  path: data/pathways/allantoin-degradation-to-glyoxylate-i.yaml
+  label: gomodel:YeastPathways_PWY-5694 (gomodel:YeastPathways_PWY-5694)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 20a2143fca48392111bbf273148db8cd7128139ade7a74c00e1b8c26e3f4e58b
+    description: Raw SHA-256 file digest of data/pathways/allantoin-degradation-to-glyoxylate-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/allantoin-degradation-to-glyoxylate-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5705
+  path: data/pathways/allantoin-degradation-to-glyoxylate-iii.yaml
+  label: MetaCyc:PWY-5705 (MetaCyc:PWY-5705)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 46d7361452387c017e0a66460ea2cce8edbfa5a7ddad17333890b9fc47482bd0
+    description: Raw SHA-256 file digest of data/pathways/allantoin-degradation-to-glyoxylate-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/allantoin-degradation-to-glyoxylate-iii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5697
+  path: data/pathways/allantoin-degradation-to-ureidoglycolate-i.yaml
+  label: gomodel:YeastPathways_PWY-5697 (gomodel:YeastPathways_PWY-5697)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 962f07ce5ea3130396bc51df0bab3892ceb8bbfc45326a76a50f7a82579168d0
+    description: Raw SHA-256 file digest of data/pathways/allantoin-degradation-to-ureidoglycolate-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/allantoin-degradation-to-ureidoglycolate-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLCMANNANAUT-PWY
+  path: data/pathways/amino-sugar-superpathway.yaml
+  label: MetaCyc:GLCMANNANAUT-PWY (MetaCyc:GLCMANNANAUT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 8cb2330ad4963f4c9a641c9d023f59cb928c8a2e5bf2ae69d71aa4e5364b60de
+    description: Raw SHA-256 file digest of data/pathways/amino-sugar-superpathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/amino-sugar-superpathway.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_ASPBIO-PWY
+  path: data/pathways/aspartate-biosynthesis.yaml
+  label: gomodel:YeastPathways_ASPBIO-PWY (gomodel:YeastPathways_ASPBIO-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 20016b7d818f0dc7e4cb17610ef76abfba9265db8d24b0af5b3fab496685bf87
+    description: Raw SHA-256 file digest of data/pathways/aspartate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/aspartate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_SO4ASSIM-PWY
+  path: data/pathways/assimilatory-sulfate-reduction.yaml
+  label: gomodel:YeastPathways_SO4ASSIM-PWY (gomodel:YeastPathways_SO4ASSIM-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0f335f68be3212861d2ca9152b0eed4e5428fea2d6531d39e5d7e1cb3606e3ac
+    description: Raw SHA-256 file digest of data/pathways/assimilatory-sulfate-reduction.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/assimilatory-sulfate-reduction.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5903
+  path: data/pathways/bacillibactin-biosynthesis.yaml
+  label: MetaCyc:PWY-5903 (MetaCyc:PWY-5903)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa
+    description: Raw SHA-256 file digest of data/pathways/bacillibactin-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/bacillibactin-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002123
+  path: data/pathways/baesr-two-component-signal-transduction.yaml
+  label: PathBank:SMP0002123 (PathBank:SMP0002123)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e826a431a7b5c43a825544a4e82deb154b06b80f90156b3b4c0feafd9edf7bc0
+    description: Raw SHA-256 file digest of data/pathways/baesr-two-component-signal-transduction.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/baesr-two-component-signal-transduction.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-2503
+  path: data/pathways/benzoate-degradation-i-aerobic.yaml
+  label: MetaCyc:PWY-2503 (MetaCyc:PWY-2503)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 82b5ebd128c07ef4b5041fdbb047890c4c91cb5fa099dc0735fadb5dd1964b24
+    description: Raw SHA-256 file digest of data/pathways/benzoate-degradation-i-aerobic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-1361
+  path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+  label: MetaCyc:PWY-1361 (MetaCyc:PWY-1361)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 91552e9b4f36ece175f6cee1ff384423f11ddfbb76ce2ec1dd4b4b87cc2d7f08
+    description: Raw SHA-256 file digest of data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CENTBENZCOA-PWY
+  path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+  label: MetaCyc:CENTBENZCOA-PWY (MetaCyc:CENTBENZCOA-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 45b132d52f255bc06c2c3892d6d225c920b10469febc474ecb94bb16441fbd3c
+    description: Raw SHA-256 file digest of data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:P321-PWY
+  path: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+  label: MetaCyc:P321-PWY (MetaCyc:P321-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 32f3d830f2932266bd3fff36fae2e08e738929c282ad46ed4b97f32fa726636d
+    description: Raw SHA-256 file digest of data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5760-1
+  path: data/pathways/beta-alanine-biosynthesis-iv.yaml
+  label: gomodel:YeastPathways_PWY-5760-1 (gomodel:YeastPathways_PWY-5760-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0b24a16ea8a7fb91fe1ead37cb5868d9ce4c8b8d36f04e788e2e9030da6b8972
+    description: Raw SHA-256 file digest of data/pathways/beta-alanine-biosynthesis-iv.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/beta-alanine-biosynthesis-iv.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  path: data/pathways/biotin-biosynthesis-i.yaml
+  label: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY (MetaCyc:BIOTIN-BIOSYNTHESIS-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 96ef911aa3e61f888318443a3414158c041f66ea1db8e3895630c7317a729f0d
+    description: Raw SHA-256 file digest of data/pathways/biotin-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/biotin-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CALVIN-PWY
+  path: data/pathways/calvin-cycle.yaml
+  label: MetaCyc:CALVIN-PWY (MetaCyc:CALVIN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: afbdd8f0562e83d0556f6171b1f5812e82575d53c5baf536c31322280c13adcc
+    description: Raw SHA-256 file digest of data/pathways/calvin-cycle.yaml at frozen
+      Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/calvin-cycle.yaml
+    role: maintained pathway YAML
+- target_id: GO:0043427
+  path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+  label: GO:0043427 (GO:0043427)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 92e0c1a1a4f2ae4ebf5986a711a51788116037953a76e5ae0681097dcc5c4100
+    description: Raw SHA-256 file digest of data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4
+  path: data/pathways/carnitine-shuttle.yaml
+  label: gomodel:YeastPathways_PWY3O-4 (gomodel:YeastPathways_PWY3O-4)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b30ce5a608752d19a0f22de39a50c261be96e4d8f7cd5940759a4de49eff8e28
+    description: Raw SHA-256 file digest of data/pathways/carnitine-shuttle.yaml at
+      frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/carnitine-shuttle.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5415
+  path: data/pathways/catechol-degradation-i.yaml
+  label: MetaCyc:PWY-5415 (MetaCyc:PWY-5415)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: da702e94061eefb56de41d4539232e059d5e4e6fa1513fa8b8f6125d82e277f5
+    description: Raw SHA-256 file digest of data/pathways/catechol-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/catechol-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5420
+  path: data/pathways/catechol-degradation-ii.yaml
+  label: MetaCyc:PWY-5420 (MetaCyc:PWY-5420)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e549a17f5d1a9434acc87b091d1799f79bb8c7b9268e16ea3debc58ddcf9eb3c
+    description: Raw SHA-256 file digest of data/pathways/catechol-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/catechol-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5417
+  path: data/pathways/catechol-degradation-iii.yaml
+  label: MetaCyc:PWY-5417 (MetaCyc:PWY-5417)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4d60fd0cb356ba9e9612a0acfe77f154d970193bc3f37e1dc91d96fa360c4952
+    description: Raw SHA-256 file digest of data/pathways/catechol-degradation-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/catechol-degradation-iii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  path: data/pathways/catechol-degradation-to-beta-ketoadipate.yaml
+  label: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY (MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2e666ecee36cddac380818d0f4972206b91a54846a4ccc924e294b8be5d661a1
+    description: Raw SHA-256 file digest of data/pathways/catechol-degradation-to-beta-ketoadipate.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/catechol-degradation-to-beta-ketoadipate.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-15
+  path: data/pathways/chitin-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-15 (gomodel:YeastPathways_PWY3O-15)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: af4878e7f38ab7e24bbf1a2cc3b479e00573162eaaa283efe718b62ece157efa
+    description: Raw SHA-256 file digest of data/pathways/chitin-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/chitin-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ARO-PWY
+  path: data/pathways/chorismate-biosynthesis-i.yaml
+  label: MetaCyc:ARO-PWY (MetaCyc:ARO-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ecc59655916bc2496dfa2f2888fcf5453569326a96a890447b2d5692c3e32053
+    description: Raw SHA-256 file digest of data/pathways/chorismate-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/chorismate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MIBiG:BGC0000829
+  path: data/pathways/chromobacterium-violaceum-violacein-biosynthetic-gene-cluster.yaml
+  label: MIBiG:BGC0000829 (MIBiG:BGC0000829)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a2c389bdea0ba8574ded73b47ae67cc5011105f4579401661197ffcb0e689d0a
+    description: Raw SHA-256 file digest of data/pathways/chromobacterium-violaceum-violacein-biosynthetic-gene-cluster.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/chromobacterium-violaceum-violacein-biosynthetic-gene-cluster.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:P2-PWY
+  path: data/pathways/citrate-lyase-activation.yaml
+  label: MetaCyc:P2-PWY (MetaCyc:P2-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e59b9d81c54fa1682340477c9e01ceec821cc02e3d1dff011f4ea366d901eb84
+    description: Raw SHA-256 file digest of data/pathways/citrate-lyase-activation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/citrate-lyase-activation.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_CITRUL-BIO2-PWY
+  path: data/pathways/citrulline-biosynthesis.yaml
+  label: gomodel:YeastPathways_CITRUL-BIO2-PWY (gomodel:YeastPathways_CITRUL-BIO2-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6c5712838679062f4135385472fddf04fa0e671174a5fa6f8f992111bfb39a65
+    description: Raw SHA-256 file digest of data/pathways/citrulline-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/citrulline-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:COA-PWY
+  path: data/pathways/coenzyme-a-biosynthesis-i-prokaryotic.yaml
+  label: MetaCyc:COA-PWY (MetaCyc:COA-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e8a71c7499b3684d208ad964caa060e3df9735625ca4b607bd6a85bbcf20975d
+    description: Raw SHA-256 file digest of data/pathways/coenzyme-a-biosynthesis-i-prokaryotic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/coenzyme-a-biosynthesis-i-prokaryotic.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002070
+  path: data/pathways/conversion-of-succinate-to-propanoate-escherichia-coli.yaml
+  label: PathBank:SMP0002070 (PathBank:SMP0002070)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b898590d8ac46b434466e88dc63d499b99778551f5e74f3045ebd33b7c3ebc4c
+    description: Raw SHA-256 file digest of data/pathways/conversion-of-succinate-to-propanoate-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/conversion-of-succinate-to-propanoate-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0001910
+  path: data/pathways/curcumin-degradation-escherichia-coli.yaml
+  label: PathBank:SMP0001910 (PathBank:SMP0001910)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d29886dff14b80ca1ba1f876a2028b33535ce94167fc9e502a0cce1ed9c2f8ad
+    description: Raw SHA-256 file digest of data/pathways/curcumin-degradation-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/curcumin-degradation-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: GO:0036040
+  path: data/pathways/curcumin-degradation.yaml
+  label: GO:0036040 (GO:0036040)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 169fa541ddf32cef797ae64723b8b2ca58686ce454c295cc9b1cdbbb9f73b6a5
+    description: Raw SHA-256 file digest of data/pathways/curcumin-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/curcumin-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CYANCAT-PWY
+  path: data/pathways/cyanate-degradation.yaml
+  label: MetaCyc:CYANCAT-PWY (MetaCyc:CYANCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a9839719374edea383b2fb65c1bb4cd5d4021eee5b6b28d5d41e8be51df6e9d7
+    description: Raw SHA-256 file digest of data/pathways/cyanate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cyanate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0000993
+  path: data/pathways/cysteine-biosynthesis-from-serine-escherichia-coli.yaml
+  label: PathBank:SMP0000993 (PathBank:SMP0000993)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1ab9412e8f4f1f5a0773f3289041df13f906d0beb1e33f566b2f9958b966c900
+    description: Raw SHA-256 file digest of data/pathways/cysteine-biosynthesis-from-serine-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/cysteine-biosynthesis-from-serine-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:DARABCAT-PWY
+  path: data/pathways/d-arabinose-degradation-i.yaml
+  label: MetaCyc:DARABCAT-PWY (MetaCyc:DARABCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0bf9ffd31ebe2fcd98a34b8b9de8d87aa4d2ca009c03067a507a1c52a3fcb3dc
+    description: Raw SHA-256 file digest of data/pathways/d-arabinose-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-arabinose-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GALACTARDEG-PWY
+  path: data/pathways/d-galactarate-degradation-i.yaml
+  label: MetaCyc:GALACTARDEG-PWY (MetaCyc:GALACTARDEG-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 255a54c1a0d212502065f0b88cc26b7599026d5dfc80621c504a6436cbee66ad
+    description: Raw SHA-256 file digest of data/pathways/d-galactarate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactarate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GALACTCAT-PWY
+  path: data/pathways/d-galactonate-degradation.yaml
+  label: MetaCyc:GALACTCAT-PWY (MetaCyc:GALACTCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4a8c65462e953ff8ff301ba25eb6eb717f153731d9bde35f4b36448f557b333b
+    description: Raw SHA-256 file digest of data/pathways/d-galactonate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactonate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GALACTUROCAT-PWY
+  path: data/pathways/d-galacturonate-degradation-i.yaml
+  label: MetaCyc:GALACTUROCAT-PWY (MetaCyc:GALACTUROCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bcba6b22043e2476b3becc03472ac7fcd95287ca643ec5d561404982fedf59db
+    description: Raw SHA-256 file digest of data/pathways/d-galacturonate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galacturonate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLUCARDEG-PWY
+  path: data/pathways/d-glucarate-degradation-i.yaml
+  label: MetaCyc:GLUCARDEG-PWY (MetaCyc:GLUCARDEG-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7a16ccac6f89910cc214a8660964ab093c36ee9ebec9599abd8f67fbe89c40ac
+    description: Raw SHA-256 file digest of data/pathways/d-glucarate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-glucarate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:XYLCAT-PWY
+  path: data/pathways/d-xylose-degradation-i.yaml
+  label: MetaCyc:XYLCAT-PWY (MetaCyc:XYLCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: dcea294990af98ec62667a1432f4970279eae2758776a8d27447e0860c237df4
+    description: Raw SHA-256 file digest of data/pathways/d-xylose-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-xylose-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6376
+  path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+  label: MetaCyc:PWY-6376 (MetaCyc:PWY-6376)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ab6b7808c564fc2bbddaa1fea159f0927e2ec2f73b9890e7ab360c5e3718a9dd
+    description: Raw SHA-256 file digest of data/pathways/desferrioxamine-b-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: KEGG:M00374
+  path: data/pathways/dicarboxylate-hydroxybutyrate-cycle.yaml
+  label: KEGG:M00374 (KEGG:M00374)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bf5316958e94eae4e2e09a864dca8e45d8997b041d7e26c991c9633f24449209
+    description: Raw SHA-256 file digest of data/pathways/dicarboxylate-hydroxybutyrate-cycle.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/dicarboxylate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-1565
+  path: data/pathways/dolichyl-glucosyl-phosphate-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-1565 (gomodel:YeastPathways_PWY3O-1565)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1fe23e30c0e1d0e14fff70678f966812c1c1a4bc602441076ad041c232190ef8
+    description: Raw SHA-256 file digest of data/pathways/dolichyl-glucosyl-phosphate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/dolichyl-glucosyl-phosphate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-123
+  path: data/pathways/dolichyl-phosphate-d-mannose-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-123 (gomodel:YeastPathways_PWY3O-123)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6fa9f8a6697af1bb35b060943f7b16c0d350366bbaa8ae9268456c45683f5c62
+    description: Raw SHA-256 file digest of data/pathways/dolichyl-phosphate-d-mannose-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/dolichyl-phosphate-d-mannose-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: GO:0019305
+  path: data/pathways/dtdp-l-rhamnose-biosynthesis.yaml
+  label: GO:0019305 (GO:0019305)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7b915dc9eab89c57ac0a1775a90c80caaddcc60616726d43cebf8f45acb42ee0
+    description: Raw SHA-256 file digest of data/pathways/dtdp-l-rhamnose-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/dtdp-l-rhamnose-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:P101-PWY
+  path: data/pathways/ectoine-biosynthesis.yaml
+  label: MetaCyc:P101-PWY (MetaCyc:P101-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c72a482e72bd403d0b2b8c1018a1c277ac75b1560dd36182cc7695eb2b575428
+    description: Raw SHA-256 file digest of data/pathways/ectoine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ectoine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: KEGG:M00008
+  path: data/pathways/entner-doudoroff-pathway.yaml
+  label: KEGG:M00008 (KEGG:M00008)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 8c28d060864a319e17fc2d05e3e3d6c75c2180a19369b6791423c86805d2ce4e
+    description: Raw SHA-256 file digest of data/pathways/entner-doudoroff-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/entner-doudoroff-pathway.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5670-1
+  path: data/pathways/epoxysqualene-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-5670-1 (gomodel:YeastPathways_PWY-5670-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: da3b71fd30801bc13f92ba2226badc86c1376f40b78bd622c9b8a4ff132d1fd2
+    description: Raw SHA-256 file digest of data/pathways/epoxysqualene-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/epoxysqualene-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-6075-1
+  path: data/pathways/ergosterol-biosynthesis-i.yaml
+  label: gomodel:YeastPathways_PWY-6075-1 (gomodel:YeastPathways_PWY-6075-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b8f7c7cd77268474d0b3d17f2109c0f4da9131eb2e040907a188127ed7b98bc6
+    description: Raw SHA-256 file digest of data/pathways/ergosterol-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ergosterol-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7255
+  path: data/pathways/ergothioneine-biosynthesis-i.yaml
+  label: MetaCyc:PWY-7255 (MetaCyc:PWY-7255)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6d2fb20f5a664a6b7e43e9efb48ac1b65fd59a3e5c5daa1aa95b6bae35184dec
+    description: Raw SHA-256 file digest of data/pathways/ergothioneine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ergothioneine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4300
+  path: data/pathways/ethanol-degradation.yaml
+  label: gomodel:YeastPathways_PWY3O-4300 (gomodel:YeastPathways_PWY3O-4300)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: fc50f4fe0251b9a24c2c0be359c4349ef12194556f510f390132dc556094031a
+    description: Raw SHA-256 file digest of data/pathways/ethanol-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ethanol-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1477
+  path: data/pathways/ethanolamine-utilization.yaml
+  label: MetaCyc:PWY0-1477 (MetaCyc:PWY0-1477)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f1fd9402cab31bf3c62d53ef630abc52308c2c0e2d7b61d7ad6b9c0aaba8fb1e
+    description: Raw SHA-256 file digest of data/pathways/ethanolamine-utilization.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ethanolamine-utilization.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1280
+  path: data/pathways/ethylene-glycol-degradation.yaml
+  label: MetaCyc:PWY0-1280 (MetaCyc:PWY0-1280)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c969108f6e4d2912c67051410713741616cd40a6d85a02c286f39f9c774cdac1
+    description: Raw SHA-256 file digest of data/pathways/ethylene-glycol-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ethylene-glycol-degradation.yaml
+    role: maintained pathway YAML
+- target_id: KEGG:M00373
+  path: data/pathways/ethylmalonyl-coa-pathway.yaml
+  label: KEGG:M00373 (KEGG:M00373)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 8c4d525a0285213cbc92bed1045a3c69125135abede0b66fed548dcab8e8913d
+    description: Raw SHA-256 file digest of data/pathways/ethylmalonyl-coa-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ethylmalonyl-coa-pathway.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_FASYN-ELONG2-PWY
+  path: data/pathways/fatty-acid-elongation.yaml
+  label: gomodel:YeastPathways_FASYN-ELONG2-PWY (gomodel:YeastPathways_FASYN-ELONG2-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b62921d961d820d8ff589720e08dd002e146b9989aee2c82b045d810bf0351b3
+    description: Raw SHA-256 file digest of data/pathways/fatty-acid-elongation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/fatty-acid-elongation.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_YEAST-FAO-PWY
+  path: data/pathways/fatty-acid-oxidation-pathway.yaml
+  label: gomodel:YeastPathways_YEAST-FAO-PWY (gomodel:YeastPathways_YEAST-FAO-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bfde333f007a3a73eb3172619e731d189e131a628653ad171bf4252798ed593e
+    description: Raw SHA-256 file digest of data/pathways/fatty-acid-oxidation-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/fatty-acid-oxidation-pathway.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:RIBOSYN2-PWY
+  path: data/pathways/flavin-biosynthesis-i.yaml
+  label: MetaCyc:RIBOSYN2-PWY (MetaCyc:RIBOSYN2-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 9f89b3813fe7db7b32ef674f7163a512ebe7840c0803852614401404931e5b8d
+    description: Raw SHA-256 file digest of data/pathways/flavin-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/flavin-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-697
+  path: data/pathways/folate-interconversions.yaml
+  label: gomodel:YeastPathways_PWY3O-697 (gomodel:YeastPathways_PWY3O-697)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 05f87cd9ee50e16cbacb738c54b87ec1c404fdf9d1d481139016d8dec6101753
+    description: Raw SHA-256 file digest of data/pathways/folate-interconversions.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/folate-interconversions.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-1801-1
+  path: data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml
+  label: gomodel:YeastPathways_PWY-1801-1 (gomodel:YeastPathways_PWY-1801-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cad662956612f880a1fa23e5dd729af944a7cee3c09d93eb8abce7b2a2aceebb
+    description: Raw SHA-256 file digest of data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-521
+  path: data/pathways/fructoselysine-and-psicoselysine-degradation.yaml
+  label: MetaCyc:PWY0-521 (MetaCyc:PWY0-521)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cf7f6eb1070dafb5865ea48dadcf79936b114e4a44f275019e1d0efb45fd59bc
+    description: Raw SHA-256 file digest of data/pathways/fructoselysine-and-psicoselysine-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/fructoselysine-and-psicoselysine-degradation.yaml
+    role: maintained pathway YAML
+- target_id: GO:1901281
+  path: data/pathways/fructoselysine-catabolic-process.yaml
+  label: GO:1901281 (GO:1901281)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6ed6d86ba86373fd0a29f5346098686a46c7387952a82071c7833eb8dc8f7186
+    description: Raw SHA-256 file digest of data/pathways/fructoselysine-catabolic-process.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/fructoselysine-catabolic-process.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  path: data/pathways/galactose-degradation.yaml
+  label: gomodel:YeastPathways_YEAST-GALACT-METAB-PWY (gomodel:YeastPathways_YEAST-GALACT-METAB-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: afb4d246ee5305b34e0d960cabb3a25e30d6289e0899133cf5eb5cd6aaba2860
+    description: Raw SHA-256 file digest of data/pathways/galactose-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/galactose-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GALLATE-DEGRADATION-II-PWY
+  path: data/pathways/gallate-degradation-i.yaml
+  label: MetaCyc:GALLATE-DEGRADATION-II-PWY (MetaCyc:GALLATE-DEGRADATION-II-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 375aa600712d899f0c2b23b31d6a96e1f5bb87ceba5ade96b5d10a2fd7eee4ed
+    description: Raw SHA-256 file digest of data/pathways/gallate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GALLATE-DEGRADATION-I-PWY
+  path: data/pathways/gallate-degradation-ii.yaml
+  label: MetaCyc:GALLATE-DEGRADATION-I-PWY (MetaCyc:GALLATE-DEGRADATION-I-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0b983b787431a326580cf51621dacf38341257ee86067f19bff3b799bec6d67a
+    description: Raw SHA-256 file digest of data/pathways/gallate-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6223
+  path: data/pathways/gentisate-degradation-i.yaml
+  label: MetaCyc:PWY-6223 (MetaCyc:PWY-6223)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 272e475b3bb872475bba938c5e5016b52b63e21dc8c9dea772e25ba78524c064
+    description: Raw SHA-256 file digest of data/pathways/gentisate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gentisate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_GLUCONEO-PWY-1
+  path: data/pathways/gluconeogenesis-i.yaml
+  label: gomodel:YeastPathways_GLUCONEO-PWY-1 (gomodel:YeastPathways_GLUCONEO-PWY-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ed359fc88a819b1ff6c51b8b2e10cf399b184cbe25df7c74883d560311296a15
+    description: Raw SHA-256 file digest of data/pathways/gluconeogenesis-i.yaml at
+      frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gluconeogenesis-i.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP556
+  path: data/pathways/glutamate-degradation-i.yaml
+  label: WikiPathways:WP556 (WikiPathways:WP556)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 5bfde8cb993cedc9cfc1534157d0c63121bcdbcc75b1c915274e381ada8524ce
+    description: Raw SHA-256 file digest of data/pathways/glutamate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutamate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5177
+  path: data/pathways/glutaryl-coa-degradation.yaml
+  label: MetaCyc:PWY-5177 (MetaCyc:PWY-5177)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3c2ac2ae8443a7bdac87bd8ca9e612eee869fb479f3625231fadf84658e16317
+    description: Raw SHA-256 file digest of data/pathways/glutaryl-coa-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutaryl-coa-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLUTATHIONESYN-PWY
+  path: data/pathways/glutathione-biosynthesis.yaml
+  label: MetaCyc:GLUTATHIONESYN-PWY (MetaCyc:GLUTATHIONESYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4d71f1634ba3f875ddfdb547e856f83d2ed773390cc1e78bfdc972e13a4b7599
+    description: Raw SHA-256 file digest of data/pathways/glutathione-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutathione-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWYQT-4432
+  path: data/pathways/glutathione-degradation.yaml
+  label: gomodel:YeastPathways_PWYQT-4432 (gomodel:YeastPathways_PWYQT-4432)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 90700db818d7b32cf46b41e4bf53c234f070829e779a5b80ee8537b32f4a808a
+    description: Raw SHA-256 file digest of data/pathways/glutathione-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutathione-degradation.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP392
+  path: data/pathways/glutathione-glutaredoxin-redox-reaction.yaml
+  label: WikiPathways:WP392 (WikiPathways:WP392)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cbee4a5a80e9340376ae64bdd05ccc7a3aa6096630f24324af11fca9eca97977
+    description: Raw SHA-256 file digest of data/pathways/glutathione-glutaredoxin-redox-reaction.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutathione-glutaredoxin-redox-reaction.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-48
+  path: data/pathways/glycerol-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-48 (gomodel:YeastPathways_PWY3O-48)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ac0ea900a57b2147297dc7bde6c767bda334664a92c406cc367b6f6ee8430cbc
+    description: Raw SHA-256 file digest of data/pathways/glycerol-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glycerol-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLYCEROLMETAB-PWY
+  path: data/pathways/glycerol-degradation-v.yaml
+  label: MetaCyc:GLYCEROLMETAB-PWY (MetaCyc:GLYCEROLMETAB-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a8e36da3e055cd299c7501923fc54324c46882cd13d32314c30af8a23d7c9aea
+    description: Raw SHA-256 file digest of data/pathways/glycerol-degradation-v.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glycerol-degradation-v.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_GLYCLEAV-PWY
+  path: data/pathways/glycine-cleavage.yaml
+  label: gomodel:YeastPathways_GLYCLEAV-PWY (gomodel:YeastPathways_GLYCLEAV-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 74b9d679808b3950cd1bd0bf2ed8574e4abf9f61f203c8b5538e5e4b46a483db
+    description: Raw SHA-256 file digest of data/pathways/glycine-cleavage.yaml at
+      frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glycine-cleavage.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP478
+  path: data/pathways/glycogen-catabolism.yaml
+  label: WikiPathways:WP478 (WikiPathways:WP478)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 72b8e29697334f849212bd9827055265fb375fbc3f2847b7b062d6a9705e6cce
+    description: Raw SHA-256 file digest of data/pathways/glycogen-catabolism.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glycogen-catabolism.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_GLYCOLYSIS
+  path: data/pathways/glycolysis-i-from-glucose-6-phosphate.yaml
+  label: gomodel:YeastPathways_GLYCOLYSIS (gomodel:YeastPathways_GLYCOLYSIS)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0a9fd40d1eaa77a75af58968732d361457618636d5d81775200f3cf88c88193d
+    description: Raw SHA-256 file digest of data/pathways/glycolysis-i-from-glucose-6-phosphate.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glycolysis-i-from-glucose-6-phosphate.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5744
+  path: data/pathways/glyoxylate-assimilation.yaml
+  label: MetaCyc:PWY-5744 (MetaCyc:PWY-5744)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d0df038ad2114f8f5a27dae2a208764180c45f5f370c6a6a7a6cc4ad7980c22d
+    description: Raw SHA-256 file digest of data/pathways/glyoxylate-assimilation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glyoxylate-assimilation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLYOXYLATE-BYPASS
+  path: data/pathways/glyoxylate-cycle.yaml
+  label: MetaCyc:GLYOXYLATE-BYPASS (MetaCyc:GLYOXYLATE-BYPASS)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 47adf43fa2ebc9560c6fd6d516df9e1a351efcbf93aea23a675a92d6a23d2db4
+    description: Raw SHA-256 file digest of data/pathways/glyoxylate-cycle.yaml at
+      frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glyoxylate-cycle.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6579
+  path: data/pathways/guanine-and-guanosine-salvage.yaml
+  label: MetaCyc:PWY-6579 (MetaCyc:PWY-6579)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1ee8a4fe53989c51c626ef92747e0ae07bcb0978291c1c439b0f2bbc15f929d6
+    description: Raw SHA-256 file digest of data/pathways/guanine-and-guanosine-salvage.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/guanine-and-guanosine-salvage.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-7221
+  path: data/pathways/guanosine-ribonucleotides-de-novo-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-7221 (gomodel:YeastPathways_PWY-7221)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2d1a05f95a978e13f16c2fb551b60633b34b8bd5397de9214411b99c95e090be
+    description: Raw SHA-256 file digest of data/pathways/guanosine-ribonucleotides-de-novo-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/guanosine-ribonucleotides-de-novo-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  path: data/pathways/heme-biosynthesis-i-aerobic.yaml
+  label: gomodel:YeastPathways_HEME-BIOSYNTHESIS-II (gomodel:YeastPathways_HEME-BIOSYNTHESIS-II)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a82d6893480d683143a1d54350b3f183de5a0d1fcb4ff59a16d146f054d9fa66
+    description: Raw SHA-256 file digest of data/pathways/heme-biosynthesis-i-aerobic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/heme-biosynthesis-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_HEXPPSYN-PWY-2
+  path: data/pathways/hexaprenyl-diphosphate-biosynthesis.yaml
+  label: gomodel:YeastPathways_HEXPPSYN-PWY-2 (gomodel:YeastPathways_HEXPPSYN-PWY-2)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e97493175ab78edaaa100e8e0924f5c8ad4ef3d31ce7b13368c9ca067707a02e
+    description: Raw SHA-256 file digest of data/pathways/hexaprenyl-diphosphate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hexaprenyl-diphosphate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  path: data/pathways/homocysteine-and-cysteine-interconversion.yaml
+  label: gomodel:YeastPathways_HOMOCYS-CYS-CONVERT (gomodel:YeastPathways_HOMOCYS-CYS-CONVERT)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0c37a4a06ecb68d0c327980f8f3d9fb91e705d762181f9a2654ccf1fd45deed2
+    description: Raw SHA-256 file digest of data/pathways/homocysteine-and-cysteine-interconversion.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/homocysteine-and-cysteine-interconversion.yaml
+    role: maintained pathway YAML
+- target_id: GO:1902000
+  path: data/pathways/homogentisate-degradation.yaml
+  label: GO:1902000 (GO:1902000)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f3577e26db76f0eee6f23ff8fc8dfac6f833d9b04e010a9865d340e587702c32
+    description: Raw SHA-256 file digest of data/pathways/homogentisate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/homogentisate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5789
+  path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+  label: MetaCyc:PWY-5789 (MetaCyc:PWY-5789)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 446563402748efc0a853cc56f17e22c6dea37d553d7977790ac73dbe6d3a09d7
+    description: Raw SHA-256 file digest of data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6123
+  path: data/pathways/inosine-5-phosphate-biosynthesis-i.yaml
+  label: MetaCyc:PWY-6123 (MetaCyc:PWY-6123)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c1bca2158d83b620b5adb23991cc11b10e3d655c9c241707badaf43392141b39
+    description: Raw SHA-256 file digest of data/pathways/inosine-5-phosphate-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/inosine-5-phosphate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6124
+  path: data/pathways/inosine-5-phosphate-biosynthesis-ii.yaml
+  label: MetaCyc:PWY-6124 (MetaCyc:PWY-6124)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 5734789b52538aff83d5cb3d54933fffeef31d70527b572e9ce89befdf54c930
+    description: Raw SHA-256 file digest of data/pathways/inosine-5-phosphate-biosynthesis-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/inosine-5-phosphate-biosynthesis-ii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-402
+  path: data/pathways/inositol-phosphate-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-402 (gomodel:YeastPathways_PWY3O-402)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2fe2d2ba88e85693135d52e2bb72ab7ca37cf41d2e9f879fdb602241d63a6fc3
+    description: Raw SHA-256 file digest of data/pathways/inositol-phosphate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/inositol-phosphate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP178
+  path: data/pathways/isoleucine-degradation.yaml
+  label: WikiPathways:WP178 (WikiPathways:WP178)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 8d93b27c9181bb58990868d80e7443b52c161f5878909d0ff70f0c7147b1857b
+    description: Raw SHA-256 file digest of data/pathways/isoleucine-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/isoleucine-degradation.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0000991
+  path: data/pathways/isoprenoid-biosynthesis-nonmevalonate-pathway-escherichia-coli.yaml
+  label: PathBank:SMP0000991 (PathBank:SMP0000991)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 19a63ab0d85ed28df9e22212b9681c986c10e56f2fbe7ea26f5cffe0e3dfe9f5
+    description: Raw SHA-256 file digest of data/pathways/isoprenoid-biosynthesis-nonmevalonate-pathway-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/isoprenoid-biosynthesis-nonmevalonate-pathway-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1338
+  path: data/pathways/l-ara4n-modified-lipid-a-biosynthesis.yaml
+  label: MetaCyc:PWY0-1338 (MetaCyc:PWY0-1338)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6c9f87fc7a7b6ae411092a5e34330df52f18bb574a09b25eae79fc48182d3955
+    description: Raw SHA-256 file digest of data/pathways/l-ara4n-modified-lipid-a-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ara4n-modified-lipid-a-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ARABCAT-PWY
+  path: data/pathways/l-arabinose-degradation-i.yaml
+  label: MetaCyc:ARABCAT-PWY (MetaCyc:ARABCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e3c1a570eb11080fb319921e3ae7cc49a6eb5b63d2b222c386f46049da2740a3
+    description: Raw SHA-256 file digest of data/pathways/l-arabinose-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-arabinose-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ARGSYN-PWY
+  path: data/pathways/l-arginine-biosynthesis-i.yaml
+  label: MetaCyc:ARGSYN-PWY (MetaCyc:ARGSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cdd664d6d5edc54c7952a39052ed543e3d8f30bbfe5aeae2c82338f1cb96925a
+    description: Raw SHA-256 file digest of data/pathways/l-arginine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-arginine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_ARGSYNBSUB-PWY
+  path: data/pathways/l-arginine-biosynthesis-ii-acetyl-cycle.yaml
+  label: gomodel:YeastPathways_ARGSYNBSUB-PWY (gomodel:YeastPathways_ARGSYNBSUB-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cce1353fcdd659940db26fec1dd8dce7df198977f01837354798ac91756f5ac4
+    description: Raw SHA-256 file digest of data/pathways/l-arginine-biosynthesis-ii-acetyl-cycle.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-arginine-biosynthesis-ii-acetyl-cycle.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:AST-PWY
+  path: data/pathways/l-arginine-degradation-ii-ast-pathway.yaml
+  label: MetaCyc:AST-PWY (MetaCyc:AST-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b907fb463572d194082918506e9c5514c0d7e87eea65a1ec2054a90c9c9fec77
+    description: Raw SHA-256 file digest of data/pathways/l-arginine-degradation-ii-ast-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-arginine-degradation-ii-ast-pathway.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ARGDEG-III-PWY
+  path: data/pathways/l-arginine-degradation-iv.yaml
+  label: MetaCyc:ARGDEG-III-PWY (MetaCyc:ARGDEG-III-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 10fa2975a9b5111f13c52b9b6422d168860e15d2333fff01be361a653b644ba6
+    description: Raw SHA-256 file digest of data/pathways/l-arginine-degradation-iv.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-arginine-degradation-iv.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ARGDEGRAD-PWY
+  path: data/pathways/l-arginine-degradation-v.yaml
+  label: MetaCyc:ARGDEGRAD-PWY (MetaCyc:ARGDEGRAD-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3a15c891af34a6281c08eda94a38f3dba4b1c79453836f51ba25315367dfc105
+    description: Raw SHA-256 file digest of data/pathways/l-arginine-degradation-v.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-arginine-degradation-v.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-301
+  path: data/pathways/l-ascorbate-degradation-i.yaml
+  label: MetaCyc:PWY0-301 (MetaCyc:PWY0-301)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: fbd52a2c7fdf4cee6091b65b6dc744fc50f0c4e53c42992e750c013839850b26
+    description: Raw SHA-256 file digest of data/pathways/l-ascorbate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  path: data/pathways/l-asparagine-biosynthesis-i.yaml
+  label: gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1 (gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4c2ab031a5eec78aa751ddf4dc8753fc9523b1c18209abee6c237fd96d48628b
+    description: Raw SHA-256 file digest of data/pathways/l-asparagine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-asparagine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  path: data/pathways/l-asparagine-degradation.yaml
+  label: gomodel:YeastPathways_ASPARAGINE-DEG2-PWY (gomodel:YeastPathways_ASPARAGINE-DEG2-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 427034ee8a5311f807010c76d58368f822040bdec093c44c8638211b3a4cc1ef
+    description: Raw SHA-256 file digest of data/pathways/l-asparagine-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-asparagine-degradation.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002051
+  path: data/pathways/l-carnitine-degradation-i.yaml
+  label: PathBank:SMP0002051 (PathBank:SMP0002051)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e8aa88babc1107f5dc64445c885aae2ecfa22fbdf6fd2bdfe35c47ad1191d779
+    description: Raw SHA-256 file digest of data/pathways/l-carnitine-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-carnitine-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CYSTSYN-PWY
+  path: data/pathways/l-cysteine-biosynthesis-i.yaml
+  label: MetaCyc:CYSTSYN-PWY (MetaCyc:CYSTSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3f14ac2ae1ac38489081f029c533951c33716c51e78ba616da5cbd00a07bb6da
+    description: Raw SHA-256 file digest of data/pathways/l-cysteine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-cysteine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  path: data/pathways/l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml
+  label: gomodel:YeastPathways_HOMOCYSDEGR-PWY-1 (gomodel:YeastPathways_HOMOCYSDEGR-PWY-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 853d2e8062004300c7c87cca636911806facac50e2aa01def7f9c4074e8a8f6b
+    description: Raw SHA-256 file digest of data/pathways/l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:FUCCAT-PWY
+  path: data/pathways/l-fucose-degradation-i.yaml
+  label: MetaCyc:FUCCAT-PWY (MetaCyc:FUCCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6335ac444b2f78b24d76b1f5d13a688bc659111ead39bca0c197b8f4f5d6d30e
+    description: Raw SHA-256 file digest of data/pathways/l-fucose-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-fucose-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:HISTSYN-PWY
+  path: data/pathways/l-histidine-biosynthesis.yaml
+  label: MetaCyc:HISTSYN-PWY (MetaCyc:HISTSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 754447e37e8a7c25acc9cc23c6eb3553ba5daeb90cc5182825640838f7fea5f3
+    description: Raw SHA-256 file digest of data/pathways/l-histidine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-histidine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5344
+  path: data/pathways/l-homocysteine-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-5344 (gomodel:YeastPathways_PWY-5344)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ba66c588436c87397735f545b7e85accde4ae1e836f617b4041926e07f155f17
+    description: Raw SHA-256 file digest of data/pathways/l-homocysteine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-homocysteine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:HOMOSERSYN-PWY
+  path: data/pathways/l-homoserine-biosynthesis.yaml
+  label: MetaCyc:HOMOSERSYN-PWY (MetaCyc:HOMOSERSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d493a96e57449ad2165e22387dc19b8c9210995c0d3743d8467e3bac2e5ad488
+    description: Raw SHA-256 file digest of data/pathways/l-homoserine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-homoserine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ILEUSYN-PWY
+  path: data/pathways/l-isoleucine-biosynthesis-i-from-threonine.yaml
+  label: MetaCyc:ILEUSYN-PWY (MetaCyc:ILEUSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: eeb3fb3becfca15fb139f6b784af05420fd7792f4bd7c7abdf75160b8d4d1d48
+    description: Raw SHA-256 file digest of data/pathways/l-isoleucine-biosynthesis-i-from-threonine.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-isoleucine-biosynthesis-i-from-threonine.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:LEUSYN-PWY
+  path: data/pathways/l-leucine-biosynthesis.yaml
+  label: MetaCyc:LEUSYN-PWY (MetaCyc:LEUSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 502da5c5afe05a3b596e2d2aa7aa4135b5a29b30a4273612130934cb5bfa1b7f
+    description: Raw SHA-256 file digest of data/pathways/l-leucine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-leucine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:DAPLYSINESYN-PWY
+  path: data/pathways/l-lysine-biosynthesis-i.yaml
+  label: MetaCyc:DAPLYSINESYN-PWY (MetaCyc:DAPLYSINESYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 856af3e5889aff74c0ff2516799caba121e251051cb16bdbaffabf9203ec4958
+    description: Raw SHA-256 file digest of data/pathways/l-lysine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-lysine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  path: data/pathways/l-lysine-biosynthesis-iv.yaml
+  label: gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2 (gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1677f106fb798345712261c31d55df8175810494d8988bcf6ad6cf5f28debf28
+    description: Raw SHA-256 file digest of data/pathways/l-lysine-biosynthesis-iv.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-lysine-biosynthesis-iv.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:LYXMET-PWY
+  path: data/pathways/l-lyxose-degradation.yaml
+  label: MetaCyc:LYXMET-PWY (MetaCyc:LYXMET-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 670f274094b5e3e472c77c253451eec2e8ebb9b5b6d8fea7ae145299cc2cdf28
+    description: Raw SHA-256 file digest of data/pathways/l-lyxose-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-lyxose-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:HOMOSER-METSYN-PWY
+  path: data/pathways/l-methionine-biosynthesis-i.yaml
+  label: MetaCyc:HOMOSER-METSYN-PWY (MetaCyc:HOMOSER-METSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1e8cfbfc2ebeae0c6021245852c4c7b1df9368d25e97aaaaff70b3c76f020967
+    description: Raw SHA-256 file digest of data/pathways/l-methionine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-methionine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLUTORN-PWY
+  path: data/pathways/l-ornithine-biosynthesis-i.yaml
+  label: MetaCyc:GLUTORN-PWY (MetaCyc:GLUTORN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 65ab69722307785f2e70bdf2ba80f1aa63168f95137ab99aa2121426a9a49765
+    description: Raw SHA-256 file digest of data/pathways/l-ornithine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ornithine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PHESYN
+  path: data/pathways/l-phenylalanine-biosynthesis-i.yaml
+  label: MetaCyc:PHESYN (MetaCyc:PHESYN)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 69f717d7426f4bd97da52e3d3fe16f19c636ef0b5c247aee25c5d6af7329d2dc
+    description: Raw SHA-256 file digest of data/pathways/l-phenylalanine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-phenylalanine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PROSYN-PWY
+  path: data/pathways/l-proline-biosynthesis-i-from-l-glutamate.yaml
+  label: MetaCyc:PROSYN-PWY (MetaCyc:PROSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 53dafe3e5606df60948b55be8474f25b46c89a8ea4b9ea24e124cc703a457694
+    description: Raw SHA-256 file digest of data/pathways/l-proline-biosynthesis-i-from-l-glutamate.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-proline-biosynthesis-i-from-l-glutamate.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PROUT-PWY
+  path: data/pathways/l-proline-degradation.yaml
+  label: gomodel:YeastPathways_PROUT-PWY (gomodel:YeastPathways_PROUT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 219603aea97d72075b8af5b9127026b3b397438b4fcaa4729e7a231f346c4160
+    description: Raw SHA-256 file digest of data/pathways/l-proline-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-proline-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:RHAMCAT-PWY
+  path: data/pathways/l-rhamnose-degradation-i.yaml
+  label: MetaCyc:RHAMCAT-PWY (MetaCyc:RHAMCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d57c0cb5e9d5d85ac5573f15b9037ea9c6036bb163ae0b8544b28b3800212914
+    description: Raw SHA-256 file digest of data/pathways/l-rhamnose-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-rhamnose-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:SERSYN-PWY
+  path: data/pathways/l-serine-biosynthesis-i.yaml
+  label: MetaCyc:SERSYN-PWY (MetaCyc:SERSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 56bf93aad394eac694332ef0ca6eedc181a4e5e02617e09e3f7ad71978c1f098
+    description: Raw SHA-256 file digest of data/pathways/l-serine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-serine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:HOMOSER-THRESYN-PWY
+  path: data/pathways/l-threonine-biosynthesis.yaml
+  label: MetaCyc:HOMOSER-THRESYN-PWY (MetaCyc:HOMOSER-THRESYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3de07e08b92218b31b25157650f7a0a8bc0d166dfd5e623afde22e1e786d79a7
+    description: Raw SHA-256 file digest of data/pathways/l-threonine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-threonine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:THRDLCTCAT-PWY
+  path: data/pathways/l-threonine-degradation-iii.yaml
+  label: MetaCyc:THRDLCTCAT-PWY (MetaCyc:THRDLCTCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 604b8cea7c0b80b266aa672b31d93ee53f657c527efd86d91adaa33ad4a37afd
+    description: Raw SHA-256 file digest of data/pathways/l-threonine-degradation-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-threonine-degradation-iii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:TRPSYN-PWY
+  path: data/pathways/l-tryptophan-biosynthesis.yaml
+  label: MetaCyc:TRPSYN-PWY (MetaCyc:TRPSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e605be4366c2b31d473dbad32a6c71b2205b2ed34bf4bbdd91380662a70a95fe
+    description: Raw SHA-256 file digest of data/pathways/l-tryptophan-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-tryptophan-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5651
+  path: data/pathways/l-tryptophan-degradation-to-2-amino-3-carboxymuconate-semialdehyde.yaml
+  label: gomodel:YeastPathways_PWY-5651 (gomodel:YeastPathways_PWY-5651)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7c69e4796385026c8d9f6fd0746183965cfa757a93b397e1fc6ae4cbfc40ab78
+    description: Raw SHA-256 file digest of data/pathways/l-tryptophan-degradation-to-2-amino-3-carboxymuconate-semialdehyde.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-tryptophan-degradation-to-2-amino-3-carboxymuconate-semialdehyde.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:TYRSYN
+  path: data/pathways/l-tyrosine-biosynthesis-i.yaml
+  label: MetaCyc:TYRSYN (MetaCyc:TYRSYN)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e296e282c11af5a73e9e106db27ccf934a9baf7de7d15dfb61fbece102418de5
+    description: Raw SHA-256 file digest of data/pathways/l-tyrosine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-tyrosine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4108
+  path: data/pathways/l-tyrosine-degradation-iii.yaml
+  label: gomodel:YeastPathways_PWY3O-4108 (gomodel:YeastPathways_PWY3O-4108)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e284eb14b32872c68b2914eebf0a511d6c6793803a2b7fb464dc5b65d6436f17
+    description: Raw SHA-256 file digest of data/pathways/l-tyrosine-degradation-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-tyrosine-degradation-iii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:VALSYN-PWY
+  path: data/pathways/l-valine-biosynthesis.yaml
+  label: MetaCyc:VALSYN-PWY (MetaCyc:VALSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c34ad6e367d954ee2a340fc1978debc89a2c6a2fa041756b5a4a181fbeaf815c
+    description: Raw SHA-256 file digest of data/pathways/l-valine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-valine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4112
+  path: data/pathways/leucine-degradation.yaml
+  label: gomodel:YeastPathways_PWY3O-4112 (gomodel:YeastPathways_PWY3O-4112)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 970f3bd13ea75cf742fc23a5410e4fe2e8f728e07e9d64049575e17480296b31
+    description: Raw SHA-256 file digest of data/pathways/leucine-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/leucine-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MIBiG:BGC0002072
+  path: data/pathways/linearmycin-biosynthetic-gene-cluster.yaml
+  label: MIBiG:BGC0002072 (MIBiG:BGC0002072)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a5a908285f06357add5292777ea7be2226263c1448097361f9b3d87be0001cbe
+    description: Raw SHA-256 file digest of data/pathways/linearmycin-biosynthetic-gene-cluster.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/linearmycin-biosynthetic-gene-cluster.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:6882d2b800000609
+  path: data/pathways/lipid-iva-biosynthesis.yaml
+  label: gomodel:6882d2b800000609 (gomodel:6882d2b800000609)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b52d719a33fa00fd67cdd13eaab8dd81c8e92a3604918daaab48d9b4488e8318
+    description: Raw SHA-256 file digest of data/pathways/lipid-iva-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/lipid-iva-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-501
+  path: data/pathways/lipoate-biosynthesis-and-incorporation-i.yaml
+  label: MetaCyc:PWY0-501 (MetaCyc:PWY0-501)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e42978564168731759bd4d8ee2b6686773aa4b756c3375403f7e0b2fc9cdff69
+    description: Raw SHA-256 file digest of data/pathways/lipoate-biosynthesis-and-incorporation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/lipoate-biosynthesis-and-incorporation-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-1743
+  path: data/pathways/mannose-degradation.yaml
+  label: gomodel:YeastPathways_PWY3O-1743 (gomodel:YeastPathways_PWY3O-1743)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 28b58d00df8bc90ca2167213378d240f784502ee3d38cd044f0b9f708645d17a
+    description: Raw SHA-256 file digest of data/pathways/mannose-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mannose-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1300
+  path: data/pathways/mannosylglycerate-degradation.yaml
+  label: MetaCyc:PWY0-1300 (MetaCyc:PWY0-1300)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: dd80af1d972798683b03189a50a5f5d39b5a63ccf9dd74a3380bf5b3cd71948e
+    description: Raw SHA-256 file digest of data/pathways/mannosylglycerate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mannosylglycerate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:METH-ACETATE-PWY
+  path: data/pathways/methanogenesis-from-acetate.yaml
+  label: MetaCyc:METH-ACETATE-PWY (MetaCyc:METH-ACETATE-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 47d1c71951ce5806e5c9570ee00b2ab9f8634158251ee06821a0f77017b0eca3
+    description: Raw SHA-256 file digest of data/pathways/methanogenesis-from-acetate.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methanogenesis-from-acetate.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:METHANOGENESIS-PWY
+  path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+  label: MetaCyc:METHANOGENESIS-PWY (MetaCyc:METHANOGENESIS-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e
+    description: Raw SHA-256 file digest of data/pathways/methanogenesis-from-h2-and-co2.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-64
+  path: data/pathways/methionine-salvage-pathway.yaml
+  label: gomodel:YeastPathways_PWY3O-64 (gomodel:YeastPathways_PWY3O-64)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7d9173433d90f1344b909cbd4d147923e5acf5acd18c2132df357c892c68f503
+    description: Raw SHA-256 file digest of data/pathways/methionine-salvage-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methionine-salvage-pathway.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:NONMEVIPP-PWY
+  path: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+  label: MetaCyc:NONMEVIPP-PWY (MetaCyc:NONMEVIPP-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 09de4d42a144f61a5c00af9577655170f473448d2632232e3461f9e31e11b7b2
+    description: Raw SHA-256 file digest of data/pathways/methylerythritol-phosphate-pathway-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-901
+  path: data/pathways/methylglyoxal-catabolism.yaml
+  label: gomodel:YeastPathways_PWY-901 (gomodel:YeastPathways_PWY-901)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d1409031c98be3795d39fc4d2e5362d951cbd86c8b4c2868810a70c61582947a
+    description: Raw SHA-256 file digest of data/pathways/methylglyoxal-catabolism.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylglyoxal-catabolism.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5386
+  path: data/pathways/methylglyoxal-degradation-i.yaml
+  label: MetaCyc:PWY-5386 (MetaCyc:PWY-5386)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 273066a3324e879f25bf888a5ecbe72d30f3014ab57aa4a768e1376b87f7c6cc
+    description: Raw SHA-256 file digest of data/pathways/methylglyoxal-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylglyoxal-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5453
+  path: data/pathways/methylglyoxal-degradation-iii.yaml
+  label: MetaCyc:PWY-5453 (MetaCyc:PWY-5453)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 49ca68c20b674103c554963bb86f50b46fa8fbb9ef491b5476d2ec7df6fd2e4d
+    description: Raw SHA-256 file digest of data/pathways/methylglyoxal-degradation-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylglyoxal-degradation-iii.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002077
+  path: data/pathways/methylphosphonate-degradation-i.yaml
+  label: PathBank:SMP0002077 (PathBank:SMP0002077)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 057158f94d834a61c836371a522c9c776d36122674ce04b0b886c9a1df1e17b5
+    description: Raw SHA-256 file digest of data/pathways/methylphosphonate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylphosphonate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6048
+  path: data/pathways/methylthiopropanoate-degradation-i.yaml
+  label: MetaCyc:PWY-6048 (MetaCyc:PWY-6048)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ec7c8759d23b9baa4ecfe2d4f1092a3f849361ff065d10b9e0954937c8ac4143
+    description: Raw SHA-256 file digest of data/pathways/methylthiopropanoate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methylthiopropanoate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_IPPSYN-PWY
+  path: data/pathways/mevalonate-pathway.yaml
+  label: gomodel:YeastPathways_IPPSYN-PWY (gomodel:YeastPathways_IPPSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1a3aaaf143564f9f1d345596cff4b961219716288a656791de7bf51bdba0307c
+    description: Raw SHA-256 file digest of data/pathways/mevalonate-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mevalonate-pathway.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6823
+  path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+  label: MetaCyc:PWY-6823 (MetaCyc:PWY-6823)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: be34e968a813d3542e42036d4b56f0b17a94de1e365f09e160fb95a636fa6eb8
+    description: Raw SHA-256 file digest of data/pathways/molybdenum-cofactor-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: Reactome:R-MTU-936721
+  path: data/pathways/mycobacterium-cysteine-synthesis-from-o-acetylserine.yaml
+  label: Reactome:R-MTU-936721 (Reactome:R-MTU-936721)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cdbfd2cae9e281dc1a1722f65b2f019841b0a84b6e53e755bce049d495ed7f44
+    description: Raw SHA-256 file digest of data/pathways/mycobacterium-cysteine-synthesis-from-o-acetylserine.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mycobacterium-cysteine-synthesis-from-o-acetylserine.yaml
+    role: maintained pathway YAML
+- target_id: Reactome:R-MTU-936654
+  path: data/pathways/mycobacterium-cysteine-synthesis-from-o-phosphoserine.yaml
+  label: Reactome:R-MTU-936654 (Reactome:R-MTU-936654)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 99b0c6d3e04ab2d3c310bbe8099cd5fa716f251632e5320ba83444bd7ebff82d
+    description: Raw SHA-256 file digest of data/pathways/mycobacterium-cysteine-synthesis-from-o-phosphoserine.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mycobacterium-cysteine-synthesis-from-o-phosphoserine.yaml
+    role: maintained pathway YAML
+- target_id: Reactome:R-MTU-936635
+  path: data/pathways/mycobacterium-sulfate-assimilation.yaml
+  label: Reactome:R-MTU-936635 (Reactome:R-MTU-936635)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: aecb344e6ec330b48884cafd9bab879f5e3c623f66e315d90ad93910da12f931
+    description: Raw SHA-256 file digest of data/pathways/mycobacterium-sulfate-assimilation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mycobacterium-sulfate-assimilation.yaml
+    role: maintained pathway YAML
+- target_id: Reactome:R-MTU-868688
+  path: data/pathways/mycobacterium-trehalose-biosynthesis.yaml
+  label: Reactome:R-MTU-868688 (Reactome:R-MTU-868688)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7c3915665fbbe8cfe1d695354f471a1c832ccf972d2302c0910a96144ec1cd49
+    description: Raw SHA-256 file digest of data/pathways/mycobacterium-trehalose-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mycobacterium-trehalose-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: Reactome:R-MTU-879299
+  path: data/pathways/mycothiol-biosynthesis.yaml
+  label: Reactome:R-MTU-879299 (Reactome:R-MTU-879299)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 35dfb77de4fcc447aeb649bb478c6a840e78ab39f5921469a154ec3768c32f4f
+    description: Raw SHA-256 file digest of data/pathways/mycothiol-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mycothiol-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: Reactome:R-MTU-879325
+  path: data/pathways/mycothiol-catabolism.yaml
+  label: Reactome:R-MTU-879325 (Reactome:R-MTU-879325)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 9d1f2496015cee969712712da363456ac0cac63dcd5cb46cfa5ace763f8388b1
+    description: Raw SHA-256 file digest of data/pathways/mycothiol-catabolism.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mycothiol-catabolism.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-2301
+  path: data/pathways/myo-inositol-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-2301 (gomodel:YeastPathways_PWY-2301)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 361f6547c51db754e8f9b68069e874d314ed2c7d0b2ee8c1716f6ac9fbcdff96
+    description: Raw SHA-256 file digest of data/pathways/myo-inositol-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/myo-inositol-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-8383
+  path: data/pathways/myxochelin-a-and-b-biosynthesis.yaml
+  label: MetaCyc:PWY-8383 (MetaCyc:PWY-8383)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a30e8c37c07c1bd2d081da0fc68cdfb951e7f318e924773d2d54a3e682537e64
+    description: Raw SHA-256 file digest of data/pathways/myxochelin-a-and-b-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/myxochelin-a-and-b-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:GLUAMCAT-PWY
+  path: data/pathways/n-acetylglucosamine-degradation-i.yaml
+  label: MetaCyc:GLUAMCAT-PWY (MetaCyc:GLUAMCAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 546cc1115beab1bb0a8c22efc9568a9cec4c9b4a774da3196ac572d20d48f962
+    description: Raw SHA-256 file digest of data/pathways/n-acetylglucosamine-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/n-acetylglucosamine-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5653
+  path: data/pathways/nad-biosynthesis-from-2-amino-3-carboxymuconate-semialdehyde.yaml
+  label: gomodel:YeastPathways_PWY-5653 (gomodel:YeastPathways_PWY-5653)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bcd51a74589e80d1ff361bad234b690c487330acc238450bcd5e3215f25ea7cd
+    description: Raw SHA-256 file digest of data/pathways/nad-biosynthesis-from-2-amino-3-carboxymuconate-semialdehyde.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nad-biosynthesis-from-2-amino-3-carboxymuconate-semialdehyde.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PYRIDNUCSYN-PWY
+  path: data/pathways/nad-de-novo-biosynthesis-i-from-aspartate.yaml
+  label: MetaCyc:PYRIDNUCSYN-PWY (MetaCyc:PYRIDNUCSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4f78aaa39819e9dc81c2228e4cc0eead0bfa604d5880bcefc93253e40b86a6b5
+    description: Raw SHA-256 file digest of data/pathways/nad-de-novo-biosynthesis-i-from-aspartate.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nad-de-novo-biosynthesis-i-from-aspartate.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:NADPHOS-DEPHOS-PWY
+  path: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+  label: MetaCyc:NADPHOS-DEPHOS-PWY (MetaCyc:NADPHOS-DEPHOS-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 76bd4caf5be98997fed5a09bf378ff2ec85c885a2db3f16005e9b50140bca73f
+    description: Raw SHA-256 file digest of data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PYRIDNUCSAL-PWY
+  path: data/pathways/nad-salvage-pathway-i-pnc-vi-cycle.yaml
+  label: MetaCyc:PYRIDNUCSAL-PWY (MetaCyc:PYRIDNUCSAL-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: df08cd758bbee6a31994b142eab11a9318e7bac63aaec489649b124924599cd6
+    description: Raw SHA-256 file digest of data/pathways/nad-salvage-pathway-i-pnc-vi-cycle.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nad-salvage-pathway-i-pnc-vi-cycle.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4106
+  path: data/pathways/nad-salvage-pathway-iv-from-nicotinamide-riboside.yaml
+  label: gomodel:YeastPathways_PWY3O-4106 (gomodel:YeastPathways_PWY3O-4106)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 04f04356990ef06c793936970668528f4e4a3fadc52a32d161ab8c5175673101
+    description: Raw SHA-256 file digest of data/pathways/nad-salvage-pathway-iv-from-nicotinamide-riboside.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nad-salvage-pathway-iv-from-nicotinamide-riboside.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP171
+  path: data/pathways/nad-salvage-pathway-v.yaml
+  label: WikiPathways:WP171 (WikiPathways:WP171)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6f1e3a5883d8c6fba1aa10c90d089d3d8c19a54a6b7b9e1b1b0a4e24c2a0fdf8
+    description: Raw SHA-256 file digest of data/pathways/nad-salvage-pathway-v.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nad-salvage-pathway-v.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6993
+  path: data/pathways/nicotine-degradation-ii.yaml
+  label: MetaCyc:PWY-6993 (MetaCyc:PWY-6993)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 02322c0f9fc96ca45d333c17b2dfb2ac0041d6e9f59d744090adbe6113679b29
+    description: Raw SHA-256 file digest of data/pathways/nicotine-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nicotine-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:DENITRIFICATION-PWY
+  path: data/pathways/nitrate-reduction-i-denitrification.yaml
+  label: MetaCyc:DENITRIFICATION-PWY (MetaCyc:DENITRIFICATION-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f86583eaa558c5b2f89ef7a3152dfb3337905176f8409f19bfb34cbba3b69127
+    description: Raw SHA-256 file digest of data/pathways/nitrate-reduction-i-denitrification.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1352
+  path: data/pathways/nitrate-reduction-viii.yaml
+  label: MetaCyc:PWY0-1352 (MetaCyc:PWY0-1352)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 5243f546a62490581e35d29516f2ecb830b1284748d6b2b042b82e7d9f6303b7
+    description: Raw SHA-256 file digest of data/pathways/nitrate-reduction-viii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-viii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-5268
+  path: data/pathways/oleate-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-5268 (gomodel:YeastPathways_PWY3O-5268)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 15992b5f8df117cec7bf73691cd2765cd60ea6db24aaa37b9b36861ee08909f7
+    description: Raw SHA-256 file digest of data/pathways/oleate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/oleate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-1801
+  path: data/pathways/palmitoleate-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-1801 (gomodel:YeastPathways_PWY3O-1801)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b19047b3b055d4f065267230e639742d344b7aabe2edaa8a64bc0bfda88320b8
+    description: Raw SHA-256 file digest of data/pathways/palmitoleate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/palmitoleate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:NONOXIPENT-PWY
+  path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-i.yaml
+  label: MetaCyc:NONOXIPENT-PWY (MetaCyc:NONOXIPENT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: ed22c55ef88a108b0b993196b06b3f0a487ba2c2f4b3e742c1f1cd811eb14370
+    description: Raw SHA-256 file digest of data/pathways/pentose-phosphate-pathway-non-oxidative-branch-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-8178
+  path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+  label: MetaCyc:PWY-8178 (MetaCyc:PWY-8178)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 828076d310a64976bf416e52a9c5acc8ce9979807149c3cc171dfda3db009312
+    description: Raw SHA-256 file digest of data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:OXIDATIVEPENT-PWY
+  path: data/pathways/pentose-phosphate-pathway-oxidative-branch-i.yaml
+  label: MetaCyc:OXIDATIVEPENT-PWY (MetaCyc:OXIDATIVEPENT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 279a0a8c7f2f065e506c22d5bc2bfa3e3b4bbc40abeb8b1ecaedb027cba8be32
+    description: Raw SHA-256 file digest of data/pathways/pentose-phosphate-pathway-oxidative-branch-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pentose-phosphate-pathway-oxidative-branch-i.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP5060
+  path: data/pathways/peptidoglycan-cytoplasmic-synthesis-and-recycling-pathways.yaml
+  label: WikiPathways:WP5060 (WikiPathways:WP5060)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 41137e969f7960cddb59b6452079b9424b87b0bfaa8402172969c230965cb36a
+    description: Raw SHA-256 file digest of data/pathways/peptidoglycan-cytoplasmic-synthesis-and-recycling-pathways.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/peptidoglycan-cytoplasmic-synthesis-and-recycling-pathways.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  path: data/pathways/periplasmic-nad-degradation.yaml
+  label: gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION (gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b9186a25e2fe115e1f86d2d40024117d5424f5c1f1addd35d6d60fedd9c037bd
+    description: Raw SHA-256 file digest of data/pathways/periplasmic-nad-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/periplasmic-nad-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6289
+  path: data/pathways/petrobactin-biosynthesis.yaml
+  label: MetaCyc:PWY-6289 (MetaCyc:PWY-6289)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a
+    description: Raw SHA-256 file digest of data/pathways/petrobactin-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/petrobactin-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-321
+  path: data/pathways/phenylacetate-degradation-i-aerobic.yaml
+  label: MetaCyc:PWY0-321 (MetaCyc:PWY0-321)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e99722d1ee920cf64aaeae7b00f1de9b59f939bd96a03a7ac5f2885933a72227
+    description: Raw SHA-256 file digest of data/pathways/phenylacetate-degradation-i-aerobic.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylacetate-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4153
+  path: data/pathways/phenylalanine-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-4153 (gomodel:YeastPathways_PWY3O-4153)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b8903227908a29e6abaa9e8b9f9999b9f381aac31f8902702fa76591ae781f65
+    description: Raw SHA-256 file digest of data/pathways/phenylalanine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylalanine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:2PHENDEG-PWY
+  path: data/pathways/phenylethylamine-degradation-i.yaml
+  label: MetaCyc:2PHENDEG-PWY (MetaCyc:2PHENDEG-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: caec88eac6f03f4e58ef30a198b16aa3a014e8c3f8be9adaf03d2f6f601f79fc
+    description: Raw SHA-256 file digest of data/pathways/phenylethylamine-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylethylamine-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6534
+  path: data/pathways/phenylethylamine-degradation-ii.yaml
+  label: MetaCyc:PWY-6534 (MetaCyc:PWY-6534)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3c9403535e818a16f7824a50ebefbf8efc0f408866b30e6b6e6426f0cef24104
+    description: Raw SHA-256 file digest of data/pathways/phenylethylamine-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylethylamine-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1277
+  path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+  label: MetaCyc:PWY0-1277 (MetaCyc:PWY0-1277)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 773dfb3337c3d1b95dfa0c0e032c8b746c6f2f5bf19b17e40bcf4f7a1239617e
+    description: Raw SHA-256 file digest of data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-6407
+  path: data/pathways/phosphatidate-biosynthesis-i-the-dihydroxyacetone-pathway.yaml
+  label: gomodel:YeastPathways_PWY3O-6407 (gomodel:YeastPathways_PWY3O-6407)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: fc29837d25bb30779601d0cd011092833be57b2040370f5b656108c6351f3e5c
+    description: Raw SHA-256 file digest of data/pathways/phosphatidate-biosynthesis-i-the-dihydroxyacetone-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phosphatidate-biosynthesis-i-the-dihydroxyacetone-pathway.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-6499
+  path: data/pathways/phosphatidate-biosynthesis-ii-the-glycerol-3-phosphate-pathway.yaml
+  label: gomodel:YeastPathways_PWY3O-6499 (gomodel:YeastPathways_PWY3O-6499)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3754f2cc7edc6996237b0bd5cdc96602bdb41c94abd1bd4ea010029d42ac51d7
+    description: Raw SHA-256 file digest of data/pathways/phosphatidate-biosynthesis-ii-the-glycerol-3-phosphate-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phosphatidate-biosynthesis-ii-the-glycerol-3-phosphate-pathway.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-450
+  path: data/pathways/phosphatidylcholine-biosynthesis-i.yaml
+  label: gomodel:YeastPathways_PWY3O-450 (gomodel:YeastPathways_PWY3O-450)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 72b66339971241b0e2bf89a17bf5b9dc1297cdb82d01fc4857d0a5379ba03cb6
+    description: Raw SHA-256 file digest of data/pathways/phosphatidylcholine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phosphatidylcholine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5669
+  path: data/pathways/phosphatidylethanolamine-biosynthesis-i.yaml
+  label: gomodel:YeastPathways_PWY-5669 (gomodel:YeastPathways_PWY-5669)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 48257f89bbe473bd0cb155f35cb5e8b5745d7cca8adb13f9f00c0d88018804f3
+    description: Raw SHA-256 file digest of data/pathways/phosphatidylethanolamine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phosphatidylethanolamine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-242
+  path: data/pathways/phosphatidylinositol-phosphate-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-242 (gomodel:YeastPathways_PWY3O-242)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3e02f66d204a5b899920d7d45cec37f2a83bbe57a321b1a394716a247f5ada26
+    description: Raw SHA-256 file digest of data/pathways/phosphatidylinositol-phosphate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phosphatidylinositol-phosphate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-259
+  path: data/pathways/phospholipid-biosynthesis-ii-kennedy-pathway.yaml
+  label: gomodel:YeastPathways_PWY3O-259 (gomodel:YeastPathways_PWY3O-259)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b9378fa6c051f50743bf57b8cf280cc44f702f4266470898a88aec0b3b222591
+    description: Raw SHA-256 file digest of data/pathways/phospholipid-biosynthesis-ii-kennedy-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phospholipid-biosynthesis-ii-kennedy-pathway.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  path: data/pathways/phospholipid-biosynthesis.yaml
+  label: gomodel:YeastPathways_PHOSLIPSYN2-PWY-1 (gomodel:YeastPathways_PHOSLIPSYN2-PWY-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 417bf20d9ae6714e5055e015952829c2fd20f34c1f532dcc9116eb76983fa8e0
+    description: Raw SHA-256 file digest of data/pathways/phospholipid-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phospholipid-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP71
+  path: data/pathways/phospholipids-degradation.yaml
+  label: WikiPathways:WP71 (WikiPathways:WP71)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1623a953f29c91d49e189b163e6d91a21803e9d9176e53fcd7b76b9cb874ec30
+    description: Raw SHA-256 file digest of data/pathways/phospholipids-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phospholipids-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PANTO-PWY
+  path: data/pathways/phosphopantothenate-biosynthesis-i.yaml
+  label: MetaCyc:PANTO-PWY (MetaCyc:PANTO-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 5c4ec894fd396212313ec798adaf4ed09581a77c21f3414abf71e9408915492e
+    description: Raw SHA-256 file digest of data/pathways/phosphopantothenate-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phosphopantothenate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY1-3
+  path: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+  label: MetaCyc:PWY1-3 (MetaCyc:PWY1-3)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 31480b5959f3b596fa758d0272b7b2400a9b23b33b52af7349f999ae6dad8d45
+    description: Raw SHA-256 file digest of data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PPGPPMET-PWY
+  path: data/pathways/ppgpp-metabolism.yaml
+  label: MetaCyc:PPGPPMET-PWY (MetaCyc:PPGPPMET-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 9fd22d5da0134ca3eca2b6cb127a1c12958076f5dde198d91f7d4dde44fc957f
+    description: Raw SHA-256 file digest of data/pathways/ppgpp-metabolism.yaml at
+      frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ppgpp-metabolism.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:P184-PWY
+  path: data/pathways/protocatechuate-meta-cleavage.yaml
+  label: MetaCyc:P184-PWY (MetaCyc:P184-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49
+    description: Raw SHA-256 file digest of data/pathways/protocatechuate-meta-cleavage.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: maintained pathway YAML
+- target_id: GO:0019618
+  path: data/pathways/protocatechuate-ortho-cleavage.yaml
+  label: GO:0019618 (GO:0019618)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 03c1fced81d599136ea6577ef4ff314cc428aab9171c522f0334fa4ccba418d4
+    description: Raw SHA-256 file digest of data/pathways/protocatechuate-ortho-cleavage.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-ortho-cleavage.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6336
+  path: data/pathways/protocatechuate-para-cleavage.yaml
+  label: MetaCyc:PWY-6336 (MetaCyc:PWY-6336)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: fe0024f2064903578609314649be4fc0f2dd173eb0b8809664c550ead6bd66e6
+    description: Raw SHA-256 file digest of data/pathways/protocatechuate-para-cleavage.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6019
+  path: data/pathways/pseudouridine-degradation.yaml
+  label: MetaCyc:PWY-6019 (MetaCyc:PWY-6019)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 68698dd33a2d246cdb8440f6a74d6df0aa9081c1e0707542ebffc64d70bfe15a
+    description: Raw SHA-256 file digest of data/pathways/pseudouridine-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pseudouridine-degradation.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002089
+  path: data/pathways/purine-deoxyribonucleosides-degradation.yaml
+  label: PathBank:SMP0002089 (PathBank:SMP0002089)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7ba78f487af6467f030d8634b0faf6f982b31d5708ef82456dcc8bc5bd0f7510
+    description: Raw SHA-256 file digest of data/pathways/purine-deoxyribonucleosides-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/purine-deoxyribonucleosides-degradation.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002067
+  path: data/pathways/putrescine-degradation-ii.yaml
+  label: PathBank:SMP0002067 (PathBank:SMP0002067)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e7a7cf6dab08e3edcd0fa4709df1ddd28e51f006f37422a9d0d637760709b184
+    description: Raw SHA-256 file digest of data/pathways/putrescine-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/putrescine-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: GO:0042864
+  path: data/pathways/pyochelin-biosynthesis.yaml
+  label: GO:0042864 (GO:0042864)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b
+    description: Raw SHA-256 file digest of data/pathways/pyochelin-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyochelin-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PYRIDOXSYN-PWY
+  path: data/pathways/pyridoxal-5-phosphate-biosynthesis-i.yaml
+  label: MetaCyc:PYRIDOXSYN-PWY (MetaCyc:PYRIDOXSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0918993deb31b55454f225b663ce7982d3e2b37139b0c724e078787e47f49109
+    description: Raw SHA-256 file digest of data/pathways/pyridoxal-5-phosphate-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyridoxal-5-phosphate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PLPSAL-PWY
+  path: data/pathways/pyridoxal-5-phosphate-salvage-i.yaml
+  label: MetaCyc:PLPSAL-PWY (MetaCyc:PLPSAL-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 8899315e99e70be19d3ee6a57cb49dbddd916b95ca403b928c0291e89c5d6243
+    description: Raw SHA-256 file digest of data/pathways/pyridoxal-5-phosphate-salvage-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyridoxal-5-phosphate-salvage-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7181
+  path: data/pathways/pyrimidine-deoxyribonucleosides-degradation.yaml
+  label: MetaCyc:PWY-7181 (MetaCyc:PWY-7181)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c950a85cfb4472db24bf4cf7a442f85eae3b13975581f56dd3d7a1dec965b416
+    description: Raw SHA-256 file digest of data/pathways/pyrimidine-deoxyribonucleosides-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyrimidine-deoxyribonucleosides-degradation.yaml
+    role: maintained pathway YAML
+- target_id: GO:0010139
+  path: data/pathways/pyrimidine-deoxyribonucleotide-salvage.yaml
+  label: GO:0010139 (GO:0010139)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 3954b251a4831937ec55414702a54e9e89cd26676c18de6c7cef6967d138c987
+    description: Raw SHA-256 file digest of data/pathways/pyrimidine-deoxyribonucleotide-salvage.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyrimidine-deoxyribonucleotide-salvage.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002038
+  path: data/pathways/pyrimidine-ribonucleosides-degradation.yaml
+  label: PathBank:SMP0002038 (PathBank:SMP0002038)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6ae10dd0851078d00e31d845e3a2e321c75ab4ab2d1613a3375bbb358639f006
+    description: Raw SHA-256 file digest of data/pathways/pyrimidine-ribonucleosides-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyrimidine-ribonucleosides-degradation.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PYRUVDEHYD-PWY
+  path: data/pathways/pyruvate-decarboxylation-to-acetyl-coa.yaml
+  label: gomodel:YeastPathways_PYRUVDEHYD-PWY (gomodel:YeastPathways_PYRUVDEHYD-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 78370a3d929d7580ff372192b4362e2a48c430e20e79066262a2aa5371b11baa
+    description: Raw SHA-256 file digest of data/pathways/pyruvate-decarboxylation-to-acetyl-coa.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-decarboxylation-to-acetyl-coa.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-440
+  path: data/pathways/pyruvate-fermentation-to-acetoin-iii.yaml
+  label: gomodel:YeastPathways_PWY3O-440 (gomodel:YeastPathways_PWY3O-440)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6a91a3bcbe9679c27ae30c57357772f3ccd7fe98ec9ead2b6097c89e34f6a6a7
+    description: Raw SHA-256 file digest of data/pathways/pyruvate-fermentation-to-acetoin-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-fermentation-to-acetoin-iii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7545
+  path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+  label: MetaCyc:PWY-7545 (MetaCyc:PWY-7545)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1f4ea5bcf744449a6ad04d0da03b69c2e87e33dbfadc6db16a4de84d69407e31
+    description: Raw SHA-256 file digest of data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:QUINATEDEG-PWY
+  path: data/pathways/quinate-degradation-i.yaml
+  label: MetaCyc:QUINATEDEG-PWY (MetaCyc:QUINATEDEG-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: fb73865fd12cd0ad2934d65d058496aeada3e2b087e5aca80fc0b55030d8ad30
+    description: Raw SHA-256 file digest of data/pathways/quinate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/quinate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6416
+  path: data/pathways/quinate-degradation-ii.yaml
+  label: MetaCyc:PWY-6416 (MetaCyc:PWY-6416)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 42585b8a6d2b15cc6e31be7a29c33c636155beca8cbdf3ed122bf370caf10d08
+    description: Raw SHA-256 file digest of data/pathways/quinate-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/quinate-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002406
+  path: data/pathways/riboneogenesis.yaml
+  label: PathBank:SMP0002406 (PathBank:SMP0002406)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 55497469d6ffcbb962caee13ec4cb3d66d42c3f10547140dbfd17fac0f52f870
+    description: Raw SHA-256 file digest of data/pathways/riboneogenesis.yaml at frozen
+      Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/riboneogenesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:RIBOKIN-PWY
+  path: data/pathways/ribose-phosphorylation.yaml
+  label: MetaCyc:RIBOKIN-PWY (MetaCyc:RIBOKIN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4bd1cf5637fff3a247df438bf014c02fe5685fe912c5e015776851c9ff811076
+    description: Raw SHA-256 file digest of data/pathways/ribose-phosphorylation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ribose-phosphorylation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6151
+  path: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+  label: MetaCyc:PWY-6151 (MetaCyc:PWY-6151)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 60ad394e590036fee8611b5e18297f72d8b19aa37cfef39d929af3b891c4455c
+    description: Raw SHA-256 file digest of data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5041
+  path: data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml
+  label: gomodel:YeastPathways_PWY-5041 (gomodel:YeastPathways_PWY-5041)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4907cf3e7dc0469ef74274da8f536c99a4bfced9a177938d793c448e1db7724c
+    description: Raw SHA-256 file digest of data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-8132
+  path: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+  label: MetaCyc:PWY-8132 (MetaCyc:PWY-8132)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 5aa35424ed5c8e99270b6defc3b2a5fb850350b157295149f477d2145c143c3b
+    description: Raw SHA-256 file digest of data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_YEAST-RNT-SALV
+  path: data/pathways/salvage-pathways-of-pyrimidine-ribonucleotides.yaml
+  label: gomodel:YeastPathways_YEAST-RNT-SALV (gomodel:YeastPathways_YEAST-RNT-SALV)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c703f90bedcee65918e9dda8a322c76984eac65759b018811030c42557ba81ce
+    description: Raw SHA-256 file digest of data/pathways/salvage-pathways-of-pyrimidine-ribonucleotides.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/salvage-pathways-of-pyrimidine-ribonucleotides.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1517
+  path: data/pathways/sedoheptulose-bisphosphate-bypass.yaml
+  label: MetaCyc:PWY0-1517 (MetaCyc:PWY0-1517)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c9b46e76aa405a321ac9c4a79a96b263a9d63d28dbc27437cb58de5d0823259b
+    description: Raw SHA-256 file digest of data/pathways/sedoheptulose-bisphosphate-bypass.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sedoheptulose-bisphosphate-bypass.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:SHIKIMATEDEG-PWY
+  path: data/pathways/shikimate-degradation-i.yaml
+  label: MetaCyc:SHIKIMATEDEG-PWY (MetaCyc:SHIKIMATEDEG-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 19afc37cf2c8bbcf8eb19637f818a892e26a8380e083fb444323adb2e3037d9c
+    description: Raw SHA-256 file digest of data/pathways/shikimate-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/shikimate-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6419
+  path: data/pathways/shikimate-degradation-ii.yaml
+  label: MetaCyc:PWY-6419 (MetaCyc:PWY-6419)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2e070f81e06a20c00f29901cc84b54c6f72eae0af9b0c892151faf313f25828b
+    description: Raw SHA-256 file digest of data/pathways/shikimate-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/shikimate-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5194-1
+  path: data/pathways/siroheme-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-5194-1 (gomodel:YeastPathways_PWY-5194-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 266f51a79c6f909fb6179937bf4c367f1f1d1c3a6fa1d314bec790466955548e
+    description: Raw SHA-256 file digest of data/pathways/siroheme-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/siroheme-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002097
+  path: data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml
+  label: PathBank:SMP0002097 (PathBank:SMP0002097)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 85429c55e6da7ec720069cc442f902ae014ca6e7ad46d686280f5b88694c3da2
+    description: Raw SHA-256 file digest of data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  path: data/pathways/spermidine-biosynthesis-i.yaml
+  label: gomodel:YeastPathways_BSUBPOLYAMSYN-PWY (gomodel:YeastPathways_BSUBPOLYAMSYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 6d94af196efc361a35dc72c2f8ef30fdf7def3a9e2597bd8bba8a2daaf235260
+    description: Raw SHA-256 file digest of data/pathways/spermidine-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/spermidine-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_ARGSPECAT-PWY
+  path: data/pathways/spermine-biosynthesis.yaml
+  label: gomodel:YeastPathways_ARGSPECAT-PWY (gomodel:YeastPathways_ARGSPECAT-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: da1f3ef31eb3d56e724b06474a42acb883f1947d17dd46415e36e0e99b5d3f56
+    description: Raw SHA-256 file digest of data/pathways/spermine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/spermine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  path: data/pathways/sphingolipid-biosynthesis-yeast.yaml
+  label: gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1 (gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d7c01da786b8f7261fbf51f1b83cd3125d5dd9a3dbbd4945e8a195c1e8cab6b7
+    description: Raw SHA-256 file digest of data/pathways/sphingolipid-biosynthesis-yeast.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sphingolipid-biosynthesis-yeast.yaml
+    role: maintained pathway YAML
+- target_id: MIBiG:BGC0000852
+  path: data/pathways/sporosarcina-pasteurii-ectoine-biosynthetic-gene-cluster.yaml
+  label: MIBiG:BGC0000852 (MIBiG:BGC0000852)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0c2e4ef99740885129888a71cf927b1ac8af45e7061c3e3b55ac0913d68dc224
+    description: Raw SHA-256 file digest of data/pathways/sporosarcina-pasteurii-ectoine-biosynthetic-gene-cluster.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sporosarcina-pasteurii-ectoine-biosynthetic-gene-cluster.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7990
+  path: data/pathways/staphyloferrin-a-biosynthesis.yaml
+  label: MetaCyc:PWY-7990 (MetaCyc:PWY-7990)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 5b4cd8d7838a19de2ba9c623bd59d321def6fffca45553895df646852d780e42
+    description: Raw SHA-256 file digest of data/pathways/staphyloferrin-a-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloferrin-a-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-8008
+  path: data/pathways/staphyloferrin-b-biosynthesis.yaml
+  label: MetaCyc:PWY-8008 (MetaCyc:PWY-8008)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 61bb5d7ce3c9d6ea9554599c0d42dc47e7792503fe060aa4713330f78b24505b
+    description: Raw SHA-256 file digest of data/pathways/staphyloferrin-b-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/staphyloferrin-b-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-43
+  path: data/pathways/succinate-to-propanoate.yaml
+  label: MetaCyc:PWY0-43 (MetaCyc:PWY0-43)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 38e383fadbfd7168156a8fdd68f8a48632f79cc888475b5a104492b7eb1cc19e
+    description: Raw SHA-256 file digest of data/pathways/succinate-to-propanoate.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/succinate-to-propanoate.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5340
+  path: data/pathways/sulfate-activation-for-sulfonation.yaml
+  label: gomodel:YeastPathways_PWY-5340 (gomodel:YeastPathways_PWY-5340)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bcfb1267bed7de24a78f54d271e10b5ad9251648adcdd73c6882c5fb203cf904
+    description: Raw SHA-256 file digest of data/pathways/sulfate-activation-for-sulfonation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfate-activation-for-sulfonation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7446
+  path: data/pathways/sulfoquinovose-degradation-i.yaml
+  label: MetaCyc:PWY-7446 (MetaCyc:PWY-7446)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 91080feab4ba83987b59622257b6dccda70841e590cf1b4835236810189e691a
+    description: Raw SHA-256 file digest of data/pathways/sulfoquinovose-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7722
+  path: data/pathways/sulfoquinovose-degradation-ii.yaml
+  label: MetaCyc:PWY-7722 (MetaCyc:PWY-7722)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 20a95c209243399b88a90fbecb0d8d310ebfb3094fc6ee4487352fdc2185c596
+    description: Raw SHA-256 file digest of data/pathways/sulfoquinovose-degradation-ii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_DETOX1-PWY
+  path: data/pathways/superoxide-radicals-degradation.yaml
+  label: gomodel:YeastPathways_DETOX1-PWY (gomodel:YeastPathways_DETOX1-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f55995b9eac815491d9b7f5a57daa252e6111c9680612188fb1ff09a7a8698b9
+    description: Raw SHA-256 file digest of data/pathways/superoxide-radicals-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/superoxide-radicals-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5838
+  path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+  label: MetaCyc:PWY-5838 (MetaCyc:PWY-5838)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 119bfbabd17f6079885d4c7894cb214766463726392089b85be54c1954bfb53f
+    description: Raw SHA-256 file digest of data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP296
+  path: data/pathways/tca-cycle-detailed.yaml
+  label: WikiPathways:WP296 (WikiPathways:WP296)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: c574f799eef6b8b793decf52b1934a9f65ddac42893bb56ed5ed9d4134f837fe
+    description: Raw SHA-256 file digest of data/pathways/tca-cycle-detailed.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/tca-cycle-detailed.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-6614
+  path: data/pathways/tetrahydrofolate-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-6614 (gomodel:YeastPathways_PWY-6614)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 926aeb5bbfafd09fa1e6d0599456545cfa89186f2f8bc88e5f6bb3a55d7b0d19
+    description: Raw SHA-256 file digest of data/pathways/tetrahydrofolate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/tetrahydrofolate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1433
+  path: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+  label: MetaCyc:PWY0-1433 (MetaCyc:PWY0-1433)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: d76bf2e548f901bbecf826a33227d2a202f6e7eecbd12e0dfb08168236c83c15
+    description: Raw SHA-256 file digest of data/pathways/tetrahydromonapterin-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-50
+  path: data/pathways/tetrapyrrole-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-50 (gomodel:YeastPathways_PWY3O-50)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 75ebed65fc0c1f3a60cb1941f878481a38a5ad719cc4f2512930fd96cd1a7df7
+    description: Raw SHA-256 file digest of data/pathways/tetrapyrrole-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/tetrapyrrole-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002042
+  path: data/pathways/thiamin-diphosphate-biosynthesis-escherichia-coli.yaml
+  label: PathBank:SMP0002042 (PathBank:SMP0002042)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 504ff0ca8db2e9a6e0c1be99ba1208f3d0828ae2fb52a2821c60de763bcc42ec
+    description: Raw SHA-256 file digest of data/pathways/thiamin-diphosphate-biosynthesis-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thiamin-diphosphate-biosynthesis-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-17
+  path: data/pathways/thiamine-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-17 (gomodel:YeastPathways_PWY3O-17)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 21e9b0a3d9e6f00d36454acbed3f582919331587f8777a2f7f2ee7a19a16a7ea
+    description: Raw SHA-256 file digest of data/pathways/thiamine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thiamine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:THISYN-PWY
+  path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+  label: MetaCyc:THISYN-PWY (MetaCyc:THISYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: bceec45211c8f3b0c39072d6d8e123944b28c35562bbe0f582a265e8d25ff296
+    description: Raw SHA-256 file digest of data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0002055
+  path: data/pathways/thiazole-biosynthesis-i-escherichia-coli.yaml
+  label: PathBank:SMP0002055 (PathBank:SMP0002055)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 33bbf1c04a7e5fbfe56c98c34ee2b64cf2e0f9f0c8e23d5b94151cec489a7b39
+    description: Raw SHA-256 file digest of data/pathways/thiazole-biosynthesis-i-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thiazole-biosynthesis-i-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:THIOREDOX-PWY
+  path: data/pathways/thioredoxin-pathway.yaml
+  label: MetaCyc:THIOREDOX-PWY (MetaCyc:THIOREDOX-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 565fbfe8ef69b7728ce8d720c53845071b90938cb845d2cd87db963b13f0080c
+    description: Raw SHA-256 file digest of data/pathways/thioredoxin-pathway.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thioredoxin-pathway.yaml
+    role: maintained pathway YAML
+- target_id: PathBank:SMP0000992
+  path: data/pathways/threonine-biosynthesis-from-aspartate-escherichia-coli.yaml
+  label: PathBank:SMP0000992 (PathBank:SMP0000992)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a5dd94c6c00ce18f22ab027d4134387981691c7de136a17c897ec0374e2eb17c
+    description: Raw SHA-256 file digest of data/pathways/threonine-biosynthesis-from-aspartate-escherichia-coli.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/threonine-biosynthesis-from-aspartate-escherichia-coli.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_THREOCAT2-PWY
+  path: data/pathways/threonine-degradation.yaml
+  label: gomodel:YeastPathways_THREOCAT2-PWY (gomodel:YeastPathways_THREOCAT2-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 1d6f4daad39854a6c62404c166df9c282bffc8c57f4a88b83bca6d7150e62d7c
+    description: Raw SHA-256 file digest of data/pathways/threonine-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/threonine-degradation.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5123
+  path: data/pathways/trans-trans-farnesyl-diphosphate-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-5123 (gomodel:YeastPathways_PWY-5123)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2c9a01d5a4cbf5dd9b5a4d165cbe64e705ea2d7570f385f0b8dbf242a980be77
+    description: Raw SHA-256 file digest of data/pathways/trans-trans-farnesyl-diphosphate-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/trans-trans-farnesyl-diphosphate-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:TRESYN-PWY
+  path: data/pathways/trehalose-biosynthesis-i.yaml
+  label: MetaCyc:TRESYN-PWY (MetaCyc:TRESYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 9ad861caff0f6d6b4f48e6eb73cce8a460b39dcd3075a3b9a568648d193d905f
+    description: Raw SHA-256 file digest of data/pathways/trehalose-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/trehalose-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP266
+  path: data/pathways/triglyceride-biosynthesis.yaml
+  label: WikiPathways:WP266 (WikiPathways:WP266)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a6cf5919fcfd1d23095258909f13c819a81dbaf8fdae4d8f5aebb862428ac07a
+    description: Raw SHA-256 file digest of data/pathways/triglyceride-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/triglyceride-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-214
+  path: data/pathways/tryptophan-degradation.yaml
+  label: gomodel:YeastPathways_PWY3O-214 (gomodel:YeastPathways_PWY3O-214)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: caeb051e798194e96fac5ae22959fd91b6c3314fe69d6c0175721e6c6250bb01
+    description: Raw SHA-256 file digest of data/pathways/tryptophan-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/tryptophan-degradation.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4120
+  path: data/pathways/tyrosine-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY3O-4120 (gomodel:YeastPathways_PWY3O-4120)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 97f352fdb43fa188391dc1a79702296c03c34fbdd8564cce53610528ca9793b0
+    description: Raw SHA-256 file digest of data/pathways/tyrosine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/tyrosine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: WikiPathways:WP287
+  path: data/pathways/ubiquinol-6-biosynthesis-from-4-hydroxybenzoate.yaml
+  label: WikiPathways:WP287 (WikiPathways:WP287)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2546ba7c2b4a4b8d1ec2ff21d48672a1d164a7caf987b71aa67763c67a013efd
+    description: Raw SHA-256 file digest of data/pathways/ubiquinol-6-biosynthesis-from-4-hydroxybenzoate.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ubiquinol-6-biosynthesis-from-4-hydroxybenzoate.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  path: data/pathways/udp-n-acetylglucosamine-biosynthesis.yaml
+  label: gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY (gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4e8b67155682a12a450182016df2250fb9ab3ea340f059b8a620998c38407cb5
+    description: Raw SHA-256 file digest of data/pathways/udp-n-acetylglucosamine-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/udp-n-acetylglucosamine-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5686
+  path: data/pathways/ump-biosynthesis-i.yaml
+  label: MetaCyc:PWY-5686 (MetaCyc:PWY-5686)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: de743e1d8fca835e785e5a0d054e3081c8978316c9cb9e8699e7d99b3ba48c76
+    description: Raw SHA-256 file digest of data/pathways/ump-biosynthesis-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ump-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1471
+  path: data/pathways/uracil-degradation-iii.yaml
+  label: MetaCyc:PWY0-1471 (MetaCyc:PWY0-1471)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: fc2ffd10d740ff4bea1b90b59f0d18ef3515c40ea6124667fd00555e9f200cee
+    description: Raw SHA-256 file digest of data/pathways/uracil-degradation-iii.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/uracil-degradation-iii.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5703
+  path: data/pathways/urea-degradation-i.yaml
+  label: gomodel:YeastPathways_PWY-5703 (gomodel:YeastPathways_PWY-5703)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0c163d8fa329237abc323929210505f9f1051d0dcd5ae7756cdde96924236ab9
+    description: Raw SHA-256 file digest of data/pathways/urea-degradation-i.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/urea-degradation-i.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-7176
+  path: data/pathways/utp-and-ctp-de-novo-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-7176 (gomodel:YeastPathways_PWY-7176)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 9a13a458e243bec38a792d1b4f85346a6fd4ef9d53e531b3aaf02cc0b13ef831
+    description: Raw SHA-256 file digest of data/pathways/utp-and-ctp-de-novo-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/utp-and-ctp-de-novo-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-4105
+  path: data/pathways/valine-degradation.yaml
+  label: gomodel:YeastPathways_PWY3O-4105 (gomodel:YeastPathways_PWY3O-4105)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f283194f16e064bff894a9d68eccff7bc79241495247561c4c10dd46aa0fcd1f
+    description: Raw SHA-256 file digest of data/pathways/valine-degradation.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/valine-degradation.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-5080-1
+  path: data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-5080-1 (gomodel:YeastPathways_PWY-5080-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 21b1b8c472788467007f47443a2d57bd00f47386f2f5222b5a8236a3e4e2681a
+    description: Raw SHA-256 file digest of data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY3O-8
+  path: data/pathways/xylose-metabolism.yaml
+  label: gomodel:YeastPathways_PWY3O-8 (gomodel:YeastPathways_PWY3O-8)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 9d940d5a968e3b77aa250ff035c84eeb897f51a7f125e8b42bc9993840da7fc9
+    description: Raw SHA-256 file digest of data/pathways/xylose-metabolism.yaml at
+      frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/xylose-metabolism.yaml
+    role: maintained pathway YAML
+- target_id: gomodel:YeastPathways_PWY-6074-1
+  path: data/pathways/zymosterol-biosynthesis.yaml
+  label: gomodel:YeastPathways_PWY-6074-1 (gomodel:YeastPathways_PWY-6074-1)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 26595566a352af774f6529b5de553412cb754fa337c54ed09c25e30460c15152
+    description: Raw SHA-256 file digest of data/pathways/zymosterol-biosynthesis.yaml
+      at frozen Git commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/zymosterol-biosynthesis.yaml
+    role: maintained pathway YAML
+checks:
+- check_id: validate
+  name: Repository QC and closed-schema validation (just validate)
+  status: passed
+  required: true
+  summary: Validated all 277 maintained pathway records against the closed LinkML
+    schema, local identifier/label authority snapshots, 955 history records, 22,832
+    evidence blocks, 33 source records, and pages/ synchrony.
+  target_ids:
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY0-42
+  - WikiPathways:WP5587
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-6543
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - gomodel:YeastPathways_PWY-6147
+  - GO:0097288
+  - MetaCyc:PWY0-1312
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - WikiPathways:WP5019
+  - PathBank:SMP0002081
+  - MetaCyc:P121-PWY
+  - PathBank:SMP0002083
+  - MetaCyc:PWY-6609
+  - gomodel:YeastPathways_PWY-7220-1
+  - MetaCyc:SALVADEHYPOX-PWY
+  - gomodel:YeastPathways_PWY-7219
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-1241
+  - GO:0019270
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - MetaCyc:PWY0-41
+  - gomodel:YeastPathways_PWY-5694
+  - MetaCyc:PWY-5705
+  - gomodel:YeastPathways_PWY-5697
+  - MetaCyc:GLCMANNANAUT-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - MetaCyc:PWY-5903
+  - PathBank:SMP0002123
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:P321-PWY
+  - gomodel:YeastPathways_PWY-5760-1
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - GO:0043427
+  - gomodel:YeastPathways_PWY3O-4
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5417
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - gomodel:YeastPathways_PWY3O-15
+  - MetaCyc:ARO-PWY
+  - MIBiG:BGC0000829
+  - MetaCyc:P2-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - MetaCyc:COA-PWY
+  - PathBank:SMP0002070
+  - PathBank:SMP0001910
+  - GO:0036040
+  - MetaCyc:CYANCAT-PWY
+  - PathBank:SMP0000993
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:XYLCAT-PWY
+  - MetaCyc:PWY-6376
+  - KEGG:M00374
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-123
+  - GO:0019305
+  - MetaCyc:P101-PWY
+  - KEGG:M00008
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - MetaCyc:PWY-7255
+  - gomodel:YeastPathways_PWY3O-4300
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1280
+  - KEGG:M00373
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY-1801-1
+  - MetaCyc:PWY0-521
+  - GO:1901281
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-6223
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - WikiPathways:WP556
+  - MetaCyc:PWY-5177
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - gomodel:YeastPathways_PWYQT-4432
+  - WikiPathways:WP392
+  - gomodel:YeastPathways_PWY3O-48
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - WikiPathways:WP478
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - MetaCyc:PWY-5744
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:PWY-6579
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - GO:1902000
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - gomodel:YeastPathways_PWY3O-402
+  - WikiPathways:WP178
+  - PathBank:SMP0000991
+  - MetaCyc:PWY0-1338
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGSYN-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:PWY0-301
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - PathBank:SMP0002051
+  - MetaCyc:CYSTSYN-PWY
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:HISTSYN-PWY
+  - gomodel:YeastPathways_PWY-5344
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PROSYN-PWY
+  - gomodel:YeastPathways_PROUT-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRPSYN-PWY
+  - gomodel:YeastPathways_PWY-5651
+  - MetaCyc:TYRSYN
+  - gomodel:YeastPathways_PWY3O-4108
+  - MetaCyc:VALSYN-PWY
+  - gomodel:YeastPathways_PWY3O-4112
+  - MIBiG:BGC0002072
+  - gomodel:6882d2b800000609
+  - MetaCyc:PWY0-501
+  - gomodel:YeastPathways_PWY3O-1743
+  - MetaCyc:PWY0-1300
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - gomodel:YeastPathways_PWY3O-64
+  - MetaCyc:NONMEVIPP-PWY
+  - gomodel:YeastPathways_PWY-901
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5453
+  - PathBank:SMP0002077
+  - MetaCyc:PWY-6048
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - MetaCyc:PWY-6823
+  - Reactome:R-MTU-936721
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - gomodel:YeastPathways_PWY-2301
+  - MetaCyc:PWY-8383
+  - MetaCyc:GLUAMCAT-PWY
+  - gomodel:YeastPathways_PWY-5653
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - gomodel:YeastPathways_PWY3O-4106
+  - WikiPathways:WP171
+  - MetaCyc:PWY-6993
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:PWY0-1352
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-1801
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - WikiPathways:WP5060
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY0-321
+  - gomodel:YeastPathways_PWY3O-4153
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY0-1277
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - WikiPathways:WP71
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PWY1-3
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:P184-PWY
+  - GO:0019618
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6019
+  - PathBank:SMP0002089
+  - PathBank:SMP0002067
+  - GO:0042864
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PWY-7181
+  - GO:0010139
+  - PathBank:SMP0002038
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_PWY3O-440
+  - MetaCyc:PWY-7545
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:PWY-6416
+  - PathBank:SMP0002406
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:PWY-6151
+  - gomodel:YeastPathways_PWY-5041
+  - MetaCyc:PWY-8132
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  - MetaCyc:PWY0-1517
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:PWY-6419
+  - gomodel:YeastPathways_PWY-5194-1
+  - PathBank:SMP0002097
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - MIBiG:BGC0000852
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY0-43
+  - gomodel:YeastPathways_PWY-5340
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - gomodel:YeastPathways_DETOX1-PWY
+  - MetaCyc:PWY-5838
+  - WikiPathways:WP296
+  - gomodel:YeastPathways_PWY-6614
+  - MetaCyc:PWY0-1433
+  - gomodel:YeastPathways_PWY3O-50
+  - PathBank:SMP0002042
+  - gomodel:YeastPathways_PWY3O-17
+  - MetaCyc:THISYN-PWY
+  - PathBank:SMP0002055
+  - MetaCyc:THIOREDOX-PWY
+  - PathBank:SMP0000992
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_PWY-5123
+  - MetaCyc:TRESYN-PWY
+  - WikiPathways:WP266
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-4120
+  - WikiPathways:WP287
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY0-1471
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWY-6074-1
+  command: .venv/bin/pathwaymech-run-qc
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+- check_id: test
+  name: Pytest unit and corpus test suite (just test)
+  status: passed
+  required: true
+  summary: Executed the full pytest suite (8096 passed, 3 skipped) verifying schema,
+    authority, KGX, SSSOM, and record-review invariants across all 277 records.
+  target_ids:
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY0-42
+  - WikiPathways:WP5587
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-6543
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - gomodel:YeastPathways_PWY-6147
+  - GO:0097288
+  - MetaCyc:PWY0-1312
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - WikiPathways:WP5019
+  - PathBank:SMP0002081
+  - MetaCyc:P121-PWY
+  - PathBank:SMP0002083
+  - MetaCyc:PWY-6609
+  - gomodel:YeastPathways_PWY-7220-1
+  - MetaCyc:SALVADEHYPOX-PWY
+  - gomodel:YeastPathways_PWY-7219
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-1241
+  - GO:0019270
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - MetaCyc:PWY0-41
+  - gomodel:YeastPathways_PWY-5694
+  - MetaCyc:PWY-5705
+  - gomodel:YeastPathways_PWY-5697
+  - MetaCyc:GLCMANNANAUT-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - MetaCyc:PWY-5903
+  - PathBank:SMP0002123
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:P321-PWY
+  - gomodel:YeastPathways_PWY-5760-1
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - GO:0043427
+  - gomodel:YeastPathways_PWY3O-4
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5417
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - gomodel:YeastPathways_PWY3O-15
+  - MetaCyc:ARO-PWY
+  - MIBiG:BGC0000829
+  - MetaCyc:P2-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - MetaCyc:COA-PWY
+  - PathBank:SMP0002070
+  - PathBank:SMP0001910
+  - GO:0036040
+  - MetaCyc:CYANCAT-PWY
+  - PathBank:SMP0000993
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:XYLCAT-PWY
+  - MetaCyc:PWY-6376
+  - KEGG:M00374
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-123
+  - GO:0019305
+  - MetaCyc:P101-PWY
+  - KEGG:M00008
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - MetaCyc:PWY-7255
+  - gomodel:YeastPathways_PWY3O-4300
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1280
+  - KEGG:M00373
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY-1801-1
+  - MetaCyc:PWY0-521
+  - GO:1901281
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-6223
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - WikiPathways:WP556
+  - MetaCyc:PWY-5177
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - gomodel:YeastPathways_PWYQT-4432
+  - WikiPathways:WP392
+  - gomodel:YeastPathways_PWY3O-48
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - WikiPathways:WP478
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - MetaCyc:PWY-5744
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:PWY-6579
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - GO:1902000
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - gomodel:YeastPathways_PWY3O-402
+  - WikiPathways:WP178
+  - PathBank:SMP0000991
+  - MetaCyc:PWY0-1338
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGSYN-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:PWY0-301
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - PathBank:SMP0002051
+  - MetaCyc:CYSTSYN-PWY
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:HISTSYN-PWY
+  - gomodel:YeastPathways_PWY-5344
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PROSYN-PWY
+  - gomodel:YeastPathways_PROUT-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRPSYN-PWY
+  - gomodel:YeastPathways_PWY-5651
+  - MetaCyc:TYRSYN
+  - gomodel:YeastPathways_PWY3O-4108
+  - MetaCyc:VALSYN-PWY
+  - gomodel:YeastPathways_PWY3O-4112
+  - MIBiG:BGC0002072
+  - gomodel:6882d2b800000609
+  - MetaCyc:PWY0-501
+  - gomodel:YeastPathways_PWY3O-1743
+  - MetaCyc:PWY0-1300
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - gomodel:YeastPathways_PWY3O-64
+  - MetaCyc:NONMEVIPP-PWY
+  - gomodel:YeastPathways_PWY-901
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5453
+  - PathBank:SMP0002077
+  - MetaCyc:PWY-6048
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - MetaCyc:PWY-6823
+  - Reactome:R-MTU-936721
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - gomodel:YeastPathways_PWY-2301
+  - MetaCyc:PWY-8383
+  - MetaCyc:GLUAMCAT-PWY
+  - gomodel:YeastPathways_PWY-5653
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - gomodel:YeastPathways_PWY3O-4106
+  - WikiPathways:WP171
+  - MetaCyc:PWY-6993
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:PWY0-1352
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-1801
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - WikiPathways:WP5060
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY0-321
+  - gomodel:YeastPathways_PWY3O-4153
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY0-1277
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - WikiPathways:WP71
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PWY1-3
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:P184-PWY
+  - GO:0019618
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6019
+  - PathBank:SMP0002089
+  - PathBank:SMP0002067
+  - GO:0042864
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PWY-7181
+  - GO:0010139
+  - PathBank:SMP0002038
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_PWY3O-440
+  - MetaCyc:PWY-7545
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:PWY-6416
+  - PathBank:SMP0002406
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:PWY-6151
+  - gomodel:YeastPathways_PWY-5041
+  - MetaCyc:PWY-8132
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  - MetaCyc:PWY0-1517
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:PWY-6419
+  - gomodel:YeastPathways_PWY-5194-1
+  - PathBank:SMP0002097
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - MIBiG:BGC0000852
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY0-43
+  - gomodel:YeastPathways_PWY-5340
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - gomodel:YeastPathways_DETOX1-PWY
+  - MetaCyc:PWY-5838
+  - WikiPathways:WP296
+  - gomodel:YeastPathways_PWY-6614
+  - MetaCyc:PWY0-1433
+  - gomodel:YeastPathways_PWY3O-50
+  - PathBank:SMP0002042
+  - gomodel:YeastPathways_PWY3O-17
+  - MetaCyc:THISYN-PWY
+  - PathBank:SMP0002055
+  - MetaCyc:THIOREDOX-PWY
+  - PathBank:SMP0000992
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_PWY-5123
+  - MetaCyc:TRESYN-PWY
+  - WikiPathways:WP266
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-4120
+  - WikiPathways:WP287
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY0-1471
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWY-6074-1
+  command: .venv/bin/pytest -q
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8-PYTEST
+- check_id: lint
+  name: Ruff linter check (just lint)
+  status: passed
+  required: true
+  summary: Ruff static analysis passed with zero findings across the repository.
+  target_ids:
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY0-42
+  - WikiPathways:WP5587
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-6543
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - gomodel:YeastPathways_PWY-6147
+  - GO:0097288
+  - MetaCyc:PWY0-1312
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - WikiPathways:WP5019
+  - PathBank:SMP0002081
+  - MetaCyc:P121-PWY
+  - PathBank:SMP0002083
+  - MetaCyc:PWY-6609
+  - gomodel:YeastPathways_PWY-7220-1
+  - MetaCyc:SALVADEHYPOX-PWY
+  - gomodel:YeastPathways_PWY-7219
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-1241
+  - GO:0019270
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - MetaCyc:PWY0-41
+  - gomodel:YeastPathways_PWY-5694
+  - MetaCyc:PWY-5705
+  - gomodel:YeastPathways_PWY-5697
+  - MetaCyc:GLCMANNANAUT-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - MetaCyc:PWY-5903
+  - PathBank:SMP0002123
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:P321-PWY
+  - gomodel:YeastPathways_PWY-5760-1
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - GO:0043427
+  - gomodel:YeastPathways_PWY3O-4
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5417
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - gomodel:YeastPathways_PWY3O-15
+  - MetaCyc:ARO-PWY
+  - MIBiG:BGC0000829
+  - MetaCyc:P2-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - MetaCyc:COA-PWY
+  - PathBank:SMP0002070
+  - PathBank:SMP0001910
+  - GO:0036040
+  - MetaCyc:CYANCAT-PWY
+  - PathBank:SMP0000993
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:XYLCAT-PWY
+  - MetaCyc:PWY-6376
+  - KEGG:M00374
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-123
+  - GO:0019305
+  - MetaCyc:P101-PWY
+  - KEGG:M00008
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - MetaCyc:PWY-7255
+  - gomodel:YeastPathways_PWY3O-4300
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1280
+  - KEGG:M00373
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY-1801-1
+  - MetaCyc:PWY0-521
+  - GO:1901281
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-6223
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - WikiPathways:WP556
+  - MetaCyc:PWY-5177
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - gomodel:YeastPathways_PWYQT-4432
+  - WikiPathways:WP392
+  - gomodel:YeastPathways_PWY3O-48
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - WikiPathways:WP478
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - MetaCyc:PWY-5744
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:PWY-6579
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - GO:1902000
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - gomodel:YeastPathways_PWY3O-402
+  - WikiPathways:WP178
+  - PathBank:SMP0000991
+  - MetaCyc:PWY0-1338
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGSYN-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:PWY0-301
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - PathBank:SMP0002051
+  - MetaCyc:CYSTSYN-PWY
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:HISTSYN-PWY
+  - gomodel:YeastPathways_PWY-5344
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PROSYN-PWY
+  - gomodel:YeastPathways_PROUT-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRPSYN-PWY
+  - gomodel:YeastPathways_PWY-5651
+  - MetaCyc:TYRSYN
+  - gomodel:YeastPathways_PWY3O-4108
+  - MetaCyc:VALSYN-PWY
+  - gomodel:YeastPathways_PWY3O-4112
+  - MIBiG:BGC0002072
+  - gomodel:6882d2b800000609
+  - MetaCyc:PWY0-501
+  - gomodel:YeastPathways_PWY3O-1743
+  - MetaCyc:PWY0-1300
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - gomodel:YeastPathways_PWY3O-64
+  - MetaCyc:NONMEVIPP-PWY
+  - gomodel:YeastPathways_PWY-901
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5453
+  - PathBank:SMP0002077
+  - MetaCyc:PWY-6048
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - MetaCyc:PWY-6823
+  - Reactome:R-MTU-936721
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - gomodel:YeastPathways_PWY-2301
+  - MetaCyc:PWY-8383
+  - MetaCyc:GLUAMCAT-PWY
+  - gomodel:YeastPathways_PWY-5653
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - gomodel:YeastPathways_PWY3O-4106
+  - WikiPathways:WP171
+  - MetaCyc:PWY-6993
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:PWY0-1352
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-1801
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - WikiPathways:WP5060
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY0-321
+  - gomodel:YeastPathways_PWY3O-4153
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY0-1277
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - WikiPathways:WP71
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PWY1-3
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:P184-PWY
+  - GO:0019618
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6019
+  - PathBank:SMP0002089
+  - PathBank:SMP0002067
+  - GO:0042864
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PWY-7181
+  - GO:0010139
+  - PathBank:SMP0002038
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_PWY3O-440
+  - MetaCyc:PWY-7545
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:PWY-6416
+  - PathBank:SMP0002406
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:PWY-6151
+  - gomodel:YeastPathways_PWY-5041
+  - MetaCyc:PWY-8132
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  - MetaCyc:PWY0-1517
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:PWY-6419
+  - gomodel:YeastPathways_PWY-5194-1
+  - PathBank:SMP0002097
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - MIBiG:BGC0000852
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY0-43
+  - gomodel:YeastPathways_PWY-5340
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - gomodel:YeastPathways_DETOX1-PWY
+  - MetaCyc:PWY-5838
+  - WikiPathways:WP296
+  - gomodel:YeastPathways_PWY-6614
+  - MetaCyc:PWY0-1433
+  - gomodel:YeastPathways_PWY3O-50
+  - PathBank:SMP0002042
+  - gomodel:YeastPathways_PWY3O-17
+  - MetaCyc:THISYN-PWY
+  - PathBank:SMP0002055
+  - MetaCyc:THIOREDOX-PWY
+  - PathBank:SMP0000992
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_PWY-5123
+  - MetaCyc:TRESYN-PWY
+  - WikiPathways:WP266
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-4120
+  - WikiPathways:WP287
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY0-1471
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWY-6074-1
+  command: .venv/bin/ruff check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8-RUFF
+- check_id: diff-check
+  name: Git diff whitespace and conflict marker check
+  status: passed
+  required: true
+  summary: Clean worktree diff check with zero whitespace or conflict errors.
+  target_ids:
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY0-42
+  - WikiPathways:WP5587
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-6543
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - gomodel:YeastPathways_PWY-6147
+  - GO:0097288
+  - MetaCyc:PWY0-1312
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - WikiPathways:WP5019
+  - PathBank:SMP0002081
+  - MetaCyc:P121-PWY
+  - PathBank:SMP0002083
+  - MetaCyc:PWY-6609
+  - gomodel:YeastPathways_PWY-7220-1
+  - MetaCyc:SALVADEHYPOX-PWY
+  - gomodel:YeastPathways_PWY-7219
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-1241
+  - GO:0019270
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - MetaCyc:PWY0-41
+  - gomodel:YeastPathways_PWY-5694
+  - MetaCyc:PWY-5705
+  - gomodel:YeastPathways_PWY-5697
+  - MetaCyc:GLCMANNANAUT-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - MetaCyc:PWY-5903
+  - PathBank:SMP0002123
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:P321-PWY
+  - gomodel:YeastPathways_PWY-5760-1
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - GO:0043427
+  - gomodel:YeastPathways_PWY3O-4
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5417
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - gomodel:YeastPathways_PWY3O-15
+  - MetaCyc:ARO-PWY
+  - MIBiG:BGC0000829
+  - MetaCyc:P2-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - MetaCyc:COA-PWY
+  - PathBank:SMP0002070
+  - PathBank:SMP0001910
+  - GO:0036040
+  - MetaCyc:CYANCAT-PWY
+  - PathBank:SMP0000993
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:XYLCAT-PWY
+  - MetaCyc:PWY-6376
+  - KEGG:M00374
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-123
+  - GO:0019305
+  - MetaCyc:P101-PWY
+  - KEGG:M00008
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - MetaCyc:PWY-7255
+  - gomodel:YeastPathways_PWY3O-4300
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1280
+  - KEGG:M00373
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY-1801-1
+  - MetaCyc:PWY0-521
+  - GO:1901281
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-6223
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - WikiPathways:WP556
+  - MetaCyc:PWY-5177
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - gomodel:YeastPathways_PWYQT-4432
+  - WikiPathways:WP392
+  - gomodel:YeastPathways_PWY3O-48
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - WikiPathways:WP478
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - MetaCyc:PWY-5744
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:PWY-6579
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - GO:1902000
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - gomodel:YeastPathways_PWY3O-402
+  - WikiPathways:WP178
+  - PathBank:SMP0000991
+  - MetaCyc:PWY0-1338
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGSYN-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:PWY0-301
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - PathBank:SMP0002051
+  - MetaCyc:CYSTSYN-PWY
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:HISTSYN-PWY
+  - gomodel:YeastPathways_PWY-5344
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PROSYN-PWY
+  - gomodel:YeastPathways_PROUT-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRPSYN-PWY
+  - gomodel:YeastPathways_PWY-5651
+  - MetaCyc:TYRSYN
+  - gomodel:YeastPathways_PWY3O-4108
+  - MetaCyc:VALSYN-PWY
+  - gomodel:YeastPathways_PWY3O-4112
+  - MIBiG:BGC0002072
+  - gomodel:6882d2b800000609
+  - MetaCyc:PWY0-501
+  - gomodel:YeastPathways_PWY3O-1743
+  - MetaCyc:PWY0-1300
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - gomodel:YeastPathways_PWY3O-64
+  - MetaCyc:NONMEVIPP-PWY
+  - gomodel:YeastPathways_PWY-901
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5453
+  - PathBank:SMP0002077
+  - MetaCyc:PWY-6048
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - MetaCyc:PWY-6823
+  - Reactome:R-MTU-936721
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - gomodel:YeastPathways_PWY-2301
+  - MetaCyc:PWY-8383
+  - MetaCyc:GLUAMCAT-PWY
+  - gomodel:YeastPathways_PWY-5653
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - gomodel:YeastPathways_PWY3O-4106
+  - WikiPathways:WP171
+  - MetaCyc:PWY-6993
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:PWY0-1352
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-1801
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - WikiPathways:WP5060
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY0-321
+  - gomodel:YeastPathways_PWY3O-4153
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY0-1277
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - WikiPathways:WP71
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PWY1-3
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:P184-PWY
+  - GO:0019618
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6019
+  - PathBank:SMP0002089
+  - PathBank:SMP0002067
+  - GO:0042864
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PWY-7181
+  - GO:0010139
+  - PathBank:SMP0002038
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_PWY3O-440
+  - MetaCyc:PWY-7545
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:PWY-6416
+  - PathBank:SMP0002406
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:PWY-6151
+  - gomodel:YeastPathways_PWY-5041
+  - MetaCyc:PWY-8132
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  - MetaCyc:PWY0-1517
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:PWY-6419
+  - gomodel:YeastPathways_PWY-5194-1
+  - PathBank:SMP0002097
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - MIBiG:BGC0000852
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY0-43
+  - gomodel:YeastPathways_PWY-5340
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - gomodel:YeastPathways_DETOX1-PWY
+  - MetaCyc:PWY-5838
+  - WikiPathways:WP296
+  - gomodel:YeastPathways_PWY-6614
+  - MetaCyc:PWY0-1433
+  - gomodel:YeastPathways_PWY3O-50
+  - PathBank:SMP0002042
+  - gomodel:YeastPathways_PWY3O-17
+  - MetaCyc:THISYN-PWY
+  - PathBank:SMP0002055
+  - MetaCyc:THIOREDOX-PWY
+  - PathBank:SMP0000992
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_PWY-5123
+  - MetaCyc:TRESYN-PWY
+  - WikiPathways:WP266
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-4120
+  - WikiPathways:WP287
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY0-1471
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWY-6074-1
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8-GIT-DIFF
+- check_id: review-check
+  name: Structured record-review bundle validator
+  status: passed
+  required: true
+  summary: Validated 211 retained structured review bundles under reviews/structured/.
+  target_ids:
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY0-42
+  - WikiPathways:WP5587
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-6543
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - gomodel:YeastPathways_PWY-6147
+  - GO:0097288
+  - MetaCyc:PWY0-1312
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - WikiPathways:WP5019
+  - PathBank:SMP0002081
+  - MetaCyc:P121-PWY
+  - PathBank:SMP0002083
+  - MetaCyc:PWY-6609
+  - gomodel:YeastPathways_PWY-7220-1
+  - MetaCyc:SALVADEHYPOX-PWY
+  - gomodel:YeastPathways_PWY-7219
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-1241
+  - GO:0019270
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - MetaCyc:PWY0-41
+  - gomodel:YeastPathways_PWY-5694
+  - MetaCyc:PWY-5705
+  - gomodel:YeastPathways_PWY-5697
+  - MetaCyc:GLCMANNANAUT-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - MetaCyc:PWY-5903
+  - PathBank:SMP0002123
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:P321-PWY
+  - gomodel:YeastPathways_PWY-5760-1
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - GO:0043427
+  - gomodel:YeastPathways_PWY3O-4
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5417
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - gomodel:YeastPathways_PWY3O-15
+  - MetaCyc:ARO-PWY
+  - MIBiG:BGC0000829
+  - MetaCyc:P2-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - MetaCyc:COA-PWY
+  - PathBank:SMP0002070
+  - PathBank:SMP0001910
+  - GO:0036040
+  - MetaCyc:CYANCAT-PWY
+  - PathBank:SMP0000993
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:XYLCAT-PWY
+  - MetaCyc:PWY-6376
+  - KEGG:M00374
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-123
+  - GO:0019305
+  - MetaCyc:P101-PWY
+  - KEGG:M00008
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - MetaCyc:PWY-7255
+  - gomodel:YeastPathways_PWY3O-4300
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1280
+  - KEGG:M00373
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY-1801-1
+  - MetaCyc:PWY0-521
+  - GO:1901281
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-6223
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - WikiPathways:WP556
+  - MetaCyc:PWY-5177
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - gomodel:YeastPathways_PWYQT-4432
+  - WikiPathways:WP392
+  - gomodel:YeastPathways_PWY3O-48
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - WikiPathways:WP478
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - MetaCyc:PWY-5744
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:PWY-6579
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - GO:1902000
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - gomodel:YeastPathways_PWY3O-402
+  - WikiPathways:WP178
+  - PathBank:SMP0000991
+  - MetaCyc:PWY0-1338
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGSYN-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:PWY0-301
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - PathBank:SMP0002051
+  - MetaCyc:CYSTSYN-PWY
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:HISTSYN-PWY
+  - gomodel:YeastPathways_PWY-5344
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PROSYN-PWY
+  - gomodel:YeastPathways_PROUT-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRPSYN-PWY
+  - gomodel:YeastPathways_PWY-5651
+  - MetaCyc:TYRSYN
+  - gomodel:YeastPathways_PWY3O-4108
+  - MetaCyc:VALSYN-PWY
+  - gomodel:YeastPathways_PWY3O-4112
+  - MIBiG:BGC0002072
+  - gomodel:6882d2b800000609
+  - MetaCyc:PWY0-501
+  - gomodel:YeastPathways_PWY3O-1743
+  - MetaCyc:PWY0-1300
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - gomodel:YeastPathways_PWY3O-64
+  - MetaCyc:NONMEVIPP-PWY
+  - gomodel:YeastPathways_PWY-901
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5453
+  - PathBank:SMP0002077
+  - MetaCyc:PWY-6048
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - MetaCyc:PWY-6823
+  - Reactome:R-MTU-936721
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - gomodel:YeastPathways_PWY-2301
+  - MetaCyc:PWY-8383
+  - MetaCyc:GLUAMCAT-PWY
+  - gomodel:YeastPathways_PWY-5653
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - gomodel:YeastPathways_PWY3O-4106
+  - WikiPathways:WP171
+  - MetaCyc:PWY-6993
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:PWY0-1352
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-1801
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - WikiPathways:WP5060
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY0-321
+  - gomodel:YeastPathways_PWY3O-4153
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY0-1277
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - WikiPathways:WP71
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PWY1-3
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:P184-PWY
+  - GO:0019618
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6019
+  - PathBank:SMP0002089
+  - PathBank:SMP0002067
+  - GO:0042864
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PWY-7181
+  - GO:0010139
+  - PathBank:SMP0002038
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_PWY3O-440
+  - MetaCyc:PWY-7545
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:PWY-6416
+  - PathBank:SMP0002406
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:PWY-6151
+  - gomodel:YeastPathways_PWY-5041
+  - MetaCyc:PWY-8132
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  - MetaCyc:PWY0-1517
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:PWY-6419
+  - gomodel:YeastPathways_PWY-5194-1
+  - PathBank:SMP0002097
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - MIBiG:BGC0000852
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY0-43
+  - gomodel:YeastPathways_PWY-5340
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - gomodel:YeastPathways_DETOX1-PWY
+  - MetaCyc:PWY-5838
+  - WikiPathways:WP296
+  - gomodel:YeastPathways_PWY-6614
+  - MetaCyc:PWY0-1433
+  - gomodel:YeastPathways_PWY3O-50
+  - PathBank:SMP0002042
+  - gomodel:YeastPathways_PWY3O-17
+  - MetaCyc:THISYN-PWY
+  - PathBank:SMP0002055
+  - MetaCyc:THIOREDOX-PWY
+  - PathBank:SMP0000992
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_PWY-5123
+  - MetaCyc:TRESYN-PWY
+  - WikiPathways:WP266
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-4120
+  - WikiPathways:WP287
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY0-1471
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWY-6074-1
+  command: .venv/bin/python scripts/record_review.py check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C8-REVIEW-CHECK
+  scope_note: Validates all retained reviews/structured/ bundles against schema/record_review.yaml.
+evidence:
+- evidence_id: EV-C8-QC-VALIDATE
+  kind: validation
+  reference: .venv/bin/pathwaymech-run-qc
+  locator: stdout summary (277 pathway records, 955 history records, 22,832 evidence
+    blocks, 33 source records)
+  accessed_at: '2026-10-31T09:15:00Z'
+  support: supports
+  summary: 'Executed .venv/bin/pathwaymech-run-qc across the frozen working tree at
+    2cf03ac05f40abb493c82adee36be1de3ea17ad8: validated 277 pathway records against
+    the closed LinkML schema, verified all identifiers and labels against local authority
+    snapshots, validated 955 history records and 22,832 evidence blocks, validated
+    33 source records, and confirmed pages/ synchrony with 277 pathway records.'
+- evidence_id: EV-C8-PYTEST
+  kind: validation
+  reference: .venv/bin/pytest -q
+  locator: pytest suite execution across tests/ (8096 passed, 3 skipped)
+  accessed_at: '2026-10-31T09:38:00Z'
+  support: supports
+  summary: Executed the full pytest suite (8096 passed, 3 skipped), verifying closed
+    LinkML schema validation, identifier policy, KGX export, SSSOM export, source
+    registry, and structured record-review contract invariants.
+- evidence_id: EV-C8-RUFF
+  kind: validation
+  reference: .venv/bin/ruff check --no-cache .
+  locator: ruff check output
+  accessed_at: '2026-10-31T09:40:00Z'
+  support: supports
+  summary: Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks
+    passed!).
+- evidence_id: EV-C8-GIT-DIFF
+  kind: validation
+  reference: git diff --check
+  locator: git worktree at 2cf03ac05f40abb493c82adee36be1de3ea17ad8
+  accessed_at: '2026-10-31T09:40:00Z'
+  support: supports
+  summary: Executed git diff --check with exit code 0; no whitespace errors or conflict
+    markers.
+- evidence_id: EV-C8-REVIEW-CHECK
+  kind: prior_review
+  reference: reviews/structured/20261030T221500Z-cycle7-stage5-resolve-review-findings/review.yaml
+  locator: 211 retained structured review bundles including Cycle 7 Stage 5 remediation
+    review
+  accessed_at: '2026-10-31T09:39:00Z'
+  support: supports
+  summary: Validated all 211 previously retained structured review bundles under reviews/structured/
+    via scripts/record_review.py check; confirmed Cycle 7 Stage 4 findings (F-C7S4-001
+    16 bare CURIE literature reference titles across 3 MetaCyc records and F-C7S4-002
+    52 concrete small-molecule participants typed as chemical_entity across 3 MetaCyc
+    records) were resolved in 20261030T221500Z-cycle7-stage5-resolve-review-findings
+    and remain 100% resolved in Cycle 8 (zero bare CURIE reference titles where title
+    == id across all 7,099 references; zero pure chemical_entity vs small_molecule
+    biolink:ChemicalEntity|biolink:SmallMolecule merges across all 5,457 nodes in
+    pages/downloads/nodes.tsv).
+  snapshot_sha256: e5348ddc0624f8814a367b2a2f30129c34eae1f0d70cfc262946f1f073246fc5
+- evidence_id: EV-C8-CORPUS-INSPECTION
+  kind: record_content
+  reference: data/pathways/
+  locator: 277 maintained pathway YAML files (7,851 participants, 1,630 reactions
+    including 731 RHEA:* reactions, 14,730 mechanistic_edges, 7,099 references, 1,061
+    source_mappings across 218 records)
+  accessed_at: '2026-10-31T09:24:00Z'
+  support: supports
+  summary: 'Inspected all 277 maintained pathway records in data/pathways/*.yaml (including
+    PathBank:SMP0001910 added in Cycle 8 Stage 1, 8 records enriched in Cycle 8 Stage
+    2 with 248 stoichiometric coefficients, 62 ECO codes, and 62 assay taxa, and 6
+    records enriched in Cycle 8 Stage 3 across 38 UniProtKB:* mechanistic_edges and
+    16 reference titles): 100% declare valid pathway_type, 100% of 14,730 mechanistic_edges
+    carry structured evidence blocks (21,706 on mechanistic_edges + 918 on endpoint_qualifiers
+    = 22,624 edge/qualifier evidence items; plus 208 reaction_mechanisms evidence
+    items = 22,832 total evidence blocks), 100% of 1,630 reactions carry explicit
+    category (1,592 molecular_activity, 36 pathway, 2 biological_process), 100% of
+    7,846 concrete participants carry explicit category (plus 5 contract-verified
+    generic gomodel:* physical participant instances per src/pathwaymech/gocam_native.py:30-32
+    and tests/test_kgx_export.py:142-159), 100% of 7,851 participants are connected
+    by at least one mechanistic_edges entry (0 orphans), and 100% of 731 RHEA:* reaction
+    nodes declare explicit direction with zero cross-record direction conflicts.'
+- evidence_id: EV-C8-CONCRETE-CHEBI-SMALL-MOLECULE-CHEMICAL-ENTITY-4
+  kind: record_content
+  reference: data/pathways/protocatechuate-meta-cleavage.yaml
+  locator: '4 concrete CHEBI:* small-molecule effector participants typed as category:
+    chemical_entity across adenosine-nucleotides-degradation-ii.yaml, protocatechuate-meta-cleavage.yaml,
+    protocatechuate-para-cleavage.yaml, and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml'
+  accessed_at: '2026-10-31T09:30:00Z'
+  support: supports
+  summary: 'Across all 68 category: chemical_entity participant entries in the 277-record
+    corpus, 64 represent genuine chemical classes, generic electron/methyl donors
+    or acceptors, carrier-protein conjugates, or amino-acid residues, whereas the
+    remaining 4 CHEBI:* entries across 4 maintained MetaCyc:* pathway records — CHEBI:59640
+    N-acetylglucosamine (formula C8H15NO6, activates Entrez:945283 in salvadehypox-edge-087)
+    at adenosine-nucleotides-degradation-ii.yaml#participants[62], CHEBI:22651 ascorbate
+    (formula C6H7O6-, activates MetaCyc:CPLX-2701 in protocatechuate-meta-edge-075)
+    at protocatechuate-meta-cleavage.yaml#participants[61], CHEBI:22651 ascorbate
+    (formula C6H7O6-, activates MetaCyc:CPLX-7915 in protocatechuate-para-edge-035)
+    at protocatechuate-para-cleavage.yaml#participants[24], and CHEBI:203056 Microcin
+    J25 (formula C100H139N23O27, inhibits EcoCyc:CYT-D-UBIOX-CPLX in pyruvate-bd-edge-030)
+    at pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml#participants[27] —
+    are concrete small-molecule effectors typed as generic category: chemical_entity
+    instead of category: small_molecule.'
+  quote: "- id: CHEBI:22651\n  label: ascorbate\n  category: chemical_entity"
+  snapshot_sha256: c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49
+- evidence_id: EV-C8-RAW-LOCAL-ID-STRUCTURED-REFERENCE-TITLES-4
+  kind: record_content
+  reference: data/pathways/sulfoquinovose-degradation-i.yaml
+  locator: 17 structured MetaCyc:* reaction and enzyme-complex references[] entries
+    across guanine-and-guanosine-salvage.yaml (3), sulfoquinovose-degradation-i.yaml
+    (4), sulfoquinovose-degradation-ii.yaml (5), and nitrate-reduction-i-denitrification.yaml
+    (5) where title == local_id
+  accessed_at: '2026-10-31T09:35:00Z'
+  support: supports
+  summary: 'Across 4 maintained MetaCyc pathway records — MetaCyc:PWY-6579 (guanine-and-guanosine-salvage.yaml
+    references[3..5]: MetaCyc:RXN0-5199, MetaCyc:GUANPRIBOSYLTRAN-RXN, MetaCyc:GUANOSINEKIN-RXN),
+    MetaCyc:PWY-7446 (sulfoquinovose-degradation-i.yaml references[1..4]: MetaCyc:RXN-15296,
+    MetaCyc:RXN-15297, MetaCyc:RXN-15298, MetaCyc:RXN-15299), MetaCyc:PWY-7722 (sulfoquinovose-degradation-ii.yaml
+    references[1..5]: MetaCyc:RXN-17096, MetaCyc:RXN-17095, MetaCyc:RXN-17097, MetaCyc:RXN-17098,
+    MetaCyc:RXN-17101), and MetaCyc:DENITRIFICATION-PWY (nitrate-reduction-i-denitrification.yaml
+    references[1, 3, 4, 5, 63]: MetaCyc:RXN-11236, MetaCyc:RXN-15838, MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN,
+    MetaCyc:RXN-12130, MetaCyc:CPLX-1701) — 17 structured MetaCyc:* reaction and enzyme-complex
+    references[] entries store an unprefixed raw database frame identifier (title
+    == local_id) instead of a descriptive reaction or enzyme complex title.'
+  quote: "- id: MetaCyc:RXN-15296\n  title: RXN-15296\n  url: https://biocyc.org/META/NEW-IMAGE?type=OBJECT&object=RXN-15296"
+  snapshot_sha256: 91080feab4ba83987b59622257b6dccda70841e590cf1b4835236810189e691a
+assessments:
+- assessment_id: ASSESS-C8-IDENTITY-AND-CAUSAL-GRAPHS-ALL-277
+  area: identity
+  topic: Pathway identity, taxon grounding, authority-verified CURIEs, causal graph
+    connectivity, participant/reaction typing, RHEA directionality, and edge-level
+    evidence across all 277 maintained records
+  outcome: supported
+  summary: 'All 277 maintained pathway records in data/pathways/*.yaml (including
+    PathBank:SMP0001910 added in Cycle 8 Stage 1, 8 records enriched in Cycle 8 Stage
+    2, and 6 records enriched in Cycle 8 Stage 3) pass closed LinkML schema validation,
+    authority snapshot checks, 100% explicit reaction category typing (1,630/1,630:
+    1,592 molecular_activity, 36 pathway, 2 biological_process), 100% explicit RHEA:*
+    directionality (731/731 with 0 cross-record direction conflicts), 100% concrete
+    participant category typing (7,846/7,846 concrete participants + 5 contract-verified
+    generic gomodel:* physical participant instances), 100% participant graph connectivity
+    (0 orphan participants across 7,851 entries), 0 reflexive self-loops (0/14,730),
+    0 biolink:Protein|biolink:SmallMolecule category conflicts in pages/downloads/nodes.tsv
+    (0/5,457), 0 pure chemical_entity vs small_molecule biolink:ChemicalEntity|biolink:SmallMolecule
+    merges in pages/downloads/nodes.tsv (0/5,457), 0 bare CURIE reference titles where
+    title == id (0/7,099), and 100% edge-level evidence grounding (14,730 mechanistic_edges,
+    22,624 edge/qualifier evidence items, 22,832 total evidence blocks).'
+  target_ids:
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY0-42
+  - WikiPathways:WP5587
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-6543
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - gomodel:YeastPathways_PWY-6147
+  - GO:0097288
+  - MetaCyc:PWY0-1312
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - WikiPathways:WP5019
+  - PathBank:SMP0002081
+  - MetaCyc:P121-PWY
+  - PathBank:SMP0002083
+  - MetaCyc:PWY-6609
+  - gomodel:YeastPathways_PWY-7220-1
+  - MetaCyc:SALVADEHYPOX-PWY
+  - gomodel:YeastPathways_PWY-7219
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY0-1241
+  - GO:0019270
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - MetaCyc:PWY0-41
+  - gomodel:YeastPathways_PWY-5694
+  - MetaCyc:PWY-5705
+  - gomodel:YeastPathways_PWY-5697
+  - MetaCyc:GLCMANNANAUT-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - MetaCyc:PWY-5903
+  - PathBank:SMP0002123
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-1361
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:P321-PWY
+  - gomodel:YeastPathways_PWY-5760-1
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - GO:0043427
+  - gomodel:YeastPathways_PWY3O-4
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5417
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - gomodel:YeastPathways_PWY3O-15
+  - MetaCyc:ARO-PWY
+  - MIBiG:BGC0000829
+  - MetaCyc:P2-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - MetaCyc:COA-PWY
+  - PathBank:SMP0002070
+  - PathBank:SMP0001910
+  - GO:0036040
+  - MetaCyc:CYANCAT-PWY
+  - PathBank:SMP0000993
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:XYLCAT-PWY
+  - MetaCyc:PWY-6376
+  - KEGG:M00374
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-123
+  - GO:0019305
+  - MetaCyc:P101-PWY
+  - KEGG:M00008
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - MetaCyc:PWY-7255
+  - gomodel:YeastPathways_PWY3O-4300
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1280
+  - KEGG:M00373
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY-1801-1
+  - MetaCyc:PWY0-521
+  - GO:1901281
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:PWY-6223
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - WikiPathways:WP556
+  - MetaCyc:PWY-5177
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - gomodel:YeastPathways_PWYQT-4432
+  - WikiPathways:WP392
+  - gomodel:YeastPathways_PWY3O-48
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - WikiPathways:WP478
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - MetaCyc:PWY-5744
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:PWY-6579
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - GO:1902000
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - gomodel:YeastPathways_PWY3O-402
+  - WikiPathways:WP178
+  - PathBank:SMP0000991
+  - MetaCyc:PWY0-1338
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGSYN-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:PWY0-301
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - PathBank:SMP0002051
+  - MetaCyc:CYSTSYN-PWY
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:HISTSYN-PWY
+  - gomodel:YeastPathways_PWY-5344
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PROSYN-PWY
+  - gomodel:YeastPathways_PROUT-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRPSYN-PWY
+  - gomodel:YeastPathways_PWY-5651
+  - MetaCyc:TYRSYN
+  - gomodel:YeastPathways_PWY3O-4108
+  - MetaCyc:VALSYN-PWY
+  - gomodel:YeastPathways_PWY3O-4112
+  - MIBiG:BGC0002072
+  - gomodel:6882d2b800000609
+  - MetaCyc:PWY0-501
+  - gomodel:YeastPathways_PWY3O-1743
+  - MetaCyc:PWY0-1300
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - gomodel:YeastPathways_PWY3O-64
+  - MetaCyc:NONMEVIPP-PWY
+  - gomodel:YeastPathways_PWY-901
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5453
+  - PathBank:SMP0002077
+  - MetaCyc:PWY-6048
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - MetaCyc:PWY-6823
+  - Reactome:R-MTU-936721
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - gomodel:YeastPathways_PWY-2301
+  - MetaCyc:PWY-8383
+  - MetaCyc:GLUAMCAT-PWY
+  - gomodel:YeastPathways_PWY-5653
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - gomodel:YeastPathways_PWY3O-4106
+  - WikiPathways:WP171
+  - MetaCyc:PWY-6993
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:PWY0-1352
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-1801
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:PWY-8178
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - WikiPathways:WP5060
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY0-321
+  - gomodel:YeastPathways_PWY3O-4153
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY0-1277
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - WikiPathways:WP71
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PWY1-3
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:P184-PWY
+  - GO:0019618
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6019
+  - PathBank:SMP0002089
+  - PathBank:SMP0002067
+  - GO:0042864
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PWY-7181
+  - GO:0010139
+  - PathBank:SMP0002038
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_PWY3O-440
+  - MetaCyc:PWY-7545
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:PWY-6416
+  - PathBank:SMP0002406
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:PWY-6151
+  - gomodel:YeastPathways_PWY-5041
+  - MetaCyc:PWY-8132
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  - MetaCyc:PWY0-1517
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:PWY-6419
+  - gomodel:YeastPathways_PWY-5194-1
+  - PathBank:SMP0002097
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - MIBiG:BGC0000852
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY0-43
+  - gomodel:YeastPathways_PWY-5340
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - gomodel:YeastPathways_DETOX1-PWY
+  - MetaCyc:PWY-5838
+  - WikiPathways:WP296
+  - gomodel:YeastPathways_PWY-6614
+  - MetaCyc:PWY0-1433
+  - gomodel:YeastPathways_PWY3O-50
+  - PathBank:SMP0002042
+  - gomodel:YeastPathways_PWY3O-17
+  - MetaCyc:THISYN-PWY
+  - PathBank:SMP0002055
+  - MetaCyc:THIOREDOX-PWY
+  - PathBank:SMP0000992
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_PWY-5123
+  - MetaCyc:TRESYN-PWY
+  - WikiPathways:WP266
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-4120
+  - WikiPathways:WP287
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY0-1471
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWY-6074-1
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-PYTEST
+  - EV-C8-CORPUS-INSPECTION
+  - EV-C8-REVIEW-CHECK
+  metrics:
+  - name: maintained_pathway_records_reviewed
+    value: 277.0
+    unit: records
+    definition: Count of maintained pathway YAML records in data/pathways/*.yaml inspected
+      in full.
+    denominator: 277
+    minimum: 0.0
+    maximum: 277.0
+  - name: explicit_reaction_category_coverage
+    value: 100.0
+    unit: percent
+    definition: Percentage of reactions[] entries (1,630 / 1,630) carrying an explicit
+      category value.
+    denominator: 1630
+    minimum: 0.0
+    maximum: 100.0
+  - name: rhea_reaction_direction_coverage
+    value: 100.0
+    unit: percent
+    definition: Percentage of RHEA:* reaction nodes (731 / 731) declaring an explicit
+      direction enum value.
+    denominator: 731
+    minimum: 0.0
+    maximum: 100.0
+  - name: mechanistic_edge_evidence_coverage
+    value: 100.0
+    unit: percent
+    definition: Percentage of mechanistic_edges (14,730 / 14,730) carrying at least
+      one valid structured evidence block.
+    denominator: 14730
+    minimum: 0.0
+    maximum: 100.0
+  dimensions:
+  - name: corpus_scope
+    value: full_maintained_inventory
+    definition: All 277 maintained YAML records in data/pathways/*.yaml at frozen
+      Git base 2cf03ac05f40abb493c82adee36be1de3ea17ad8.
+    evidence_ids:
+    - EV-C8-CORPUS-INSPECTION
+  - name: namespace_distribution
+    value: MetaCyc:140, gomodel:86, PathBank:17, WikiPathways:12, GO:10, Reactome:6,
+      KEGG:3, MIBiG:3
+    definition: Distribution of primary pathway identifier prefixes across the 277
+      maintained records.
+    evidence_ids:
+    - EV-C8-CORPUS-INSPECTION
+- assessment_id: ASSESS-C8-SMALL-MOLECULE-EFFECTORS-AND-STRUCTURED-REF-TITLES-8
+  area: representation
+  topic: '4 concrete CHEBI:* small-molecule effector participants typed as generic
+    category: chemical_entity across 4 MetaCyc records and 17 structured MetaCyc:*
+    reaction/complex references[] entries with raw local-ID titles (title == local_id)
+    across 4 MetaCyc records'
+  outcome: concern
+  summary: 'Across 4 maintained MetaCyc pathway records (MetaCyc:SALVADEHYPOX-PWY,
+    MetaCyc:P184-PWY, MetaCyc:PWY-6336, and MetaCyc:PWY-7545), 4 concrete CHEBI:*
+    small-molecule effector participants (CHEBI:59640 N-acetylglucosamine, CHEBI:22651
+    ascorbate in two pathways, and CHEBI:203056 Microcin J25) with defined molecular
+    formulas participating in activates or inhibits edges are typed as generic category:
+    chemical_entity instead of category: small_molecule (F-C8S4-001). Across 4 maintained
+    MetaCyc pathway records (MetaCyc:PWY-6579, MetaCyc:PWY-7446, MetaCyc:PWY-7722,
+    and MetaCyc:DENITRIFICATION-PWY), 17 structured MetaCyc:* reaction and enzyme-complex
+    references[] entries store an unprefixed raw database frame identifier where title
+    == local_id instead of a descriptive reaction or enzyme complex title (F-C8S4-002).'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  evidence_ids:
+  - EV-C8-CONCRETE-CHEBI-SMALL-MOLECULE-CHEMICAL-ENTITY-4
+  - EV-C8-RAW-LOCAL-ID-STRUCTURED-REFERENCE-TITLES-4
+  metrics:
+  - name: concrete_chebi_small_molecule_effectors_typed_as_chemical_entity
+    value: 4.0
+    unit: participants
+    definition: 'Count of concrete CHEBI:* small-molecule effector participant entries
+      with defined molecular formulas typed as generic category: chemical_entity instead
+      of category: small_molecule across all 277 maintained records (7,851 total participants).'
+    denominator: 7851
+    minimum: 0.0
+    maximum: 7851.0
+  - name: raw_local_id_structured_reference_titles
+    value: 17.0
+    unit: references
+    definition: Count of structured MetaCyc:* reaction and enzyme-complex references[]
+      entries across all 277 maintained records (7,099 total references) where title
+      equals the unprefixed raw database frame identifier (title == local_id).
+    denominator: 7099
+    minimum: 0.0
+    maximum: 7099.0
+  dimensions:
+  - name: rendered_page_and_kgx_impact
+    value: 4 concrete CHEBI:* small-molecule effectors across 4 MetaCyc pathways export
+      as generic biolink:ChemicalEntity instead of biolink:SmallMolecule in pages/downloads/nodes.tsv;
+      17 structured MetaCyc:* reaction/complex references across 4 MetaCyc pathways
+      display raw frame IDs (e.g. RXN-15296, CPLX-1701) in rendered HTML reference
+      tables
+    definition: Downstream impact on KGX node ontological categories and rendered
+      HTML reference tables.
+    evidence_ids:
+    - EV-C8-CONCRETE-CHEBI-SMALL-MOLECULE-CHEMICAL-ENTITY-4
+    - EV-C8-RAW-LOCAL-ID-STRUCTURED-REFERENCE-TITLES-4
+findings:
+- finding_id: F-C8S4-001
+  issue_key: concrete-chebi-small-molecule-participants-typed-as-chemical-entity-4-metacyc-records
+  category: representation
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: 'Four maintained MetaCyc pathway records type 4 concrete CHEBI:* small-molecule
+    effector participants as generic category: chemical_entity instead of category:
+    small_molecule'
+  description: 'Across all 68 category: chemical_entity participant entries in the
+    277-record corpus, 64 represent genuine chemical classes, generic electron/methyl
+    donors or acceptors, carrier-protein conjugates, or amino-acid residues, whereas
+    the remaining 4 CHEBI:* participant entries across 4 maintained MetaCyc pathway
+    records—data/pathways/adenosine-nucleotides-degradation-ii.yaml (MetaCyc:SALVADEHYPOX-PWY:
+    participants[62] CHEBI:59640 N-acetylglucosamine, formula C8H15NO6, activates
+    Entrez:945283 in salvadehypox-edge-087), data/pathways/protocatechuate-meta-cleavage.yaml
+    (MetaCyc:P184-PWY: participants[61] CHEBI:22651 ascorbate, formula C6H7O6-, activates
+    MetaCyc:CPLX-2701 in protocatechuate-meta-edge-075), data/pathways/protocatechuate-para-cleavage.yaml
+    (MetaCyc:PWY-6336: participants[24] CHEBI:22651 ascorbate, formula C6H7O6-, activates
+    MetaCyc:CPLX-7915 in protocatechuate-para-edge-035), and data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    (MetaCyc:PWY-7545: participants[27] CHEBI:203056 Microcin J25, formula C100H139N23O27,
+    inhibits EcoCyc:CYT-D-UBIOX-CPLX in pyruvate-bd-edge-030)—are concrete small-molecule
+    effectors typed as generic category: chemical_entity instead of category: small_molecule,
+    causing CHEBI:59640, CHEBI:22651, and CHEBI:203056 to export as generic biolink:ChemicalEntity
+    instead of biolink:SmallMolecule in pages/downloads/nodes.tsv.'
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  field_paths:
+  - data/pathways/adenosine-nucleotides-degradation-ii.yaml#participants[62].category
+    (CHEBI:59640)
+  - data/pathways/protocatechuate-meta-cleavage.yaml#participants[61].category (CHEBI:22651)
+  - data/pathways/protocatechuate-para-cleavage.yaml#participants[24].category (CHEBI:22651)
+  - data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml#participants[27].category
+    (CHEBI:203056)
+  evidence_ids:
+  - EV-C8-CONCRETE-CHEBI-SMALL-MOLECULE-CHEMICAL-ENTITY-4
+  rule_id: CURATION:concrete-small-molecule-participant-category
+  native_severity: minor
+  normalization_reason: 'Native minor participant-category representation defect maps
+    directly to minor severity: changing category from chemical_entity to small_molecule
+    on the 4 concrete CHEBI:* small-molecule effector participants across the 4 affected
+    MetaCyc records ensures that all 64 remaining chemical_entity entries in the corpus
+    are genuine chemical classes, carrier conjugates, or residues and upgrades CHEBI:59640,
+    CHEBI:22651, and CHEBI:203056 to biolink:SmallMolecule in pages/downloads/nodes.tsv.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    role: maintained pathway YAML
+  tags:
+  - cycle8-stage4-record-review
+  - participant-category-mismatch
+  - kgx-category-hygiene
+- finding_id: F-C8S4-002
+  issue_key: raw-local-id-structured-reference-titles-4-metacyc-records
+  category: representation
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Four maintained MetaCyc pathway records retain 17 structured MetaCyc:* reaction
+    and enzyme-complex references[] entries with raw unprefixed database frame ID
+    titles (title == local_id) instead of descriptive titles
+  description: 'Across 4 maintained MetaCyc pathway records—data/pathways/guanine-and-guanosine-salvage.yaml
+    (MetaCyc:PWY-6579: references[3..5] MetaCyc:RXN0-5199, MetaCyc:GUANPRIBOSYLTRAN-RXN,
+    MetaCyc:GUANOSINEKIN-RXN), data/pathways/sulfoquinovose-degradation-i.yaml (MetaCyc:PWY-7446:
+    references[1..4] MetaCyc:RXN-15296, MetaCyc:RXN-15297, MetaCyc:RXN-15298, MetaCyc:RXN-15299),
+    data/pathways/sulfoquinovose-degradation-ii.yaml (MetaCyc:PWY-7722: references[1..5]
+    MetaCyc:RXN-17096, MetaCyc:RXN-17095, MetaCyc:RXN-17097, MetaCyc:RXN-17098, MetaCyc:RXN-17101),
+    and data/pathways/nitrate-reduction-i-denitrification.yaml (MetaCyc:DENITRIFICATION-PWY:
+    references[1, 3, 4, 5, 63] MetaCyc:RXN-11236, MetaCyc:RXN-15838, MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN,
+    MetaCyc:RXN-12130, and MetaCyc:CPLX-1701)—17 structured MetaCyc:* reaction and
+    enzyme-complex references[] entries store their unprefixed raw database frame
+    identifier (title == local_id) instead of a descriptive reaction or enzyme complex
+    title.'
+  target_ids:
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  field_paths:
+  - data/pathways/guanine-and-guanosine-salvage.yaml#references[3].title (MetaCyc:RXN0-5199)
+  - data/pathways/guanine-and-guanosine-salvage.yaml#references[4].title (MetaCyc:GUANPRIBOSYLTRAN-RXN)
+  - data/pathways/guanine-and-guanosine-salvage.yaml#references[5].title (MetaCyc:GUANOSINEKIN-RXN)
+  - data/pathways/sulfoquinovose-degradation-i.yaml#references[1].title (MetaCyc:RXN-15296)
+  - data/pathways/sulfoquinovose-degradation-i.yaml#references[2].title (MetaCyc:RXN-15297)
+  - data/pathways/sulfoquinovose-degradation-i.yaml#references[3].title (MetaCyc:RXN-15298)
+  - data/pathways/sulfoquinovose-degradation-i.yaml#references[4].title (MetaCyc:RXN-15299)
+  - data/pathways/sulfoquinovose-degradation-ii.yaml#references[1].title (MetaCyc:RXN-17096)
+  - data/pathways/sulfoquinovose-degradation-ii.yaml#references[2].title (MetaCyc:RXN-17095)
+  - data/pathways/sulfoquinovose-degradation-ii.yaml#references[3].title (MetaCyc:RXN-17097)
+  - data/pathways/sulfoquinovose-degradation-ii.yaml#references[4].title (MetaCyc:RXN-17098)
+  - data/pathways/sulfoquinovose-degradation-ii.yaml#references[5].title (MetaCyc:RXN-17101)
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[1].title (MetaCyc:RXN-11236)
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[3].title (MetaCyc:RXN-15838)
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[4].title (MetaCyc:NITRIC-OXIDE-REDUCTASE-RXN)
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[5].title (MetaCyc:RXN-12130)
+  - data/pathways/nitrate-reduction-i-denitrification.yaml#references[63].title (MetaCyc:CPLX-1701)
+  evidence_ids:
+  - EV-C8-RAW-LOCAL-ID-STRUCTURED-REFERENCE-TITLES-4
+  rule_id: CURATION:no-raw-local-id-structured-reference-titles
+  native_severity: minor
+  normalization_reason: 'Native minor reference-title representation defect maps directly
+    to minor severity: replacing the 17 raw unprefixed frame ID titles (title == local_id)
+    across the 4 affected MetaCyc records with descriptive MetaCyc reaction and enzyme-complex
+    reference titles aligns them with their sibling structured references across the
+    277-record corpus.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/guanine-and-guanosine-salvage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    role: maintained pathway YAML
+  tags:
+  - cycle8-stage4-record-review
+  - raw-local-id-reference-title
+  - structured-reference-hygiene
+actions:
+- action_id: A-C8S4-001
+  description: Across the 4 affected MetaCyc pathway records (data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    participants[62] CHEBI:59640, data/pathways/protocatechuate-meta-cleavage.yaml
+    participants[61] CHEBI:22651, data/pathways/protocatechuate-para-cleavage.yaml
+    participants[24] CHEBI:22651, and data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    participants[27] CHEBI:203056), change category from chemical_entity to small_molecule
+    on all 4 concrete CHEBI:* small-molecule effector participants, record curation
+    history entries under history/records/<slug>/, and regenerate pages/ and output/kgx/.
+  finding_ids:
+  - F-C8S4-001
+  target_ids:
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-7545
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    role: maintained pathway YAML
+  acceptance_checks:
+  - 'Zero CHEBI:* concrete small-molecule participants with defined molecular formulas
+    are typed as category: chemical_entity across data/pathways/*.yaml.'
+  - CHEBI:59640, CHEBI:22651, and CHEBI:203056 export with category biolink:SmallMolecule
+    in pages/downloads/nodes.tsv.
+  - .venv/bin/pathwaymech-run-qc and .venv/bin/pytest -q exit 0.
+- action_id: A-C8S4-002
+  description: Across the 4 affected MetaCyc pathway records (data/pathways/guanine-and-guanosine-salvage.yaml
+    references[3..5], data/pathways/sulfoquinovose-degradation-i.yaml references[1..4],
+    data/pathways/sulfoquinovose-degradation-ii.yaml references[1..5], and data/pathways/nitrate-reduction-i-denitrification.yaml
+    references[1, 3, 4, 5, 63]), replace all 17 raw unprefixed database frame ID titles
+    (title == local_id) on structured MetaCyc:* reaction and enzyme-complex references[]
+    entries with descriptive MetaCyc reaction and enzyme-complex titles, record curation
+    history entries under history/records/<slug>/, and regenerate pages/.
+  finding_ids:
+  - F-C8S4-002
+  target_ids:
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7722
+  - MetaCyc:DENITRIFICATION-PWY
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/guanine-and-guanosine-salvage.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-i.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    role: maintained pathway YAML
+  acceptance_checks:
+  - Zero structured MetaCyc:* reaction or enzyme-complex references[] entries in data/pathways/*.yaml
+    have raw unprefixed frame ID titles (title == local_id).
+  - .venv/bin/pathwaymech-run-qc and .venv/bin/pytest -q exit 0.
+boundary_decisions:
+- action: retain
+  target_ids:
+  - GO:0010139
+  - GO:0019270
+  - GO:0019305
+  - GO:0019618
+  - GO:0036040
+  - GO:0042864
+  - GO:0043427
+  - GO:0097288
+  - GO:1901281
+  - GO:1902000
+  rationale: Retain all 10 maintained GO:* biological process pathway records as distinct,
+    non-duplicate source-scoped pathway definitions verified against GO authority
+    snapshots and docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - KEGG:M00008
+  - KEGG:M00373
+  - KEGG:M00374
+  rationale: Retain all 3 maintained KEGG:* pathway records as distinct, non-duplicate
+    source-scoped pathway definitions verified against KEGG authority snapshots and
+    docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - MIBiG:BGC0000829
+  - MIBiG:BGC0000852
+  - MIBiG:BGC0002072
+  rationale: Retain all 3 maintained MIBiG:* biosynthetic gene cluster pathway records
+    as distinct, non-duplicate source-scoped pathway definitions verified against
+    MIBiG authority snapshots and docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - MetaCyc:2PHENDEG-PWY
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:ARABCAT-PWY
+  - MetaCyc:ARGDEG-III-PWY
+  - MetaCyc:ARGDEGRAD-PWY
+  - MetaCyc:ARGSYN-PWY
+  - MetaCyc:ARO-PWY
+  - MetaCyc:AST-PWY
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:COA-PWY
+  - MetaCyc:CYANCAT-PWY
+  - MetaCyc:CYSTSYN-PWY
+  - MetaCyc:DAPLYSINESYN-PWY
+  - MetaCyc:DARABCAT-PWY
+  - MetaCyc:DENITRIFICATION-PWY
+  - MetaCyc:FUCCAT-PWY
+  - MetaCyc:GALACTARDEG-PWY
+  - MetaCyc:GALACTCAT-PWY
+  - MetaCyc:GALACTUROCAT-PWY
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:GLCMANNANAUT-PWY
+  - MetaCyc:GLUAMCAT-PWY
+  - MetaCyc:GLUCARDEG-PWY
+  - MetaCyc:GLUTATHIONESYN-PWY
+  - MetaCyc:GLUTORN-PWY
+  - MetaCyc:GLYCEROLMETAB-PWY
+  - MetaCyc:GLYOXYLATE-BYPASS
+  - MetaCyc:HISTSYN-PWY
+  - MetaCyc:HOMOSER-METSYN-PWY
+  - MetaCyc:HOMOSER-THRESYN-PWY
+  - MetaCyc:HOMOSERSYN-PWY
+  - MetaCyc:ILEUSYN-PWY
+  - MetaCyc:LEUSYN-PWY
+  - MetaCyc:LYXMET-PWY
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  - MetaCyc:NONMEVIPP-PWY
+  - MetaCyc:NONOXIPENT-PWY
+  - MetaCyc:OXIDATIVEPENT-PWY
+  - MetaCyc:P101-PWY
+  - MetaCyc:P121-PWY
+  - MetaCyc:P184-PWY
+  - MetaCyc:P2-PWY
+  - MetaCyc:P321-PWY
+  - MetaCyc:PANTO-PWY
+  - MetaCyc:PHESYN
+  - MetaCyc:PLPSAL-PWY
+  - MetaCyc:PPGPPMET-PWY
+  - MetaCyc:PROSYN-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY-2361
+  - MetaCyc:PWY-2503
+  - MetaCyc:PWY-5177
+  - MetaCyc:PWY-5386
+  - MetaCyc:PWY-5415
+  - MetaCyc:PWY-5417
+  - MetaCyc:PWY-5420
+  - MetaCyc:PWY-5453
+  - MetaCyc:PWY-5509
+  - MetaCyc:PWY-5686
+  - MetaCyc:PWY-5705
+  - MetaCyc:PWY-5744
+  - MetaCyc:PWY-5789
+  - MetaCyc:PWY-5838
+  - MetaCyc:PWY-5901
+  - MetaCyc:PWY-5903
+  - MetaCyc:PWY-6019
+  - MetaCyc:PWY-6048
+  - MetaCyc:PWY-6121
+  - MetaCyc:PWY-6122
+  - MetaCyc:PWY-6123
+  - MetaCyc:PWY-6124
+  - MetaCyc:PWY-6151
+  - MetaCyc:PWY-6223
+  - MetaCyc:PWY-6289
+  - MetaCyc:PWY-6336
+  - MetaCyc:PWY-6376
+  - MetaCyc:PWY-6416
+  - MetaCyc:PWY-6419
+  - MetaCyc:PWY-6534
+  - MetaCyc:PWY-6543
+  - MetaCyc:PWY-6579
+  - MetaCyc:PWY-6609
+  - MetaCyc:PWY-6823
+  - MetaCyc:PWY-6993
+  - MetaCyc:PWY-7181
+  - MetaCyc:PWY-7255
+  - MetaCyc:PWY-7446
+  - MetaCyc:PWY-7545
+  - MetaCyc:PWY-7722
+  - MetaCyc:PWY-7971
+  - MetaCyc:PWY-7990
+  - MetaCyc:PWY-8008
+  - MetaCyc:PWY-8130
+  - MetaCyc:PWY-8131
+  - MetaCyc:PWY-8132
+  - MetaCyc:PWY-8178
+  - MetaCyc:PWY-8383
+  - MetaCyc:PWY0-1241
+  - MetaCyc:PWY0-1277
+  - MetaCyc:PWY0-1280
+  - MetaCyc:PWY0-1300
+  - MetaCyc:PWY0-1312
+  - MetaCyc:PWY0-1338
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY0-1433
+  - MetaCyc:PWY0-1471
+  - MetaCyc:PWY0-1477
+  - MetaCyc:PWY0-1517
+  - MetaCyc:PWY0-301
+  - MetaCyc:PWY0-321
+  - MetaCyc:PWY0-41
+  - MetaCyc:PWY0-42
+  - MetaCyc:PWY0-43
+  - MetaCyc:PWY0-501
+  - MetaCyc:PWY0-521
+  - MetaCyc:PWY1-3
+  - MetaCyc:PYRIDNUCSAL-PWY
+  - MetaCyc:PYRIDNUCSYN-PWY
+  - MetaCyc:PYRIDOXSYN-PWY
+  - MetaCyc:QUINATEDEG-PWY
+  - MetaCyc:RHAMCAT-PWY
+  - MetaCyc:RIBOKIN-PWY
+  - MetaCyc:RIBOSYN2-PWY
+  - MetaCyc:SALVADEHYPOX-PWY
+  - MetaCyc:SERSYN-PWY
+  - MetaCyc:SHIKIMATEDEG-PWY
+  - MetaCyc:THIOREDOX-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:THRDLCTCAT-PWY
+  - MetaCyc:TRESYN-PWY
+  - MetaCyc:TRPSYN-PWY
+  - MetaCyc:TYRSYN
+  - MetaCyc:VALSYN-PWY
+  - MetaCyc:XYLCAT-PWY
+  rationale: Retain all 140 maintained MetaCyc:* pathway records as distinct, non-duplicate
+    source-scoped pathway definitions verified against MetaCyc authority snapshots
+    and docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - PathBank:SMP0000991
+  - PathBank:SMP0000992
+  - PathBank:SMP0000993
+  - PathBank:SMP0001910
+  - PathBank:SMP0002038
+  - PathBank:SMP0002042
+  - PathBank:SMP0002051
+  - PathBank:SMP0002055
+  - PathBank:SMP0002067
+  - PathBank:SMP0002070
+  - PathBank:SMP0002077
+  - PathBank:SMP0002081
+  - PathBank:SMP0002083
+  - PathBank:SMP0002089
+  - PathBank:SMP0002097
+  - PathBank:SMP0002123
+  - PathBank:SMP0002406
+  rationale: Retain all 17 maintained PathBank:* pathway records (including PathBank:SMP0001910
+    added in Cycle 8 Stage 1) as distinct, non-duplicate source-scoped pathway definitions
+    verified against PathBank authority snapshots and docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - Reactome:R-MTU-868688
+  - Reactome:R-MTU-879299
+  - Reactome:R-MTU-879325
+  - Reactome:R-MTU-936635
+  - Reactome:R-MTU-936654
+  - Reactome:R-MTU-936721
+  rationale: Retain all 6 maintained Reactome:* pathway records as distinct, non-duplicate
+    source-scoped pathway definitions verified against Reactome authority snapshots
+    and docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - WikiPathways:WP171
+  - WikiPathways:WP178
+  - WikiPathways:WP266
+  - WikiPathways:WP287
+  - WikiPathways:WP296
+  - WikiPathways:WP392
+  - WikiPathways:WP478
+  - WikiPathways:WP5019
+  - WikiPathways:WP5060
+  - WikiPathways:WP556
+  - WikiPathways:WP5587
+  - WikiPathways:WP71
+  rationale: Retain all 12 maintained WikiPathways:* pathway records as distinct,
+    non-duplicate source-scoped pathway definitions verified against WikiPathways
+    authority snapshots and docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - gomodel:6882d2b800000609
+  - gomodel:YeastPathways_AERO-GLYCEROL-CAT-PWY
+  - gomodel:YeastPathways_ARGSPECAT-PWY
+  - gomodel:YeastPathways_ARGSYNBSUB-PWY
+  - gomodel:YeastPathways_ASPARAGINE-BIOSYNTHESIS-1
+  - gomodel:YeastPathways_ASPARAGINE-DEG2-PWY
+  - gomodel:YeastPathways_ASPBIO-PWY
+  - gomodel:YeastPathways_BSUBPOLYAMSYN-PWY
+  - gomodel:YeastPathways_CITRUL-BIO2-PWY
+  - gomodel:YeastPathways_DETOX1-PWY
+  - gomodel:YeastPathways_FASYN-ELONG2-PWY
+  - gomodel:YeastPathways_GLUCONEO-PWY-1
+  - gomodel:YeastPathways_GLYCLEAV-PWY
+  - gomodel:YeastPathways_GLYCOLYSIS
+  - gomodel:YeastPathways_HEME-BIOSYNTHESIS-II
+  - gomodel:YeastPathways_HEXPPSYN-PWY-2
+  - gomodel:YeastPathways_HOMOCYS-CYS-CONVERT
+  - gomodel:YeastPathways_HOMOCYSDEGR-PWY-1
+  - gomodel:YeastPathways_IPPSYN-PWY
+  - gomodel:YeastPathways_LYSINE-AMINOAD-PWY-2
+  - gomodel:YeastPathways_PERIPLASMA-NAD-DEGRADATION
+  - gomodel:YeastPathways_PHOSLIPSYN2-PWY-1
+  - gomodel:YeastPathways_PROUT-PWY
+  - gomodel:YeastPathways_PWY-1801-1
+  - gomodel:YeastPathways_PWY-2301
+  - gomodel:YeastPathways_PWY-5041
+  - gomodel:YeastPathways_PWY-5080-1
+  - gomodel:YeastPathways_PWY-5123
+  - gomodel:YeastPathways_PWY-5194-1
+  - gomodel:YeastPathways_PWY-5340
+  - gomodel:YeastPathways_PWY-5344
+  - gomodel:YeastPathways_PWY-5651
+  - gomodel:YeastPathways_PWY-5653
+  - gomodel:YeastPathways_PWY-5669
+  - gomodel:YeastPathways_PWY-5670-1
+  - gomodel:YeastPathways_PWY-5694
+  - gomodel:YeastPathways_PWY-5697
+  - gomodel:YeastPathways_PWY-5703
+  - gomodel:YeastPathways_PWY-5760-1
+  - gomodel:YeastPathways_PWY-6074-1
+  - gomodel:YeastPathways_PWY-6075-1
+  - gomodel:YeastPathways_PWY-6147
+  - gomodel:YeastPathways_PWY-6614
+  - gomodel:YeastPathways_PWY-7176
+  - gomodel:YeastPathways_PWY-7219
+  - gomodel:YeastPathways_PWY-7220-1
+  - gomodel:YeastPathways_PWY-7221
+  - gomodel:YeastPathways_PWY-901
+  - gomodel:YeastPathways_PWY3O-123
+  - gomodel:YeastPathways_PWY3O-15
+  - gomodel:YeastPathways_PWY3O-1565
+  - gomodel:YeastPathways_PWY3O-17
+  - gomodel:YeastPathways_PWY3O-1743
+  - gomodel:YeastPathways_PWY3O-1801
+  - gomodel:YeastPathways_PWY3O-214
+  - gomodel:YeastPathways_PWY3O-242
+  - gomodel:YeastPathways_PWY3O-259
+  - gomodel:YeastPathways_PWY3O-4
+  - gomodel:YeastPathways_PWY3O-402
+  - gomodel:YeastPathways_PWY3O-4105
+  - gomodel:YeastPathways_PWY3O-4106
+  - gomodel:YeastPathways_PWY3O-4108
+  - gomodel:YeastPathways_PWY3O-4112
+  - gomodel:YeastPathways_PWY3O-4120
+  - gomodel:YeastPathways_PWY3O-4153
+  - gomodel:YeastPathways_PWY3O-4300
+  - gomodel:YeastPathways_PWY3O-440
+  - gomodel:YeastPathways_PWY3O-450
+  - gomodel:YeastPathways_PWY3O-48
+  - gomodel:YeastPathways_PWY3O-50
+  - gomodel:YeastPathways_PWY3O-5268
+  - gomodel:YeastPathways_PWY3O-64
+  - gomodel:YeastPathways_PWY3O-6407
+  - gomodel:YeastPathways_PWY3O-6499
+  - gomodel:YeastPathways_PWY3O-697
+  - gomodel:YeastPathways_PWY3O-8
+  - gomodel:YeastPathways_PWYQT-4432
+  - gomodel:YeastPathways_PYRUVDEHYD-PWY
+  - gomodel:YeastPathways_SO4ASSIM-PWY
+  - gomodel:YeastPathways_SPHINGOLIPID-SYN-PWY-1
+  - gomodel:YeastPathways_THREOCAT2-PWY
+  - gomodel:YeastPathways_UDPNAGSYN-YEAST-PWY
+  - gomodel:YeastPathways_YEAST-4AMINOBUTMETAB-PWY
+  - gomodel:YeastPathways_YEAST-FAO-PWY
+  - gomodel:YeastPathways_YEAST-GALACT-METAB-PWY
+  - gomodel:YeastPathways_YEAST-RNT-SALV
+  rationale: Retain all 86 maintained gomodel:* pathway records as distinct, non-duplicate
+    source-scoped pathway definitions verified against gomodel authority snapshots
+    and docs/HARMONIZATION.md.
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+- action: retain
+  target_ids:
+  - GO:0036040
+  - PathBank:SMP0001910
+  rationale: 'Retain PathBank:SMP0001910 (curcumin-degradation-escherichia-coli.yaml,
+    added in Cycle 8 Stage 1) alongside GO:0036040 (curcumin-degradation.yaml, curcumin
+    catabolic process) as distinct authority-scoped pathway definitions: PathBank:SMP0001910
+    captures the native PathBank PW001896.owl BioPAX boundary in Escherichia coli
+    (including explicit BioPAX homodimeric CurA PathBank:SMP0001910/ProteinComplex/3920
+    assembly, directional Rhea reactions RHEA:34821 and RHEA:34813, and SSSOM source_mappings)
+    per docs/HARMONIZATION.md.'
+  evidence_ids:
+  - EV-C8-QC-VALIDATE
+  - EV-C8-CORPUS-INSPECTION
+limitations:
+- 'Four maintained MetaCyc:* records (MetaCyc:SALVADEHYPOX-PWY, MetaCyc:P184-PWY,
+  MetaCyc:PWY-6336, and MetaCyc:PWY-7545) type 4 concrete CHEBI:* small-molecule effector
+  participants as generic category: chemical_entity instead of category: small_molecule
+  (F-C8S4-001), and four maintained MetaCyc:* records (MetaCyc:PWY-6579, MetaCyc:PWY-7446,
+  MetaCyc:PWY-7722, and MetaCyc:DENITRIFICATION-PWY) retain 17 structured MetaCyc:*
+  reaction and enzyme-complex references[] entries with raw unprefixed frame ID titles
+  (title == local_id) (F-C8S4-002); both are recorded as open minor findings for Cycle
+  8 Stage 5 grouped remediation.'
+- Verification of literature-backed evidence blocks relied on the repository's local
+  authority snapshots and curated evidence quotes/abstracts at frozen commit 2cf03ac05f40abb493c82adee36be1de3ea17ad8
+  without re-fetching external publisher full texts over the network.
+notes:
+- Per Cycle 8 Stage 4 (record_review) workflow policy, no edits were made to data/pathways/*.yaml
+  during this stage; open findings F-C8S4-001 and F-C8S4-002 are carried forward to
+  Cycle 8 Stage 5 (record_remediation).
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261030T221500Z-cycle7-stage5-resolve-review-findings
+  relationship: follows_resolved_review
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261030T205500Z-cycle7-stage4-frozen-corpus-cohort-review
+  relationship: supersedes_cohort_review
+tags:
+- mech-goal-sequence-20261019
+- cycle-8
+- stage-4
+- frozen-inventory
+- full-corpus-review
+```
