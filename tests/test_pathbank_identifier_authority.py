@@ -24,6 +24,7 @@ from pathwaymech.pathbank_provenance import (
     build_pathbank_archive_manifest_entry,
     inspect_pathbank_archive_member,
     rank_pathbank_archive_member_candidates,
+    select_next_pathbank_archive_candidate,
 )
 from scripts.build_source_identifier_snapshot import (
     build_snapshot,
@@ -1398,4 +1399,135 @@ def test_rank_pathbank_archive_member_candidates_rejects_invalid_candidates(
     snapshot_path.write_text(json.dumps({"sources": {}, "terms": {}}), encoding="utf-8")
     with pytest.raises(ValueError, match=match):
         rank_pathbank_archive_member_candidates(path, candidates, snapshot_path)
+
+
+def test_select_next_pathbank_archive_candidate_skips_registered_and_excluded_pathways(tmp_path):
+    archive_path = tmp_path / "candidates.zip"
+    root_registered = _member_root_for_accession("SMP9999991", uniprot_ids=("P0A9T0",))
+    root_one_missing = _member_root_for_accession("SMP9999992", uniprot_ids=("P0A9T0", "P00877"))
+    root_two_missing = _member_root_for_accession(
+        "SMP9999993", uniprot_ids=("P00877", "P0A6D7")
+    )
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr(
+            "PW9999993.owl", ET.tostring(root_two_missing, encoding="utf-8", xml_declaration=True)
+        )
+        archive.writestr(
+            "PW9999991.owl", ET.tostring(root_registered, encoding="utf-8", xml_declaration=True)
+        )
+        archive.writestr(
+            "PW9999992.owl", ET.tostring(root_one_missing, encoding="utf-8", xml_declaration=True)
+        )
+
+    registered_manifest = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999991.owl", "SMP9999991"
+    )
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "sources": {registered_manifest["key"]: registered_manifest},
+                "terms": {
+                    "PathBank:SMP9999991": {
+                        "label": "Native pathway title",
+                        "synonyms": [],
+                        "source": registered_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/Reactions/7": {
+                        "label": "1.2.3.4",
+                        "synonyms": ["Native substrate → native product"],
+                        "source": registered_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/ProteinComplex/8": {
+                        "label": "ProteinComplex/8",
+                        "synonyms": [],
+                        "source": registered_manifest["key"],
+                    },
+                    "CHEBI:15377": {"label": "water", "synonyms": [], "source": "chebi-obo"},
+                    "UniProtKB:P0A9T0": {
+                        "label": "D-3-phosphoglycerate dehydrogenase",
+                        "synonyms": [],
+                        "source": "uniprot-entries",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    candidates = [
+        ("PW9999993.owl", "SMP9999993"),
+        ("PW9999991.owl", "SMP9999991"),
+        ("PW9999992.owl", "SMP9999992"),
+    ]
+    selected_unregistered = select_next_pathbank_archive_candidate(
+        archive_path, candidates, snapshot_path
+    )
+    assert selected_unregistered is not None
+    assert selected_unregistered["pathway_id"] == "PathBank:SMP9999992"
+    assert selected_unregistered["missing_external_xref_count"] == 1
+
+    selected_including_registered = select_next_pathbank_archive_candidate(
+        archive_path,
+        candidates,
+        snapshot_path,
+        require_unregistered_manifest=False,
+    )
+    assert selected_including_registered is not None
+    assert selected_including_registered["pathway_id"] == "PathBank:SMP9999991"
+
+    selected_after_exclusion = select_next_pathbank_archive_candidate(
+        archive_path,
+        candidates,
+        snapshot_path,
+        excluded_pathway_ids={"PathBank:SMP9999992"},
+    )
+    assert selected_after_exclusion is not None
+    assert selected_after_exclusion["pathway_id"] == "PathBank:SMP9999993"
+
+    assert (
+        select_next_pathbank_archive_candidate(
+            archive_path,
+            candidates,
+            snapshot_path,
+            excluded_pathway_ids=["PathBank:SMP9999992", "PathBank:SMP9999993"],
+        )
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    "kwargs,match",
+    [
+        (
+            {"require_unregistered_manifest": "yes"},
+            "boolean require_unregistered_manifest flag",
+        ),
+        (
+            {"excluded_pathway_ids": "PathBank:SMP9999991"},
+            "collection of PathBank:SMP\\[0-9\\]\\+ CURIEs",
+        ),
+        (
+            {"excluded_pathway_ids": ["SMP9999991"]},
+            "entries to match PathBank:SMP\\[0-9\\]\\+",
+        ),
+        (
+            {"excluded_pathway_ids": [123]},
+            "entries to match PathBank:SMP\\[0-9\\]\\+",
+        ),
+    ],
+)
+def test_select_next_pathbank_archive_candidate_rejects_invalid_filters(
+    tmp_path, kwargs, match
+):
+    path, _ = archive_fixture(tmp_path)
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(json.dumps({"sources": {}, "terms": {}}), encoding="utf-8")
+    with pytest.raises(ValueError, match=match):
+        select_next_pathbank_archive_candidate(
+            path,
+            [("PW9999999.owl", "SMP9999999")],
+            snapshot_path,
+            **kwargs,
+        )
 

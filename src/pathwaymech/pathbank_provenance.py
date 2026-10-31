@@ -353,3 +353,61 @@ def rank_pathbank_archive_member_candidates(
     return ranked
 
 
+def select_next_pathbank_archive_candidate(
+    archive_path: Path,
+    candidates: list[tuple[str, str]] | tuple[tuple[str, str], ...],
+    authority_snapshot_path: Path,
+    *,
+    excluded_pathway_ids: set[str] | frozenset[str] | list[str] | tuple[str, ...] = (),
+    require_unregistered_manifest: bool = True,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> dict[str, Any] | None:
+    """Select the highest-readiness uncurated PathBank ZIP candidate slice.
+
+    Validates ``excluded_pathway_ids`` (each entry must be an exact
+    ``PathBank:SMP[0-9]+`` CURIE) and ``require_unregistered_manifest``, ranks
+    ``candidates`` with :func:`rank_pathbank_archive_member_candidates`, filters out
+    candidates whose ``pathway_id`` is in ``excluded_pathway_ids`` or (when
+    ``require_unregistered_manifest`` is ``True``) whose ``manifest_key_registered``
+    is ``True``, and returns the first remaining candidate audit dictionary (or
+    ``None`` when no eligible candidate remains).
+    """
+    if not isinstance(require_unregistered_manifest, bool):
+        raise ValueError(
+            "PathBank candidate selection requires a boolean "
+            "require_unregistered_manifest flag"
+        )
+    if not isinstance(excluded_pathway_ids, (set, frozenset, list, tuple)):
+        raise ValueError(
+            "PathBank candidate selection requires excluded_pathway_ids to be "
+            "a collection of PathBank:SMP[0-9]+ CURIEs"
+        )
+    excluded: set[str] = set()
+    for pathway_id in excluded_pathway_ids:
+        if not isinstance(pathway_id, str) or not re.fullmatch(
+            r"PathBank:SMP[0-9]+", pathway_id
+        ):
+            raise ValueError(
+                "PathBank candidate selection requires excluded_pathway_ids "
+                "entries to match PathBank:SMP[0-9]+"
+            )
+        excluded.add(pathway_id)
+
+    ranked = rank_pathbank_archive_member_candidates(
+        archive_path,
+        candidates,
+        authority_snapshot_path,
+        path=path,
+        version=version,
+        license=license,
+    )
+    for entry in ranked:
+        if entry["pathway_id"] in excluded:
+            continue
+        if require_unregistered_manifest and entry["manifest_key_registered"]:
+            continue
+        return entry
+    return None
+
