@@ -1,0 +1,652 @@
+id: PathBank:SMP0002063
+label: Fructoselysine and Psicoselysine Degradation
+description: >-
+  PathBank/SMPDB BioPAX Level 3 pathway record (PathBank:SMP0002063, PathWhiz PW002049)
+  for cytoplasmic catabolism of the Heyns and Amadori glycation products psicoselysine
+  and fructoselysine in Escherichia coli (NCBITaxon:562), backed by biochemical assays
+  in E. coli K-12 (NCBITaxon:83333). Fructoselysine 3-epimerase FrlC (UniProtKB:P45541,
+  modeled as complex PathBank:SMP0002063/ProteinComplex/4018) catalyzes the reversible
+  Ni(2+)- or Co(2+)-dependent C3 epimerization between psicosyllysine(1+) (CHEBI:61403)
+  and fructosyllysine(1+) (CHEBI:61393; RHEA:28391). Fructoselysine 6-kinase FrlD
+  (UniProtKB:P45543; EC 2.7.1.174) catalyzes the ATP-dependent phosphorylation of
+  fructosyllysine(1+) (CHEBI:61393) with ATP (CHEBI:15422) to fructoselysine
+  6-phosphate(1-) (CHEBI:61392), ADP (CHEBI:16761), and hydron (CHEBI:15378; RHEA:28379).
+  Fructoselysine 6-phosphate deglycase FrlB (UniProtKB:P0AC00, modeled as complex
+  PathBank:SMP0002063/ProteinComplex/4020; EC 3.5.1.104) catalyzes the reversible
+  hydrolytic cleavage of fructoselysine 6-phosphate(1-) (CHEBI:61392) with water
+  (CHEBI:15377) to L-lysinium(1+) (CHEBI:32551) and beta-D-glucose 6-phosphate
+  (CHEBI:17719; PathBank:SMP0002063/Reactions/5985), corresponding to the EcoCyc E. coli
+  K-12 pathway reference MetaCyc:PWY0-521 (fructoselysine-and-psicoselysine-degradation.yaml)
+  and the downstream two-step GO:1901281 record (fructoselysine-catabolic-process.yaml).
+pathway_type: catabolic
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:61403
+  label: psicosyllysine(1+)
+  category: small_molecule
+- id: CHEBI:61393
+  label: fructosyllysine(1+)
+  category: small_molecule
+- id: CHEBI:15422
+  label: ATP
+  category: small_molecule
+- id: CHEBI:16761
+  label: ADP
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:61392
+  label: fructoselysine 6-phosphate(1-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:17719
+  label: beta-D-glucose 6-phosphate
+  category: small_molecule
+- id: CHEBI:32551
+  label: L-lysinium(1+)
+  category: small_molecule
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: UniProtKB:P45541
+  label: Fructoselysine 3-epimerase
+  category: protein
+- id: PathBank:SMP0002063/ProteinComplex/4018
+  label: fructoselysine 3-epimerase
+  category: complex
+- id: UniProtKB:P45543
+  label: Fructoselysine 6-kinase
+  category: protein
+- id: UniProtKB:P0AC00
+  label: Fructoselysine 6-phosphate deglycase
+  category: protein
+- id: PathBank:SMP0002063/ProteinComplex/4020
+  label: fructoselysine 6-phosphate deglycase
+  category: complex
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+reactions:
+- id: RHEA:28391
+  label: N(6)-(D-psicosyl)-L-lysine => N(6)-(D-fructosyl)-L-lysine
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:28379
+  label: N(6)-(D-fructosyl)-L-lysine + ATP => N(6)-(6-phospho-D-fructosyl)-L-lysine + ADP + H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: PathBank:SMP0002063/Reactions/5985
+  label: Fructoselysine-6-phosphate + Water <-> L-Lysine + beta-D-Glucose 6-phosphate
+  category: molecular_activity
+  direction: reversible
+mechanistic_edges:
+- id: smp0002063-edge-001
+  subject: UniProtKB:P45541
+  predicate: part_of
+  object: PathBank:SMP0002063/ProteinComplex/4018
+  description: >-
+    PW002049.owl Complex ProteinComplex/4018 models FrlC (UniProtKB:P45541) with
+    componentStoichiometry 8.0 based on the ~260 kDa Superdex 200 gel-filtration
+    estimate (PMID:14641112); coefficient is omitted because native stoichiometry
+    remains unverified beyond His-tagged gel filtration.
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl Complex ProteinComplex/4018 (fructoselysine 3-epimerase) declares
+      component Protein/7300 (entityReference ProteinReference/7300, xref UniProt_P45541,
+      displayName Protein frlC) with componentStoichiometry Protein/7300/Stoichiometry/8.0
+      (stoichiometricCoefficient 8.0).
+    source_locator: PW002049.owl#ProteinComplex/4018
+  - reference_id: PMID:14641112
+    quote: >-
+      Gel filtration of the recombinant protein produced with an N-terminal His tag
+      on Superdex 200 HR 10/30 indicated a molecular mass of about 260 kDa, compared
+      with the predicted molecular mass for the subunit of 30.5 kDa, suggesting that
+      the protein is an octamer (results not shown).
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: >-
+      N-terminally His6-tagged E. coli K-12 FrlC (UniProtKB:P45541) overexpressed in
+      E. coli BL21(DE3)pLysS and analyzed by Superdex 200 HR 10/30 gel filtration
+      (~260 kDa apparent mass vs 30.5 kDa subunit, octamer; PMID:14641112).
+    evidence:
+    - reference_id: PMID:14641112
+      quote: >-
+        Gel filtration of the recombinant protein produced with an N-terminal His tag
+        on Superdex 200 HR 10/30 indicated a molecular mass of about 260 kDa, compared
+        with the predicted molecular mass for the subunit of 30.5 kDa, suggesting that
+        the protein is an octamer (results not shown).
+      source_locator: Results and Discussion, p. 3328
+      eco_code: ECO:0000269
+      assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-002
+  subject: PathBank:SMP0002063/ProteinComplex/4018
+  predicate: catalyzes
+  object: RHEA:28391
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl Catalysis ReactionCatalysis/5945 links controller ProteinComplex/4018
+      (fructoselysine 3-epimerase) to controlled BiochemicalReaction Reactions/5983
+      (reversible interconversion of psicoselysine and fructoselysine, RHEA:28391) with
+      controlType ACTIVATION in PathwayEnzymeReaction/22365.
+    source_locator: PW002049.owl#ReactionCatalysis/5945
+  - reference_id: PMID:14641112
+    quote: >-
+      Purified recombinant FrlC protein indeed catalysed the reversible interconversion
+      of fructoselysine and psicoselysine directly, i.e. without need of prior
+      phosphorylation (Table 1).
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: >-
+      Purified N-terminally His6-tagged E. coli K-12 FrlC (UniProtKB:P45541) assayed
+      for reversible epimerization of fructoselysine and psicoselysine at 30 degrees C
+      in 25 mM HEPES pH 7.1, 1 mM DTT, and 0.1 mM NiCl2 (PMID:14641112).
+    evidence:
+    - reference_id: PMID:14641112
+      quote: >-
+        Purified recombinant FrlC protein indeed catalysed the reversible interconversion
+        of fructoselysine and psicoselysine directly, i.e. without need of prior
+        phosphorylation (Table 1).
+      source_locator: Results and Discussion, p. 3328
+      eco_code: ECO:0000269
+      assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-003
+  subject: PathBank:SMP0002063/ProteinComplex/4018
+  predicate: has_cofactor
+  object: CHEBI:49786
+  evidence:
+  - reference_id: PMID:14641112
+    quote: >-
+      Similar to several other epimerases (allulose 6-phosphate 3-epimerase, Chan et al.,
+      2003; L-ribulose 5-phosphate 4-epimerase, Lee et al., 2000), FrlC was stimulated by
+      100 uM Co2+ or Ni2+ (about 3.5-fold) and completely inactivated by 0.5 mM EDTA,
+      meaning that it is dependent on a metal ion.
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: UniProtKB:P45541
+    source_assertion: >-
+      UniProtKB:P45541 COFACTOR annotation states Name=Ni(2+); Xref=ChEBI:CHEBI:49786;
+      Evidence={ECO:0000269|PubMed:14641112}, Note=Binds 1 Co(2+) or Ni(2+) ion per subunit.
+    source_locator: UniProtKB:P45541#cofactor
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-004
+  subject: PathBank:SMP0002063/ProteinComplex/4018
+  predicate: has_cofactor
+  object: CHEBI:48828
+  evidence:
+  - reference_id: PMID:14641112
+    quote: >-
+      Similar to several other epimerases (allulose 6-phosphate 3-epimerase, Chan et al.,
+      2003; L-ribulose 5-phosphate 4-epimerase, Lee et al., 2000), FrlC was stimulated by
+      100 uM Co2+ or Ni2+ (about 3.5-fold) and completely inactivated by 0.5 mM EDTA,
+      meaning that it is dependent on a metal ion.
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: UniProtKB:P45541
+    source_assertion: >-
+      UniProtKB:P45541 COFACTOR annotation states Name=Co(2+); Xref=ChEBI:CHEBI:48828;
+      Evidence={ECO:0000269|PubMed:14641112}, Note=Binds 1 Co(2+) or Ni(2+) ion per subunit.
+    source_locator: UniProtKB:P45541#cofactor
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-005
+  subject: CHEBI:61403
+  predicate: consumes
+  object: RHEA:28391
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5983 (conversionDirection REVERSIBLE)
+      declares left participant Compound/PW_C043261 (stoichiometry 1.0; PubChem-compound
+      720, labeled Fructoselysine in PathWhiz and representing the C3 epimer substrate
+      psicosyllysine(1+), CHEBI:61403, paired with right participant CHEBI:61393).
+    source_locator: PW002049.owl#Reactions/5983
+  - reference_id: PMID:14641112
+    quote: >-
+      Purified recombinant FrlC protein indeed catalysed the reversible interconversion
+      of fructoselysine and psicoselysine directly, i.e. without need of prior
+      phosphorylation (Table 1).
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-006
+  subject: RHEA:28391
+  predicate: produces
+  object: CHEBI:61393
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5983 (conversionDirection REVERSIBLE)
+      declares right participant Compound/PW_C015864 (1-[(5-Amino-5-carboxypentyl)amino]-1-deoxyfructose,
+      ChEBI CHEBI:24109, major species fructosyllysine(1+) CHEBI:61393 in RHEA:28391,
+      stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5983
+  - reference_id: PMID:14641112
+    quote: >-
+      Purified recombinant FrlC protein indeed catalysed the reversible interconversion
+      of fructoselysine and psicoselysine directly, i.e. without need of prior
+      phosphorylation (Table 1).
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-007
+  subject: RHEA:28391
+  predicate: provides_input_for
+  object: RHEA:28379
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl orders BiochemicalPathwayStep PathwayEnzymeReaction/22365 (Reactions/5983,
+      RHEA:28391, producing Compound/PW_C015864 / CHEBI:61393) upstream of
+      PathwayEnzymeReaction/22366 (Reactions/5984, RHEA:28379, consuming Compound/PW_C015864).
+    source_locator: PW002049.owl#PathwayEnzymeReaction/22365
+  - reference_id: PMID:14641112
+    quote: >-
+      This problem has forced us to monitor the conversion of psicoselysine by combining
+      appropriate ancillary enzymes; for the assay of the formation of fructoselysine
+      from psicoselysine, it was the use of fructoselysine kinase (FrlD), pyruvate kinase
+      and lactate dehydrogenase which allowed the spectrophotometric measurement of
+      ADP formation.
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-008
+  subject: UniProtKB:P45543
+  predicate: catalyzes
+  object: RHEA:28379
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl Catalysis ReactionCatalysis/5946 links controller Protein/6630
+      (ProteinReference/6630, UniProt_P45543, Fructoselysine kinase) to controlled
+      BiochemicalReaction Reactions/5984 (eCNumber 2.7.1.-; RHEA:28379) with controlType
+      ACTIVATION in PathwayEnzymeReaction/22366.
+    source_locator: PW002049.owl#ReactionCatalysis/5946
+  - reference_id: PMID:12147680
+    quote: >-
+      No phosphorylated derivative was built under the same conditions in the absence
+      of fructoselysine or with control extracts (showing less than 1% of the reaction
+      rate discussed above), indicating that YhfQ is indeed a fructoselysine kinase.
+    source_locator: Results, Overexpression and Characterization of YhfQ (FrlD), p. 42525
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-009
+  subject: CHEBI:61393
+  predicate: consumes
+  object: RHEA:28379
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5984 (LEFT_TO_RIGHT) declares left
+      participant Compound/PW_C015864 (1-[(5-Amino-5-carboxypentyl)amino]-1-deoxyfructose,
+      ChEBI CHEBI:24109, major species fructosyllysine(1+) CHEBI:61393 in RHEA:28379,
+      stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5984
+  - reference_id: PMID:12147680
+    quote: >-
+      Its saturation curve with fructoselysine adjusted deeply to push a Michaelis-Menten
+      equation with a Km of 17 +/- 2 uM and a Vmax of 25.5 +/- 1.5 umol/min/mg of protein
+      in the presence of 2 mM Mg-ATP.
+    source_locator: Results, Overexpression and Characterization of YhfQ (FrlD), p. 42525
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-010
+  subject: CHEBI:15422
+  predicate: consumes
+  object: RHEA:28379
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5984 (LEFT_TO_RIGHT) declares left
+      participant Compound/PW_C000414 (Adenosine triphosphate, ChEBI CHEBI:15422,
+      stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5984
+  - reference_id: PMID:12147680
+    quote: >-
+      With 0.5 mM fructoselysine, the Km for Mg-ATP was 0.36 +/- 0.05 mM.
+    source_locator: Results, Overexpression and Characterization of YhfQ (FrlD), p. 42525
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-011
+  subject: RHEA:28379
+  predicate: produces
+  object: CHEBI:61392
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5984 (LEFT_TO_RIGHT) declares right
+      participant Compound/PW_C041456 (Fructoselysine-6-phosphate, PubChem-compound 721,
+      major species fructoselysine 6-phosphate(1-) CHEBI:61392 in RHEA:28379,
+      stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5984
+  - reference_id: PMID:12147680
+    quote: >-
+      The 13C NMR spectrum identified the product of the kinase as fructoselysine
+      6-phosphate (Fig. 3); as expected from a substitution on C6, the C6 resonance had
+      shifted downfield in the phosphorylated compound as compared with the unphosphorylated
+      one (from 63.7 to 66.0 ppm for the predominant beta-pyranose form) and showed a
+      split of 4.4 Hz because of the coupling to phosphorus.
+    source_locator: Results, Overexpression and Characterization of YhfQ (FrlD), p. 42525-42526
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-012
+  subject: RHEA:28379
+  predicate: produces
+  object: CHEBI:16761
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5984 (LEFT_TO_RIGHT) declares right
+      participant Compound/PW_C001034 (Adenosine diphosphate, ChEBI CHEBI:16761,
+      stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5984
+  - reference_id: PMID:12147680
+    quote: >-
+      Fructoselysine kinase activity was assayed spectrophotometrically at 340 nm by
+      coupling the formation of ADP to the oxidation of NADH in the presence of pyruvate
+      kinase and lactate dehydrogenase.
+    source_locator: Experimental Procedures, Enzyme Assays, p. 42524
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-013
+  subject: RHEA:28379
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5984 (LEFT_TO_RIGHT) declares right
+      participant Compound/PW_C040034 (Hydrogen Ion, ChEBI CHEBI:15378, stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5984
+- id: smp0002063-edge-014
+  subject: RHEA:28379
+  predicate: provides_input_for
+  object: PathBank:SMP0002063/Reactions/5985
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl orders BiochemicalPathwayStep PathwayEnzymeReaction/22366 (Reactions/5984,
+      RHEA:28379, producing Compound/PW_C041456 / CHEBI:61392) upstream of
+      PathwayEnzymeReaction/22367 (Reactions/5985, consuming Compound/PW_C041456).
+    source_locator: PW002049.owl#PathwayEnzymeReaction/22366
+  - reference_id: PMID:12147680
+    quote: >-
+      Taken together, our results show that fructoselysine is metabolized in E. coli
+      through phosphorylation into fructoselysine 6-phosphate followed by the conversion
+      of this intermediate into glucose 6-phosphate and lysine under the action of two
+      previously undescribed enzymes, a kinase that we designate FrlD (formerly YhfQ)
+      and a deglycase named FrlB (formerly YhfN).
+    source_locator: Discussion, p. 42528
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-015
+  subject: UniProtKB:P0AC00
+  predicate: part_of
+  object: PathBank:SMP0002063/ProteinComplex/4020
+  description: >-
+    PW002049.owl Complex ProteinComplex/4020 declares componentStoichiometry 12.0
+    (matching the ~450 kDa gel-filtration peak in PMID:12147680), whereas
+    UniProtKB:P0AC00 SUBUNIT curates homodimer; coefficient is omitted because
+    the source and UniProt subunit stoichiometries disagree.
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl Complex ProteinComplex/4020 (fructoselysine 6-phosphate deglycase)
+      declares component Protein/6192 (ProteinReference/6192, UniProt_P0AC00,
+      Fructoselysine 6-phosphate deglycase) with componentStoichiometry
+      Protein/6192/Stoichiometry/12.0 (stoichiometricCoefficient 12.0; UniProtKB:P0AC00
+      SUBUNIT curates homodimer).
+    source_locator: PW002049.owl#ProteinComplex/4020
+  - reference_id: PMID:12147680
+    quote: >-
+      When chromatographed on a Superdex 200 HR 10/30 gel filtration column, the radial
+      peak of FrlB was eluted with an apparent molecular mass of ~450 kDa, which, when
+      compared with the subunit mass (38.5 kDa), suggests a dodecamer (results not shown).
+    source_locator: Results, Overexpression, Purification, and Characterization of YhfN (FrlB), p. 42527
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-016
+  subject: PathBank:SMP0002063/ProteinComplex/4020
+  predicate: catalyzes
+  object: PathBank:SMP0002063/Reactions/5985
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl Catalysis ReactionCatalysis/5947 links controller ProteinComplex/4020
+      (fructoselysine 6-phosphate deglycase) to controlled BiochemicalReaction
+      Reactions/5985 (eCNumber 3.5.-.-; Fructoselysine-6-phosphate + Water <-> L-Lysine
+      + beta-D-Glucose 6-phosphate) with controlType ACTIVATION in
+      PathwayEnzymeReaction/22367.
+    source_locator: PW002049.owl#ReactionCatalysis/5947
+  - reference_id: PMID:12147680
+    quote: >-
+      A rapid formation of glucose 6-phosphate and of an equivalent amount of lysine was
+      observed with this extract, indicating that YhfN catalyzed the expected "deglycase"
+      reaction (fructoselysine 6-phosphate + H2O <-> glucose 6-phosphate + lysine).
+    source_locator: Results, Overexpression, Purification, and Characterization of YhfN (FrlB), p. 42526
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-017
+  subject: CHEBI:61392
+  predicate: consumes
+  object: PathBank:SMP0002063/Reactions/5985
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5985 (conversionDirection REVERSIBLE)
+      declares left participant Compound/PW_C041456 (Fructoselysine-6-phosphate,
+      PubChem-compound 721, normalized to CHEBI:61392, stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5985
+  - reference_id: PMID:12147680
+    quote: >-
+      A rapid formation of glucose 6-phosphate and of an equivalent amount of lysine was
+      observed with this extract, indicating that YhfN catalyzed the expected "deglycase"
+      reaction (fructoselysine 6-phosphate + H2O <-> glucose 6-phosphate + lysine).
+    source_locator: Results, Overexpression, Purification, and Characterization of YhfN (FrlB), p. 42526
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-018
+  subject: CHEBI:15377
+  predicate: consumes
+  object: PathBank:SMP0002063/Reactions/5985
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5985 (conversionDirection REVERSIBLE)
+      declares left participant Compound/PW_C001420 (Water, ChEBI CHEBI:15377,
+      stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5985
+  - reference_id: PMID:12147680
+    quote: >-
+      A rapid formation of glucose 6-phosphate and of an equivalent amount of lysine was
+      observed with this extract, indicating that YhfN catalyzed the expected "deglycase"
+      reaction (fructoselysine 6-phosphate + H2O <-> glucose 6-phosphate + lysine).
+    source_locator: Results, Overexpression, Purification, and Characterization of YhfN (FrlB), p. 42526
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-019
+  subject: PathBank:SMP0002063/Reactions/5985
+  predicate: produces
+  object: CHEBI:17719
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5985 (conversionDirection REVERSIBLE)
+      declares right participant Compound/PW_C001906 (beta-D-Glucose 6-phosphate,
+      ChEBI CHEBI:17719, stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5985
+  - reference_id: PMID:12147680
+    quote: >-
+      A rapid formation of glucose 6-phosphate and of an equivalent amount of lysine was
+      observed with this extract, indicating that YhfN catalyzed the expected "deglycase"
+      reaction (fructoselysine 6-phosphate + H2O <-> glucose 6-phosphate + lysine).
+    source_locator: Results, Overexpression, Purification, and Characterization of YhfN (FrlB), p. 42526
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-020
+  subject: PathBank:SMP0002063/Reactions/5985
+  predicate: produces
+  object: CHEBI:32551
+  coefficient: 1
+  evidence:
+  - reference_id: PathBank:SMP0002063
+    source_assertion: >-
+      PW002049.owl BiochemicalReaction Reactions/5985 (conversionDirection REVERSIBLE)
+      declares right participant Compound/PW_C000118 (L-Lysine, ChEBI CHEBI:18019,
+      normalized to major species L-lysinium(1+) CHEBI:32551, stoichiometry 1.0).
+    source_locator: PW002049.owl#Reactions/5985
+  - reference_id: PMID:12147680
+    quote: >-
+      A rapid formation of glucose 6-phosphate and of an equivalent amount of lysine was
+      observed with this extract, indicating that YhfN catalyzed the expected "deglycase"
+      reaction (fructoselysine 6-phosphate + H2O <-> glucose 6-phosphate + lysine).
+    source_locator: Results, Overexpression, Purification, and Characterization of YhfN (FrlB), p. 42526
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-021
+  subject: UniProtKB:P45541
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PMID:14641112
+    quote: >-
+      Extracts of control cells (typically containing about 15 mg protein ml-1) converted
+      fructoselysine to glucose 6-phosphate with a specific activity of 3.2 nmol min-1
+      (mg protein)-1 after 20 min pre-incubation with 5 mM fructoselysine and 5 mM Mg-ATP
+      resulting from the low basal expression of frlB and frlD in the host strain.
+    source_locator: Results and Discussion, p. 3328
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-022
+  subject: UniProtKB:P45543
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: UniProtKB:P45543
+    source_assertion: >-
+      UniProtKB:P45543 SUBCELLULAR LOCATION annotation states Cytoplasm (cytosolic
+      soluble fraction GO:0005829 in PathWhiz PW002049).
+    source_locator: UniProtKB:P45543#subcellular_location
+    eco_code: ECO:0000256
+    assay_taxon: NCBITaxon:83333
+- id: smp0002063-edge-023
+  subject: UniProtKB:P0AC00
+  predicate: located_in
+  object: GO:0005829
+  evidence:
+  - reference_id: PMID:12147680
+    quote: >-
+      Cells were harvested by centrifugation, resuspended in 25 ml of buffer A (25 mM
+      HEPES, pH 7.1, 1 mM dithiothreitol, 0.5 mM PMSF, 2 ug/ml antipain, and 2 ug/ml
+      leupeptin), disrupted with a French press, and centrifuged for 30 min at 15,000 x g.
+      The resulting supernatant was used for purification.
+    source_locator: Experimental Procedures, Overexpression and Purification of YhfN (FrlB), p. 42525
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+references:
+- id: PathBank:SMP0002063
+  title: >-
+    PathBank SMP0002063 (PathWhiz PW002049): Fructoselysine and Psicoselysine Degradation
+    in Escherichia coli (BioPAX Level 3 PW002049.owl)
+  url: https://smpdb.ca/view/SMP0002063
+  source_version: pathbank-primary-2019-10-08
+  source_sha256: 1520871b1df6726f46a7ef1d68b13235e9a43bd0e52bd8d01666101f6a30686a
+- id: PMID:12147680
+  title: >-
+    Metabolism of the Amadori product fructoselysine in Escherichia coli: identification
+    of a gene cluster encoding a fructoselysine kinase and a fructoselysine 6-phosphate
+    deglycase
+  citation: >-
+    Wiame E, Delpierre G, Collard F, Van Schaftingen E. J Biol Chem.
+    2002;277(45):42523-42529. doi:10.1074/jbc.M200863200
+  url: https://pubmed.ncbi.nlm.nih.gov/12147680/
+- id: PMID:14641112
+  title: >-
+    Identification of a pathway for the utilization of the Amadori product psicoselysine
+    in Escherichia coli
+  citation: >-
+    Wiame E, Van Schaftingen E. Biochem J. 2004;378(Pt 3):1047-1052.
+    doi:10.1042/BJ20031527
+  url: https://pubmed.ncbi.nlm.nih.gov/14641112/
+- id: UniProtKB:P45541
+  title: 'UniProtKB P45541 (FRLC_ECOLI): Fructoselysine 3-epimerase (frlC / b3372)'
+  url: https://www.uniprot.org/uniprotkb/P45541
+- id: UniProtKB:P45543
+  title: 'UniProtKB P45543 (FRLD_ECOLI): Fructoselysine 6-kinase (frlD / b3374)'
+  url: https://www.uniprot.org/uniprotkb/P45543
+- id: UniProtKB:P0AC00
+  title: 'UniProtKB P0AC00 (FRLB_ECOLI): Fructoselysine 6-phosphate deglycase (frlB / b3371)'
+  url: https://www.uniprot.org/uniprotkb/P0AC00
+source_mappings:
+- subject_id: UniProt:P45541
+  subject_label: Protein frlC
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P45541
+  object_label: Fructoselysine 3-epimerase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002063
+  source_element_id: ProteinReference/7300
+- subject_id: UniProt:P45543
+  subject_label: Fructoselysine kinase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P45543
+  object_label: Fructoselysine 6-kinase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002063
+  source_element_id: ProteinReference/6630
+- subject_id: UniProt:P0AC00
+  subject_label: Fructoselysine 6-phosphate deglycase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0AC00
+  object_label: Fructoselysine 6-phosphate deglycase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002063
+  source_element_id: ProteinReference/6192
+curation_history:
+- timestamp: '2026-10-31T15:38:00Z'
+  curator: antigravity
+  action: CREATE
+  changes: >-
+    Curated E. coli PathBank/SMPDB pathway record PathBank:SMP0002063 (PW002049.owl,
+    Fructoselysine and Psicoselysine Degradation) with 17 participants, 3 reactions
+    (RHEA:28391, RHEA:28379, PathBank:SMP0002063/Reactions/5985), 23 mechanistic edges
+    backed by BioPAX assertions and primary E. coli K-12 biochemical evidence
+    (PMID:12147680, PMID:14641112), and 3 UniProt -> UniProtKB source mappings; linked
+    to cross-source sibling records fructoselysine-and-psicoselysine-degradation.yaml
+    (MetaCyc:PWY0-521) and fructoselysine-catabolic-process.yaml (GO:1901281).
+  llm_assisted: true
