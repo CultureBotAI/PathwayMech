@@ -1,0 +1,488 @@
+id: PathBank:SMP0002091
+label: Methylglyoxal Degradation III
+description: 'PathBank SMP0002091 (native BioPAX archive member PW002079.owl) models the two-step
+  glutathione-independent acetol branch of methylglyoxal degradation III in Escherichia coli (NCBITaxon:562;
+  native Species/3), corresponding to the Escherichia coli K-12 MG1655 MetaCyc pathway record MetaCyc:PWY-5453
+  (methylglyoxal-degradation-iii.yaml) and supported by biochemical and structural characterization in
+  Escherichia coli K-12 (NCBITaxon:83333). In the first step (RHEA:27988, right-to-left direction of
+  RHEA:27986; native Reactions/6074, eCNumber 1.1.1.-, Hydrogen Ion + NADPH + Pyruvaldehyde <-> Hydroxyacetone
+  + NADP, conversionDirection REVERSIBLE), L-glyceraldehyde 3-phosphate reductase / methylglyoxal reductase
+  Gpr/YghZ (UniProtKB:Q46851; native Protein/7315 Uncharacterized protein yghZ controlling Reactions/6074
+  via ReactionCatalysis/6037 in PathwayEnzymeReaction/22629) reduces methylglyoxal (CHEBI:17158; native
+  Compound/PW_C000905 Pyruvaldehyde) with NADPH(4-) (CHEBI:57783; pH 7.3 major microspecies of native
+  Compound/PW_C000146 NADPH, CHEBI:16474) and hydron (CHEBI:15378; native Compound/PW_C040034 Hydrogen
+  Ion) to hydroxyacetone (acetol, CHEBI:27957; native Compound/PW_C003018 Hydroxyacetone) and NADP(3-)
+  (CHEBI:58349; pH 7.3 major microspecies of native Compound/PW_C000143 NADP, CHEBI:18009). Purified
+  E. coli K-12 YghZ converts methylglyoxal to acetol with NADPH by 1H NMR, whereas NADH activity was
+  below 3% of NADPH activity and the reverse acetol-to-methylglyoxal reaction was not detected under
+  the reported conditions (PMID:16077126).
+
+
+  In the second step (RHEA:28668, left-to-right direction of RHEA:28667; native Reactions/6075, eCNumber
+  1.1.1.6, Hydrogen Ion + Hydroxyacetone + NADH <-> (S)-Propane-1,2-diol + NAD, conversionDirection
+  REVERSIBLE), the L-1,2-propanediol dehydrogenase / glycerol dehydrogenase complex (PathBank:SMP0002091/ProteinComplex/3935,
+  modeled in PW002079.owl with 8 copies of Protein/6141 Glycerol dehydrogenase cross-referenced to UniProtKB:P0A9S5,
+  controlling Reactions/6075 via ReactionCatalysis/6038 in PathwayEnzymeReaction/22630) reduces hydroxyacetone
+  (CHEBI:27957) with NADH(2-) (CHEBI:57945; pH 7.3 major microspecies of native Compound/PW_C001144
+  NADH, CHEBI:16908) and hydron (CHEBI:15378) to (S)-propane-1,2-diol (CHEBI:29002; native Compound/PW_C040967
+  (S)-Propane-1,2-diol) and NAD(1-) (CHEBI:57540; pH 7.3 major microspecies of native Compound/PW_C000721
+  NAD, CHEBI:15846). Glycerol dehydrogenase GldA binds one catalytic zinc(2+) ion (CHEBI:29105) per
+  subunit in its active site (PMID:30839292), and its oligomeric state in vitro varies between tetramers
+  in 5% glycerol and dimer/octamer mixtures without glycerol (PMID:30839292). The (S)-propane-1,2-diol
+  product stereochemistry is retained from native PW002079.owl, RHEA:28668, and reviewed UniProtKB:P0A9S5
+  annotations; the 2005 NMR study (PMID:16077126) did not resolve diol enantiomers, and R-1,2-propanediol
+  accumulation in engineered E. coli AG1 (PMID:10049880) was attributed to a lactaldehyde route rather
+  than direct stereochemical characterization of this acetol step. Native PW002079.owl also includes
+  an uncatalyzed diagrammatic export step (Transports/10317 in PathwayTransport/2123361, moving Compound/PW_C040967_Cytosol
+  to Compound/PW_C040967_Periplasmic_Space without a stepProcess or carrier protein) and omits bp:cellularLocation
+  on the enzymatic reaction participants and bp:nextStep links on PathwayEnzymeReaction/22629 and PathwayEnzymeReaction/22630;
+  the causal graph retains the two enzyme-catalyzed reactions and grounds step handoff in bp:pathwayOrder
+  and the shared Compound/PW_C003018 (CHEBI:27957) intermediate.'
+pathway_type: methylglyoxal-detoxification
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:17158
+  label: methylglyoxal
+  category: small_molecule
+- id: CHEBI:27957
+  label: hydroxyacetone
+  category: small_molecule
+- id: CHEBI:29002
+  label: (S)-propane-1,2-diol
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:Q46851
+  label: L-glyceraldehyde 3-phosphate reductase
+  category: protein
+- id: UniProtKB:P0A9S5
+  label: Glycerol dehydrogenase
+  category: protein
+- id: PathBank:SMP0002091/ProteinComplex/3935
+  label: L-1,2-propanediol dehydrogenase / glycerol dehydrogenase
+  category: complex
+reactions:
+- id: RHEA:27988
+  label: methylglyoxal + NADPH + H(+) => hydroxyacetone + NADP(+)
+  direction: right_to_left
+  category: molecular_activity
+- id: RHEA:28668
+  label: hydroxyacetone + NADH + H(+) => (S)-propane-1,2-diol + NAD(+)
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0002091-edge-001
+  subject: CHEBI:17158
+  predicate: consumes
+  object: RHEA:27988
+  coefficient: 1
+  description: Methylglyoxal (CHEBI:17158; native Compound/PW_C000905 Pyruvaldehyde) is consumed with
+    stoichiometric coefficient 1 in the NADPH-dependent reduction to hydroxyacetone (RHEA:27988; native
+    Reactions/6074).
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:17158 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_4547'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6074 (1.1.1.-, Hydrogen Ion +
+      NADPH + Pyruvaldehyde <-> Hydroxyacetone + NADP) lists Compound/PW_C000905 (Pyruvaldehyde, CompoundReference/PW_C000905
+      cross-referenced to ChEBI CHEBI:17158) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6074']/bp:left[@rdf:resource='#Compound/PW_C000905'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000905/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000905']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_17158']
+- id: smp0002091-edge-002
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:27988
+  coefficient: 1
+  description: NADPH(4-) (CHEBI:57783; pH 7.3 major microspecies of native Compound/PW_C000146 NADPH,
+    CHEBI:16474) is consumed with stoichiometric coefficient 1 in the reduction of methylglyoxal (RHEA:27988;
+    native Reactions/6074).
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:57783 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_3438'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6074 lists Compound/PW_C000146
+      (NADPH, CompoundReference/PW_C000146 cross-referenced to neutral ChEBI CHEBI:16474) on bp:left with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6074']/bp:left[@rdf:resource='#Compound/PW_C000146'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000146/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000146']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_16474']
+- id: smp0002091-edge-003
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:27988
+  coefficient: 1
+  description: Hydron (CHEBI:15378; native Compound/PW_C040034 Hydrogen Ion) is consumed with stoichiometric
+    coefficient 1 in the reduction of methylglyoxal (RHEA:27988; native Reactions/6074).
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_3249'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6074 lists Compound/PW_C040034
+      (Hydrogen Ion, CompoundReference/PW_C040034 cross-referenced to ChEBI CHEBI:15378) on bp:left with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6074']/bp:left[@rdf:resource='#Compound/PW_C040034'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C040034']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15378']
+- id: smp0002091-edge-004
+  subject: RHEA:27988
+  predicate: produces
+  object: CHEBI:27957
+  coefficient: 1
+  description: Hydroxyacetone (acetol, CHEBI:27957; native Compound/PW_C003018 Hydroxyacetone) is produced
+    with stoichiometric coefficient 1 by the NADPH-dependent reduction of methylglyoxal (RHEA:27988; native
+    Reactions/6074).
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:27957 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_6312'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6074 lists Compound/PW_C003018
+      (Hydroxyacetone, CompoundReference/PW_C003018 cross-referenced to ChEBI CHEBI:27957) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6074']/bp:right[@rdf:resource='#Compound/PW_C003018'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C003018/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C003018']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_27957']
+- id: smp0002091-edge-005
+  subject: RHEA:27988
+  predicate: produces
+  object: CHEBI:58349
+  coefficient: 1
+  description: NADP(3-) (CHEBI:58349; pH 7.3 major microspecies of native Compound/PW_C000143 NADP, CHEBI:18009)
+    is produced with stoichiometric coefficient 1 in the reduction of methylglyoxal (RHEA:27988; native
+    Reactions/6074).
+  evidence:
+  - reference_id: RHEA:27988
+    source_assertion: Rhea RHEA:27988 assigns CHEBI:58349 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/27988']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/27986_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_27986_compound_5188'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6074 lists Compound/PW_C000143
+      (NADP, CompoundReference/PW_C000143 cross-referenced to neutral ChEBI CHEBI:18009) on bp:right with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6074']/bp:right[@rdf:resource='#Compound/PW_C000143'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000143/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000143']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_18009']
+- id: smp0002091-edge-006
+  subject: CHEBI:27957
+  predicate: consumes
+  object: RHEA:28668
+  coefficient: 1
+  description: Hydroxyacetone (acetol, CHEBI:27957; native Compound/PW_C003018 Hydroxyacetone) is consumed
+    with stoichiometric coefficient 1 in the NADH-dependent reduction to (S)-propane-1,2-diol (RHEA:28668;
+    native Reactions/6075).
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:27957 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_6312'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6075 (1.1.1.6, Hydrogen Ion +
+      Hydroxyacetone + NADH <-> (S)-Propane-1,2-diol + NAD) lists Compound/PW_C003018 (Hydroxyacetone,
+      CompoundReference/PW_C003018 cross-referenced to ChEBI CHEBI:27957) on bp:left with stoichiometricCoefficient
+      1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6075']/bp:left[@rdf:resource='#Compound/PW_C003018'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C003018/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C003018']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_27957']
+- id: smp0002091-edge-007
+  subject: CHEBI:57945
+  predicate: consumes
+  object: RHEA:28668
+  coefficient: 1
+  description: NADH(2-) (CHEBI:57945; pH 7.3 major microspecies of native Compound/PW_C001144 NADH, CHEBI:16908)
+    is consumed with stoichiometric coefficient 1 in the reduction of hydroxyacetone (RHEA:28668; native
+    Reactions/6075).
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:57945 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_1650'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6075 lists Compound/PW_C001144
+      (NADH, CompoundReference/PW_C001144 cross-referenced to neutral ChEBI CHEBI:16908) on bp:left with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6075']/bp:left[@rdf:resource='#Compound/PW_C001144'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001144/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C001144']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_16908']
+- id: smp0002091-edge-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:28668
+  coefficient: 1
+  description: Hydron (CHEBI:15378; native Compound/PW_C040034 Hydrogen Ion) is consumed with stoichiometric
+    coefficient 1 in the reduction of hydroxyacetone (RHEA:28668; native Reactions/6075).
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:15378 to its substrates, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:substrates; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_L']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_3249'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6075 lists Compound/PW_C040034
+      (Hydrogen Ion, CompoundReference/PW_C040034 cross-referenced to ChEBI CHEBI:15378) on bp:left with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6075']/bp:left[@rdf:resource='#Compound/PW_C040034'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C040034']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15378']
+- id: smp0002091-edge-009
+  subject: RHEA:28668
+  predicate: produces
+  object: CHEBI:29002
+  coefficient: 1
+  description: The (S)-propane-1,2-diol product (CHEBI:29002; native Compound/PW_C040967 (S)-Propane-1,2-diol)
+    is the current Rhea/UniProt and native PathBank PW002079.owl annotation with stoichiometric coefficient
+    1. The inspected 2005 NMR study (PMID:16077126) did not resolve diol enantiomers, and engineered AG1
+    R-diol production in PMID:10049880 was assigned to a lactaldehyde route rather than direct stereochemical
+    testing of this acetol step.
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:29002 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_5131'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6075 lists Compound/PW_C040967
+      ((S)-Propane-1,2-diol, CompoundReference/PW_C040967 cross-referenced to ChEBI CHEBI:29002) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6075']/bp:right[@rdf:resource='#Compound/PW_C040967'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040967/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C040967']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_29002']
+- id: smp0002091-edge-010
+  subject: RHEA:28668
+  predicate: produces
+  object: CHEBI:57540
+  coefficient: 1
+  description: NAD(1-) (CHEBI:57540; pH 7.3 major microspecies of native Compound/PW_C000721 NAD, CHEBI:15846)
+    is produced with stoichiometric coefficient 1 in the reduction of hydroxyacetone (RHEA:28668; native
+    Reactions/6075).
+  evidence:
+  - reference_id: RHEA:28668
+    source_assertion: Rhea RHEA:28668 assigns CHEBI:57540 to its products, with coefficient 1 in rh:contains1.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/28668']/rh:products; rdf:Description[@rdf:about='http://rdf.rhea-db.org/28667_R']/rh:contains1[@rdf:resource='http://rdf.rhea-db.org/Participant_28667_compound_3484'];
+      rh:compound/rh:chebi
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl BiochemicalReaction Reactions/6075 lists Compound/PW_C000721
+      (NAD, CompoundReference/PW_C000721 cross-referenced to neutral ChEBI CHEBI:15846) on bp:right with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6075']/bp:right[@rdf:resource='#Compound/PW_C000721'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000721/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000721']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15846']
+- id: smp0002091-edge-011
+  subject: UniProtKB:Q46851
+  predicate: enables
+  object: RHEA:27988
+  description: Functional Gpr/YghZ activity is represented without asserting a monomeric physical catalyst
+    (native PW002079.owl models controller Protein/7315 directly rather than as a ProteinComplex; UniProt
+    reports tetrameric and octameric assemblies across studies). Its methylglyoxal reductase activity
+    is much less efficient than its L-glyceraldehyde 3-phosphate reductase activity.
+  evidence:
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl Catalysis ReactionCatalysis/6037 (stepProcess of PathwayEnzymeReaction/22629)
+      assigns controller Protein/7315 (Uncharacterized protein yghZ, ProteinReference/7315 cross-referenced
+      to UniProt Q46851) with controlType ACTIVATION over controlled Reactions/6074.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6037']/bp:controller[@rdf:resource='#Protein/7315'];
+      bp:controlled[@rdf:resource='#Reactions/6074']; bp:ProteinReference[@rdf:ID='ProteinReference/7315']/bp:xref[@rdf:resource='#Reference/UniProt_Q46851']
+  - reference_id: PMID:16077126
+    source_assertion: Purified YghZ converts methylglyoxal to acetol with NADPH by NMR. NADH activity
+      was below 3% of NADPH activity; the reverse acetol-to-methylglyoxal reaction was not detected under
+      the assay conditions.
+    source_locator: 'PMC1196063: Results, Reduction of methylglyoxal to acetol by purified E. coli AKRs;
+      Figure 3B; Table 2'
+    assay_taxon: NCBITaxon:83333
+  - reference_id: UniProtKB:Q46851
+    source_assertion: Reviewed Q46851 assigns hydroxyacetone/NADP versus methylglyoxal/NADPH chemistry
+      to RHEA:27986, citing ECO:0000269 PMID:16077126 and ECO:0000305 PMID:12583903.
+    source_locator: /comments/2/reaction; /genes/0; /primaryAccession
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002091-edge-012
+  subject: PathBank:SMP0002091/ProteinComplex/3935
+  predicate: catalyzes
+  object: RHEA:28668
+  description: Native PW002079.owl assigns ReactionCatalysis/6038 to ProteinComplex/3935 (L-1,2-propanediol
+    dehydrogenase / glycerol dehydrogenase). The (S)-propane-1,2-diol product is the current Rhea/UniProt
+    and native PathBank annotation; the inspected 2005 NMR study did not resolve diol enantiomers, and
+    engineered AG1 R-diol production in PMID:10049880 was assigned to a lactaldehyde route.
+  evidence:
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl Catalysis ReactionCatalysis/6038 (stepProcess of PathwayEnzymeReaction/22630)
+      assigns controller ProteinComplex/3935 (L-1,2-propanediol dehydrogenase / glycerol dehydrogenase)
+      with controlType ACTIVATION over controlled Reactions/6075 (1.1.1.6).
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6038']/bp:controller[@rdf:resource='#ProteinComplex/3935'];
+      bp:controlled[@rdf:resource='#Reactions/6075']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22630']/bp:stepProcess[@rdf:resource='#ReactionCatalysis/6038']
+  - reference_id: UniProtKB:P0A9S5
+    source_assertion: Reviewed GldA explicitly assigns hydroxyacetone + NADH + H(+) = (S)-propane-1,2-diol
+      + NAD(+) to RHEA:28667, with ECO:0000269 citations 18179582,3920199,40950,6365902.
+    source_locator: /comments/2/reaction; /primaryAccession
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002091-edge-013
+  subject: UniProtKB:P0A9S5
+  predicate: part_of
+  object: PathBank:SMP0002091/ProteinComplex/3935
+  coefficient: 8
+  description: Native PW002079.owl models ProteinComplex/3935 with 8 copies of Protein/6141 (UniProtKB:P0A9S5).
+    In vitro oligomeric state is condition-dependent (homogeneous tetramer in 5% glycerol vs dimer/octamer
+    mixtures without glycerol in PMID:30839292).
+  evidence:
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl Complex ProteinComplex/3935 (L-1,2-propanediol dehydrogenase
+      / glycerol dehydrogenase) lists component Protein/6141 (Glycerol dehydrogenase, ProteinReference/6141
+      cross-referenced to UniProt P0A9S5) with componentStoichiometry Protein/6141/Stoichiometry/8.0 (stoichiometricCoefficient
+      8.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3935']/bp:component[@rdf:resource='#Protein/6141'];
+      bp:componentStoichiometry[@rdf:resource='#Protein/6141/Stoichiometry/8.0']; bp:ProteinReference[@rdf:ID='ProteinReference/6141']/bp:xref[@rdf:resource='#Reference/UniProt_P0A9S5']
+  - reference_id: PMID:30839292
+    source_assertion: Purified E. coli GldA eluted as a homogeneous tetramer in 5% glycerol; the authors
+      contrast reported dimer/octamer mixtures without glycerol.
+    source_locator: 'PMC6404857: Results and discussion 3.1, Protein purification; Figure 1b'
+    assay_taxon: NCBITaxon:83333
+- id: smp0002091-edge-014
+  subject: UniProtKB:P0A9S5
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: The E. coli GldA crystal structure demonstrates one active-site zinc(2+) ion per subunit
+    coordinated by His254, His271, and Asp171.
+  evidence:
+  - reference_id: UniProtKB:P0A9S5
+    source_assertion: Reviewed GldA names Zn(2+) as cofactor with ECO:0000305 PMID:30839292; its note
+      says one zinc ion per subunit with ECO:0000269 for the same paper.
+    source_locator: /comments/4/cofactors/0; /comments/4/note
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:30839292
+    source_assertion: The E. coli GldA structure contains active-site Zn2+ coordinated by His254, His271
+      and Asp171 and interacting with glycerol.
+    source_locator: 'PMC6404857: Results and discussion 3.3, Overall structural details; Figure 3'
+    assay_taxon: NCBITaxon:83333
+- id: smp0002091-edge-015
+  subject: RHEA:27988
+  predicate: part_of
+  object: PathBank:SMP0002091
+  description: NADPH-dependent reduction of methylglyoxal to hydroxyacetone (RHEA:27988; native Reactions/6074)
+    is the first enzymatic step of PathBank:SMP0002091.
+  evidence:
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl Pathway SMP0002091 (Methylglyoxal Degradation III) lists Reactions/6074
+      under bp:pathwayComponent and PathwayEnzymeReaction/22629 (stepConversion Reactions/6074, stepProcess
+      ReactionCatalysis/6037) under bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002091']/bp:pathwayComponent[@rdf:resource='#Reactions/6074'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22629']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22629']/bp:stepConversion[@rdf:resource='#Reactions/6074']
+- id: smp0002091-edge-016
+  subject: RHEA:28668
+  predicate: part_of
+  object: PathBank:SMP0002091
+  description: NADH-dependent reduction of hydroxyacetone to (S)-propane-1,2-diol (RHEA:28668; native
+    Reactions/6075) is the second enzymatic step of PathBank:SMP0002091.
+  evidence:
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl Pathway SMP0002091 (Methylglyoxal Degradation III) lists Reactions/6075
+      under bp:pathwayComponent and PathwayEnzymeReaction/22630 (stepConversion Reactions/6075, stepProcess
+      ReactionCatalysis/6038) under bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002091']/bp:pathwayComponent[@rdf:resource='#Reactions/6075'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22630']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22630']/bp:stepConversion[@rdf:resource='#Reactions/6075']
+- id: smp0002091-edge-017
+  subject: RHEA:27988
+  predicate: provides_input_for
+  object: RHEA:28668
+  description: Hydroxyacetone (CHEBI:27957; native Compound/PW_C003018) produced by Gpr/YghZ-catalyzed
+    methylglyoxal reduction (RHEA:27988; native Reactions/6074) is the substrate consumed by GldA-catalyzed
+    reduction to (S)-propane-1,2-diol (RHEA:28668; native Reactions/6075).
+  evidence:
+  - reference_id: PathBank:SMP0002091
+    source_assertion: Native PW002079.owl Reactions/6074 produces Compound/PW_C003018 (Hydroxyacetone,
+      CHEBI:27957) on bp:right and Reactions/6075 consumes the same Compound/PW_C003018 on bp:left within
+      Pathway SMP0002091.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6074']/bp:right[@rdf:resource='#Compound/PW_C003018'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6075']/bp:left[@rdf:resource='#Compound/PW_C003018']
+  - reference_id: PMID:16077126
+    source_assertion: The MG-accumulating strain and crude extracts produced acetol followed by small
+      amounts of 1,2-propanediol; purified AKRs produced acetol but no detectable diol.
+    source_locator: 'PMC1196063: Results, Detection of acetol from methylglyoxal-producing E. coli cells;
+      Figure 2; MG-reducing activity in crude extracts; Figure 3B'
+    assay_taxon: NCBITaxon:83333
+source_mappings:
+- subject_id: UniProt:P0A9S5
+  subject_label: Glycerol dehydrogenase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0A9S5
+  object_label: Glycerol dehydrogenase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002091
+  source_element_id: ProteinReference/6141
+- subject_id: UniProt:Q46851
+  subject_label: Uncharacterized protein yghZ
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:Q46851
+  object_label: L-glyceraldehyde 3-phosphate reductase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002091
+  source_element_id: ProteinReference/7315
+references:
+- id: PathBank:SMP0002091
+  title: PathBank SMP0002091 (PW002079.owl, Methylglyoxal Degradation III in Escherichia coli)
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: 2019-08-16 frozen primary BioPAX archive (PW002079.owl, 36298 bytes, member sha256 b075efabab51c7cc0d01e978dce0199e1359f8e5c3bcc47b3e4e422346e65cf2)
+  source_sha256: b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44
+- id: UniProtKB:Q46851
+  title: Reviewed UniProtKB Q46851 (Gpr / YghZ, Escherichia coli K-12)
+  url: https://rest.uniprot.org/uniprotkb/Q46851.json
+  source_version: 2026_03; response release header and entry retrieved 2026-10-10
+  source_sha256: b42926fbe3b36065ea7e2ebe7e67c6d787b7be9ae2edf95187f20fd4b95e126e
+- id: UniProtKB:P0A9S5
+  title: Reviewed UniProtKB P0A9S5 (GldA, Escherichia coli K-12)
+  url: https://rest.uniprot.org/uniprotkb/P0A9S5.json
+  source_version: 2026_03; response release header and entry retrieved 2026-10-10
+  source_sha256: faee284ee8a8c21d95764d891e90e9154d22c2fda5c891c59f0d890ffb577a49
+- id: RHEA:27988
+  title: Rhea 27988 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28668
+  title: Rhea 28668 directional reaction
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: 142 (2026-09-02)
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:16077126
+  title: Conversion of methylglyoxal to acetol by Escherichia coli aldo-keto reductases.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC1196063/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 7edca4dd5ce4a7ab4903200f3bacbdbc3d35a276cc7a241e7cecd4d3992cd574
+- id: PMID:30839292
+  title: Structure of glycerol dehydrogenase (GldA) from Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC6404857/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 40df653530af56649dbfb283428b1e8d9fce15b945ce649c1db8ae7223e0e53e
+- id: PMID:10049880
+  title: Metabolic engineering of a 1,2-propanediol pathway in Escherichia coli.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC91161/?pdf=render
+  source_version: Primary full text; retrieved 2026-10-10
+  source_sha256: 6488881bcba91a133320f164e9be3e7757ad4be8f19dbfa4e71613cd1e724767
+curation_history:
+- timestamp: '2026-11-01T02:28:00Z'
+  curator: antigravity
+  action: created
+  changes: Curated PathBank:SMP0002091 (Methylglyoxal Degradation III in Escherichia coli, native BioPAX
+    archive member PW002079.owl) with 12 participants, 2 directional Rhea reactions (RHEA:27988, RHEA:28668),
+    17 mechanistic edges with explicit stoichiometric coefficients, ECO codes, and Escherichia coli K-12
+    assay_taxon qualifiers, and 2 SSSOM source_mappings (UniProt:P0A9S5 -> UniProtKB:P0A9S5, UniProt:Q46851
+    -> UniProtKB:Q46851).
+  llm_assisted: true
