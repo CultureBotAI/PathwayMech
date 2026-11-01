@@ -1,0 +1,45 @@
+history_version: 1
+target:
+  kind: other
+  slug: cycle10-stage4-frozen-corpus-cohort-review-rev2-2026-11-01
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000010/stage-04/revision-0002/evidence.yaml
+session:
+  id: 2026-11-01T082500Z-antigravity-a1d1e5
+  timestamp: '2026-11-01T08:25:00Z'
+  actors:
+    - type: ai_agent
+      name: antigravity
+      model: gemini-2.5-pro
+      agent_tool: antigravity
+links:
+  prs:
+    - https://github.com/CultureBotAI/PathwayMech/pull/779
+events:
+  - type: REVIEW
+    outcome: needs_followup
+    sections:
+      - reviews/structured
+      - reviews/workflow
+    summary: Persist Cycle 10 Stage 4 Revision 2 cohort review and workflow evidence manifest addressing PR 779 adversarial review findings while preserving immutable Revision 1 bundles
+    details: >-
+      Created superseding structured cohort review bundle
+      reviews/structured/20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2/{review.yaml,review.md}
+      and workflow evidence bundle
+      reviews/workflow/mech-goal-sequence-20261019/cycle-000010/stage-04/revision-0002/{review_report.md,review_findings.md,coverage.json,evidence.yaml}
+      (with supersedes_evidence pointing to revision-0001/evidence.yaml) to address
+      four factual/prose findings from the Cycle 10 Stage 4 adversarial PR review
+      on PR #779 without mutating the merged Revision 1 files:
+      (1) corrected EV-C10-RAW-LOCAL-ID-METACYC-RXN-REF-TITLES-2 quote URL to
+      https://pathway.yeastgenome.org/getxml?META:RXN0-5224;
+      (2) corrected boundary_decisions[8] record IDs to MetaCyc:PWY-5386,
+      MetaCyc:PWY-5453, PathBank:SMP0002091, and gomodel:YeastPathways_PWY-901
+      (methylglyoxal-catabolism.yaml) and accurately described PathBank:SMP0002091
+      (PW002079.owl, UniProtKB:Q46851 on RHEA:27988, and PathBank:SMP0002091/ProteinComplex/3935
+      with UniProtKB:P0A9S5 on RHEA:28668);
+      (3) updated review_report.md participant, reaction, and mechanistic_edges
+      counts to match the exact 279-record corpus totals (7,880 participants,
+      1,635 reactions, 14,770 mechanistic_edges); and
+      (4) aligned review_findings.md field names (id, label, category, direction)
+      and evidence IDs with review.yaml. Preserved open findings F-C10S4-001 and
+      F-C10S4-002 for Cycle 10 Stage 5 grouped remediation with zero edits to
+      data/pathways/*.yaml or pages/.
