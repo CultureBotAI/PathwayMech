@@ -23,6 +23,7 @@ from pathwaymech.pathbank_provenance import (
     audit_pathbank_archive_member_authority,
     build_pathbank_archive_manifest_entry,
     inspect_pathbank_archive_member,
+    plan_next_pathbank_archive_candidate_registration,
     rank_pathbank_archive_member_candidates,
     select_next_pathbank_archive_candidate,
     summarize_pathbank_archive_candidate_frontier,
@@ -1679,4 +1680,189 @@ def test_summarize_pathbank_archive_candidate_frontier_rejects_invalid_filters(
             [("PW9999999.owl", "SMP9999999")],
             snapshot_path,
             **kwargs,
+        )
+
+
+def test_plan_next_pathbank_archive_candidate_registration_builds_updated_manifest(
+    tmp_path,
+):
+    archive_path = tmp_path / "candidates.zip"
+    root_registered = _member_root_for_accession("SMP9999991", uniprot_ids=("P0A9T0",))
+    root_one_missing = _member_root_for_accession(
+        "SMP9999992", uniprot_ids=("P0A9T0", "P00877")
+    )
+    root_two_missing = _member_root_for_accession(
+        "SMP9999993", uniprot_ids=("P00877", "P0A6D7")
+    )
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr(
+            "PW9999993.owl",
+            ET.tostring(root_two_missing, encoding="utf-8", xml_declaration=True),
+        )
+        archive.writestr(
+            "PW9999991.owl",
+            ET.tostring(root_registered, encoding="utf-8", xml_declaration=True),
+        )
+        archive.writestr(
+            "PW9999992.owl",
+            ET.tostring(root_one_missing, encoding="utf-8", xml_declaration=True),
+        )
+
+    registered_manifest = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999991.owl", "SMP9999991"
+    )
+    next_manifest = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999992.owl", "SMP9999992"
+    )
+    manifest_path = tmp_path / "identifier_sources.json"
+    manifest_path.write_text(
+        json.dumps([registered_manifest], indent=2),
+        encoding="utf-8",
+    )
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "sources": {registered_manifest["key"]: registered_manifest},
+                "terms": {
+                    "PathBank:SMP9999991": {
+                        "label": "Native pathway title",
+                        "synonyms": [],
+                        "source": registered_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/Reactions/7": {
+                        "label": "1.2.3.4",
+                        "synonyms": ["Native substrate → native product"],
+                        "source": registered_manifest["key"],
+                    },
+                    "PathBank:SMP9999991/ProteinComplex/8": {
+                        "label": "ProteinComplex/8",
+                        "synonyms": [],
+                        "source": registered_manifest["key"],
+                    },
+                    "CHEBI:15377": {"label": "water", "synonyms": [], "source": "chebi-obo"},
+                    "UniProtKB:P0A9T0": {
+                        "label": "D-3-phosphoglycerate dehydrogenase",
+                        "synonyms": [],
+                        "source": "uniprot-entries",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    candidates = [
+        ("PW9999993.owl", "SMP9999993"),
+        ("PW9999991.owl", "SMP9999991"),
+        ("PW9999992.owl", "SMP9999992"),
+    ]
+    plan = plan_next_pathbank_archive_candidate_registration(
+        archive_path, candidates, snapshot_path, manifest_path
+    )
+    assert plan["selected_candidate"] is not None
+    assert plan["selected_candidate"]["pathway_id"] == "PathBank:SMP9999992"
+    assert plan["manifest_entry"] == next_manifest
+    assert plan["manifest_already_present"] is False
+    assert plan["required_native_term_ids"] == [
+        "PathBank:SMP9999992",
+        "PathBank:SMP9999992/Reactions/7",
+        "PathBank:SMP9999992/ProteinComplex/8",
+    ]
+    assert plan["required_external_xrefs"] == {
+        "CHEBI": [],
+        "NCBITaxon": [],
+        "UniProtKB": ["UniProtKB:P00877"],
+    }
+    assert plan["updated_manifest_entries"] == [registered_manifest, next_manifest]
+
+    plan_including_registered = plan_next_pathbank_archive_candidate_registration(
+        archive_path,
+        candidates,
+        snapshot_path,
+        manifest_path,
+        require_unregistered_manifest=False,
+    )
+    assert plan_including_registered["selected_candidate"] is not None
+    assert plan_including_registered["selected_candidate"]["pathway_id"] == "PathBank:SMP9999991"
+    assert plan_including_registered["manifest_already_present"] is True
+    assert plan_including_registered["updated_manifest_entries"] == [registered_manifest]
+
+    empty_plan = plan_next_pathbank_archive_candidate_registration(
+        archive_path,
+        candidates,
+        snapshot_path,
+        manifest_path,
+        excluded_pathway_ids=["PathBank:SMP9999992", "PathBank:SMP9999993"],
+    )
+    assert empty_plan["selected_candidate"] is None
+    assert empty_plan["manifest_entry"] is None
+    assert empty_plan["manifest_already_present"] is False
+    assert empty_plan["required_native_term_ids"] == []
+    assert empty_plan["required_external_xrefs"] == {
+        "CHEBI": [],
+        "NCBITaxon": [],
+        "UniProtKB": [],
+    }
+    assert empty_plan["updated_manifest_entries"] == [registered_manifest]
+
+
+@pytest.mark.parametrize(
+    "problem,match",
+    [
+        ("invalid-json", "valid JSON manifest file"),
+        ("not-a-list", "JSON list of source entries"),
+        ("non-dict-entry", "object source entries"),
+        ("blank-key", "non-empty string keys"),
+        ("duplicate-key", "duplicate key: dup"),
+        (
+            "duplicate-archive-pair",
+            "duplicate archive \\(member, root\\): PW9999999.owl / SMP9999999",
+        ),
+        (
+            "conflicting-existing-entry",
+            "conflicts with existing manifest entry for pathbank-primary-2019-PW9999999-SMP9999999",
+        ),
+        (
+            "already-in-manifest-when-unregistered",
+            "already present in manifest file while unregistered in snapshot: "
+            "pathbank-primary-2019-PW9999999-SMP9999999",
+        ),
+    ],
+)
+def test_plan_next_pathbank_archive_candidate_registration_rejects_invalid_or_conflicting_manifests(
+    tmp_path, problem, match
+):
+    path, _ = archive_fixture(tmp_path)
+    entry = build_pathbank_archive_manifest_entry(path, "PW9999999.owl", "SMP9999999")
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(json.dumps({"sources": {}, "terms": {}}), encoding="utf-8")
+    manifest_path = tmp_path / "identifier_sources.json"
+    if problem == "invalid-json":
+        manifest_path.write_text("{not-json", encoding="utf-8")
+    elif problem == "not-a-list":
+        manifest_path.write_text(json.dumps({"entries": []}), encoding="utf-8")
+    elif problem == "non-dict-entry":
+        manifest_path.write_text(json.dumps(["bad"]), encoding="utf-8")
+    elif problem == "blank-key":
+        manifest_path.write_text(json.dumps([{"key": " "}]), encoding="utf-8")
+    elif problem == "duplicate-key":
+        manifest_path.write_text(
+            json.dumps([{"key": "dup"}, {"key": "dup"}]),
+            encoding="utf-8",
+        )
+    elif problem == "duplicate-archive-pair":
+        second = {**copy.deepcopy(entry), "key": "second-key"}
+        manifest_path.write_text(json.dumps([entry, second]), encoding="utf-8")
+    elif problem == "conflicting-existing-entry":
+        conflicting = {**copy.deepcopy(entry), "version": "different-version"}
+        manifest_path.write_text(json.dumps([conflicting]), encoding="utf-8")
+    elif problem == "already-in-manifest-when-unregistered":
+        manifest_path.write_text(json.dumps([entry]), encoding="utf-8")
+    with pytest.raises(ValueError, match=match):
+        plan_next_pathbank_archive_candidate_registration(
+            path,
+            [("PW9999999.owl", "SMP9999999")],
+            snapshot_path,
+            manifest_path,
         )
