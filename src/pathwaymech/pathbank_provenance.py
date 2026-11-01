@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import re
@@ -479,4 +480,143 @@ def summarize_pathbank_archive_candidate_frontier(
         "missing_external_xrefs_union": {
             prefix: sorted(curies) for prefix, curies in missing_union.items()
         },
+    }
+
+
+def _load_validated_manifest_entries(manifest_path: Path) -> list[dict[str, Any]]:
+    try:
+        raw_entries = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(
+            "PathBank manifest registration plan requires a valid JSON manifest file"
+        ) from exc
+    if not isinstance(raw_entries, list):
+        raise ValueError(
+            "PathBank manifest registration plan requires a JSON list of source entries"
+        )
+    seen_keys: set[str] = set()
+    seen_archive_pairs: set[tuple[str, str]] = set()
+    validated: list[dict[str, Any]] = []
+    for entry in raw_entries:
+        if not isinstance(entry, dict):
+            raise ValueError(
+                "PathBank manifest registration plan requires object source entries"
+            )
+        entry_key = entry.get("key")
+        if not isinstance(entry_key, str) or not entry_key.strip():
+            raise ValueError(
+                "PathBank manifest registration plan requires non-empty string keys"
+            )
+        if entry_key in seen_keys:
+            raise ValueError(
+                f"PathBank manifest registration plan duplicate key: {entry_key}"
+            )
+        seen_keys.add(entry_key)
+        if entry.get("kind") == PATHBANK_ARCHIVE_KIND:
+            validate_pathbank_archive(
+                entry.get("url"), entry.get("sha256"), entry.get("archive")
+            )
+            archive = entry["archive"]
+            pair = (archive["member"], archive["root"])
+            if pair in seen_archive_pairs:
+                raise ValueError(
+                    "PathBank manifest registration plan duplicate archive "
+                    f"(member, root): {pair[0]} / {pair[1]}"
+                )
+            seen_archive_pairs.add(pair)
+        validated.append(copy.deepcopy(entry))
+    return validated
+
+
+def plan_next_pathbank_archive_candidate_registration(
+    archive_path: Path,
+    candidates: list[tuple[str, str]] | tuple[tuple[str, str], ...],
+    authority_snapshot_path: Path,
+    manifest_path: Path,
+    *,
+    excluded_pathway_ids: set[str] | frozenset[str] | list[str] | tuple[str, ...] = (),
+    require_unregistered_manifest: bool = True,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+) -> dict[str, Any]:
+    """Build a deterministic manifest-and-authority registration plan for the next slice.
+
+    Validates ``manifest_path`` (``conf/identifier_sources.json``), summarizes the
+    candidate frontier against ``authority_snapshot_path``
+    (``data/identifier_authorities/sources.json``), verifies that the selected
+    candidate's manifest entry does not conflict with existing manifest entries, and
+    returns the selected candidate, its closed ``pathbank-biopax-zip`` manifest entry,
+    required missing native/external CURIEs, and the updated manifest entry list.
+    """
+    manifest_entries = _load_validated_manifest_entries(manifest_path)
+    frontier = summarize_pathbank_archive_candidate_frontier(
+        archive_path,
+        candidates,
+        authority_snapshot_path,
+        excluded_pathway_ids=excluded_pathway_ids,
+        require_unregistered_manifest=require_unregistered_manifest,
+        path=path,
+        version=version,
+        license=license,
+    )
+    selected = frontier["next_candidate"]
+    if selected is None:
+        return {
+            "frontier": frontier,
+            "selected_candidate": None,
+            "manifest_entry": None,
+            "manifest_already_present": False,
+            "required_native_term_ids": [],
+            "required_external_xrefs": {
+                "CHEBI": [],
+                "NCBITaxon": [],
+                "UniProtKB": [],
+            },
+            "updated_manifest_entries": manifest_entries,
+        }
+
+    manifest_entry = copy.deepcopy(selected["manifest_entry"])
+    target_key = manifest_entry["key"]
+    target_pair = (
+        manifest_entry["archive"]["member"],
+        manifest_entry["archive"]["root"],
+    )
+    manifest_already_present = False
+    for existing in manifest_entries:
+        existing_key = existing["key"]
+        existing_pair = None
+        if existing.get("kind") == PATHBANK_ARCHIVE_KIND:
+            existing_archive = existing["archive"]
+            existing_pair = (existing_archive["member"], existing_archive["root"])
+        if existing_key == target_key or existing_pair == target_pair:
+            if existing != manifest_entry:
+                raise ValueError(
+                    "PathBank manifest registration plan conflicts with existing "
+                    f"manifest entry for {target_key}"
+                )
+            if require_unregistered_manifest:
+                raise ValueError(
+                    "PathBank manifest registration plan found manifest key already "
+                    f"present in manifest file while unregistered in snapshot: {target_key}"
+                )
+            manifest_already_present = True
+            break
+
+    updated_manifest_entries = (
+        manifest_entries
+        if manifest_already_present
+        else [*manifest_entries, copy.deepcopy(manifest_entry)]
+    )
+    return {
+        "frontier": frontier,
+        "selected_candidate": selected,
+        "manifest_entry": manifest_entry,
+        "manifest_already_present": manifest_already_present,
+        "required_native_term_ids": list(selected["missing_native_term_ids"]),
+        "required_external_xrefs": {
+            prefix: list(curies)
+            for prefix, curies in selected["missing_external_xrefs"].items()
+        },
+        "updated_manifest_entries": updated_manifest_entries,
     }
