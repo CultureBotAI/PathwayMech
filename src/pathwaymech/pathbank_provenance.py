@@ -202,6 +202,27 @@ def inspect_pathbank_archive_member(
     }
 
 
+def _load_validated_authority_snapshot(
+    authority_snapshot_path: Path,
+) -> dict[str, Any]:
+    try:
+        snapshot = json.loads(Path(authority_snapshot_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError(
+            "PathBank authority audit requires a valid JSON authority snapshot"
+        ) from exc
+    if (
+        not isinstance(snapshot, dict)
+        or not isinstance(snapshot.get("sources"), dict)
+        or not isinstance(snapshot.get("terms"), dict)
+    ):
+        raise ValueError(
+            "PathBank authority audit requires an authority snapshot "
+            "with 'sources' and 'terms' mappings"
+        )
+    return snapshot
+
+
 def audit_pathbank_archive_member_authority(
     archive_path: Path,
     member: str,
@@ -229,21 +250,7 @@ def audit_pathbank_archive_member_authority(
         version=version,
         license=license,
     )
-    try:
-        snapshot = json.loads(Path(authority_snapshot_path).read_text(encoding="utf-8"))
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise ValueError(
-            "PathBank authority audit requires a valid JSON authority snapshot"
-        ) from exc
-    if (
-        not isinstance(snapshot, dict)
-        or not isinstance(snapshot.get("sources"), dict)
-        or not isinstance(snapshot.get("terms"), dict)
-    ):
-        raise ValueError(
-            "PathBank authority audit requires an authority snapshot "
-            "with 'sources' and 'terms' mappings"
-        )
+    snapshot = _load_validated_authority_snapshot(authority_snapshot_path)
     sources = snapshot["sources"]
     terms = snapshot["terms"]
     manifest_key = summary["manifest_entry"]["key"]
@@ -619,4 +626,118 @@ def plan_next_pathbank_archive_candidate_registration(
             for prefix, curies in selected["missing_external_xrefs"].items()
         },
         "updated_manifest_entries": updated_manifest_entries,
+    }
+
+
+def audit_pathbank_manifest_snapshot_sync(
+    manifest_path: Path,
+    authority_snapshot_path: Path,
+) -> dict[str, Any]:
+    """Audit PathBank ZIP provenance synchronization between manifest and authority snapshot.
+
+    Validates ``manifest_path`` (``conf/identifier_sources.json``) and
+    ``authority_snapshot_path`` (``data/identifier_authorities/sources.json``),
+    verifies closed ``pathbank-biopax-zip`` provenance invariants on both sides,
+    rejects conflicting keys or ``(member, root)`` pairs, and partitions
+    ``pathbank-biopax-zip`` keys into ``synchronized_keys``,
+    ``pending_snapshot_keys``, and ``orphan_snapshot_keys``.
+    """
+    manifest_entries = _load_validated_manifest_entries(manifest_path)
+    snapshot = _load_validated_authority_snapshot(authority_snapshot_path)
+    sources = snapshot["sources"]
+
+    manifest_archive_by_key: dict[str, dict[str, Any]] = {}
+    manifest_key_by_pair: dict[tuple[str, str], str] = {}
+    for entry in manifest_entries:
+        if entry.get("kind") != PATHBANK_ARCHIVE_KIND:
+            continue
+        if entry.keys() != {
+            "key",
+            "kind",
+            "path",
+            "url",
+            "version",
+            "license",
+            "sha256",
+            "archive",
+        }:
+            raise ValueError(
+                "PathBank manifest-snapshot sync requires closed manifest entry fields "
+                f"for {entry['key']}"
+            )
+        pair = (entry["archive"]["member"], entry["archive"]["root"])
+        manifest_archive_by_key[entry["key"]] = entry
+        manifest_key_by_pair[pair] = entry["key"]
+
+    snapshot_archive_by_key: dict[str, dict[str, Any]] = {}
+    seen_snapshot_pairs: set[tuple[str, str]] = set()
+    for key, meta in sources.items():
+        if not isinstance(meta, dict):
+            raise ValueError(
+                f"PathBank manifest-snapshot sync requires object snapshot source for {key}"
+            )
+        if key in manifest_archive_by_key and meta.get("kind") != PATHBANK_ARCHIVE_KIND:
+            raise ValueError(
+                f"PathBank manifest-snapshot sync kind mismatch for {key}"
+            )
+        if meta.get("kind") != PATHBANK_ARCHIVE_KIND:
+            continue
+        validate_pathbank_archive(
+            meta.get("url"), meta.get("sha256"), meta.get("archive")
+        )
+        accessions = meta.get("pathway_accessions")
+        if (
+            not isinstance(accessions, list)
+            or not accessions
+            or any(
+                not isinstance(acc, str) or not re.fullmatch(r"SMP[0-9]+", acc)
+                for acc in accessions
+            )
+            or len(set(accessions)) != len(accessions)
+            or accessions[0] != meta["archive"]["root"]
+        ):
+            raise ValueError(
+                "PathBank manifest-snapshot sync requires valid pathway_accessions "
+                f"headed by archive root for {key}"
+            )
+        pair = (meta["archive"]["member"], meta["archive"]["root"])
+        if pair in seen_snapshot_pairs:
+            raise ValueError(
+                "PathBank manifest-snapshot sync duplicate snapshot archive "
+                f"(member, root): {pair[0]} / {pair[1]}"
+            )
+        seen_snapshot_pairs.add(pair)
+        if pair in manifest_key_by_pair and manifest_key_by_pair[pair] != key:
+            raise ValueError(
+                "PathBank manifest-snapshot sync conflicting archive "
+                f"(member, root) key for {pair[0]} / {pair[1]}"
+            )
+        snapshot_archive_by_key[key] = meta
+
+    synchronized_keys: list[str] = []
+    pending_snapshot_keys: list[str] = []
+    shared_fields = ("kind", "url", "version", "license", "sha256", "archive")
+    for key, manifest_entry in manifest_archive_by_key.items():
+        snapshot_meta = snapshot_archive_by_key.get(key)
+        if snapshot_meta is None:
+            pending_snapshot_keys.append(key)
+            continue
+        if any(manifest_entry.get(field) != snapshot_meta.get(field) for field in shared_fields):
+            raise ValueError(
+                f"PathBank manifest-snapshot sync provenance mismatch for {key}"
+            )
+        synchronized_keys.append(key)
+
+    orphan_snapshot_keys = sorted(
+        key for key in snapshot_archive_by_key if key not in manifest_archive_by_key
+    )
+    return {
+        "manifest_archive_count": len(manifest_archive_by_key),
+        "snapshot_archive_count": len(snapshot_archive_by_key),
+        "manifest_archive_keys": list(manifest_archive_by_key),
+        "snapshot_archive_keys": sorted(snapshot_archive_by_key),
+        "synchronized_keys": synchronized_keys,
+        "pending_snapshot_keys": pending_snapshot_keys,
+        "orphan_snapshot_keys": orphan_snapshot_keys,
+        "in_sync": not pending_snapshot_keys and not orphan_snapshot_keys,
     }
