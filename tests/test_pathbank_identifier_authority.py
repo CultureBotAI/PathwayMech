@@ -21,6 +21,7 @@ from pathwaymech.pathbank_provenance import (
     PATHBANK_ARCHIVE_URL,
     PATHBANK_ARCHIVE_VERSION,
     audit_pathbank_archive_member_authority,
+    audit_pathbank_manifest_snapshot_sync,
     build_pathbank_archive_manifest_entry,
     inspect_pathbank_archive_member,
     plan_next_pathbank_archive_candidate_registration,
@@ -1866,3 +1867,202 @@ def test_plan_next_pathbank_archive_candidate_registration_rejects_invalid_or_co
             snapshot_path,
             manifest_path,
         )
+
+
+def test_audit_pathbank_manifest_snapshot_sync_partitions_synchronized_pending_and_orphan_keys(
+    tmp_path: Path,
+) -> None:
+    archive_path = tmp_path / "candidates.zip"
+    root_a = _member_root_for_accession("SMP9999991", uniprot_ids=("P0A9T0",))
+    root_b = _member_root_for_accession("SMP9999992", uniprot_ids=("P00877",))
+    root_orphan = _member_root_for_accession("SMP9999993", uniprot_ids=("P0A6D7",))
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr(
+            "PW9999991.owl",
+            ET.tostring(root_a, encoding="utf-8", xml_declaration=True),
+        )
+        archive.writestr(
+            "PW9999992.owl",
+            ET.tostring(root_b, encoding="utf-8", xml_declaration=True),
+        )
+        archive.writestr(
+            "PW9999993.owl",
+            ET.tostring(root_orphan, encoding="utf-8", xml_declaration=True),
+        )
+
+    entry_a = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999991.owl", "SMP9999991"
+    )
+    entry_b = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999992.owl", "SMP9999992"
+    )
+    entry_orphan = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999993.owl", "SMP9999993"
+    )
+    manifest_path = tmp_path / "identifier_sources.json"
+    manifest_path.write_text(
+        json.dumps(
+            [
+                {"key": "chebi-obo", "kind": "obo", "path": "data/chebi.obo"},
+                entry_a,
+                entry_b,
+            ]
+        ),
+        encoding="utf-8",
+    )
+    snapshot_entry_a = {
+        "kind": entry_a["kind"],
+        "url": entry_a["url"],
+        "version": entry_a["version"],
+        "license": entry_a["license"],
+        "sha256": entry_a["sha256"],
+        "archive": copy.deepcopy(entry_a["archive"]),
+        "pathway_accessions": ["SMP9999991"],
+    }
+    snapshot_entry_b = {
+        "kind": entry_b["kind"],
+        "url": entry_b["url"],
+        "version": entry_b["version"],
+        "license": entry_b["license"],
+        "sha256": entry_b["sha256"],
+        "archive": copy.deepcopy(entry_b["archive"]),
+        "pathway_accessions": ["SMP9999992"],
+    }
+    snapshot_entry_orphan = {
+        "kind": entry_orphan["kind"],
+        "url": entry_orphan["url"],
+        "version": entry_orphan["version"],
+        "license": entry_orphan["license"],
+        "sha256": entry_orphan["sha256"],
+        "archive": copy.deepcopy(entry_orphan["archive"]),
+        "pathway_accessions": ["SMP9999993"],
+    }
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "sources": {
+                    "chebi-obo": {"kind": "obo", "url": "https://example.org/chebi.obo"},
+                    entry_a["key"]: snapshot_entry_a,
+                    entry_orphan["key"]: snapshot_entry_orphan,
+                },
+                "terms": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    out_of_sync = audit_pathbank_manifest_snapshot_sync(manifest_path, snapshot_path)
+    assert out_of_sync == {
+        "manifest_archive_count": 2,
+        "snapshot_archive_count": 2,
+        "manifest_archive_keys": [entry_a["key"], entry_b["key"]],
+        "snapshot_archive_keys": [entry_a["key"], entry_orphan["key"]],
+        "synchronized_keys": [entry_a["key"]],
+        "pending_snapshot_keys": [entry_b["key"]],
+        "orphan_snapshot_keys": [entry_orphan["key"]],
+        "in_sync": False,
+    }
+
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "sources": {
+                    entry_a["key"]: snapshot_entry_a,
+                    entry_b["key"]: snapshot_entry_b,
+                },
+                "terms": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    in_sync = audit_pathbank_manifest_snapshot_sync(manifest_path, snapshot_path)
+    assert in_sync == {
+        "manifest_archive_count": 2,
+        "snapshot_archive_count": 2,
+        "manifest_archive_keys": [entry_a["key"], entry_b["key"]],
+        "snapshot_archive_keys": [entry_a["key"], entry_b["key"]],
+        "synchronized_keys": [entry_a["key"], entry_b["key"]],
+        "pending_snapshot_keys": [],
+        "orphan_snapshot_keys": [],
+        "in_sync": True,
+    }
+
+    repo_root = Path(__file__).resolve().parents[1]
+    repo_sync = audit_pathbank_manifest_snapshot_sync(
+        repo_root / "conf" / "identifier_sources.json",
+        repo_root / "data" / "identifier_authorities" / "sources.json",
+    )
+    assert repo_sync["in_sync"] is True
+    assert repo_sync["manifest_archive_count"] == 14
+    assert repo_sync["snapshot_archive_count"] == 14
+    assert repo_sync["pending_snapshot_keys"] == []
+    assert repo_sync["orphan_snapshot_keys"] == []
+
+
+@pytest.mark.parametrize(
+    ("problem", "match"),
+    [
+        ("extra-manifest-field", "closed manifest entry fields"),
+        ("non-dict-source-entry", "requires object snapshot source"),
+        ("kind-mismatch", "kind mismatch"),
+        ("invalid-snapshot-provenance", "closed archive provenance object"),
+        ("missing-pathway-accessions", "valid pathway_accessions headed by archive root"),
+        ("duplicate-snapshot-pair", "duplicate snapshot archive \\(member, root\\)"),
+        ("conflicting-pair-key", "conflicting archive \\(member, root\\) key"),
+        ("drifted-snapshot-provenance", "provenance mismatch"),
+    ],
+)
+def test_audit_pathbank_manifest_snapshot_sync_rejects_invalid_or_drifted_provenance(
+    tmp_path: Path,
+    problem: str,
+    match: str,
+) -> None:
+    path, _ = archive_fixture(tmp_path)
+    entry = build_pathbank_archive_manifest_entry(path, "PW9999999.owl", "SMP9999999")
+    manifest_entries = [copy.deepcopy(entry)]
+    if problem == "extra-manifest-field":
+        manifest_entries[0]["extra"] = "unexpected"
+    manifest_path = tmp_path / "identifier_sources.json"
+    manifest_path.write_text(json.dumps(manifest_entries), encoding="utf-8")
+
+    snapshot_entry = {
+        "kind": entry["kind"],
+        "url": entry["url"],
+        "version": entry["version"],
+        "license": entry["license"],
+        "sha256": entry["sha256"],
+        "archive": copy.deepcopy(entry["archive"]),
+        "pathway_accessions": ["SMP9999999"],
+    }
+    sources: dict[str, object] = {entry["key"]: snapshot_entry}
+    if problem == "non-dict-source-entry":
+        sources = {entry["key"]: "bad"}
+    elif problem == "kind-mismatch":
+        sources = {entry["key"]: {**snapshot_entry, "kind": "obo"}}
+    elif problem == "invalid-snapshot-provenance":
+        bad_archive = dict(entry["archive"])
+        del bad_archive["member_sha256"]
+        sources = {entry["key"]: {**snapshot_entry, "archive": bad_archive}}
+    elif problem == "missing-pathway-accessions":
+        sources = {entry["key"]: {**snapshot_entry, "pathway_accessions": ["SMP0000001"]}}
+    elif problem == "duplicate-snapshot-pair":
+        sources = {
+            entry["key"]: snapshot_entry,
+            "duplicate-key": copy.deepcopy(snapshot_entry),
+        }
+    elif problem == "conflicting-pair-key":
+        sources = {"different-key": snapshot_entry}
+    elif problem == "drifted-snapshot-provenance":
+        sources = {entry["key"]: {**snapshot_entry, "version": "drifted-version"}}
+
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps({"version": 1, "sources": sources, "terms": {}}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match=match):
+        audit_pathbank_manifest_snapshot_sync(manifest_path, snapshot_path)
