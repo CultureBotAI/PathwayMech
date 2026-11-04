@@ -1,0 +1,455 @@
+id: PathBank:SMP0002100
+label: Trehalose Biosynthesis I
+description: 'PathBank SMP0002100 (native BioPAX archive member PW002088.owl) models the two-step cytoplasmic
+  trehalose biosynthesis I pathway in Escherichia coli (NCBITaxon:562; native Species/3), corresponding
+  to the Escherichia coli MetaCyc pathway record MetaCyc:TRESYN-PWY (trehalose-biosynthesis-i.yaml) and
+  supported by genetic and biochemical characterization of the otsBA operon in Escherichia coli K-12
+  (NCBITaxon:83333; PMID:8045430). In the first step (RHEA:18890, left-to-right direction of RHEA:18889;
+  native Reactions/6093, eCNumber 2.4.1.15, Glucose 6-phosphate + Uridine diphosphate glucose -> Hydrogen
+  Ion + Uridine 5''-diphosphate + alpha,alpha-Trehalose 6-phosphate, conversionDirection LEFT-TO-RIGHT),
+  cytosolic trehalose-6-phosphate synthase OtsA (UniProtKB:P31677; native Protein/6510 Alpha,alpha-trehalose-phosphate
+  synthase [UDP-forming] controlling Reactions/6093 via ReactionCatalysis/6052 in PathwayEnzymeReaction/22665)
+  transfers a glucosyl moiety from UDP-alpha-D-glucose (CHEBI:58885; pH 7.3 major microspecies of native
+  Compound/PW_C000193 Uridine diphosphate glucose, BioCyc UDP-GLUCOSE / KEGG Compound C00029) to D-glucose
+  6-phosphate (CHEBI:61548; pH 7.3 major microspecies of native Compound/PW_C001083 Glucose 6-phosphate,
+  CHEBI:4170) to form alpha,alpha-trehalose 6-phosphate (CHEBI:58429; pH 7.3 major microspecies of native
+  Compound/PW_C044529 alpha,alpha-Trehalose 6-phosphate, CHEBI:18283), UDP (CHEBI:58223; pH 7.3 major
+  microspecies of native Compound/PW_C000201 Uridine 5''-diphosphate, CHEBI:17659), and hydron (CHEBI:15378;
+  native Compound/PW_C040034 Hydrogen Ion).
+
+
+  In the second step (RHEA:23421, left-to-right direction of RHEA:23420; native Reactions/6094, eCNumber
+  3.1.3.12, Water + alpha,alpha-Trehalose 6-phosphate -> Phosphate + alpha,alpha-trehalose, conversionDirection
+  LEFT-TO-RIGHT), cytosolic trehalose-6-phosphate phosphatase OtsB (UniProtKB:P31678; native Protein/6511
+  Trehalose-phosphate phosphatase controlling Reactions/6094 via ReactionCatalysis/6054 in PathwayEnzymeReaction/22667),
+  which utilizes Mg(2+) (CHEBI:18420) or alternative divalent metal cations Mn(2+) (CHEBI:29035), Co(2+)
+  (CHEBI:48828), or Zn(2+) (CHEBI:29105) as a cofactor, hydrolyzes alpha,alpha-trehalose 6-phosphate
+  (CHEBI:58429; native Compound/PW_C044529) with water (CHEBI:15377; native Compound/PW_C001420 Water)
+  to yield alpha,alpha-trehalose (CHEBI:16551; native Compound/PW_C042934 alpha,alpha-trehalose) and
+  phosphate (CHEBI:43474; pH 7.3 major microspecies of native Compound/PW_C001104 Phosphate, CHEBI:18367).
+  Native PW002088.owl also declares diagram subpathway stubs SMP0000841 (Galactose Metabolism; PathwaySubPathway/109953,
+  SubPathwayInteractions/109953) and SMP0002109 (Trehalose Degradation I (Low Osmolarity); PathwaySubPathway/109954,
+  SubPathwayInteractions/109954 with participant Compound/PW_C042934), which are recorded as adjacent
+  pathway context without fabricating cross-pathway edges.'
+pathway_type: compatible-solute-biosynthesis
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:61548
+  label: D-glucose 6-phosphate
+  category: small_molecule
+- id: CHEBI:58885
+  label: UDP-alpha-D-glucose
+  category: small_molecule
+- id: CHEBI:58429
+  label: alpha,alpha-trehalose 6-phosphate
+  category: small_molecule
+- id: CHEBI:58223
+  label: UDP
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:16551
+  label: alpha,alpha-trehalose
+  category: small_molecule
+- id: CHEBI:43474
+  label: phosphate
+  category: small_molecule
+- id: UniProtKB:P31677
+  label: Trehalose-6-phosphate synthase
+  category: protein
+- id: UniProtKB:P31678
+  label: Trehalose-6-phosphate phosphatase
+  category: protein
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+reactions:
+- id: RHEA:18890
+  label: trehalose-6-phosphate synthase reaction
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:23421
+  label: trehalose-6-phosphate phosphatase reaction
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0002100-edge-001
+  subject: CHEBI:61548
+  predicate: consumes
+  object: RHEA:18890
+  coefficient: 1
+  description: D-glucose 6-phosphate (CHEBI:61548; pH 7.3 major microspecies of native Compound/PW_C001083
+    Glucose 6-phosphate, CHEBI:4170) is consumed with stoichiometric coefficient 1 in the OtsA-catalyzed
+    trehalose-6-phosphate synthase reaction (RHEA:18890; native Reactions/6093).
+  evidence:
+  - reference_id: RHEA:18890
+    source_assertion: Rhea lists CHEBI:61548 on the substrates side of RHEA:18890 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18890']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6093 (2.4.1.15, Glucose 6-phosphate
+      + Uridine diphosphate glucose -> Hydrogen Ion + Uridine 5'-diphosphate + alpha,alpha-Trehalose 6-phosphate)
+      lists Compound/PW_C001083 (Glucose 6-phosphate, CompoundReference/PW_C001083 cross-referenced to
+      ChEBI CHEBI:4170) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6093']/bp:left[@rdf:resource='#Compound/PW_C001083'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001083/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C001083']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_4170']
+- id: smp0002100-edge-002
+  subject: CHEBI:58885
+  predicate: consumes
+  object: RHEA:18890
+  coefficient: 1
+  description: UDP-alpha-D-glucose (CHEBI:58885; pH 7.3 major microspecies of native Compound/PW_C000193
+    Uridine diphosphate glucose, BioCyc UDP-GLUCOSE / KEGG Compound C00029) is consumed with stoichiometric
+    coefficient 1 in the OtsA-catalyzed trehalose-6-phosphate synthase reaction (RHEA:18890; native Reactions/6093).
+  evidence:
+  - reference_id: RHEA:18890
+    source_assertion: Rhea lists CHEBI:58885 on the substrates side of RHEA:18890 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18890']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6093 lists Compound/PW_C000193
+      (Uridine diphosphate glucose, CompoundReference/PW_C000193 cross-referenced to BioCyc UDP-GLUCOSE
+      and KEGG Compound C00029) on bp:left with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6093']/bp:left[@rdf:resource='#Compound/PW_C000193'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000193/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000193']/bp:xref[@rdf:resource='#Reference/BioCyc_UDP-GLUCOSE']
+- id: smp0002100-edge-003
+  subject: RHEA:18890
+  predicate: produces
+  object: CHEBI:58429
+  coefficient: 1
+  description: Alpha,alpha-trehalose 6-phosphate (CHEBI:58429; pH 7.3 major microspecies of native Compound/PW_C044529
+    alpha,alpha-Trehalose 6-phosphate, CHEBI:18283) is produced with stoichiometric coefficient 1 by the
+    OtsA-catalyzed trehalose-6-phosphate synthase reaction (RHEA:18890; native Reactions/6093).
+  evidence:
+  - reference_id: RHEA:18890
+    source_assertion: Rhea lists CHEBI:58429 on the products side of RHEA:18890 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18890']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6093 lists Compound/PW_C044529
+      (alpha,alpha-Trehalose 6-phosphate, CompoundReference/PW_C044529 cross-referenced to ChEBI CHEBI:18283)
+      on bp:right with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6093']/bp:right[@rdf:resource='#Compound/PW_C044529'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C044529/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C044529']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_18283']
+- id: smp0002100-edge-004
+  subject: RHEA:18890
+  predicate: produces
+  object: CHEBI:58223
+  coefficient: 1
+  description: UDP (CHEBI:58223; pH 7.3 major microspecies of native Compound/PW_C000201 Uridine 5'-diphosphate,
+    CHEBI:17659) is produced with stoichiometric coefficient 1 by the OtsA-catalyzed trehalose-6-phosphate
+    synthase reaction (RHEA:18890; native Reactions/6093).
+  evidence:
+  - reference_id: RHEA:18890
+    source_assertion: Rhea lists CHEBI:58223 on the products side of RHEA:18890 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18890']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6093 lists Compound/PW_C000201
+      (Uridine 5'-diphosphate, CompoundReference/PW_C000201 cross-referenced to ChEBI CHEBI:17659) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6093']/bp:right[@rdf:resource='#Compound/PW_C000201'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000201/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C000201']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_17659']
+- id: smp0002100-edge-005
+  subject: RHEA:18890
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  description: Hydron (CHEBI:15378; native Compound/PW_C040034 Hydrogen Ion) is produced with stoichiometric
+    coefficient 1 by the OtsA-catalyzed trehalose-6-phosphate synthase reaction (RHEA:18890; native Reactions/6093).
+  evidence:
+  - reference_id: RHEA:18890
+    source_assertion: Rhea lists CHEBI:15378 on the products side of RHEA:18890 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/18890']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6093 lists Compound/PW_C040034
+      (Hydrogen Ion, CompoundReference/PW_C040034 cross-referenced to ChEBI CHEBI:15378) on bp:right with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6093']/bp:right[@rdf:resource='#Compound/PW_C040034'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C040034']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15378']
+- id: smp0002100-edge-006
+  subject: CHEBI:58429
+  predicate: consumes
+  object: RHEA:23421
+  coefficient: 1
+  description: Alpha,alpha-trehalose 6-phosphate (CHEBI:58429; pH 7.3 major microspecies of native Compound/PW_C044529
+    alpha,alpha-Trehalose 6-phosphate, CHEBI:18283) is consumed with stoichiometric coefficient 1 in the
+    OtsB-catalyzed trehalose-6-phosphate phosphatase reaction (RHEA:23421; native Reactions/6094).
+  evidence:
+  - reference_id: RHEA:23421
+    source_assertion: Rhea lists CHEBI:58429 on the substrates side of RHEA:23421 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23421']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6094 (3.1.3.12, Water + alpha,alpha-Trehalose
+      6-phosphate -> Phosphate + alpha,alpha-trehalose) lists Compound/PW_C044529 (alpha,alpha-Trehalose
+      6-phosphate, CompoundReference/PW_C044529 cross-referenced to ChEBI CHEBI:18283) on bp:left with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6094']/bp:left[@rdf:resource='#Compound/PW_C044529'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C044529/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C044529']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_18283']
+- id: smp0002100-edge-007
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:23421
+  coefficient: 1
+  description: Water (CHEBI:15377; native Compound/PW_C001420 Water) is consumed with stoichiometric coefficient
+    1 in the OtsB-catalyzed hydrolysis of alpha,alpha-trehalose 6-phosphate (RHEA:23421; native Reactions/6094).
+  evidence:
+  - reference_id: RHEA:23421
+    source_assertion: Rhea lists CHEBI:15377 on the substrates side of RHEA:23421 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23421']/rh:substrates; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6094 lists Compound/PW_C001420
+      (Water, CompoundReference/PW_C001420 cross-referenced to ChEBI CHEBI:15377) on bp:left with stoichiometricCoefficient
+      1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6094']/bp:left[@rdf:resource='#Compound/PW_C001420'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001420/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C001420']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_15377']
+- id: smp0002100-edge-008
+  subject: RHEA:23421
+  predicate: produces
+  object: CHEBI:16551
+  coefficient: 1
+  description: Alpha,alpha-trehalose (CHEBI:16551; native Compound/PW_C042934 alpha,alpha-trehalose) is
+    produced with stoichiometric coefficient 1 by the OtsB-catalyzed hydrolysis of alpha,alpha-trehalose
+    6-phosphate (RHEA:23421; native Reactions/6094).
+  evidence:
+  - reference_id: RHEA:23421
+    source_assertion: Rhea lists CHEBI:16551 on the products side of RHEA:23421 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23421']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6094 lists Compound/PW_C042934
+      (alpha,alpha-trehalose, CompoundReference/PW_C042934 cross-referenced to ChEBI CHEBI:16551) on bp:right
+      with stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6094']/bp:right[@rdf:resource='#Compound/PW_C042934'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C042934/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C042934']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_16551']
+- id: smp0002100-edge-009
+  subject: RHEA:23421
+  predicate: produces
+  object: CHEBI:43474
+  coefficient: 1
+  description: Phosphate (CHEBI:43474; pH 7.3 major microspecies of native Compound/PW_C001104 Phosphate,
+    CHEBI:18367) is produced with stoichiometric coefficient 1 by the OtsB-catalyzed hydrolysis of alpha,alpha-trehalose
+    6-phosphate (RHEA:23421; native Reactions/6094).
+  evidence:
+  - reference_id: RHEA:23421
+    source_assertion: Rhea lists CHEBI:43474 on the products side of RHEA:23421 in this directed reaction.
+    source_locator: rdf:Description[@rdf:about='http://rdf.rhea-db.org/23421']/rh:products; rh:contains/rh:compound/rh:accession
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl BiochemicalReaction Reactions/6094 lists Compound/PW_C001104
+      (Phosphate, CompoundReference/PW_C001104 cross-referenced to ChEBI CHEBI:18367) on bp:right with
+      stoichiometricCoefficient 1.0.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6094']/bp:right[@rdf:resource='#Compound/PW_C001104'];
+      bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001104/Stoichiometry/1.0']; bp:SmallMoleculeReference[@rdf:ID='CompoundReference/PW_C001104']/bp:xref[@rdf:resource='#Reference/ChEBI_CHEBI_18367']
+- id: smp0002100-edge-010
+  subject: UniProtKB:P31677
+  predicate: enables
+  object: RHEA:18890
+  description: Cytosolic trehalose-6-phosphate synthase OtsA (UniProtKB:P31677; native Protein/6510) enables
+    the UDP-alpha-D-glucose-dependent synthesis of alpha,alpha-trehalose 6-phosphate (RHEA:18890; native
+    Reactions/6093).
+  evidence:
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl Catalysis ReactionCatalysis/6052 (stepProcess of PathwayEnzymeReaction/22665)
+      assigns controller Protein/6510 (Alpha,alpha-trehalose-phosphate synthase [UDP-forming], ProteinReference/6510
+      cross-referenced to UniProt P31677) with controlType ACTIVATION over controlled Reactions/6093 (2.4.1.15).
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6052']/bp:controller[@rdf:resource='#Protein/6510'];
+      bp:controlled[@rdf:resource='#Reactions/6093']; bp:ProteinReference[@rdf:ID='ProteinReference/6510']/bp:xref[@rdf:resource='#Reference/UniProt_P31677']
+  - reference_id: UniProtKB:P31677
+    source_assertion: 'UniProt annotates UniProtKB:P31677 with catalytic activity for the reaction family
+      of RHEA:18890. Annotation evidence: ECO:0000305; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000305
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:8045430
+    quote: The Escherichia coli otsBA operon, located at min 42, was sequenced and shown to encode a 29.1-kDa
+      trehalose-6-phosphate phosphatase (OtsB) and a 53.6-kDa trehalose-6-phosphate synthase (OtsA).
+    source_locator: PubMed Abstract
+    assay_taxon: NCBITaxon:83333
+- id: smp0002100-edge-011
+  subject: UniProtKB:P31678
+  predicate: enables
+  object: RHEA:23421
+  description: Cytosolic trehalose-6-phosphate phosphatase OtsB (UniProtKB:P31678; native Protein/6511)
+    enables the hydrolysis of alpha,alpha-trehalose 6-phosphate to alpha,alpha-trehalose and phosphate
+    (RHEA:23421; native Reactions/6094).
+  evidence:
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl Catalysis ReactionCatalysis/6054 (stepProcess of PathwayEnzymeReaction/22667)
+      assigns controller Protein/6511 (Trehalose-phosphate phosphatase, ProteinReference/6511 cross-referenced
+      to UniProt P31678) with controlType ACTIVATION over controlled Reactions/6094 (3.1.3.12).
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6054']/bp:controller[@rdf:resource='#Protein/6511'];
+      bp:controlled[@rdf:resource='#Reactions/6094']; bp:ProteinReference[@rdf:ID='ProteinReference/6511']/bp:xref[@rdf:resource='#Reference/UniProt_P31678']
+  - reference_id: UniProtKB:P31678
+    source_assertion: 'UniProt annotates UniProtKB:P31678 with catalytic activity for the reaction family
+      of RHEA:23421. Annotation evidence: ECO:0000269; organism taxon: NCBITaxon:83333.'
+    source_locator: comments[commentType='CATALYTIC ACTIVITY'].reaction.reactionCrossReferences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:8045430
+    quote: The Escherichia coli otsBA operon, located at min 42, was sequenced and shown to encode a 29.1-kDa
+      trehalose-6-phosphate phosphatase (OtsB) and a 53.6-kDa trehalose-6-phosphate synthase (OtsA).
+    source_locator: PubMed Abstract
+    assay_taxon: NCBITaxon:83333
+- id: smp0002100-edge-012
+  subject: UniProtKB:P31678
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Trehalose-6-phosphate phosphatase OtsB (UniProtKB:P31678) utilizes Mg(2+) (CHEBI:18420)
+    as a divalent metal cation cofactor.
+  evidence:
+  - reference_id: UniProtKB:P31678
+    source_assertion: 'UniProt lists CHEBI:18420 as a cofactor of UniProtKB:P31678 (evidence: ECO:0000269).
+      Magnesium. Can also use other divalent metal cations as manganese, cobalt or zinc.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002100-edge-013
+  subject: UniProtKB:P31678
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Trehalose-6-phosphate phosphatase OtsB (UniProtKB:P31678) can use Mn(2+) (CHEBI:29035)
+    as an alternative divalent metal cation cofactor.
+  evidence:
+  - reference_id: UniProtKB:P31678
+    source_assertion: 'UniProt lists CHEBI:29035 as a cofactor of UniProtKB:P31678 (evidence: ECO:0000269).
+      Magnesium. Can also use other divalent metal cations as manganese, cobalt or zinc.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002100-edge-014
+  subject: UniProtKB:P31678
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Trehalose-6-phosphate phosphatase OtsB (UniProtKB:P31678) can use Co(2+) (CHEBI:48828)
+    as an alternative divalent metal cation cofactor.
+  evidence:
+  - reference_id: UniProtKB:P31678
+    source_assertion: 'UniProt lists CHEBI:48828 as a cofactor of UniProtKB:P31678 (evidence: ECO:0000269).
+      Magnesium. Can also use other divalent metal cations as manganese, cobalt or zinc.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002100-edge-015
+  subject: UniProtKB:P31678
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Trehalose-6-phosphate phosphatase OtsB (UniProtKB:P31678) can use Zn(2+) (CHEBI:29105)
+    as an alternative divalent metal cation cofactor.
+  evidence:
+  - reference_id: UniProtKB:P31678
+    source_assertion: 'UniProt lists CHEBI:29105 as a cofactor of UniProtKB:P31678 (evidence: ECO:0000269).
+      Magnesium. Can also use other divalent metal cations as manganese, cobalt or zinc.'
+    source_locator: comments[commentType='COFACTOR'].cofactors and note
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002100-edge-016
+  subject: RHEA:18890
+  predicate: part_of
+  object: PathBank:SMP0002100
+  description: OtsA-catalyzed synthesis of alpha,alpha-trehalose 6-phosphate (RHEA:18890; native Reactions/6093)
+    is the first enzymatic step of PathBank:SMP0002100.
+  evidence:
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl Pathway SMP0002100 (Trehalose Biosynthesis I) lists Reactions/6093
+      under bp:pathwayComponent and PathwayEnzymeReaction/22665 (stepConversion Reactions/6093, stepProcess
+      ReactionCatalysis/6052) under bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002100']/bp:pathwayComponent[@rdf:resource='#Reactions/6093'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22665']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22665']/bp:stepConversion[@rdf:resource='#Reactions/6093']
+- id: smp0002100-edge-017
+  subject: RHEA:23421
+  predicate: part_of
+  object: PathBank:SMP0002100
+  description: OtsB-catalyzed hydrolysis of alpha,alpha-trehalose 6-phosphate to alpha,alpha-trehalose
+    (RHEA:23421; native Reactions/6094) is the second enzymatic step of PathBank:SMP0002100.
+  evidence:
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl Pathway SMP0002100 (Trehalose Biosynthesis I) lists Reactions/6094
+      under bp:pathwayComponent and PathwayEnzymeReaction/22667 (stepConversion Reactions/6094, stepProcess
+      ReactionCatalysis/6054) under bp:pathwayOrder.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002100']/bp:pathwayComponent[@rdf:resource='#Reactions/6094'];
+      bp:pathwayOrder[@rdf:resource='#PathwayEnzymeReaction/22667']; bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22667']/bp:stepConversion[@rdf:resource='#Reactions/6094']
+- id: smp0002100-edge-018
+  subject: RHEA:18890
+  predicate: provides_input_for
+  object: RHEA:23421
+  description: Alpha,alpha-trehalose 6-phosphate (CHEBI:58429; native Compound/PW_C044529) produced by
+    OtsA-catalyzed trehalose-6-phosphate synthesis (RHEA:18890; native Reactions/6093) is the substrate
+    consumed by OtsB-catalyzed hydrolysis to alpha,alpha-trehalose (RHEA:23421; native Reactions/6094).
+  evidence:
+  - reference_id: PathBank:SMP0002100
+    source_assertion: Native PW002088.owl Reactions/6093 produces Compound/PW_C044529 (alpha,alpha-Trehalose
+      6-phosphate, CHEBI:18283 / pH 7.3 major microspecies CHEBI:58429) on bp:right and Reactions/6094
+      consumes the same Compound/PW_C044529 on bp:left within Pathway SMP0002100.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6093']/bp:right[@rdf:resource='#Compound/PW_C044529'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6094']/bp:left[@rdf:resource='#Compound/PW_C044529']
+  - reference_id: PMID:8045430
+    quote: The Escherichia coli otsBA operon, located at min 42, was sequenced and shown to encode a 29.1-kDa
+      trehalose-6-phosphate phosphatase (OtsB) and a 53.6-kDa trehalose-6-phosphate synthase (OtsA).
+    source_locator: PubMed Abstract
+    assay_taxon: NCBITaxon:83333
+source_mappings:
+- subject_id: UniProt:P31677
+  subject_label: Alpha,alpha-trehalose-phosphate synthase [UDP-forming]
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P31677
+  object_label: Trehalose-6-phosphate synthase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002100
+  source_element_id: ProteinReference/6510
+- subject_id: UniProt:P31678
+  subject_label: Trehalose-phosphate phosphatase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P31678
+  object_label: Trehalose-6-phosphate phosphatase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002100
+  source_element_id: ProteinReference/6511
+references:
+- id: PathBank:SMP0002100
+  title: PathBank SMP0002100 (PW002088.owl, Trehalose Biosynthesis I in Escherichia coli)
+  url: https://pathbank.org/downloads/pathbank_primary_biopax.zip
+  source_version: 2019-08-16 frozen primary BioPAX archive (PW002088.owl, 34800 bytes, member sha256 1776c3ae596d7a98cf6174ed56c9e9fe6be65f68258eb2b8eb58ef2dcbcf0a1b)
+  source_sha256: b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44
+- id: RHEA:18890
+  title: Rhea left-to-right trehalose-6-phosphate synthase direction
+  url: https://www.rhea-db.org/rhea/18890
+  source_version: '139'
+- id: RHEA:23421
+  title: Rhea left-to-right trehalose-6-phosphate phosphatase direction
+  url: https://www.rhea-db.org/rhea/23421
+  source_version: '139'
+- id: UniProtKB:P31677
+  title: Trehalose-6-phosphate synthase
+  url: https://rest.uniprot.org/uniprotkb/P31677.json
+  source_version: '2026_03'
+- id: UniProtKB:P31678
+  title: Trehalose-6-phosphate phosphatase
+  url: https://rest.uniprot.org/uniprotkb/P31678.json
+  source_version: '2026_03'
+- id: PMID:8045430
+  citation: Kaasen et al., Gene, 1994
+  url: https://pubmed.ncbi.nlm.nih.gov/8045430/
+curation_history:
+- timestamp: '2026-11-04T05:35:00Z'
+  curator: antigravity
+  action: created
+  changes: Curated PathBank:SMP0002100 (Trehalose Biosynthesis I in Escherichia coli, native BioPAX archive
+    member PW002088.owl) with 14 participants, 2 directional Rhea reactions (RHEA:18890, RHEA:23421),
+    18 mechanistic edges with explicit stoichiometric coefficients, ECO codes, and Escherichia coli K-12
+    assay_taxon qualifiers, and 2 SSSOM source_mappings (UniProt:P31677 -> UniProtKB:P31677, UniProt:P31678
+    -> UniProtKB:P31678).
+  llm_assisted: true
