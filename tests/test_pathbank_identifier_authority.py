@@ -1997,8 +1997,8 @@ def test_audit_pathbank_manifest_snapshot_sync_partitions_synchronized_pending_a
         repo_root / "data" / "identifier_authorities" / "sources.json",
     )
     assert repo_sync["in_sync"] is True
-    assert repo_sync["manifest_archive_count"] == 14
-    assert repo_sync["snapshot_archive_count"] == 14
+    assert repo_sync["manifest_archive_count"] == 15
+    assert repo_sync["snapshot_archive_count"] == 15
     assert repo_sync["pending_snapshot_keys"] == []
     assert repo_sync["orphan_snapshot_keys"] == []
 
