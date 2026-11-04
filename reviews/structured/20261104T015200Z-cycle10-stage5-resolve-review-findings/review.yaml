@@ -1,0 +1,750 @@
+schema_version: 1.0.0
+review_id: 20261104T015200Z-cycle10-stage5-resolve-review-findings
+kind: batch
+repository: CultureBotAI/PathwayMech
+title: Cycle 10 Stage 5 Successor Review Resolving F-C10S4-001 and F-C10S4-002 Across
+  6 Maintained Pathway Records
+started_at: '2026-11-04T01:35:00Z'
+finished_at: '2026-11-04T01:52:00Z'
+reviewer:
+  identity: Antigravity (pathwaymech-resolve-reviews + review-yaml-category)
+  kind: agent
+  model: Claude Opus 4.6 (Thinking)
+  independence: self_review
+  independence_basis: 'Same agent session (a1d1e545-faee-4294-8a87-4c2d031a6538) implemented
+    the Cycle 10 Stage 5 curation fixes for GitHub issue #781 and verified post-remediation
+    records, rendered HTML pages, and KGX exports.'
+skill: pathwaymech-resolve-reviews
+completion: completed
+verdict: pass
+native_verdict: coherent
+scientific_review: true
+summary: 'Re-inspected and verified all 6 maintained pathway YAML records affected
+  by Cycle 10 Stage 4 findings F-C10S4-001 (raw-local-id-structured-metacyc-reaction-reference-titles-2-records
+  across 2 maintained pathway records: GO:0043427 and MetaCyc:PWY-5744) and F-C10S4-002
+  (raw-local-id-metacyc-reaction-labels-4-metacyc-records across 4 maintained MetaCyc:*
+  pathway records: MetaCyc:ACETOACETATE-DEG-PWY, MetaCyc:PWY-1361, MetaCyc:PWY0-1352,
+  and MetaCyc:PWY-7545), grouped together under shared root-cause group G-C10S5-001
+  and GitHub issue #781. Remediated all 6 records (35 field updates total) via pathwaymech.curation.publish_curation:
+  (1) across the 2 pathway records in F-C10S4-001 (carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+  and glyoxylate-assimilation.yaml), replaced all 26 structured MetaCyc:* reaction
+  references[] titles (13 per record) that retained raw unprefixed database frame
+  IDs (title == local_id) with verified descriptive reaction titles (<reaction label>
+  (<reference_id>)), bringing raw frame-ID reference titles to 0 / 74 structured references
+  (0 / 118 total references) across those 2 records and 0 / 474 total references across
+  all 6 reassessed records (with 81 raw local-ID reference titles across 4 other records
+  remaining for subsequent cycles); and (2) across the 4 MetaCyc pathway records in
+  F-C10S4-002 (acetoacetate-degradation.yaml, benzoyl-coa-degradation-i-aerobic.yaml,
+  nitrate-reduction-viii.yaml, and pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml),
+  replaced all 9 MetaCyc:* reactions[].label entries (4 + 1 + 2 + 2) that retained
+  raw unprefixed database frame IDs (label == local_id) with verified descriptive
+  reaction labels, bringing raw frame-ID reaction labels to 0 / 12 MetaCyc reactions
+  (0 / 21 total reactions) across those 4 records and 0 / 49 total reactions across
+  all 6 reassessed records (with 49 raw local-ID reaction labels across 7 other records
+  remaining for subsequent cycles). Recorded 6 append-only curation history files
+  at history/records/<slug>/2026-11-04T014200Z-antigravity-a1d1e5.yaml, regenerated
+  rendered pages and KGX exports (.venv/bin/pathwaymech-render-pages), and confirmed
+  full pass across QC (279 pathway records, 1,010 history records, 22,922 evidence
+  blocks, 33 source records).'
+source:
+  git_revision: 80deae2e3bc3c79eb57f4e434581e8744ddd0167
+  state: working_tree
+  inputs:
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: data/pathways/acetoacetate-degradation.yaml
+    sha256: cb0e61c5d265e6634beb6dbc8bdbc7b9723b75a53aee11204520f5b54ff94290
+    role: target
+  - path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    sha256: 0dcaa9927b4907c2a0ace6a40ed59f841dffb45708ca4d49a6959621e9dfe99b
+    role: target
+  - path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    sha256: 43690bab21e93a6be11922c7e9bc7a69136712814c12792544d7cfa7bb82905c
+    role: target
+  - path: data/pathways/glyoxylate-assimilation.yaml
+    sha256: 28e0fdabc83307309eaf433fa061191a82f917d99ebcdcadb73797c5992780ea
+    role: target
+  - path: data/pathways/nitrate-reduction-viii.yaml
+    sha256: a7ac9a583ed038c8f5cf6dd38131fcf7285c5dc0403c87df6b36c43d9036ca28
+    role: target
+  - path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    sha256: f2970a865bed13e70e05ec1d27e89cd415790aa64584fa526abd1c391c1d0104
+    role: target
+  - path: pages/downloads/edges.tsv
+    sha256: 5922698ac893e5bc6ca9c78aa4bfca31ce8ee25b24b25b931fca283f8d5b3989
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: fec5f15260dbef217e0f72d8bd72c776f64e606ea58ff619b2a7a2c75651c1d1
+    role: context
+  - path: pages/records/GO_0043427.html
+    sha256: 85c97def70306b4c3a778cae3d1e02f07e56f8cdcd798e09031ca474eb5488e9
+    role: context
+  - path: pages/records/MetaCyc_ACETOACETATE-DEG-PWY.html
+    sha256: e83c1f0bce1b52c8cfa0019c3535291fc0fb76a6dadb165624fd06680b5e48ff
+    role: context
+  - path: pages/records/MetaCyc_PWY-1361.html
+    sha256: 63f81554eeff3d191bfce7b5796f54c97c553cfe33989deb9d7fc05d9d5763e7
+    role: context
+  - path: pages/records/MetaCyc_PWY-5744.html
+    sha256: 525ae98a99beaa74ae6de1a1b46e5c8edc69a689ad24a58ace4f1dbbf627341a
+    role: context
+  - path: pages/records/MetaCyc_PWY-7545.html
+    sha256: 27de8702a7e382bca01ff7bac200cc8b33abc7ef5abaceda785b7ea5e3f5c968
+    role: context
+  - path: pages/records/MetaCyc_PWY0-1352.html
+    sha256: a4435e1bf7ae8aa8fc4fce52fa36368fd6c1514dff0a8cfa25588ed61e8560a2
+    role: context
+  - path: reviews/structured/20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2/review.yaml
+    sha256: 8969af2dc829d18f9f2096d0560e96c9166106896966f93987cfe717c1b4ed35
+    role: context
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000010/stage-04/revision-0002/evidence.yaml
+    sha256: a21d5053725717a5df06cd3b9fe915a998fdf6a817b5dd3065e078f91daa7f2c
+    role: context
+scope:
+  description: Complete post-remediation reassessment of the 6 maintained pathway
+    records in data/pathways/*.yaml (1 GO:* and 5 MetaCyc:*) that carried open findings
+    (F-C10S4-001 and F-C10S4-002) in Cycle 10 Stage 4 review 20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2.
+  selection: All 6 maintained pathway records in CultureBotAI/PathwayMech carrying
+    open findings in reviews/structured/20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2/review.yaml
+    (100% of open Cycle 10 Stage 4 maintained-record findings).
+  coverage: full
+  population_size: 6
+  reviewed_target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  exclusions:
+  - target: Remaining 273 maintained pathway records in data/pathways/*.yaml
+    reason: Assessed with zero open findings in Cycle 10 Stage 4 review 20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2
+      and unchanged in Cycle 10 Stage 5.
+  - target: research/pathway_additions/*.yaml (6 withheld staging drafts)
+    reason: Non-maintained research staging drafts outside data/pathways/*.yaml; their
+      2 historical open findings (F01 in 20261010T090124Z-siroheme-pathway-addition-blocked-review
+      and F1 in 20261010T100956Z-ecoli-14dhna-octaprenyl-draft-review) remain untouched.
+targets:
+- target_id: GO:0043427
+  path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+  label: carbon fixation by 3-hydroxypropionate cycle (GO:0043427)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 43690bab21e93a6be11922c7e9bc7a69136712814c12792544d7cfa7bb82905c
+    description: 'Raw SHA-256 file digest of data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+      in Cycle 10 Stage 5 (issue #781).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5744
+  path: data/pathways/glyoxylate-assimilation.yaml
+  label: glyoxylate assimilation (MetaCyc:PWY-5744)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 28e0fdabc83307309eaf433fa061191a82f917d99ebcdcadb73797c5992780ea
+    description: 'Raw SHA-256 file digest of data/pathways/glyoxylate-assimilation.yaml
+      in Cycle 10 Stage 5 (issue #781).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glyoxylate-assimilation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:ACETOACETATE-DEG-PWY
+  path: data/pathways/acetoacetate-degradation.yaml
+  label: acetoacetate degradation (to acetyl CoA) (MetaCyc:ACETOACETATE-DEG-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: cb0e61c5d265e6634beb6dbc8bdbc7b9723b75a53aee11204520f5b54ff94290
+    description: 'Raw SHA-256 file digest of data/pathways/acetoacetate-degradation.yaml
+      in Cycle 10 Stage 5 (issue #781).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/acetoacetate-degradation.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-1361
+  path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+  label: benzoyl-CoA degradation I (aerobic) (MetaCyc:PWY-1361)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 0dcaa9927b4907c2a0ace6a40ed59f841dffb45708ca4d49a6959621e9dfe99b
+    description: 'Raw SHA-256 file digest of data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+      in Cycle 10 Stage 5 (issue #781).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1352
+  path: data/pathways/nitrate-reduction-viii.yaml
+  label: nitrate reduction VIII (dissimilatory) (MetaCyc:PWY0-1352)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: a7ac9a583ed038c8f5cf6dd38131fcf7285c5dc0403c87df6b36c43d9036ca28
+    description: 'Raw SHA-256 file digest of data/pathways/nitrate-reduction-viii.yaml
+      in Cycle 10 Stage 5 (issue #781).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-viii.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-7545
+  path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+  label: pyruvate to cytochrome bd oxidase electron transfer (MetaCyc:PWY-7545)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f2970a865bed13e70e05ec1d27e89cd415790aa64584fa526abd1c391c1d0104
+    description: 'Raw SHA-256 file digest of data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+      in Cycle 10 Stage 5 (issue #781).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    role: maintained pathway YAML
+checks:
+- check_id: validate
+  name: Repository QC and closed-schema validation (just validate)
+  status: passed
+  required: true
+  summary: Validated all 279 maintained pathway records (including the 6 remediated
+    records) against the closed LinkML schema, local identifier/label authority snapshots,
+    1,010 history records, 22,922 evidence blocks, 33 source records, and pages/ synchrony.
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  command: .venv/bin/pathwaymech-run-qc
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C10S5-QC
+  scope_note: 'Full-repository QC gate after applying issue #781 fixes and regenerating
+    pages/.'
+- check_id: test
+  name: Pytest unit and integration test suite (just test)
+  status: passed
+  required: true
+  summary: All pytest unit and integration tests passed across schema, KGX export,
+    SSSOM, and record-review checks.
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  command: .venv/bin/pytest -q
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C10S5-PYTEST
+  scope_note: Full pytest test suite.
+- check_id: lint
+  name: Ruff lint check (just lint)
+  status: passed
+  required: true
+  summary: Ruff check passed with 0 errors.
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  command: .venv/bin/ruff check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C10S5-RUFF
+  scope_note: Repository-wide Python lint check.
+- check_id: git-diff-check
+  name: Git whitespace and conflict marker check
+  status: passed
+  required: true
+  summary: git diff --check exited 0 with no whitespace or conflict marker issues.
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C10S5-GIT-DIFF
+  scope_note: Worktree diff check across all Cycle 10 Stage 5 edits.
+- check_id: review-check
+  name: Structured review bundle contract check (just review-check)
+  status: passed
+  required: true
+  summary: All retained structured review bundles in reviews/structured/ passed schema
+    and append-only checks against main.
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  command: .venv/bin/python scripts/record_review.py check --base main
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C10S5-REVIEW-CHECK
+  scope_note: Verifies append-only immutability of prior bundles and validity of current
+    bundle.
+evidence:
+- evidence_id: EV-C10S4-PREDECESSOR
+  kind: prior_review
+  reference: reviews/structured/20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2/review.yaml
+  locator: findings[0] (F-C10S4-001) and findings[1] (F-C10S4-002)
+  accessed_at: '2026-11-04T01:35:00Z'
+  support: supports
+  summary: 'Predecessor Cycle 10 Stage 4 cohort review recorded two minor open representation
+    findings across 6 maintained pathway records: F-C10S4-001 (raw-local-id-structured-metacyc-reaction-reference-titles-2-records
+    across GO:0043427 and MetaCyc:PWY-5744) and F-C10S4-002 (raw-local-id-metacyc-reaction-labels-4-metacyc-records
+    across MetaCyc:ACETOACETATE-DEG-PWY, MetaCyc:PWY-1361, MetaCyc:PWY0-1352, and
+    MetaCyc:PWY-7545).'
+  snapshot_sha256: 8969af2dc829d18f9f2096d0560e96c9166106896966f93987cfe717c1b4ed35
+- evidence_id: EV-C10S4-WORKFLOW-EVIDENCE
+  kind: prior_review
+  reference: reviews/workflow/mech-goal-sequence-20261019/cycle-000010/stage-04/revision-0002/evidence.yaml
+  locator: findings[0..1] (F-C10S4-001, F-C10S4-002)
+  accessed_at: '2026-11-04T01:35:00Z'
+  support: supports
+  summary: Cycle 10 Stage 4 workflow evidence manifest carried forward F-C10S4-001
+    and F-C10S4-002 as open findings for Cycle 10 Stage 5 grouped remediation.
+  snapshot_sha256: a21d5053725717a5df06cd3b9fe915a998fdf6a817b5dd3065e078f91daa7f2c
+- evidence_id: EV-C10S5-RAW-TITLES-FIXED-2
+  kind: record_content
+  reference: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+  locator: references[11,13,15,17,19,21,23,25,27,29,31,33,37] in carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    and references[11,13,15,17,19,21,23,25,27,29,31,33,35] in glyoxylate-assimilation.yaml
+  accessed_at: '2026-11-04T01:45:00Z'
+  support: supports
+  summary: Across both maintained pathway records in F-C10S4-001 (GO:0043427 and MetaCyc:PWY-5744),
+    replaced all 26 structured MetaCyc:* reaction references[] entries (13 per record)
+    carrying raw unprefixed database frame ID titles (title == local_id) with verified
+    descriptive reaction titles (<reaction label> (<reference_id>)) via pathwaymech.curation.publish_curation.
+  quote: "- id: MetaCyc:RXN0-5224\n  title: carbonic anhydrase reaction (MetaCyc:RXN0-5224)\n\
+    \  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5224"
+  snapshot_sha256: 43690bab21e93a6be11922c7e9bc7a69136712814c12792544d7cfa7bb82905c
+- evidence_id: EV-C10S5-REACTION-LABELS-FIXED-4
+  kind: record_content
+  reference: data/pathways/acetoacetate-degradation.yaml
+  locator: reactions[0..3].label in acetoacetate-degradation.yaml, reactions[3].label
+    in benzoyl-coa-degradation-i-aerobic.yaml, reactions[0..1].label in nitrate-reduction-viii.yaml,
+    and reactions[0..1].label in pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+  accessed_at: '2026-11-04T01:45:00Z'
+  support: supports
+  summary: Across all 4 maintained MetaCyc pathway records in F-C10S4-002 (MetaCyc:ACETOACETATE-DEG-PWY,
+    MetaCyc:PWY-1361, MetaCyc:PWY0-1352, and MetaCyc:PWY-7545), replaced all 9 MetaCyc:*
+    reactions[].label entries (4 + 1 + 2 + 2) carrying raw unprefixed database frame
+    IDs (label == local_id) with verified descriptive reaction labels via pathwaymech.curation.publish_curation.
+  quote: "- id: MetaCyc:ACETOACETYL-COA-TRANSFER-RXN\n  label: acetate CoA-transferase\
+    \ reaction\n  category: molecular_activity\n  direction: reversible"
+  snapshot_sha256: cb0e61c5d265e6634beb6dbc8bdbc7b9723b75a53aee11204520f5b54ff94290
+- evidence_id: EV-C10S5-RENDERED-PAGES-AND-KGX
+  kind: record_content
+  reference: pages/downloads/nodes.tsv
+  locator: MetaCyc:ACETOACETYL-COA-TRANSFER-RXN, MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN,
+    MetaCyc:RXN-20154, MetaCyc:RXN-20155, MetaCyc:RXN-2424, MetaCyc:RXN0-5388, MetaCyc:RXN0-3501,
+    MetaCyc:RXN-11496, and MetaCyc:RXN0-5266 rows in pages/downloads/nodes.tsv and
+    rendered HTML pages in pages/records/
+  accessed_at: '2026-11-04T01:48:30Z'
+  support: supports
+  summary: After running .venv/bin/pathwaymech-render-pages, verified that pages/downloads/nodes.tsv
+    exports descriptive reaction labels for all 9 remediated MetaCyc:* reactions and
+    all 6 remediated record HTML pages are current.
+  quote: "MetaCyc:ACETOACETYL-COA-TRANSFER-RXN\tacetate CoA-transferase reaction\t\
+    biolink:MolecularActivity\tinfores:pathwaymech\tmolecular_activity\treversible"
+  snapshot_sha256: fec5f15260dbef217e0f72d8bd72c776f64e606ea58ff619b2a7a2c75651c1d1
+- evidence_id: EV-C10S5-QC
+  kind: validation
+  reference: .venv/bin/pathwaymech-run-qc
+  locator: stdout summary (279 pathway records, 1010 history records, 22,922 evidence
+    blocks, 33 source records)
+  accessed_at: '2026-11-04T01:51:30Z'
+  support: supports
+  summary: 'Executed .venv/bin/pathwaymech-run-qc: validated 279 pathway records against
+    the closed LinkML schema, verified all identifiers and labels against local authority
+    snapshots, validated 1,010 history records (including 6 new Cycle 10 Stage 5 record
+    history entries referencing issue #781) and 22,922 evidence blocks, and confirmed
+    pages/ synchrony.'
+- evidence_id: EV-C10S5-PYTEST
+  kind: validation
+  reference: .venv/bin/pytest -q
+  locator: pytest suite execution across tests/
+  accessed_at: '2026-11-04T01:52:00Z'
+  support: supports
+  summary: Executed .venv/bin/pytest -q across the full test suite.
+- evidence_id: EV-C10S5-RUFF
+  kind: validation
+  reference: .venv/bin/ruff check --no-cache .
+  locator: ruff check output
+  accessed_at: '2026-11-04T01:52:00Z'
+  support: supports
+  summary: Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks
+    passed).
+- evidence_id: EV-C10S5-GIT-DIFF
+  kind: validation
+  reference: git diff --check
+  locator: git worktree on feat/cycle10-stage5-resolve-review-findings
+  accessed_at: '2026-11-04T01:52:00Z'
+  support: supports
+  summary: Executed git diff --check with exit code 0; no whitespace errors or conflict
+    markers.
+- evidence_id: EV-C10S5-REVIEW-CHECK
+  kind: validation
+  reference: .venv/bin/python scripts/record_review.py check --base main
+  locator: reviews/structured/
+  accessed_at: '2026-11-04T01:52:00Z'
+  support: supports
+  summary: Validated all retained structured review bundles in reviews/structured/
+    against schema/record_review.yaml and verified byte-for-byte append-only preservation
+    against main.
+assessments:
+- assessment_id: ASSESS-C10S5-RAW-FRAME-ID-HYGIENE-6
+  area: consistency
+  topic: Post-remediation elimination of raw unprefixed MetaCyc frame-ID reference
+    titles (0 / 474 reassessed references; 0 / 74 structured references across GO:0043427
+    and MetaCyc:PWY-5744) and raw unprefixed MetaCyc frame-ID reaction labels (0 /
+    49 reassessed reactions; 0 / 12 MetaCyc reactions across MetaCyc:ACETOACETATE-DEG-PWY,
+    MetaCyc:PWY-1361, MetaCyc:PWY0-1352, and MetaCyc:PWY-7545) across the 6 reassessed
+    pathway records
+  outcome: supported
+  summary: Replacing all 26 raw unprefixed MetaCyc frame-ID reference titles (title
+    == local_id) across GO:0043427 (13) and MetaCyc:PWY-5744 (13) brings raw frame-ID
+    reference titles to 0 / 74 structured references (0 / 118 total references) across
+    those 2 records and 0 / 474 total references across all 6 reassessed records,
+    and replacing all 9 raw unprefixed MetaCyc frame-ID reaction labels (label ==
+    local_id) across MetaCyc:ACETOACETATE-DEG-PWY (4), MetaCyc:PWY-1361 (1), MetaCyc:PWY0-1352
+    (2), and MetaCyc:PWY-7545 (2) brings raw frame-ID reaction labels to 0 / 12 MetaCyc
+    reactions (0 / 21 total reactions) across those 4 records and 0 / 49 total reactions
+    across all 6 reassessed records.
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  evidence_ids:
+  - EV-C10S4-PREDECESSOR
+  - EV-C10S5-RAW-TITLES-FIXED-2
+  - EV-C10S5-REACTION-LABELS-FIXED-4
+  - EV-C10S5-RENDERED-PAGES-AND-KGX
+  - EV-C10S5-QC
+  - EV-C10S5-PYTEST
+  metrics:
+  - name: raw_frame_id_reference_titles_across_reassessed_records
+    value: 0.0
+    unit: references
+    definition: Count of references[] entries carrying raw unprefixed database frame
+      IDs (title == local_id) across the 6 reassessed pathway records after updating
+      26 MetaCyc:* reaction reference entries in GO:0043427 and MetaCyc:PWY-5744 (0
+      / 474 across the 6 reassessed records; 0 / 74 structured references in GO:0043427
+      and MetaCyc:PWY-5744).
+    denominator: 474
+    minimum: 0.0
+    maximum: 474.0
+  - name: raw_frame_id_reaction_labels_across_reassessed_records
+    value: 0.0
+    unit: reactions
+    definition: Count of reactions[] entries carrying raw unprefixed database frame
+      IDs (label == local_id) across the 6 reassessed pathway records after updating
+      9 MetaCyc:* reaction labels in MetaCyc:ACETOACETATE-DEG-PWY, MetaCyc:PWY-1361,
+      MetaCyc:PWY0-1352, and MetaCyc:PWY-7545 (0 / 49 across the 6 reassessed records;
+      0 / 12 MetaCyc reactions in those 4 records).
+    denominator: 49
+    minimum: 0.0
+    maximum: 49.0
+  dimensions:
+  - name: rendered_page_and_kgx_verification
+    value: All 26 updated MetaCyc reaction reference titles and 9 updated MetaCyc
+      reaction labels rendered in GO_0043427.html, MetaCyc_PWY-5744.html, MetaCyc_ACETOACETATE-DEG-PWY.html,
+      MetaCyc_PWY-1361.html, MetaCyc_PWY0-1352.html, MetaCyc_PWY-7545.html, and pages/downloads/nodes.tsv
+    definition: Verified post-remediation rendered HTML pages and KGX exports in pages/.
+    evidence_ids:
+    - EV-C10S5-RENDERED-PAGES-AND-KGX
+    - EV-C10S5-QC
+- assessment_id: ASSESS-C10S5-SCIENTIFIC-INTEGRITY-6
+  area: evidence
+  topic: Preservation of pathway identity, taxon grounding, participant connectivity,
+    reaction directionality, stoichiometry, and edge-level evidence across the 6 remediated
+    pathway records
+  outcome: supported
+  summary: Structural verification across all 6 remediated pathway YAML files confirms
+    that all pathway IDs, taxon groundings, 7,880 connected participant entries (0
+    orphans), 1,635 reaction steps (735 RHEA:*), 14,770 non-reflexive mechanistic_edges,
+    1,073 source_mappings, and 22,922 structured evidence blocks remain 100% intact
+    and pass closed LinkML and authority snapshot checks.
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  evidence_ids:
+  - EV-C10S5-RAW-TITLES-FIXED-2
+  - EV-C10S5-REACTION-LABELS-FIXED-4
+  - EV-C10S5-QC
+  - EV-C10S5-PYTEST
+  - EV-C10S5-GIT-DIFF
+findings:
+- finding_id: F-C10S4-001
+  issue_key: raw-local-id-structured-metacyc-reaction-reference-titles-2-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: All 26 structured MetaCyc:* reaction references carrying raw unprefixed database
+    frame IDs (title == local_id) are replaced with descriptive reaction titles across
+    GO:0043427 and MetaCyc:PWY-5744
+  description: Across both maintained pathway records in F-C10S4-001 (GO:0043427 carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    and MetaCyc:PWY-5744 glyoxylate-assimilation.yaml), replaced all 26 structured
+    MetaCyc:* reaction references[] entries (13 per record) carrying raw unprefixed
+    database frame IDs (title == local_id) with verified descriptive reaction titles
+    (<reaction label> (<reference_id>)) via pathwaymech.curation.publish_curation,
+    recorded 2 history/records/<slug>/2026-11-04T014200Z-antigravity-a1d1e5.yaml files,
+    and regenerated pages/ under root-cause group G-C10S5-001 (#781).
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  field_paths:
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[11].title
+    (MetaCyc:RXN0-5224) (RXN0-5224 -> carbonic anhydrase reaction (MetaCyc:RXN0-5224))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[13].title
+    (MetaCyc:BIOTIN-CARBOXYL-RXN) (BIOTIN-CARBOXYL-RXN -> biotin carboxylase reaction
+    (MetaCyc:BIOTIN-CARBOXYL-RXN))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[15].title
+    (MetaCyc:RXN0-5055) (RXN0-5055 -> acetyl-CoA carboxyltransferase reaction (MetaCyc:RXN0-5055))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[17].title
+    (MetaCyc:RXN-8963) (RXN-8963 -> malonyl-CoA reductase (malonate semialdehyde-forming)
+    reaction (MetaCyc:RXN-8963))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[19].title
+    (MetaCyc:RXN-8974) (RXN-8974 -> malonate semialdehyde reductase (3-hydroxypropionate-forming)
+    reaction (MetaCyc:RXN-8974))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[21].title
+    (MetaCyc:RXN-9086) (RXN-9086 -> 3-hydroxypropionate---CoA ligase (AMP-forming)
+    reaction (MetaCyc:RXN-9086))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[23].title
+    (MetaCyc:RXN-6383) (RXN-6383 -> 3-hydroxypropionyl-CoA dehydratase reaction (MetaCyc:RXN-6383))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[25].title
+    (MetaCyc:RXN-9087) (RXN-9087 -> acryloyl-CoA reductase (NADPH) reaction (MetaCyc:RXN-9087))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[27].title
+    (MetaCyc:PROPIONYL-COA-CARBOXY-RXN) (PROPIONYL-COA-CARBOXY-RXN -> propionyl-CoA
+    carboxylase reaction (MetaCyc:PROPIONYL-COA-CARBOXY-RXN))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[29].title
+    (MetaCyc:METHYLMALONYL-COA-EPIM-RXN) (METHYLMALONYL-COA-EPIM-RXN -> methylmalonyl-CoA
+    epimerase reaction (MetaCyc:METHYLMALONYL-COA-EPIM-RXN))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[31].title
+    (MetaCyc:METHYLMALONYL-COA-MUT-RXN) (METHYLMALONYL-COA-MUT-RXN -> methylmalonyl-CoA
+    mutase reaction (MetaCyc:METHYLMALONYL-COA-MUT-RXN))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[33].title
+    (MetaCyc:RXN-8964) (RXN-8964 -> succinyl-CoA:(S)-malate CoA-transferase reaction
+    (MetaCyc:RXN-8964))
+  - data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml#references[37].title
+    (MetaCyc:MALYL-COA-LYASE-RXN) (MALYL-COA-LYASE-RXN -> (S)-malyl-CoA lyase reaction
+    (MetaCyc:MALYL-COA-LYASE-RXN))
+  - data/pathways/glyoxylate-assimilation.yaml#references[11].title (MetaCyc:RXN0-5224)
+    (RXN0-5224 -> carbonic anhydrase reaction (MetaCyc:RXN0-5224))
+  - data/pathways/glyoxylate-assimilation.yaml#references[13].title (MetaCyc:BIOTIN-CARBOXYL-RXN)
+    (BIOTIN-CARBOXYL-RXN -> biotin carboxylase reaction (MetaCyc:BIOTIN-CARBOXYL-RXN))
+  - data/pathways/glyoxylate-assimilation.yaml#references[15].title (MetaCyc:RXN0-5055)
+    (RXN0-5055 -> acetyl-CoA carboxyltransferase reaction (MetaCyc:RXN0-5055))
+  - data/pathways/glyoxylate-assimilation.yaml#references[17].title (MetaCyc:RXN-8963)
+    (RXN-8963 -> malonyl-CoA reductase (malonate semialdehyde-forming) reaction (MetaCyc:RXN-8963))
+  - data/pathways/glyoxylate-assimilation.yaml#references[19].title (MetaCyc:RXN-8974)
+    (RXN-8974 -> malonate semialdehyde reductase (3-hydroxypropionate-forming) reaction
+    (MetaCyc:RXN-8974))
+  - data/pathways/glyoxylate-assimilation.yaml#references[21].title (MetaCyc:RXN-9086)
+    (RXN-9086 -> 3-hydroxypropionate---CoA ligase (AMP-forming) reaction (MetaCyc:RXN-9086))
+  - data/pathways/glyoxylate-assimilation.yaml#references[23].title (MetaCyc:RXN-6383)
+    (RXN-6383 -> 3-hydroxypropionyl-CoA dehydratase reaction (MetaCyc:RXN-6383))
+  - data/pathways/glyoxylate-assimilation.yaml#references[25].title (MetaCyc:RXN-9087)
+    (RXN-9087 -> acryloyl-CoA reductase (NADPH) reaction (MetaCyc:RXN-9087))
+  - data/pathways/glyoxylate-assimilation.yaml#references[27].title (MetaCyc:RXN-8961)
+    (RXN-8961 -> (S)-malyl-CoA/beta-methylmalyl-CoA lyase (beta-methylmalyl-CoA-forming)
+    reaction (MetaCyc:RXN-8961))
+  - data/pathways/glyoxylate-assimilation.yaml#references[29].title (MetaCyc:RXN-8960)
+    (RXN-8960 -> erythro-3-methylmalyl-CoA dehydratase reaction (MetaCyc:RXN-8960))
+  - data/pathways/glyoxylate-assimilation.yaml#references[31].title (MetaCyc:RXN-13230)
+    (RXN-13230 -> mesaconyl-C1-CoA-C4-methyltransferase reaction (MetaCyc:RXN-13230))
+  - data/pathways/glyoxylate-assimilation.yaml#references[33].title (MetaCyc:RXN-8965)
+    (RXN-8965 -> mesaconyl-C4-CoA hydratase reaction (MetaCyc:RXN-8965))
+  - data/pathways/glyoxylate-assimilation.yaml#references[35].title (MetaCyc:CITRAMALYL-COA-LYASE-RXN)
+    (CITRAMALYL-COA-LYASE-RXN -> (3S)-citramalyl-CoA lyase reaction (MetaCyc:CITRAMALYL-COA-LYASE-RXN))
+  evidence_ids:
+  - EV-C10S4-PREDECESSOR
+  - EV-C10S4-WORKFLOW-EVIDENCE
+  - EV-C10S5-RAW-TITLES-FIXED-2
+  - EV-C10S5-RENDERED-PAGES-AND-KGX
+  - EV-C10S5-QC
+  - EV-C10S5-PYTEST
+  rule_id: CURATION:no-raw-local-id-structured-reference-titles
+  native_severity: minor
+  normalization_reason: 'Native minor representation defect maps directly to minor
+    severity: replacing the 26 raw unprefixed MetaCyc frame-ID reaction reference
+    titles across GO:0043427 and MetaCyc:PWY-5744 with descriptive reaction titles
+    eliminates all raw frame-ID reference titles in those 2 records (0 / 74 structured
+    references; 0 / 118 total references).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glyoxylate-assimilation.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #781 (group G-C10S5-001) by replacing
+    all 26 structured MetaCyc:* reaction references[] entries carrying raw unprefixed
+    database frame IDs (title == local_id) with descriptive reaction titles across
+    GO:0043427 and MetaCyc:PWY-5744 via pathwaymech.curation.publish_curation, recording
+    2 history/records/<slug>/2026-11-04T014200Z-antigravity-a1d1e5.yaml provenance
+    entries, and regenerating pages/.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2
+    finding_id: F-C10S4-001
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/781
+  tags:
+  - cycle10-stage5-resolve-review-findings
+  - raw-frame-id-reference-title
+  - reference-hygiene
+- finding_id: F-C10S4-002
+  issue_key: raw-local-id-metacyc-reaction-labels-4-metacyc-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: All 9 MetaCyc:* reaction labels carrying raw unprefixed database frame IDs
+    (label == local_id) are replaced with descriptive reaction labels across 4 maintained
+    MetaCyc pathway records
+  description: Across all 4 maintained MetaCyc pathway records in F-C10S4-002 (MetaCyc:ACETOACETATE-DEG-PWY,
+    MetaCyc:PWY-1361, MetaCyc:PWY0-1352, and MetaCyc:PWY-7545), replaced all 9 MetaCyc:*
+    reactions[].label entries (4 + 1 + 2 + 2) carrying raw unprefixed database frame
+    IDs (label == local_id) with verified descriptive reaction labels via pathwaymech.curation.publish_curation,
+    recorded 4 history/records/<slug>/2026-11-04T014200Z-antigravity-a1d1e5.yaml files,
+    and regenerated pages/ and pages/downloads/nodes.tsv under root-cause group G-C10S5-001
+    (#781) (bringing raw frame-ID reaction labels to 0 / 12 MetaCyc reactions and
+    0 / 21 total reactions across those 4 records, and 0 / 49 total reactions across
+    all 6 reassessed records).
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  field_paths:
+  - data/pathways/acetoacetate-degradation.yaml#reactions[0].label (MetaCyc:ACETOACETYL-COA-TRANSFER-RXN)
+    (ACETOACETYL-COA-TRANSFER-RXN -> acetate CoA-transferase reaction)
+  - data/pathways/acetoacetate-degradation.yaml#reactions[1].label (MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN)
+    (ACETYL-COA-ACETYLTRANSFER-RXN -> acetyl-CoA C-acetyltransferase reaction)
+  - data/pathways/acetoacetate-degradation.yaml#reactions[2].label (MetaCyc:RXN-20154)
+    (RXN-20154 -> acetate:[protein]-L-cysteine S-acetyltransferase reaction)
+  - data/pathways/acetoacetate-degradation.yaml#reactions[3].label (MetaCyc:RXN-20155)
+    (RXN-20155 -> acetoacetyl-CoA:[protein]-L-cysteine S-acetoacetyltransferase reaction)
+  - data/pathways/benzoyl-coa-degradation-i-aerobic.yaml#reactions[3].label (MetaCyc:RXN-2424)
+    (RXN-2424 -> cis-3,4-dehydroadipyl-CoA isomerase reaction)
+  - data/pathways/nitrate-reduction-viii.yaml#reactions[0].label (MetaCyc:RXN0-5388)
+    (RXN0-5388 -> NADH:menaquinone oxidoreductase reaction)
+  - data/pathways/nitrate-reduction-viii.yaml#reactions[1].label (MetaCyc:RXN0-3501)
+    (RXN0-3501 -> respiratory nitrate reductase (menaquinol) reaction)
+  - data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml#reactions[0].label
+    (MetaCyc:RXN-11496) (RXN-11496 -> pyruvate:ubiquinone oxidoreductase reaction)
+  - data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml#reactions[1].label
+    (MetaCyc:RXN0-5266) (RXN0-5266 -> cytochrome bd-I ubiquinol oxidase reaction)
+  evidence_ids:
+  - EV-C10S4-PREDECESSOR
+  - EV-C10S4-WORKFLOW-EVIDENCE
+  - EV-C10S5-REACTION-LABELS-FIXED-4
+  - EV-C10S5-RENDERED-PAGES-AND-KGX
+  - EV-C10S5-QC
+  - EV-C10S5-PYTEST
+  rule_id: CURATION:no-raw-local-id-reaction-labels
+  native_severity: minor
+  normalization_reason: 'Native minor representation defect maps directly to minor
+    severity: replacing the 9 raw unprefixed MetaCyc frame-ID reaction labels across
+    MetaCyc:ACETOACETATE-DEG-PWY, MetaCyc:PWY-1361, MetaCyc:PWY0-1352, and MetaCyc:PWY-7545
+    eliminates all raw database frame-ID reaction labels (0 / 12 MetaCyc reactions;
+    0 / 21 total reactions) across those 4 records.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/acetoacetate-degradation.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nitrate-reduction-viii.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #781 (group G-C10S5-001) by replacing
+    all 9 MetaCyc:* reactions[].label entries carrying raw unprefixed database frame
+    IDs with descriptive reaction labels across the 4 affected MetaCyc pathway records
+    via pathwaymech.curation.publish_curation, recording 4 history/records/<slug>/2026-11-04T014200Z-antigravity-a1d1e5.yaml
+    provenance entries, and regenerating pages/.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2
+    finding_id: F-C10S4-002
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/781
+  tags:
+  - cycle10-stage5-resolve-review-findings
+  - reaction-label-hygiene
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - GO:0043427
+  - MetaCyc:PWY-5744
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  - MetaCyc:PWY-1361
+  - MetaCyc:PWY0-1352
+  - MetaCyc:PWY-7545
+  rationale: Retain all 6 remediated pathway records as distinct, non-duplicate source-scoped
+    pathway definitions with 0 raw database frame-ID reference titles (0 / 474) and
+    0 raw database frame-ID reaction labels (0 / 49).
+  evidence_ids:
+  - EV-C10S5-RAW-TITLES-FIXED-2
+  - EV-C10S5-REACTION-LABELS-FIXED-4
+  - EV-C10S5-QC
+limitations:
+- This Cycle 10 Stage 5 successor review is scoped to verifying the remediation of
+  Cycle 10 Stage 4 findings F-C10S4-001 and F-C10S4-002 across the 6 affected maintained
+  pathway records; the remaining 273 maintained records had zero findings in Cycle
+  10 Stage 4 and were verified via repository-wide QC and pytest gates.
+notes:
+- CLAW aggregator CLI (kg_microbe_reviews) is not installed in the local culturebotai-claw
+  environment; finding lineage (predecessor review_id 20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2,
+  finding_ids F-C10S4-001 and F-C10S4-002, exact issue_keys, 100% target_ids retention,
+  and absence of competing heads) was explicitly verified against reviews/structured/.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261101T082500Z-cycle10-stage4-frozen-corpus-cohort-review-rev2
+  relationship: resolves_findings_from
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/781
+tags:
+- mech-goal-sequence-20261019
+- cycle-10
+- stage-5
+- resolve-review-findings
