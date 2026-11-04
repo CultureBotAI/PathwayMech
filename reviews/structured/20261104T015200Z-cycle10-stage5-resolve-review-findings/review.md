@@ -53,7 +53,7 @@ Replacing all 26 raw unprefixed MetaCyc frame-ID reference titles (title == loca
 
 evidence: supported. Targets: GO:0043427, MetaCyc:PWY-5744, MetaCyc:ACETOACETATE-DEG-PWY, MetaCyc:PWY-1361, MetaCyc:PWY0-1352, MetaCyc:PWY-7545.
 
-Structural verification across all 6 remediated pathway YAML files confirms that all pathway IDs, taxon groundings, 7,876 connected participant entries (0 orphans), 1,635 reaction steps (735 RHEA:*), 14,768 non-reflexive mechanistic_edges, 1,073 source_mappings, and 22,922 structured evidence blocks remain 100% intact and pass closed LinkML and authority snapshot checks.
+Structural verification across all 6 remediated pathway YAML files confirms that all pathway IDs, taxon groundings, 7,880 connected participant entries (0 orphans), 1,635 reaction steps (735 RHEA:*), 14,770 non-reflexive mechanistic_edges, 1,073 source_mappings, and 22,922 structured evidence blocks remain 100% intact and pass closed LinkML and authority snapshot checks.
 
 ## Findings
 
@@ -447,7 +447,7 @@ evidence:
     carrying raw unprefixed database frame ID titles (title == local_id) with verified
     descriptive reaction titles (<reaction label> (<reference_id>)) via pathwaymech.curation.publish_curation.
   quote: "- id: MetaCyc:RXN0-5224\n  title: carbonic anhydrase reaction (MetaCyc:RXN0-5224)\n\
-    \  url: https://biocyc.org/META/NEW-IMAGE?type=REACTION&object=RXN0-5224"
+    \  url: https://pathway.yeastgenome.org/getxml?META:RXN0-5224"
   snapshot_sha256: 43690bab21e93a6be11922c7e9bc7a69136712814c12792544d7cfa7bb82905c
 - evidence_id: EV-C10S5-REACTION-LABELS-FIXED-4
   kind: record_content
@@ -462,8 +462,7 @@ evidence:
     reactions[].label entries (4 + 1 + 2 + 2) carrying raw unprefixed database frame
     IDs (label == local_id) with verified descriptive reaction labels via pathwaymech.curation.publish_curation.
   quote: "- id: MetaCyc:ACETOACETYL-COA-TRANSFER-RXN\n  label: acetate CoA-transferase\
-    \ reaction\n  reaction_type: enzymatic\n  ec_number: EC:2.8.3.8\n  direction:\
-    \ reversible\n  category: molecular_activity"
+    \ reaction\n  category: molecular_activity\n  direction: reversible"
   snapshot_sha256: cb0e61c5d265e6634beb6dbc8bdbc7b9723b75a53aee11204520f5b54ff94290
 - evidence_id: EV-C10S5-RENDERED-PAGES-AND-KGX
   kind: record_content
@@ -596,8 +595,8 @@ assessments:
     pathway records
   outcome: supported
   summary: Structural verification across all 6 remediated pathway YAML files confirms
-    that all pathway IDs, taxon groundings, 7,876 connected participant entries (0
-    orphans), 1,635 reaction steps (735 RHEA:*), 14,768 non-reflexive mechanistic_edges,
+    that all pathway IDs, taxon groundings, 7,880 connected participant entries (0
+    orphans), 1,635 reaction steps (735 RHEA:*), 14,770 non-reflexive mechanistic_edges,
     1,073 source_mappings, and 22,922 structured evidence blocks remain 100% intact
     and pass closed LinkML and authority snapshot checks.
   target_ids:
