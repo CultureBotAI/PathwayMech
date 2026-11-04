@@ -1,0 +1,38 @@
+history_version: 1
+target:
+  kind: record
+  path: data/pathways/thioredoxin-pathway.yaml
+  slug: thioredoxin-pathway
+session:
+  id: 2026-11-04T071800Z-antigravity-a1d1e5
+  timestamp: '2026-11-04T07:18:00Z'
+  actors:
+  - type: ai_agent
+    name: antigravity
+    model: claude-opus-4-6
+    agent_tool: antigravity
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/675
+  - https://github.com/CultureBotAI/PathwayMech/issues/786
+  prs:
+  - https://github.com/CultureBotAI/PathwayMech/pull/785
+events:
+- type: EDIT
+  outcome: changed
+  sections:
+  - mechanistic_edges
+  summary: Populate Stage 6 causal-graph stoichiometry coefficients and structured evidence qualifiers
+    in MetaCyc:THIOREDOX-PWY
+  details: 'Added typed MechanisticEdge.coefficient on 15 reaction and complex subunit edges (coefficient:
+    1 on all 14 reaction substrate/product edges e001..014 across MetaCyc:THIOREDOXIN-REDUCT-NADPH-RXN,
+    MetaCyc:THIOREDOXIN-RXN, and RHEA:20347; and coefficient: 2 on the TrxB homodimer part_of edge e021
+    UniProtKB:P0A9P4 -> EcoCyc:THIOREDOXIN-REDUCT-NADPH-CPLX), populated structured EvidenceItem.eco_code:
+    ECO:0000250 on all 3 top-level and 1 endpoint_qualifier single-ECO Mycoplasma pneumoniae UniProtKB:*
+    evidence items across 3 edges (e023[0] and e040[0] for UniProtKB:P75531, and e041[0] plus e041.endpoint_qualifiers[0].evidence[0]
+    for UniProtKB:P75512), and populated EvidenceItem.assay_taxon across all 43 top-level and 1 endpoint_qualifier
+    strain-scoped evidence items on 24 edges (39 top-level NCBITaxon:511145 Escherichia coli K-12 MG1655
+    items across e019[0..1], e020[0,2], e021[0..1], e026[0,3]..029[0,3], e030[0], e031[0..1], e032[0..2],
+    e034[1..3], e035[1], e036[0..1]..038[0..1], e042[0..1]..045[0..1], and e046[1]; plus 4 top-level and
+    1 endpoint_qualifier NCBITaxon:272634 Mycoplasma pneumoniae M129 items across e023[0], e024[0], e040[0],
+    e041[0], and e041.endpoint_qualifiers[0].evidence[0]).'
