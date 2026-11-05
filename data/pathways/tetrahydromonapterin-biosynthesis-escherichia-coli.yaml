@@ -1,0 +1,675 @@
+id: PathBank:SMP0002057
+label: Tetrahydromonapterin Biosynthesis
+description: 'PathBank SMP0002057 (native BioPAX archive member PW002043.owl, PathWhiz PW002043) models
+  Escherichia coli tetrahydromonapterin biosynthesis across two experimentally supported modules and an
+  unresolved intervening dephosphorylation step: (1) hydrolytic ring expansion of GTP(4-) and water to
+  7,8-dihydroneopterin 3''-triphosphate(4-), formate, and H(+) (Reactions/3396, displayName 3.5.4.16,
+  normalized to RHEA:17474 in the left_to_right direction) catalyzed by the homodecameric GTP cyclohydrolase
+  I complex FolE (PathBank:SMP0002057/ProteinComplex/3628, ten copies of Protein/6012 cross-referenced
+  to UniProtKB:P0A6T5, with one catalytic Zn(2+) ion CHEBI:29105 per subunit); (2) reversible C2'' epimerization
+  of 7,8-dihydroneopterin 3''-triphosphate(4-) to 7,8-dihydromonapterin 3-triphosphate(4-) (Reactions/5965,
+  displayName 5.-.-.-, normalized in its monapterin-forming biosynthetic direction to RHEA:28347 left_to_right)
+  catalyzed by the homooctameric dihydroneopterin triphosphate 2''-epimerase complex FolX (PathBank:SMP0002057/ProteinComplex/4014,
+  eight copies of Protein/6195 cross-referenced to UniProtKB:P0AC19); and (3) NADPH-dependent reduction
+  of unphosphorylated 7,8-dihydromonapterin (CHEBI:71175) with H(+) to tetrahydromonapterin (CHEBI:71177)
+  and NADP(3-) (Reactions/5967, normalized to RHEA:34848 in the left_to_right direction) catalyzed by
+  dihydromonapterin reductase FolM (Protein/6277, UniProtKB:P0AFS3).
+
+
+  In native PW002043.owl, BiochemicalPathwayStep PathwayEnzymeReaction/22294 wraps Reactions/5966 (Dihydromonapterin-triphosphate
+  + 3 Water -> Dihydromethysticin + 2 Hydrogen Ion + 3 Phosphate) without any stepProcess or Catalysis
+  controller, and both Reactions/5966 and Reactions/5967 erroneously substitute the plant kavalactone
+  Compound/PW_C011995 (Dihydromethysticin, C15H16O5, ChEBI_CHEBI_1034670 / KEGG_Compound_C09926) for 7,8-dihydromonapterin
+  (CHEBI:71175, C9H13N5O4). Because the intervening dephosphorylation mechanism and phosphatase catalyst
+  between 7,8-dihydromonapterin 3-triphosphate(4-) (CHEBI:61186) and 7,8-dihydromonapterin (CHEBI:71175)
+  remain unresolved in Escherichia coli (PMID:19897652), uncatalyzed Reactions/5966 and the erroneous
+  Dihydromethysticin placeholder are excluded from asserted reactions and mechanistic_edges, and no provides_input_for
+  edge bridges RHEA:28347 to RHEA:34848. Native PW002043.owl encodes species-level Escherichia coli (NCBITaxon:562)
+  without cellularLocation annotations on participants, while the reviewed UniProtKB proteins and primary
+  biochemical, structural, and genetic complementation studies refer to Escherichia coli K-12 (NCBITaxon:83333).
+  Neutral/parent ChEBI cross-references in PW002043.owl (CHEBI:15996 -> CHEBI:37565, CHEBI:30751 -> CHEBI:15740,
+  CHEBI:16474 -> CHEBI:57783, CHEBI:18009 -> CHEBI:58349) and unlinked pterin intermediates (Compound/PW_C042912
+  -> CHEBI:58462, Compound/PW_C041451 -> CHEBI:61186, Compound/PW_C041607 -> CHEBI:71177) are normalized
+  to Rhea pH 7.3 major microspecies.'
+pathway_type: pterin-biosynthesis
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:37565
+  label: GTP(4-)
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:58462
+  label: 7,8-dihydroneopterin 3'-triphosphate(4-)
+  category: small_molecule
+- id: CHEBI:15740
+  label: formate
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:61186
+  label: 7,8-dihydromonapterin 3-triphosphate(4-)
+  category: small_molecule
+- id: CHEBI:71175
+  label: 7,8-dihydromonapterin
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:71177
+  label: tetrahydromonapterin
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: UniProtKB:P0A6T5
+  label: GTP cyclohydrolase 1
+  category: protein
+- id: UniProtKB:P0AC19
+  label: Dihydroneopterin triphosphate 2'-epimerase
+  category: protein
+- id: UniProtKB:P0AFS3
+  label: Dihydromonapterin reductase
+  category: protein
+- id: PathBank:SMP0002057/ProteinComplex/3628
+  label: GTP cyclohydrolase I
+  category: complex
+- id: PathBank:SMP0002057/ProteinComplex/4014
+  label: dihydroneopterin triphosphate 2'-epimerase
+  category: complex
+reactions:
+- id: RHEA:17474
+  label: GTP + H2O => 7,8-dihydroneopterin 3'-triphosphate + formate + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:28347
+  label: 7,8-dihydroneopterin 3'-triphosphate => 7,8-dihydromonapterin 3'-triphosphate
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:34848
+  label: 7,8-dihydromonapterin + NADPH + H(+) => 5,6,7,8-tetrahydromonapterin + NADP(+)
+  direction: left_to_right
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0002057-edge-001
+  subject: CHEBI:37565
+  predicate: consumes
+  object: RHEA:17474
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17474
+    source_assertion: RHEA:17474 explicitly lists CHEBI:37565 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:17474 rh:substrates <http://rdf.rhea-db.org/17473_L>; <http://rdf.rhea-db.org/17473_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_17473_compound_6355>; <http://rdf.rhea-db.org/Participant_17473_compound_6355>
+      rh:compound <http://rdf.rhea-db.org/Compound_6355> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/3396 (3.5.4.16, LEFT_TO_RIGHT) lists Compound/PW_C000986 (Guanosine
+      triphosphate, ChEBI_CHEBI_15996; normalized to pH 7.3 major microspecies CHEBI:37565) on bp:left
+      with participantStoichiometry Compound/PW_C000986/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:left[@rdf:resource='#Compound/PW_C000986'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000986/Stoichiometry/1.0']
+- id: smp0002057-edge-002
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:17474
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17474
+    source_assertion: RHEA:17474 explicitly lists CHEBI:15377 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:17474 rh:substrates <http://rdf.rhea-db.org/17473_L>; <http://rdf.rhea-db.org/17473_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_17473_compound_1283>; <http://rdf.rhea-db.org/Participant_17473_compound_1283>
+      rh:compound <http://rdf.rhea-db.org/Compound_1283> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/3396 (3.5.4.16, LEFT_TO_RIGHT) lists Compound/PW_C001420 (Water,
+      ChEBI_CHEBI_15377) on bp:left with participantStoichiometry Compound/PW_C001420/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:left[@rdf:resource='#Compound/PW_C001420'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001420/Stoichiometry/1.0']
+- id: smp0002057-edge-003
+  subject: RHEA:17474
+  predicate: produces
+  object: CHEBI:58462
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17474
+    source_assertion: RHEA:17474 explicitly lists CHEBI:58462 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:17474 rh:products <http://rdf.rhea-db.org/17473_R>; <http://rdf.rhea-db.org/17473_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_17473_compound_2443>; <http://rdf.rhea-db.org/Participant_17473_compound_2443>
+      rh:compound <http://rdf.rhea-db.org/Compound_2443> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/3396 (3.5.4.16, LEFT_TO_RIGHT) lists Compound/PW_C042912 (7,8-dihydroneopterin
+      3'-triphosphate, PubChem-compound_25201779; normalized to pH 7.3 major microspecies CHEBI:58462)
+      on bp:right with participantStoichiometry Compound/PW_C042912/Stoichiometry/1.0 (stoichiometricCoefficient
+      1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:right[@rdf:resource='#Compound/PW_C042912'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C042912/Stoichiometry/1.0']
+- id: smp0002057-edge-004
+  subject: RHEA:17474
+  predicate: produces
+  object: CHEBI:15740
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17474
+    source_assertion: RHEA:17474 explicitly lists CHEBI:15740 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:17474 rh:products <http://rdf.rhea-db.org/17473_R>; <http://rdf.rhea-db.org/17473_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_17473_compound_3001>; <http://rdf.rhea-db.org/Participant_17473_compound_3001>
+      rh:compound <http://rdf.rhea-db.org/Compound_3001> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/3396 (3.5.4.16, LEFT_TO_RIGHT) lists Compound/PW_C000092 (Formic
+      acid, ChEBI_CHEBI_30751; normalized to pH 7.3 major microspecies CHEBI:15740) on bp:right with participantStoichiometry
+      Compound/PW_C000092/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:right[@rdf:resource='#Compound/PW_C000092'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000092/Stoichiometry/1.0']
+- id: smp0002057-edge-005
+  subject: RHEA:17474
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:17474
+    source_assertion: RHEA:17474 explicitly lists CHEBI:15378 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:17474 rh:products <http://rdf.rhea-db.org/17473_R>; <http://rdf.rhea-db.org/17473_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_17473_compound_3249>; <http://rdf.rhea-db.org/Participant_17473_compound_3249>
+      rh:compound <http://rdf.rhea-db.org/Compound_3249> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/3396 (3.5.4.16, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen
+      Ion, ChEBI_CHEBI_15378) on bp:right with participantStoichiometry Compound/PW_C040034/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:right[@rdf:resource='#Compound/PW_C040034'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']
+- id: smp0002057-edge-006
+  subject: CHEBI:58462
+  predicate: consumes
+  object: RHEA:28347
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:28347
+    source_assertion: RHEA:28347 explicitly lists CHEBI:58462 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:28347 rh:substrates <http://rdf.rhea-db.org/28346_L>; <http://rdf.rhea-db.org/28346_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_28346_compound_2443>; <http://rdf.rhea-db.org/Participant_28346_compound_2443>
+      rh:compound <http://rdf.rhea-db.org/Compound_2443> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/5965 (5.-.-.-, REVERSIBLE) lists Compound/PW_C042912 (7,8-dihydroneopterin
+      3'-triphosphate, PubChem-compound_25201779; normalized to pH 7.3 major microspecies CHEBI:58462)
+      on bp:left with participantStoichiometry Compound/PW_C042912/Stoichiometry/1.0 (stoichiometricCoefficient
+      1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5965']/bp:left[@rdf:resource='#Compound/PW_C042912'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5965']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C042912/Stoichiometry/1.0']
+- id: smp0002057-edge-007
+  subject: RHEA:28347
+  predicate: produces
+  object: CHEBI:61186
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:28347
+    source_assertion: RHEA:28347 explicitly lists CHEBI:61186 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:28347 rh:products <http://rdf.rhea-db.org/28346_R>; <http://rdf.rhea-db.org/28346_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_28346_compound_6431>; <http://rdf.rhea-db.org/Participant_28346_compound_6431>
+      rh:compound <http://rdf.rhea-db.org/Compound_6431> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/5965 (5.-.-.-, REVERSIBLE) lists Compound/PW_C041451 (Dihydromonapterin-triphosphate,
+      PubChem-compound_25203084; normalized to pH 7.3 major microspecies CHEBI:61186) on bp:right with
+      participantStoichiometry Compound/PW_C041451/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5965']/bp:right[@rdf:resource='#Compound/PW_C041451'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5965']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C041451/Stoichiometry/1.0']
+- id: smp0002057-edge-008
+  subject: CHEBI:71175
+  predicate: consumes
+  object: RHEA:34848
+  coefficient: 1
+  description: Grounded to 7,8-dihydromonapterin (CHEBI:71175) from RHEA:34848, UniProtKB:P0AFS3, and
+    PMID:19897652, replacing the erroneous Compound/PW_C011995 (Dihydromethysticin, ChEBI_CHEBI_1034670)
+    placeholder on bp:left of native Reactions/5967 in PW002043.owl.
+  evidence:
+  - reference_id: RHEA:34848
+    source_assertion: RHEA:34848 explicitly lists CHEBI:71175 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:34848 rh:substrates <http://rdf.rhea-db.org/34847_L>; <http://rdf.rhea-db.org/34847_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_34847_compound_7636>; <http://rdf.rhea-db.org/Participant_34847_compound_7636>
+      rh:compound <http://rdf.rhea-db.org/Compound_7636> / rh:chebi
+  - reference_id: UniProtKB:P0AFS3
+    source_assertion: Reviewed UniProtKB entry P0AFS3 assigns the dihydromonapterin reductase catalytic
+      activity (7,8-dihydromonapterin + NADPH + H(+) = 5,6,7,8-tetrahydromonapterin + NADP(+), RHEA:34847)
+      supported by PMID:19897652.
+    source_locator: comments[2].reaction; reactionCrossReferences; evidences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:19897652
+    source_assertion: Purified recombinant Escherichia coli K-12 FolM catalyzes NADPH-dependent reduction
+      of 7,8-dihydromonapterin (CHEBI:71175) to tetrahydromonapterin.
+    source_locator: PMC2805310, Results, Recombinant FolM has high H2-MPt reductase activity; Fig. 4
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-009
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:34848
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:34848
+    source_assertion: RHEA:34848 explicitly lists CHEBI:57783 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:34848 rh:substrates <http://rdf.rhea-db.org/34847_L>; <http://rdf.rhea-db.org/34847_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_34847_compound_3438>; <http://rdf.rhea-db.org/Participant_34847_compound_3438>
+      rh:compound <http://rdf.rhea-db.org/Compound_3438> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/5967 (Reaction5967, LEFT_TO_RIGHT) lists Compound/PW_C000146 (NADPH,
+      ChEBI_CHEBI_16474; normalized to pH 7.3 major microspecies CHEBI:57783) on bp:left with participantStoichiometry
+      Compound/PW_C000146/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:left[@rdf:resource='#Compound/PW_C000146'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000146/Stoichiometry/1.0']
+- id: smp0002057-edge-010
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:34848
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:34848
+    source_assertion: RHEA:34848 explicitly lists CHEBI:15378 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:34848 rh:substrates <http://rdf.rhea-db.org/34847_L>; <http://rdf.rhea-db.org/34847_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_34847_compound_3249>; <http://rdf.rhea-db.org/Participant_34847_compound_3249>
+      rh:compound <http://rdf.rhea-db.org/Compound_3249> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/5967 (Reaction5967, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen
+      Ion, ChEBI_CHEBI_15378) on bp:left with participantStoichiometry Compound/PW_C040034/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:left[@rdf:resource='#Compound/PW_C040034'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']
+- id: smp0002057-edge-011
+  subject: RHEA:34848
+  predicate: produces
+  object: CHEBI:71177
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:34848
+    source_assertion: RHEA:34848 explicitly lists CHEBI:71177 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:34848 rh:products <http://rdf.rhea-db.org/34847_R>; <http://rdf.rhea-db.org/34847_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_34847_compound_7637>; <http://rdf.rhea-db.org/Participant_34847_compound_7637>
+      rh:compound <http://rdf.rhea-db.org/Compound_7637> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/5967 (Reaction5967, LEFT_TO_RIGHT) lists Compound/PW_C041607 (Tetrahydromonapterin,
+      PubChem-compound_45479608; normalized to CHEBI:71177) on bp:right with participantStoichiometry
+      Compound/PW_C041607/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:right[@rdf:resource='#Compound/PW_C041607'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C041607/Stoichiometry/1.0']
+- id: smp0002057-edge-012
+  subject: RHEA:34848
+  predicate: produces
+  object: CHEBI:58349
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:34848
+    source_assertion: RHEA:34848 explicitly lists CHEBI:58349 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:34848 rh:products <http://rdf.rhea-db.org/34847_R>; <http://rdf.rhea-db.org/34847_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_34847_compound_5188>; <http://rdf.rhea-db.org/Participant_34847_compound_5188>
+      rh:compound <http://rdf.rhea-db.org/Compound_5188> / rh:chebi
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Native Reactions/5967 (Reaction5967, LEFT_TO_RIGHT) lists Compound/PW_C000143 (NADP,
+      ChEBI_CHEBI_18009; normalized to pH 7.3 major microspecies CHEBI:58349) on bp:right with participantStoichiometry
+      Compound/PW_C000143/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:right[@rdf:resource='#Compound/PW_C000143'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5967']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000143/Stoichiometry/1.0']
+- id: smp0002057-edge-013
+  subject: RHEA:17474
+  predicate: part_of
+  object: PathBank:SMP0002057
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Pathway SMP0002057 explicitly lists Reactions/3396 (3.5.4.16, Guanosine triphosphate
+      + Water -> 7,8-dihydroneopterin 3'-triphosphate + Formic acid + Hydrogen Ion) as a pathwayComponent
+      and wraps it in BiochemicalPathwayStep PathwayEnzymeReaction/22292.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002057']/bp:pathwayComponent[@rdf:resource='#Reactions/3396'];
+      bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22292']/bp:stepConversion[@rdf:resource='#Reactions/3396']
+  - reference_id: RHEA:17474
+    source_assertion: Rhea master 17473 links directional member 17474 (GTP + H2O => 7,8-dihydroneopterin
+      3'-triphosphate + formate + H(+)), matching the substrate and product sides of Reactions/3396 at
+      pH 7.3.
+    source_locator: rhea.rdf.gz; rh:17473 rh:directionalReaction rh:17474; rh:17474 rh:substrates/rh:products/rh:equation
+- id: smp0002057-edge-014
+  subject: RHEA:28347
+  predicate: part_of
+  object: PathBank:SMP0002057
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Pathway SMP0002057 explicitly lists Reactions/5965 (5.-.-.-, 7,8-dihydroneopterin
+      3'-triphosphate <-> Dihydromonapterin-triphosphate) as a pathwayComponent and wraps it in BiochemicalPathwayStep
+      PathwayEnzymeReaction/22293.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002057']/bp:pathwayComponent[@rdf:resource='#Reactions/5965'];
+      bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22293']/bp:stepConversion[@rdf:resource='#Reactions/5965']
+  - reference_id: RHEA:28347
+    source_assertion: Rhea master 28346 links directional member 28347 (7,8-dihydroneopterin 3'-triphosphate
+      => 7,8-dihydromonapterin 3'-triphosphate), matching the biosynthetic epimerization direction of
+      Reactions/5965 at pH 7.3.
+    source_locator: rhea.rdf.gz; rh:28346 rh:directionalReaction rh:28347; rh:28347 rh:substrates/rh:products/rh:equation
+- id: smp0002057-edge-015
+  subject: RHEA:34848
+  predicate: part_of
+  object: PathBank:SMP0002057
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: Pathway SMP0002057 explicitly lists Reactions/5967 (Reaction5967) as a pathwayComponent
+      and wraps it with ReactionCatalysis/5930 in BiochemicalPathwayStep PathwayEnzymeReaction/22295.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002057']/bp:pathwayComponent[@rdf:resource='#Reactions/5967'];
+      bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22295']/bp:stepConversion[@rdf:resource='#Reactions/5967']
+  - reference_id: RHEA:34848
+    source_assertion: Rhea master 34847 links directional member 34848 (7,8-dihydromonapterin + NADPH
+      + H(+) => 5,6,7,8-tetrahydromonapterin + NADP(+)), matching the FolM-catalyzed reduction step at
+      pH 7.3 once the erroneous Dihydromethysticin placeholder in Reactions/5967 is replaced with 7,8-dihydromonapterin.
+    source_locator: rhea.rdf.gz; rh:34847 rh:directionalReaction rh:34848; rh:34848 rh:substrates/rh:products/rh:equation
+- id: smp0002057-edge-016
+  subject: UniProtKB:P0A6T5
+  predicate: part_of
+  object: PathBank:SMP0002057/ProteinComplex/3628
+  coefficient: 10
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: In PW002043.owl, ProteinComplex/3628 (displayName GTP cyclohydrolase I) lists component
+      Protein/6012 (ProteinReference/6012 -> Reference/UniProt_P0A6T5) with componentStoichiometry Protein/6012/Stoichiometry/10.0
+      (stoichiometricCoefficient 10.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/3628']/bp:component[@rdf:resource='#Protein/6012'];
+      bp:Complex[@rdf:ID='ProteinComplex/3628']/bp:componentStoichiometry[@rdf:resource='#Protein/6012/Stoichiometry/10.0']
+  - reference_id: PMID:12297008
+    source_assertion: Biochemical reconstitution and size-exclusion experiments on Escherichia coli GTP
+      cyclohydrolase I support a homodecamer composed of a pentamer of five dimers.
+    source_locator: Europe PMC core result[id=12297008].abstractText
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-017
+  subject: UniProtKB:P0AC19
+  predicate: part_of
+  object: PathBank:SMP0002057/ProteinComplex/4014
+  coefficient: 8
+  description: Native PW002043.owl and the 2.9 A crystal structure (PMID:10378270) establish an 8-subunit
+    homooctamer (two head-to-head tetramers), superseding the earlier 1997 hydrodynamic hexamer estimate
+    (PMID:9182560).
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: In PW002043.owl, ProteinComplex/4014 (displayName dihydroneopterin triphosphate
+      2'-epimerase) lists component Protein/6195 (ProteinReference/6195 -> Reference/UniProt_P0AC19) with
+      componentStoichiometry Protein/6195/Stoichiometry/8.0 (stoichiometricCoefficient 8.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/4014']/bp:component[@rdf:resource='#Protein/6195'];
+      bp:Complex[@rdf:ID='ProteinComplex/4014']/bp:componentStoichiometry[@rdf:resource='#Protein/6195/Stoichiometry/8.0']
+  - reference_id: PMID:10378270
+    source_assertion: The 2.9 A crystal structure of Escherichia coli 7,8-dihydroneopterin triphosphate
+      epimerase shows a torus-shaped D4-symmetric homooctamer formed by two head-to-head tetramers.
+    source_locator: Europe PMC core result[id=10378270].abstractText
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:9182560
+    source_assertion: The 1997 purification study inferred a probable homohexamer from apparent molecular
+      masses of 82.6 kDa (native) and 13.7 kDa (subunit); this historical hydrodynamic estimate is superseded
+      by the crystallographic octamer.
+    source_locator: Europe PMC core result[id=9182560].abstractText
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-018
+  subject: PathBank:SMP0002057/ProteinComplex/3628
+  predicate: catalyzes
+  object: RHEA:17474
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: In PW002043.owl, ReactionCatalysis/3364 links controller ProteinComplex/3628 (GTP
+      cyclohydrolase I, ten subunits of Protein/6012 -> Reference/UniProt_P0A6T5) to controlled Reactions/3396
+      with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/3364']/bp:controller[@rdf:resource='#ProteinComplex/3628'];
+      bp:Catalysis[@rdf:ID='ReactionCatalysis/3364']/bp:controlled[@rdf:resource='#Reactions/3396']
+  - reference_id: UniProtKB:P0A6T5
+    source_assertion: Reviewed UniProtKB entry P0A6T5 assigns the GTP cyclohydrolase I reaction equation
+      and RHEA:17473 in Escherichia coli K-12.
+    source_locator: comments[0].reaction; reactionCrossReferences[Rhea]
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:11087827
+    source_assertion: Purified recombinant Escherichia coli GTP cyclohydrolase I catalyzed conversion
+      of GTP to dihydroneopterin triphosphate and contained an essential active-site zinc ion.
+    source_locator: PMC17616, Results and Discussion, Crystallographic Analysis of eGTP-CH-I Purified
+      in the Absence of Chelating Agents
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-019
+  subject: PathBank:SMP0002057/ProteinComplex/4014
+  predicate: catalyzes
+  object: RHEA:28347
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: In PW002043.owl, ReactionCatalysis/5929 links controller ProteinComplex/4014 (dihydroneopterin
+      triphosphate 2'-epimerase, eight subunits of Protein/6195 -> Reference/UniProt_P0AC19) to controlled
+      Reactions/5965 with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5929']/bp:controller[@rdf:resource='#ProteinComplex/4014'];
+      bp:Catalysis[@rdf:ID='ReactionCatalysis/5929']/bp:controlled[@rdf:resource='#Reactions/5965']
+  - reference_id: UniProtKB:P0AC19
+    source_assertion: Reviewed UniProtKB entry P0AC19 assigns RHEA:28346 (7,8-dihydroneopterin 3'-triphosphate
+      = 7,8-dihydromonapterin 3'-triphosphate) in Escherichia coli K-12 with experimental evidence from
+      PMID:9182560 and PMID:9651328.
+    source_locator: comments[1].reaction; reactionCrossReferences; evidences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:9651328
+    source_assertion: Recombinant Escherichia coli FolX forms a homooctamer and catalyzes reversible C2'
+      epimerization between dihydroneopterin triphosphate and dihydromonapterin triphosphate.
+    source_locator: Europe PMC core result[id=9651328].abstractText
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-020
+  subject: UniProtKB:P0AFS3
+  predicate: catalyzes
+  object: RHEA:34848
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: In PW002043.owl, ReactionCatalysis/5930 links controller Protein/6277 (displayName
+      Dihydrofolate reductase folM, ProteinReference/6277 -> Reference/UniProt_P0AFS3) to controlled Reactions/5967
+      with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/5930']/bp:controller[@rdf:resource='#Protein/6277'];
+      bp:Catalysis[@rdf:ID='ReactionCatalysis/5930']/bp:controlled[@rdf:resource='#Reactions/5967'];
+      bp:ProteinReference[@rdf:ID='ProteinReference/6277']/bp:xref[@rdf:resource='#Reference/UniProt_P0AFS3']
+  - reference_id: UniProtKB:P0AFS3
+    source_assertion: Reviewed UniProtKB entry P0AFS3 assigns the dihydromonapterin reductase reaction
+      (RHEA:34847) in Escherichia coli K-12 with experimental evidence from PMID:19897652.
+    source_locator: comments[2].reaction; reactionCrossReferences; evidences
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:19897652
+    quote: NADH could not replace NADPH as the cofactor.
+    source_locator: PMC2805310, Results, Recombinant FolM has high H2-MPt reductase activity
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:19897652
+    source_assertion: Purified Escherichia coli K-12 FolM reduces 7,8-dihydromonapterin with NADPH to
+      tetrahydromonapterin; no activity above rearrangement-derived background was detected with quinonoid
+      dihydromonapterin.
+    source_locator: PMC2805310, Materials and Methods (FolM assays); Results/Fig. 4
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-021
+  subject: PathBank:SMP0002057/ProteinComplex/3628
+  predicate: has_cofactor
+  object: CHEBI:29105
+  evidence:
+  - reference_id: PMID:11087827
+    source_assertion: Chemical analysis of Escherichia coli GTP cyclohydrolase I measured 0.9 +/- 0.1
+      zinc ions per subunit, and the crystal structure localized the catalytically essential Zn(2+) ion
+      to each active site.
+    source_locator: PMC17616, Results and Discussion, Crystallographic Analysis of eGTP-CH-I Purified
+      in the Absence of Chelating Agents
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: UniProtKB:P0A6T5
+    source_assertion: Binding-site features on reviewed UniProtKB entry P0A6T5 identify active-site Zn(2+)
+      (CHEBI:29105) in Escherichia coli K-12.
+    source_locator: features[type="Binding site"].ligand.id
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-022
+  subject: RHEA:17474
+  predicate: provides_input_for
+  object: RHEA:28347
+  description: Sequential GTP cyclohydrolase I and dihydroneopterin triphosphate 2'-epimerase handoff
+    via shared 7,8-dihydroneopterin 3'-triphosphate(4-) (Compound/PW_C042912, CHEBI:58462) in PW002043.owl;
+    no provides_input_for edge connects RHEA:28347 to RHEA:34848 because the intervening dephosphorylation
+    step is unresolved.
+  evidence:
+  - reference_id: PathBank:SMP0002057
+    source_assertion: In PW002043.owl, Reactions/3396 produces Compound/PW_C042912 (7,8-dihydroneopterin
+      3'-triphosphate) on bp:right and Reactions/5965 consumes Compound/PW_C042912 on bp:left within the
+      SMP0002057 pathway.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/3396']/bp:right[@rdf:resource='#Compound/PW_C042912'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/5965']/bp:left[@rdf:resource='#Compound/PW_C042912']
+  - reference_id: RHEA:17474
+    source_assertion: RHEA:17474 produces CHEBI:58462 (7,8-dihydroneopterin 3'-triphosphate(4-)).
+    source_locator: rhea.rdf.gz; rh:17474 rh:products rh:17473_R; rh:17473_R rh:contains1 rh:Participant_17473_compound_2443;
+      rh:Compound_2443 rh:chebi
+  - reference_id: RHEA:28347
+    source_assertion: RHEA:28347 consumes CHEBI:58462 (7,8-dihydroneopterin 3'-triphosphate(4-)).
+    source_locator: rhea.rdf.gz; rh:28347 rh:substrates rh:28346_L; rh:28346_L rh:contains1 rh:Participant_28346_compound_2443;
+      rh:Compound_2443 rh:chebi
+- id: smp0002057-edge-023
+  subject: UniProtKB:P0AC19
+  predicate: enables
+  object: PathBank:SMP0002057
+  evidence:
+  - reference_id: PMID:19897652
+    source_assertion: Deleting folX abolished heterologous PhhA/PhhB rescue of tyrosine auxotrophy in
+      Escherichia coli K-12 JP2255, and plasmid expression of folX restored tetrahydromonapterin-dependent
+      rescue.
+    source_locator: PMC2805310, Methods (E. coli deletions); Results/Fig. 3D
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002057-edge-024
+  subject: UniProtKB:P0AFS3
+  predicate: enables
+  object: PathBank:SMP0002057
+  evidence:
+  - reference_id: PMID:19897652
+    source_assertion: Deleting folM abolished heterologous PhhA/PhhB rescue of tyrosine auxotrophy in
+      Escherichia coli K-12 JP2255, and plasmid expression of folM restored tetrahydromonapterin-dependent
+      rescue.
+    source_locator: PMC2805310, Methods (E. coli deletions); Results/Fig. 3D
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+source_mappings:
+- subject_id: UniProt:P0A6T5
+  subject_label: GTP cyclohydrolase 1
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0A6T5
+  object_label: GTP cyclohydrolase 1
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002057
+  source_element_id: ProteinReference/6012
+- subject_id: UniProt:P0AC19
+  subject_label: D-erythro-7,8-dihydroneopterin triphosphate epimerase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0AC19
+  object_label: Dihydroneopterin triphosphate 2'-epimerase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002057
+  source_element_id: ProteinReference/6195
+- subject_id: UniProt:P0AFS3
+  subject_label: Dihydrofolate reductase folM
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0AFS3
+  object_label: Dihydromonapterin reductase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002057
+  source_element_id: ProteinReference/6277
+references:
+- id: PathBank:SMP0002057
+  title: PathBank SMP0002057 Tetrahydromonapterin Biosynthesis (PW002043.owl)
+  url: https://pathbank.org/view/SMP0002057
+  source_version: 2019-08-16 primary BioPAX archive member PW002043.owl
+  source_sha256: 03f2f79e67f9cfc36a279d2bc1c409d75df5b5a5c5952f830422f490429f635f
+- id: UniProtKB:P0A6T5
+  title: GTP cyclohydrolase 1 — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P0A6T5.json
+  source_version: UniProt 2026_03; entry version 153; sequence version 2; accessed 2026-10-10
+  source_sha256: c81d6948a4c2f1043c216c6ff6de92554b2910ffd116c82ba6a1b9eec7ee7918
+- id: UniProtKB:P0AC19
+  title: Dihydroneopterin triphosphate 2'-epimerase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P0AC19.json
+  source_version: UniProt 2026_03; entry version 135; sequence version 2; accessed 2026-10-10
+  source_sha256: 1ea42535c9d7dacc6fe247065d0d53d1615bca6060360b9ebefde0090f6d5fb3
+- id: UniProtKB:P0AFS3
+  title: Dihydromonapterin reductase — reviewed UniProtKB record
+  url: https://rest.uniprot.org/uniprotkb/P0AFS3.json
+  source_version: UniProt 2026_03; entry version 131; sequence version 1; accessed 2026-10-10
+  source_sha256: 587088963abd7a8e80b0c89a62f327dbdc04f7baa88dbbc89d5fdeb7ae35cc40
+- id: RHEA:17474
+  title: GTP + H2O => 7,8-dihydroneopterin 3'-triphosphate + formate + H(+)
+  url: https://www.rhea-db.org/rhea/17474
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28347
+  title: 7,8-dihydroneopterin 3'-triphosphate => 7,8-dihydromonapterin 3'-triphosphate
+  url: https://www.rhea-db.org/rhea/28347
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:34848
+  title: 7,8-dihydromonapterin + NADPH + H(+) => 5,6,7,8-tetrahydromonapterin + NADP(+)
+  url: https://www.rhea-db.org/rhea/34848
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:11087827
+  title: Zinc plays a key role in human and bacterial GTP cyclohydrolase I.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC17616/
+  source_version: Full primary HTML; exact response digest; DOI 10.1073/pnas.240463497; accessed 2026-10-10
+  source_sha256: c19ca35524232472e1074d366912a18bee286c1d089e78072184489bfb850743
+- id: PMID:12297008
+  title: Biochemical characterization of oligomerization of Escherichia coli GTP cyclohydrolase I.
+  url: https://pubmed.ncbi.nlm.nih.gov/12297008/
+  source_version: Primary abstract in Europe PMC core; digest covers complete 5-paper JSON response, not
+    the individual PubMed page; DOI 10.5483/bmbrep.2002.35.3.255; accessed 2026-10-10
+  source_sha256: 15d1026bffa483f1a581938170be3b0d34d7d61dc86abfde4f8eb67b43f4ca3d
+- id: PMID:9651328
+  title: Biosynthesis of pteridines in Escherichia coli. Structural and mechanistic similarity of dihydroneopterin-triphosphate
+    epimerase and dihydroneopterin aldolase.
+  url: https://pubmed.ncbi.nlm.nih.gov/9651328/
+  source_version: Primary abstract in Europe PMC core; digest covers complete 5-paper JSON response, not
+    the individual PubMed page; DOI 10.1074/jbc.273.28.17418; accessed 2026-10-10
+  source_sha256: 15d1026bffa483f1a581938170be3b0d34d7d61dc86abfde4f8eb67b43f4ca3d
+- id: PMID:10378270
+  title: Crystal structure of 7,8-dihydroneopterin triphosphate epimerase.
+  url: https://pubmed.ncbi.nlm.nih.gov/10378270/
+  source_version: Primary abstract in Europe PMC core; digest covers complete 5-paper JSON response, not
+    the individual PubMed page; DOI 10.1016/s0969-2126(99)80067-7; accessed 2026-10-10
+  source_sha256: 15d1026bffa483f1a581938170be3b0d34d7d61dc86abfde4f8eb67b43f4ca3d
+- id: PMID:9182560
+  title: Purification, cloning, and functional expression of dihydroneopterin triphosphate 2'-epimerase
+    from Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/9182560/
+  source_version: Primary abstract in Europe PMC core; digest covers complete 5-paper JSON response, not
+    the individual PubMed page; DOI 10.1074/jbc.272.24.15323; accessed 2026-10-10
+  source_sha256: 15d1026bffa483f1a581938170be3b0d34d7d61dc86abfde4f8eb67b43f4ca3d
+- id: PMID:19897652
+  title: FolX and FolM are essential for tetrahydromonapterin synthesis in Escherichia coli and Pseudomonas
+    aeruginosa.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2805310/
+  source_version: Full primary HTML; exact response digest; DOI 10.1128/jb.01198-09; accessed 2026-10-10
+  source_sha256: 68ab2338bf7b5aaddc524e871c65061800e345948a99211b46e58979e384cfab
+curation_history:
+- timestamp: '2026-11-05T19:25:00Z'
+  curator: antigravity
+  action: CREATE
+  changes: Curated Escherichia coli Tetrahydromonapterin Biosynthesis (PathBank:SMP0002057, PW002043.owl)
+    with closed pathbank-biopax-zip authority provenance (pathbank-primary-2019-PW002043-SMP0002057),
+    3 directional Rhea reactions (RHEA:17474, RHEA:28347, RHEA:34848), 24 edge-evidenced mechanistic
+    edges with coefficients, eco_code, and assay_taxon, and 3 SSSOM source_mappings.
+  llm_assisted: true
