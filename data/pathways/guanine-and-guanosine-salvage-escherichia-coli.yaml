@@ -1,0 +1,678 @@
+id: PathBank:SMP0002086
+label: Guanine and Guanosine Salvage
+description: 'PathBank SMP0002086 (native BioPAX archive member PW002074.owl, PathWhiz PW002074) models
+  Escherichia coli guanine and guanosine salvage to GMP across two converging branches comprising three
+  reactions: (1) direct ATP-dependent phosphorylation of guanosine to GMP(2-), ADP(3-), and H(+) (Reactions/6057,
+  normalized to RHEA:27711 in the left_to_right direction) catalyzed by guanosine-inosine kinase Gsk (Protein/6254,
+  UniProtKB:P0AEW6); and (2) phosphorolysis of guanosine with hydrogenphosphate to guanine and alpha-D-ribose
+  1-phosphate(2-) (Reactions/6058, normalized to RHEA:13234 in the left_to_right direction) catalyzed by
+  hexameric DeoD purine nucleoside phosphorylase (PathBank:SMP0002086/ProteinComplex/4056, six copies of
+  Protein/6182 cross-referenced to UniProtKB:P0ABP8), followed by phosphoribosyl transfer from 5-phospho-alpha-D-ribose
+  1-diphosphate (PRPP) to guanine yielding GMP(2-) and diphosphate(3-) (Reactions/6059, normalized to RHEA:25426
+  in the right_to_left direction relative to Rhea master RHEA:25424) catalyzed by tetrameric xanthine-guanine
+  phosphoribosyltransferase Gpt (PathBank:SMP0002086/ProteinComplex/4059, four copies of Protein/6129 cross-referenced
+  to UniProtKB:P0A9M5).
+
+
+  Native PW002074.owl models Gsk directly as monomeric Protein/6254 (displayName Inosine-guanosine kinase)
+  controlling Reactions/6057 via ReactionCatalysis/6021 without a BioPAX Complex wrapper; primary biochemical
+  and structural studies in Escherichia coli K-12 (PMID:32857952) show that Gsk functions as an active
+  homodimer in the absence of alarmone inhibitors and undergoes ppGpp- or GDP-promoted tetramerization,
+  and feedback inhibition of Gsk by ppGpp (CHEBI:77828) and GDP (CHEBI:58189) is recorded on UniProtKB:P0AEW6
+  from PMID:10879466 and PMID:32857952. Native PW002074.owl encodes species-level Escherichia coli (NCBITaxon:562)
+  without cellularLocation annotations on participants, while the reviewed UniProtKB proteins and primary
+  biochemical and structural evidence refer to Escherichia coli K-12 (NCBITaxon:83333). Neutral/parent ChEBI
+  cross-references in PW002074.owl (CHEBI:15422 -> CHEBI:30616, CHEBI:16761 -> CHEBI:456216, CHEBI:17345
+  -> CHEBI:58115, CHEBI:18367 -> CHEBI:43474, CHEBI:16300 -> CHEBI:57720, CHEBI:17111 -> CHEBI:58017,
+  CHEBI:18361 -> CHEBI:33019) are normalized to Rhea pH 7.3 major microspecies.'
+pathway_type: purine-nucleotide-salvage
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:16750
+  label: guanosine
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:58115
+  label: guanosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:57720
+  label: alpha-D-ribose 1-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:16235
+  label: guanine
+  category: small_molecule
+- id: CHEBI:58017
+  label: 5-O-phosphonato-alpha-D-ribofuranosyl diphosphate(5-)
+  category: small_molecule
+- id: CHEBI:33019
+  label: diphosphate(3-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:58189
+  label: GDP(3-)
+  category: small_molecule
+- id: CHEBI:77828
+  label: guanosine 3',5'-bis(diphosphate)(5-)
+  category: small_molecule
+- id: UniProtKB:P0AEW6
+  label: Guanosine-inosine kinase
+  category: protein
+- id: UniProtKB:P0ABP8
+  label: Purine nucleoside phosphorylase DeoD-type
+  category: protein
+- id: UniProtKB:P0A9M5
+  label: Xanthine-guanine phosphoribosyltransferase
+  category: protein
+- id: PathBank:SMP0002086/ProteinComplex/4056
+  label: purine nucleoside phosphorylase
+  category: complex
+- id: PathBank:SMP0002086/ProteinComplex/4059
+  label: xanthine-guanine phosphoribosyltransferase
+  category: complex
+reactions:
+- id: RHEA:27711
+  label: guanosine + ATP => GMP + ADP + H(+)
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:13234
+  label: guanosine + phosphate => alpha-D-ribose 1-phosphate + guanine
+  direction: left_to_right
+  category: molecular_activity
+- id: RHEA:25426
+  label: guanine + 5-phospho-alpha-D-ribose 1-diphosphate => GMP + diphosphate
+  direction: right_to_left
+  category: molecular_activity
+mechanistic_edges:
+- id: smp0002086-edge-001
+  subject: CHEBI:16750
+  predicate: consumes
+  object: RHEA:27711
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:27711
+    source_assertion: RHEA:27711 explicitly lists CHEBI:16750 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:27711 rh:substrates <http://rdf.rhea-db.org/27710_L>; <http://rdf.rhea-db.org/27710_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_1817>; <http://rdf.rhea-db.org/Participant_27710_compound_1817>
+      rh:compound <http://rdf.rhea-db.org/Compound_1817> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6057 (Reaction6057, LEFT_TO_RIGHT) lists Compound/PW_C000087 (Guanosine,
+      ChEBI_CHEBI_16750) on bp:left with participantStoichiometry Compound/PW_C000087/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:left[@rdf:resource='#Compound/PW_C000087'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000087/Stoichiometry/1.0']
+- id: smp0002086-edge-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:27711
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:27711
+    source_assertion: RHEA:27711 explicitly lists CHEBI:30616 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:27711 rh:substrates <http://rdf.rhea-db.org/27710_L>; <http://rdf.rhea-db.org/27710_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_6372>; <http://rdf.rhea-db.org/Participant_27710_compound_6372>
+      rh:compound <http://rdf.rhea-db.org/Compound_6372> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6057 (Reaction6057, LEFT_TO_RIGHT) lists Compound/PW_C000414 (Adenosine
+      triphosphate, ChEBI_CHEBI_15422; normalized to pH 7.3 major microspecies CHEBI:30616) on bp:left
+      with participantStoichiometry Compound/PW_C000414/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:left[@rdf:resource='#Compound/PW_C000414'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000414/Stoichiometry/1.0']
+- id: smp0002086-edge-003
+  subject: RHEA:27711
+  predicate: produces
+  object: CHEBI:58115
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:27711
+    source_assertion: RHEA:27711 explicitly lists CHEBI:58115 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:27711 rh:products <http://rdf.rhea-db.org/27710_R>; <http://rdf.rhea-db.org/27710_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_3807>; <http://rdf.rhea-db.org/Participant_27710_compound_3807>
+      rh:compound <http://rdf.rhea-db.org/Compound_3807> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6057 (Reaction6057, LEFT_TO_RIGHT) lists Compound/PW_C001080 (Guanosine
+      monophosphate, ChEBI_CHEBI_17345; normalized to pH 7.3 major microspecies CHEBI:58115) on bp:right
+      with participantStoichiometry Compound/PW_C001080/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:right[@rdf:resource='#Compound/PW_C001080'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001080/Stoichiometry/1.0']
+- id: smp0002086-edge-004
+  subject: RHEA:27711
+  predicate: produces
+  object: CHEBI:456216
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:27711
+    source_assertion: RHEA:27711 explicitly lists CHEBI:456216 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:27711 rh:products <http://rdf.rhea-db.org/27710_R>; <http://rdf.rhea-db.org/27710_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_2710>; <http://rdf.rhea-db.org/Participant_27710_compound_2710>
+      rh:compound <http://rdf.rhea-db.org/Compound_2710> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6057 (Reaction6057, LEFT_TO_RIGHT) lists Compound/PW_C001034 (Adenosine
+      diphosphate, ChEBI_CHEBI_16761; normalized to pH 7.3 major microspecies CHEBI:456216) on bp:right
+      with participantStoichiometry Compound/PW_C001034/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:right[@rdf:resource='#Compound/PW_C001034'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001034/Stoichiometry/1.0']
+- id: smp0002086-edge-005
+  subject: RHEA:27711
+  predicate: produces
+  object: CHEBI:15378
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:27711
+    source_assertion: RHEA:27711 explicitly lists CHEBI:15378 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:27711 rh:products <http://rdf.rhea-db.org/27710_R>; <http://rdf.rhea-db.org/27710_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_27710_compound_3249>; <http://rdf.rhea-db.org/Participant_27710_compound_3249>
+      rh:compound <http://rdf.rhea-db.org/Compound_3249> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6057 (Reaction6057, LEFT_TO_RIGHT) lists Compound/PW_C040034 (Hydrogen
+      Ion, ChEBI_CHEBI_15378) on bp:right with participantStoichiometry Compound/PW_C040034/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:right[@rdf:resource='#Compound/PW_C040034'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6057']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C040034/Stoichiometry/1.0']
+- id: smp0002086-edge-006
+  subject: CHEBI:16750
+  predicate: consumes
+  object: RHEA:13234
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:13234
+    source_assertion: RHEA:13234 explicitly lists CHEBI:16750 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:13234 rh:substrates <http://rdf.rhea-db.org/13233_L>; <http://rdf.rhea-db.org/13233_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_1817>; <http://rdf.rhea-db.org/Participant_13233_compound_1817>
+      rh:compound <http://rdf.rhea-db.org/Compound_1817> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6058 (Reaction6058, LEFT_TO_RIGHT) lists Compound/PW_C000087 (Guanosine,
+      ChEBI_CHEBI_16750) on bp:left with participantStoichiometry Compound/PW_C000087/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:left[@rdf:resource='#Compound/PW_C000087'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000087/Stoichiometry/1.0']
+- id: smp0002086-edge-007
+  subject: CHEBI:43474
+  predicate: consumes
+  object: RHEA:13234
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:13234
+    source_assertion: RHEA:13234 explicitly lists CHEBI:43474 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:13234 rh:substrates <http://rdf.rhea-db.org/13233_L>; <http://rdf.rhea-db.org/13233_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_5518>; <http://rdf.rhea-db.org/Participant_13233_compound_5518>
+      rh:compound <http://rdf.rhea-db.org/Compound_5518> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6058 (Reaction6058, LEFT_TO_RIGHT) lists Compound/PW_C001104 (Phosphate,
+      ChEBI_CHEBI_18367; normalized to pH 7.3 major microspecies CHEBI:43474) on bp:left with participantStoichiometry
+      Compound/PW_C001104/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:left[@rdf:resource='#Compound/PW_C001104'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001104/Stoichiometry/1.0']
+- id: smp0002086-edge-008
+  subject: RHEA:13234
+  predicate: produces
+  object: CHEBI:57720
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:13234
+    source_assertion: RHEA:13234 explicitly lists CHEBI:57720 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:13234 rh:products <http://rdf.rhea-db.org/13233_R>; <http://rdf.rhea-db.org/13233_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_2276>; <http://rdf.rhea-db.org/Participant_13233_compound_2276>
+      rh:compound <http://rdf.rhea-db.org/Compound_2276> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6058 (Reaction6058, LEFT_TO_RIGHT) lists Compound/PW_C001146 (Ribose
+      1-phosphate, ChEBI_CHEBI_16300; normalized to pH 7.3 major microspecies CHEBI:57720) on bp:right
+      with participantStoichiometry Compound/PW_C001146/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:right[@rdf:resource='#Compound/PW_C001146'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001146/Stoichiometry/1.0']
+- id: smp0002086-edge-009
+  subject: RHEA:13234
+  predicate: produces
+  object: CHEBI:16235
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:13234
+    source_assertion: RHEA:13234 explicitly lists CHEBI:16235 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:13234 rh:products <http://rdf.rhea-db.org/13233_R>; <http://rdf.rhea-db.org/13233_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_13233_compound_2523>; <http://rdf.rhea-db.org/Participant_13233_compound_2523>
+      rh:compound <http://rdf.rhea-db.org/Compound_2523> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6058 (Reaction6058, LEFT_TO_RIGHT) lists Compound/PW_C000086 (Guanine,
+      ChEBI_CHEBI_16235) on bp:right with participantStoichiometry Compound/PW_C000086/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:right[@rdf:resource='#Compound/PW_C000086'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000086/Stoichiometry/1.0']
+- id: smp0002086-edge-010
+  subject: CHEBI:16235
+  predicate: consumes
+  object: RHEA:25426
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:25426
+    source_assertion: RHEA:25426 explicitly lists CHEBI:16235 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:25426 rh:substrates <http://rdf.rhea-db.org/25424_R>; <http://rdf.rhea-db.org/25424_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_2523>; <http://rdf.rhea-db.org/Participant_25424_compound_2523>
+      rh:compound <http://rdf.rhea-db.org/Compound_2523> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6059 (Reaction6059, LEFT_TO_RIGHT) lists Compound/PW_C000086 (Guanine,
+      ChEBI_CHEBI_16235) on bp:left with participantStoichiometry Compound/PW_C000086/Stoichiometry/1.0
+      (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:left[@rdf:resource='#Compound/PW_C000086'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000086/Stoichiometry/1.0']
+- id: smp0002086-edge-011
+  subject: CHEBI:58017
+  predicate: consumes
+  object: RHEA:25426
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:25426
+    source_assertion: RHEA:25426 explicitly lists CHEBI:58017 on its substrates side with coefficient
+      1; exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:25426 rh:substrates <http://rdf.rhea-db.org/25424_R>; <http://rdf.rhea-db.org/25424_R>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_4203>; <http://rdf.rhea-db.org/Participant_25424_compound_4203>
+      rh:compound <http://rdf.rhea-db.org/Compound_4203> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6059 (Reaction6059, LEFT_TO_RIGHT) lists Compound/PW_C000190 (Phosphoribosyl
+      pyrophosphate, ChEBI_CHEBI_17111; normalized to pH 7.3 major microspecies CHEBI:58017) on bp:left
+      with participantStoichiometry Compound/PW_C000190/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:left[@rdf:resource='#Compound/PW_C000190'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000190/Stoichiometry/1.0']
+- id: smp0002086-edge-012
+  subject: RHEA:25426
+  predicate: produces
+  object: CHEBI:58115
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:25426
+    source_assertion: RHEA:25426 explicitly lists CHEBI:58115 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:25426 rh:products <http://rdf.rhea-db.org/25424_L>; <http://rdf.rhea-db.org/25424_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_3807>; <http://rdf.rhea-db.org/Participant_25424_compound_3807>
+      rh:compound <http://rdf.rhea-db.org/Compound_3807> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6059 (Reaction6059, LEFT_TO_RIGHT) lists Compound/PW_C001080 (Guanosine
+      monophosphate, ChEBI_CHEBI_17345; normalized to pH 7.3 major microspecies CHEBI:58115) on bp:right
+      with participantStoichiometry Compound/PW_C001080/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:right[@rdf:resource='#Compound/PW_C001080'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C001080/Stoichiometry/1.0']
+- id: smp0002086-edge-013
+  subject: RHEA:25426
+  predicate: produces
+  object: CHEBI:33019
+  coefficient: 1
+  evidence:
+  - reference_id: RHEA:25426
+    source_assertion: RHEA:25426 explicitly lists CHEBI:33019 on its products side with coefficient 1;
+      exact formula and charge follow the linked Rhea compound and ChEBI.
+    source_locator: rhea.rdf.gz; rh:25426 rh:products <http://rdf.rhea-db.org/25424_L>; <http://rdf.rhea-db.org/25424_L>
+      rh:contains1 <http://rdf.rhea-db.org/Participant_25424_compound_2106>; <http://rdf.rhea-db.org/Participant_25424_compound_2106>
+      rh:compound <http://rdf.rhea-db.org/Compound_2106> / rh:chebi
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Native Reactions/6059 (Reaction6059, LEFT_TO_RIGHT) lists Compound/PW_C000170 (Pyrophosphate,
+      ChEBI_CHEBI_18361; normalized to pH 7.3 major microspecies CHEBI:33019) on bp:right with participantStoichiometry
+      Compound/PW_C000170/Stoichiometry/1.0 (stoichiometricCoefficient 1.0).
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:right[@rdf:resource='#Compound/PW_C000170'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:participantStoichiometry[@rdf:resource='#Compound/PW_C000170/Stoichiometry/1.0']
+- id: smp0002086-edge-014
+  subject: RHEA:27711
+  predicate: part_of
+  object: PathBank:SMP0002086
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Pathway SMP0002086 explicitly lists Reactions/6057 (Reaction6057, Adenosine triphosphate
+      + Guanosine -> Adenosine diphosphate + Guanosine monophosphate + Hydrogen Ion) as a pathwayComponent
+      and wraps it in BiochemicalPathwayStep PathwayEnzymeReaction/22602.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002086']/bp:pathwayComponent[@rdf:resource='#Reactions/6057'];
+      bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22602']/bp:stepConversion[@rdf:resource='#Reactions/6057']
+  - reference_id: RHEA:27711
+    source_assertion: Rhea master 27710 links directional member 27711 (guanosine + ATP => GMP + ADP +
+      H(+)), matching the substrate and product sides of Reactions/6057 at pH 7.3.
+    source_locator: rhea.rdf.gz; rh:27710 rh:directionalReaction rh:27711; rh:27711 rh:substrates/rh:products/rh:equation
+- id: smp0002086-edge-015
+  subject: RHEA:13234
+  predicate: part_of
+  object: PathBank:SMP0002086
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Pathway SMP0002086 explicitly lists Reactions/6058 (Reaction6058, Guanosine + Phosphate
+      -> Guanine + Ribose 1-phosphate) as a pathwayComponent and wraps it in BiochemicalPathwayStep PathwayEnzymeReaction/22603.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002086']/bp:pathwayComponent[@rdf:resource='#Reactions/6058'];
+      bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22603']/bp:stepConversion[@rdf:resource='#Reactions/6058']
+  - reference_id: RHEA:13234
+    source_assertion: Rhea master 13233 links directional member 13234 (guanosine + phosphate => alpha-D-ribose
+      1-phosphate + guanine), matching the substrate and product sides of Reactions/6058 at pH 7.3.
+    source_locator: rhea.rdf.gz; rh:13233 rh:directionalReaction rh:13234; rh:13234 rh:substrates/rh:products/rh:equation
+- id: smp0002086-edge-016
+  subject: RHEA:25426
+  predicate: part_of
+  object: PathBank:SMP0002086
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: Pathway SMP0002086 explicitly lists Reactions/6059 (Reaction6059, Guanine + Phosphoribosyl
+      pyrophosphate -> Guanosine monophosphate + Pyrophosphate) as a pathwayComponent and wraps it in
+      BiochemicalPathwayStep PathwayEnzymeReaction/22604.
+    source_locator: bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002086']/bp:pathwayComponent[@rdf:resource='#Reactions/6059'];
+      bp:BiochemicalPathwayStep[@rdf:ID='PathwayEnzymeReaction/22604']/bp:stepConversion[@rdf:resource='#Reactions/6059']
+  - reference_id: RHEA:25426
+    source_assertion: Rhea master 25424 links right-to-left directional member 25426 (guanine + 5-phospho-alpha-D-ribose
+      1-diphosphate => GMP + diphosphate), matching the substrate and product sides of Reactions/6059
+      at pH 7.3.
+    source_locator: rhea.rdf.gz; rh:25424 rh:directionalReaction rh:25426; rh:25426 rh:substrates/rh:products/rh:equation
+- id: smp0002086-edge-017
+  subject: UniProtKB:P0ABP8
+  predicate: part_of
+  object: PathBank:SMP0002086/ProteinComplex/4056
+  coefficient: 6
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: In PW002074.owl, ProteinComplex/4056 (displayName purine nucleoside phosphorylase)
+      lists component Protein/6182 (ProteinReference/6182 -> Reference/UniProt_P0ABP8) with componentStoichiometry
+      Protein/6182/Stoichiometry/6.0 (stoichiometricCoefficient 6.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/4056']/bp:component[@rdf:resource='#Protein/6182'];
+      bp:Complex[@rdf:ID='ProteinComplex/4056']/bp:componentStoichiometry[@rdf:resource='#Protein/6182/Stoichiometry/6.0']
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: Reviewed UniProtKB entry P0ABP8 annotates Escherichia coli K-12 DeoD as a homohexamer
+      (trimer of homodimers) supported by PMID:235429.
+    source_locator: uniprot-P0ABP8.json /comments/10
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:235429
+    source_assertion: Purified Escherichia coli and Salmonella typhimurium purine nucleoside phosphorylase
+      consisted of six equal subunits by cross-linking and association experiments, with activity associated
+      with the hexamer.
+    source_locator: Europe PMC core batch /resultList/result[id="235429"]/abstractText; abstract only
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-018
+  subject: UniProtKB:P0A9M5
+  predicate: part_of
+  object: PathBank:SMP0002086/ProteinComplex/4059
+  coefficient: 4
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: In PW002074.owl, ProteinComplex/4059 (displayName xanthine-guanine phosphoribosyltransferase)
+      lists component Protein/6129 (ProteinReference/6129 -> Reference/UniProt_P0A9M5) with componentStoichiometry
+      Protein/6129/Stoichiometry/4.0 (stoichiometricCoefficient 4.0).
+    source_locator: bp:Complex[@rdf:ID='ProteinComplex/4059']/bp:component[@rdf:resource='#Protein/6129'];
+      bp:Complex[@rdf:ID='ProteinComplex/4059']/bp:componentStoichiometry[@rdf:resource='#Protein/6129/Stoichiometry/4.0']
+  - reference_id: UniProtKB:P0A9M5
+    source_assertion: Reviewed UniProtKB entry P0A9M5 annotates Escherichia coli K-12 Gpt as a homotetramer
+      supported by PMID:9100006.
+    source_locator: uniprot-P0A9M5.json /comments/9
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:9100006
+    source_assertion: The crystal structure of Escherichia coli xanthine phosphoribosyltransferase shows
+      a tetramer of 152-residue subunits.
+    source_locator: Europe PMC core batch /resultList/result[id="9100006"]/abstractText; abstract only
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-019
+  subject: UniProtKB:P0AEW6
+  predicate: enables
+  object: RHEA:27711
+  description: Native PW002074.owl models Gsk directly as monomeric Protein/6254 (UniProtKB:P0AEW6) controlling
+    Reactions/6057 via ReactionCatalysis/6021; biochemical and structural studies in Escherichia coli
+    K-12 (PMID:32857952) show that Gsk is an active homodimer in the absence of alarmone inhibitors and
+    undergoes ppGpp- or GDP-promoted tetramerization.
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: In PW002074.owl, ReactionCatalysis/6021 links controller Protein/6254 (displayName
+      Inosine-guanosine kinase, ProteinReference/6254 -> Reference/UniProt_P0AEW6) to controlled Reactions/6057
+      with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6021']/bp:controller[@rdf:resource='#Protein/6254'];
+      bp:Catalysis[@rdf:ID='ReactionCatalysis/6021']/bp:controlled[@rdf:resource='#Reactions/6057'];
+      bp:ProteinReference[@rdf:ID='ProteinReference/6254']/bp:xref[@rdf:resource='#Reference/UniProt_P0AEW6']
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: Reviewed UniProtKB entry P0AEW6 annotates ATP-dependent phosphorylation of guanosine
+      to GMP, ADP, and H(+) (RHEA:27711) in Escherichia coli K-12 with experimental evidence from PMID:10879466
+      and PMID:32857952.
+    source_locator: uniprot-P0AEW6.json /comments/1/reaction; /comments/1/physiologicalReactions
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:32857952
+    source_assertion: Purified Escherichia coli K-12 Gsk catalyzes ATP-dependent guanosine phosphorylation
+      and requires dimerization for kinase activity in interface-mutant experiments.
+    source_locator: 'Results: ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization,
+      Fig. 1B-C; Gsk restructures both N- and C-termini to bind ppGpp, Fig. 2A and S2D-E'
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-020
+  subject: PathBank:SMP0002086/ProteinComplex/4056
+  predicate: catalyzes
+  object: RHEA:13234
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: In PW002074.owl, ReactionCatalysis/6022 links controller ProteinComplex/4056 (purine
+      nucleoside phosphorylase, six subunits of Protein/6182 -> Reference/UniProt_P0ABP8) to controlled
+      Reactions/6058 with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6022']/bp:controller[@rdf:resource='#ProteinComplex/4056'];
+      bp:Catalysis[@rdf:ID='ReactionCatalysis/6022']/bp:controlled[@rdf:resource='#Reactions/6058']
+  - reference_id: UniProtKB:P0ABP8
+    source_assertion: Reviewed UniProtKB entry P0ABP8 annotates reversible phosphorolysis of guanosine
+      with phosphate to alpha-D-ribose 1-phosphate and guanine in Escherichia coli K-12.
+    source_locator: uniprot-P0ABP8.json /comments/5/reaction; /comments/0
+- id: smp0002086-edge-021
+  subject: PathBank:SMP0002086/ProteinComplex/4059
+  predicate: catalyzes
+  object: RHEA:25426
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: In PW002074.owl, ReactionCatalysis/6023 links controller ProteinComplex/4059 (xanthine-guanine
+      phosphoribosyltransferase, four subunits of Protein/6129 -> Reference/UniProt_P0A9M5) to controlled
+      Reactions/6059 with controlType ACTIVATION.
+    source_locator: bp:Catalysis[@rdf:ID='ReactionCatalysis/6023']/bp:controller[@rdf:resource='#ProteinComplex/4059'];
+      bp:Catalysis[@rdf:ID='ReactionCatalysis/6023']/bp:controlled[@rdf:resource='#Reactions/6059']
+  - reference_id: UniProtKB:P0A9M5
+    source_assertion: Reviewed UniProtKB entry P0A9M5 annotates guanine phosphoribosyl transfer (RHEA:25426,
+      right-to-left relative to RHEA:25424) in Escherichia coli K-12.
+    source_locator: uniprot-P0A9M5.json /comments/1/reaction; /comments/1/physiologicalReactions
+  - reference_id: PMID:9100006
+    source_assertion: The Escherichia coli xanthine phosphoribosyltransferase tetramer transfers the phosphoribosyl
+      group from PRPP to guanine, xanthine, or hypoxanthine to form the corresponding mononucleotides.
+    source_locator: Europe PMC core batch /resultList/result[id="9100006"]/abstractText; abstract only
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-022
+  subject: UniProtKB:P0AEW6
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P0AEW6
+    source_assertion: Reviewed UniProtKB entry P0AEW6 assigns Mg(2+) (CHEBI:18420) as a cofactor with
+      experimental evidence from PMID:10879466, noting that an additional free Mg(2+) ion beyond Mg-ATP
+      is probably required for activity.
+    source_locator: uniprot-P0AEW6.json /comments/3/cofactors[cofactorCrossReference/id="CHEBI:18420"];
+      /comments/3/note
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-023
+  subject: PathBank:SMP0002086/ProteinComplex/4059
+  predicate: has_cofactor
+  object: CHEBI:18420
+  evidence:
+  - reference_id: UniProtKB:P0A9M5
+    source_assertion: Reviewed UniProtKB entry P0A9M5 assigns Mg(2+) (CHEBI:18420) as a cofactor with
+      experimental evidence from the Escherichia coli crystal structure (PMID:9100006).
+    source_locator: uniprot-P0A9M5.json /comments/4/cofactors[cofactorCrossReference/id="CHEBI:18420"]
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:9100006
+    source_assertion: The Escherichia coli xanthine phosphoribosyltransferase crystal structure contains
+      bound magnesium at the PRPP-binding site interacting with Asp89.
+    source_locator: Europe PMC core batch /resultList/result[id="9100006"]/abstractText; abstract only
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-024
+  subject: CHEBI:77828
+  predicate: inhibits
+  object: UniProtKB:P0AEW6
+  evidence:
+  - reference_id: PMID:32857952
+    source_assertion: Purified Escherichia coli K-12 Gsk tightly binds ppGpp (CHEBI:77828), which inhibits
+      both guanosine- and inosine-kinase activities in vitro by blocking conformational dynamics and inducing
+      a less-active tetramer.
+    source_locator: 'Results: ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization,
+      Fig. 1B-C and S1A; Methods: Construction of gsk(WT), ML3271 and gsk(K383A), ML3272'
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-025
+  subject: CHEBI:58189
+  predicate: inhibits
+  object: UniProtKB:P0AEW6
+  description: Both PMID:10879466 and PMID:32857952 support GDP feedback inhibition of Escherichia coli
+    Gsk, whereas they disagree on GTP inhibition (reported in PMID:10879466 abstract, not observed in
+    PMID:32857952); only the concordant GDP inhibition is asserted here.
+  evidence:
+  - reference_id: PMID:10879466
+    source_assertion: Purified Escherichia coli guanosine-inosine kinase was markedly inhibited by GDP.
+    source_locator: Europe PMC core batch /resultList/result[id="10879466"]/abstractText; abstract only
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+  - reference_id: PMID:32857952
+    source_assertion: GDP bound Escherichia coli K-12 Gsk, promoted tetramerization, and inhibited kinase
+      activity less potently than ppGpp.
+    source_locator: 'Results: ppGpp tightly binds to Gsk, inhibits its activity and induces tetramerization;
+      Fig. 1B-C,E; Methods: ITC and DLS'
+    eco_code: ECO:0000269
+    assay_taxon: NCBITaxon:83333
+- id: smp0002086-edge-026
+  subject: RHEA:13234
+  predicate: provides_input_for
+  object: RHEA:25426
+  description: Sequential nucleoside-phosphorylase and phosphoribosyltransferase branch handoff via shared
+    guanine (Compound/PW_C000086, CHEBI:16235) in PW002074.owl.
+  evidence:
+  - reference_id: PathBank:SMP0002086
+    source_assertion: In PW002074.owl, Reactions/6058 produces Compound/PW_C000086 (Guanine, ChEBI_CHEBI_16235)
+      on bp:right and Reactions/6059 consumes Compound/PW_C000086 on bp:left within the SMP0002086 salvage
+      pathway.
+    source_locator: bp:BiochemicalReaction[@rdf:ID='Reactions/6058']/bp:right[@rdf:resource='#Compound/PW_C000086'];
+      bp:BiochemicalReaction[@rdf:ID='Reactions/6059']/bp:left[@rdf:resource='#Compound/PW_C000086']
+  - reference_id: RHEA:13234
+    source_assertion: RHEA:13234 produces CHEBI:16235 (guanine).
+    source_locator: rhea.rdf.gz; rh:13234 rh:products rh:13233_R; rh:13233_R rh:contains rh:Participant_13233_compound_2523;
+      rh:Compound_2523 rh:chebi
+  - reference_id: RHEA:25426
+    source_assertion: RHEA:25426 consumes CHEBI:16235 (guanine).
+    source_locator: rhea.rdf.gz; rh:25426 rh:substrates rh:25424_R; rh:25424_R rh:contains rh:Participant_25424_compound_2523;
+      rh:Compound_2523 rh:chebi
+source_mappings:
+- subject_id: UniProt:P0AEW6
+  subject_label: Inosine-guanosine kinase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0AEW6
+  object_label: Guanosine-inosine kinase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002086
+  source_element_id: ProteinReference/6254
+- subject_id: UniProt:P0ABP8
+  subject_label: Purine nucleoside phosphorylase deoD-type
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0ABP8
+  object_label: Purine nucleoside phosphorylase DeoD-type
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002086
+  source_element_id: ProteinReference/6182
+- subject_id: UniProt:P0A9M5
+  subject_label: Xanthine phosphoribosyltransferase
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P0A9M5
+  object_label: Xanthine-guanine phosphoribosyltransferase
+  mapping_justification: semapv:UnspecifiedMatching
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002086
+  source_element_id: ProteinReference/6129
+references:
+- id: PathBank:SMP0002086
+  title: PathBank SMP0002086 Guanine and Guanosine Salvage (PW002074.owl)
+  url: https://pathbank.org/view/SMP0002086
+  source_version: 2019-08-16 primary BioPAX archive member PW002074.owl
+  source_sha256: e4fc261423cc20cf2dd7d461d22b640827acd1924f2dc64075909b9c4632aff6
+- id: UniProtKB:P0AEW6
+  title: Guanosine-inosine kinase
+  url: https://rest.uniprot.org/uniprotkb/P0AEW6.json
+  source_version: Reviewed entry version 135, sequence version 1; retrieved 2026-10-11
+  source_sha256: b2f56a5134caa015884e5b6571e050c4b2e8f24e0e6b069bb20145a733d091a9
+- id: UniProtKB:P0ABP8
+  title: Purine nucleoside phosphorylase DeoD-type
+  url: https://rest.uniprot.org/uniprotkb/P0ABP8.json
+  source_version: Reviewed entry version 149, sequence version 2; retrieved 2026-10-11
+  source_sha256: 261a1c1e34fcc0af42d3a3b4a16c27a01ecba13eee2437d3f4d8c51e422eed02
+- id: UniProtKB:P0A9M5
+  title: Xanthine-guanine phosphoribosyltransferase
+  url: https://rest.uniprot.org/uniprotkb/P0A9M5.json
+  source_version: Reviewed entry version 152, sequence version 1; retrieved 2026-10-11
+  source_sha256: b0e83f13d146d4d5010d4e6c5762094d5fd99df854859c29444374513e64da01
+- id: RHEA:27711
+  title: guanosine + ATP => GMP + ADP + H(+)
+  url: https://www.rhea-db.org/rhea/27711
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:13234
+  title: guanosine + phosphate => alpha-D-ribose 1-phosphate + guanine
+  url: https://www.rhea-db.org/rhea/13234
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:25426
+  title: guanine + 5-phospho-alpha-D-ribose 1-diphosphate => GMP + diphosphate
+  url: https://www.rhea-db.org/rhea/25426
+  source_version: Rhea release 142; digest covers original complete RDF gzip
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: PMID:10879466
+  title: End-product regulation and kinetic mechanism of guanosine-inosine kinase from Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/10879466/
+  source_version: Primary abstract inspected in Europe PMC core batch; digest covers full original batch
+    JSON, not article full text
+  source_sha256: 2469ca988208d62a5b8ffe2a8f349d792c65b8814621ee2d223063b9feb429fe
+- id: PMID:9100006
+  title: Crystal structure of Escherichia coli xanthine phosphoribosyltransferase.
+  url: https://pubmed.ncbi.nlm.nih.gov/9100006/
+  source_version: Primary abstract inspected in Europe PMC core batch; digest covers full original batch
+    JSON, not article full text
+  source_sha256: 2469ca988208d62a5b8ffe2a8f349d792c65b8814621ee2d223063b9feb429fe
+- id: PMID:235429
+  title: Purine nucleoside phosphorylase from Escherichia coli and Salmonella typhimurium. Purification
+    and some properties.
+  url: https://pubmed.ncbi.nlm.nih.gov/235429/
+  source_version: Primary abstract inspected in Europe PMC core batch; digest covers full original batch
+    JSON, not article full text
+  source_sha256: 2469ca988208d62a5b8ffe2a8f349d792c65b8814621ee2d223063b9feb429fe
+- id: PMID:32857952
+  title: ppGpp Coordinates Nucleotide and Amino-Acid Synthesis in E. coli During Starvation.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC8362273/?pdf=0
+  source_version: Complete primary article HTML inspected; published 2020, PMC availability 2021; retrieved
+    2026-10-11
+  source_sha256: d56d5330f10f96ad3c28ecdd10d26c0a7d5a8bf22ec05bb26dae7ef0e95845db
+curation_history:
+- timestamp: '2026-11-05T08:05:00Z'
+  curator: antigravity
+  action: CREATE
+  changes: Curated Escherichia coli Guanine and Guanosine Salvage (PathBank:SMP0002086, PW002074.owl)
+    with closed pathbank-biopax-zip authority provenance (pathbank-primary-2019-PW002074-SMP0002086),
+    3 directional Rhea reactions (RHEA:27711, RHEA:13234, RHEA:25426), 26 edge-evidenced mechanistic
+    edges with coefficients, eco_code, and assay_taxon, and 3 SSSOM source_mappings.
+  llm_assisted: true
