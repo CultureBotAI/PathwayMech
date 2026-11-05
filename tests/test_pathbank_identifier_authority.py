@@ -28,6 +28,7 @@ from pathwaymech.pathbank_provenance import (
     rank_pathbank_archive_member_candidates,
     select_next_pathbank_archive_candidate,
     summarize_pathbank_archive_candidate_frontier,
+    verify_pathbank_archive_candidate_post_registration,
 )
 from scripts.build_source_identifier_snapshot import (
     build_snapshot,
@@ -2066,3 +2067,206 @@ def test_audit_pathbank_manifest_snapshot_sync_rejects_invalid_or_drifted_proven
     )
     with pytest.raises(ValueError, match=match):
         audit_pathbank_manifest_snapshot_sync(manifest_path, snapshot_path)
+
+
+def test_verify_pathbank_archive_candidate_post_registration_tracks_pending_and_verified_states(
+    tmp_path: Path,
+) -> None:
+    path, _ = archive_fixture(tmp_path)
+    entry = build_pathbank_archive_manifest_entry(path, "PW9999999.owl", "SMP9999999")
+    manifest_path = tmp_path / "identifier_sources.json"
+    manifest_path.write_text(
+        json.dumps([{"key": "chebi-obo", "kind": "obo", "path": "data/chebi.obo"}]),
+        encoding="utf-8",
+    )
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps({"version": 1, "sources": {}, "terms": {}}),
+        encoding="utf-8",
+    )
+
+    unregistered = verify_pathbank_archive_candidate_post_registration(
+        path,
+        "PW9999999.owl",
+        "SMP9999999",
+        manifest_path,
+        snapshot_path,
+    )
+    assert unregistered["manifest_key"] == entry["key"]
+    assert unregistered["pathway_id"] == "PathBank:SMP9999999"
+    assert unregistered["pathway_label"] == "Native pathway title"
+    assert unregistered["manifest_entry"] == entry
+    assert unregistered["manifest_registered"] is False
+    assert unregistered["snapshot_registered"] is False
+    assert unregistered["manifest_synchronized"] is False
+    assert unregistered["pathway_id_indexed"] is False
+    assert unregistered["uniprot_xrefs_indexed"] is True
+    assert unregistered["ready_for_check_identifiers"] is False
+    assert unregistered["corpus_slice_verified"] is False
+    assert unregistered["fully_verified"] is False
+
+    manifest_path.write_text(json.dumps([entry]), encoding="utf-8")
+    pending = verify_pathbank_archive_candidate_post_registration(
+        path,
+        "PW9999999.owl",
+        "SMP9999999",
+        manifest_path,
+        snapshot_path,
+    )
+    assert pending["manifest_registered"] is True
+    assert pending["snapshot_registered"] is False
+    assert pending["manifest_synchronized"] is False
+    assert pending["pathway_id_indexed"] is False
+    assert pending["ready_for_check_identifiers"] is False
+    assert pending["corpus_slice_verified"] is False
+    assert pending["fully_verified"] is False
+
+    inspected = inspect_pathbank_archive_member(path, "PW9999999.owl", "SMP9999999")
+    terms: dict[str, dict[str, object]] = {
+        term_id: {
+            "label": f"Label for {term_id}",
+            "synonyms": [],
+            "sources": [entry["key"]],
+        }
+        for term_id in inspected["native_term_ids"]
+    }
+    for prefix, curies in inspected["external_xrefs"].items():
+        for curie in curies:
+            terms[curie] = {
+                "label": f"{prefix} label",
+                "synonyms": [],
+                "sources": [f"{prefix.lower()}-source"],
+            }
+    snapshot_entry = {
+        "kind": entry["kind"],
+        "url": entry["url"],
+        "version": entry["version"],
+        "license": entry["license"],
+        "sha256": entry["sha256"],
+        "archive": copy.deepcopy(entry["archive"]),
+        "pathway_accessions": ["SMP9999999"],
+    }
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "sources": {entry["key"]: snapshot_entry},
+                "terms": terms,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    verified = verify_pathbank_archive_candidate_post_registration(
+        path,
+        "PW9999999.owl",
+        "SMP9999999",
+        manifest_path,
+        snapshot_path,
+        require_corpus_slice_verified=True,
+        require_fully_verified=True,
+    )
+    assert verified["manifest_registered"] is True
+    assert verified["snapshot_registered"] is True
+    assert verified["manifest_synchronized"] is True
+    assert verified["pathway_id_indexed"] is True
+    assert verified["uniprot_xrefs_indexed"] is True
+    assert verified["ready_for_check_identifiers"] is True
+    assert verified["corpus_slice_verified"] is True
+    assert verified["fully_verified"] is True
+    assert verified["sync_audit"]["in_sync"] is True
+
+    repo_root = Path(__file__).resolve().parents[1]
+    real_archive = (
+        repo_root
+        / "reports"
+        / "local_source_ingestion"
+        / "2026-10-08-pathbank-dbcan"
+        / "pathbank"
+        / "pathbank_primary_biopax.zip"
+    )
+    if real_archive.is_file():
+        live_verified = verify_pathbank_archive_candidate_post_registration(
+            real_archive,
+            "PW002088.owl",
+            "SMP0002100",
+            repo_root / "conf" / "identifier_sources.json",
+            repo_root / "data" / "identifier_authorities" / "sources.json",
+            require_corpus_slice_verified=True,
+        )
+        assert live_verified["manifest_key"] == "pathbank-primary-2019-PW002088-SMP0002100"
+        assert live_verified["pathway_id"] == "PathBank:SMP0002100"
+        assert live_verified["manifest_synchronized"] is True
+        assert live_verified["pathway_id_indexed"] is True
+        assert live_verified["uniprot_xrefs_indexed"] is True
+        assert live_verified["corpus_slice_verified"] is True
+
+
+@pytest.mark.parametrize(
+    ("problem", "match"),
+    [
+        ("invalid-require-corpus-bool", "require_corpus_slice_verified must be a bool"),
+        ("invalid-require-bool", "require_fully_verified must be a bool"),
+        (
+            "conflicting-manifest-entry",
+            "conflicts with manifest entry for pathbank-primary-2019-PW9999999-SMP9999999",
+        ),
+        (
+            "conflicting-snapshot-source",
+            "conflicts with snapshot source for pathbank-primary-2019-PW9999999-SMP9999999",
+        ),
+        (
+            "require-corpus-slice-verified-when-pending",
+            "PathBank candidate pathbank-primary-2019-PW9999999-SMP9999999 "
+            "is not corpus-slice verified post-registration",
+        ),
+        (
+            "require-fully-verified-when-pending",
+            "PathBank candidate pathbank-primary-2019-PW9999999-SMP9999999 "
+            "is not fully verified post-registration",
+        ),
+    ],
+)
+def test_verify_pathbank_archive_candidate_post_registration_rejects_invalid_or_conflicting_states(
+    tmp_path: Path,
+    problem: str,
+    match: str,
+) -> None:
+    path, _ = archive_fixture(tmp_path)
+    entry = build_pathbank_archive_manifest_entry(path, "PW9999999.owl", "SMP9999999")
+    manifest_entries: list[dict[str, object]] = [copy.deepcopy(entry)]
+    sources: dict[str, object] = {}
+    require_corpus_slice_verified: object = False
+    require_fully_verified: object = False
+
+    if problem == "invalid-require-corpus-bool":
+        require_corpus_slice_verified = "yes"
+    elif problem == "invalid-require-bool":
+        require_fully_verified = "yes"
+    elif problem == "conflicting-manifest-entry":
+        manifest_entries = [{**copy.deepcopy(entry), "path": "different-archive.zip"}]
+    elif problem == "conflicting-snapshot-source":
+        manifest_entries = [{"key": "other-source", "kind": "obo", "path": "data/other.obo"}]
+        sources = {entry["key"]: {"kind": "obo", "url": "https://example.org/other.obo"}}
+    elif problem == "require-corpus-slice-verified-when-pending":
+        require_corpus_slice_verified = True
+    elif problem == "require-fully-verified-when-pending":
+        require_fully_verified = True
+
+    manifest_path = tmp_path / "identifier_sources.json"
+    manifest_path.write_text(json.dumps(manifest_entries), encoding="utf-8")
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps({"version": 1, "sources": sources, "terms": {}}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match=match):
+        verify_pathbank_archive_candidate_post_registration(
+            path,
+            "PW9999999.owl",
+            "SMP9999999",
+            manifest_path,
+            snapshot_path,
+            require_corpus_slice_verified=require_corpus_slice_verified,  # type: ignore[arg-type]
+            require_fully_verified=require_fully_verified,  # type: ignore[arg-type]
+        )

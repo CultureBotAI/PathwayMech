@@ -741,3 +741,137 @@ def audit_pathbank_manifest_snapshot_sync(
         "orphan_snapshot_keys": orphan_snapshot_keys,
         "in_sync": not pending_snapshot_keys and not orphan_snapshot_keys,
     }
+
+
+def verify_pathbank_archive_candidate_post_registration(
+    archive_path: Path,
+    member: str,
+    root: str,
+    manifest_path: Path,
+    authority_snapshot_path: Path,
+    *,
+    key: str | None = None,
+    path: str = PATHBANK_ARCHIVE_DEFAULT_PATH,
+    version: str = PATHBANK_ARCHIVE_VERSION,
+    license: str = PATHBANK_ARCHIVE_LICENSE,
+    require_corpus_slice_verified: bool = False,
+    require_fully_verified: bool = False,
+) -> dict[str, Any]:
+    """Verify post-registration readiness and manifest-snapshot sync for a PathBank ZIP member.
+
+    Validates ``manifest_path`` (``conf/identifier_sources.json``),
+    ``authority_snapshot_path`` (``data/identifier_authorities/sources.json``),
+    and the ``(member, root)`` BioPAX entry in ``archive_path``. Confirms whether
+    the computed closed ``manifest_entry`` is present in ``manifest_path`` without
+    provenance drift, whether ``manifest_path`` and ``authority_snapshot_path``
+    are synchronized on ``manifest_key``, whether the ``sources.json``-scoped
+    corpus slice invariants hold (``pathway_id_indexed`` and
+    ``uniprot_xrefs_indexed``), and whether all native ``PathBank:*`` terms and
+    external ``CHEBI`` / ``NCBITaxon`` / ``UniProtKB`` ``UnificationXref`` CURIEs
+    are indexed in ``authority_snapshot_path``.
+    """
+    if not isinstance(require_corpus_slice_verified, bool):
+        raise ValueError(
+            "PathBank post-registration verification require_corpus_slice_verified must be a bool"
+        )
+    if not isinstance(require_fully_verified, bool):
+        raise ValueError(
+            "PathBank post-registration verification require_fully_verified must be a bool"
+        )
+    member_audit = audit_pathbank_archive_member_authority(
+        archive_path,
+        member,
+        root,
+        authority_snapshot_path,
+        key=key,
+        path=path,
+        version=version,
+        license=license,
+    )
+    sync_audit = audit_pathbank_manifest_snapshot_sync(
+        manifest_path,
+        authority_snapshot_path,
+    )
+    manifest_entries = _load_validated_manifest_entries(manifest_path)
+    snapshot = _load_validated_authority_snapshot(authority_snapshot_path)
+    manifest_entry = member_audit["manifest_entry"]
+    target_key = manifest_entry["key"]
+    target_pair = (
+        manifest_entry["archive"]["member"],
+        manifest_entry["archive"]["root"],
+    )
+
+    manifest_registered = False
+    for existing in manifest_entries:
+        existing_pair = (
+            (existing["archive"]["member"], existing["archive"]["root"])
+            if existing.get("kind") == PATHBANK_ARCHIVE_KIND
+            else None
+        )
+        if existing["key"] == target_key or existing_pair == target_pair:
+            if existing != manifest_entry:
+                raise ValueError(
+                    "PathBank post-registration verification conflicts with manifest "
+                    f"entry for {target_key}"
+                )
+            manifest_registered = True
+            break
+
+    snapshot_registered = bool(member_audit["manifest_key_registered"])
+    shared_fields = ("kind", "url", "version", "license", "sha256", "archive")
+    if snapshot_registered:
+        snapshot_meta = snapshot["sources"].get(target_key)
+        if not isinstance(snapshot_meta, dict) or any(
+            manifest_entry.get(field) != snapshot_meta.get(field)
+            for field in shared_fields
+        ):
+            raise ValueError(
+                "PathBank post-registration verification conflicts with snapshot "
+                f"source for {target_key}"
+            )
+
+    manifest_synchronized = (
+        manifest_registered
+        and snapshot_registered
+        and target_key in sync_audit["synchronized_keys"]
+    )
+    pathway_id_indexed = (
+        member_audit["pathway_id"] in member_audit["indexed_native_term_ids"]
+    )
+    uniprot_xrefs_indexed = not member_audit["missing_external_xrefs"]["UniProtKB"]
+    ready_for_check_identifiers = bool(member_audit["ready_for_check_identifiers"])
+    corpus_slice_verified = bool(
+        manifest_synchronized
+        and sync_audit["in_sync"]
+        and pathway_id_indexed
+        and uniprot_xrefs_indexed
+    )
+    fully_verified = bool(
+        manifest_synchronized
+        and sync_audit["in_sync"]
+        and ready_for_check_identifiers
+    )
+    if require_corpus_slice_verified and not corpus_slice_verified:
+        raise ValueError(
+            f"PathBank candidate {target_key} is not corpus-slice verified post-registration"
+        )
+    if require_fully_verified and not fully_verified:
+        raise ValueError(
+            f"PathBank candidate {target_key} is not fully verified post-registration"
+        )
+    return {
+        "manifest_key": target_key,
+        "pathway_id": member_audit["pathway_id"],
+        "pathway_label": member_audit["pathway_label"],
+        "manifest_entry": copy.deepcopy(manifest_entry),
+        "manifest_registered": manifest_registered,
+        "snapshot_registered": snapshot_registered,
+        "manifest_synchronized": manifest_synchronized,
+        "pathway_id_indexed": pathway_id_indexed,
+        "uniprot_xrefs_indexed": uniprot_xrefs_indexed,
+        "ready_for_check_identifiers": ready_for_check_identifiers,
+        "corpus_slice_verified": corpus_slice_verified,
+        "fully_verified": fully_verified,
+        "member_audit": member_audit,
+        "sync_audit": sync_audit,
+    }
