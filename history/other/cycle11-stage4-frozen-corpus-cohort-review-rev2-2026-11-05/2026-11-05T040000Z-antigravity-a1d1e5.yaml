@@ -1,0 +1,44 @@
+history_version: 1
+target:
+  kind: other
+  slug: cycle11-stage4-frozen-corpus-cohort-review-rev2-2026-11-05
+  path: reviews/workflow/mech-goal-sequence-20261019/cycle-000011/stage-04/revision-0002/evidence.yaml
+session:
+  id: 2026-11-05T040000Z-antigravity-a1d1e5
+  timestamp: '2026-11-05T04:00:00Z'
+  actors:
+    - type: ai_agent
+      name: antigravity
+      model: claude-opus-4-6-thinking
+      agent_tool: antigravity
+links:
+  issues:
+    - https://github.com/CultureBotAI/PathwayMech/issues/790
+  prs:
+    - https://github.com/CultureBotAI/PathwayMech/pull/789
+events:
+  - type: REVIEW
+    outcome: needs_followup
+    sections:
+      - reviews/structured
+      - reviews/workflow
+    summary: Persist Cycle 11 Stage 4 Revision 2 cohort review and workflow evidence manifest addressing PR 789 adversarial review findings while preserving immutable Revision 1 bundles
+    details: >-
+      Created superseding structured cohort review bundle
+      reviews/structured/20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2/{review.yaml,review.md}
+      and workflow evidence bundle
+      reviews/workflow/mech-goal-sequence-20261019/cycle-000011/stage-04/revision-0002/{review_report.md,review_findings.md,coverage.json,evidence.yaml}
+      (with supersedes_evidence pointing to revision-0001/evidence.yaml) to address
+      two prose/quote discrepancies from the Cycle 11 Stage 4 adversarial PR review
+      on PR #789 (tracked in #790) without mutating the append-only Revision 1 files:
+      (1) aligned EV-C11-RAW-LOCAL-ID-METACYC-REF-TITLES-4, F-C11S4-001.description,
+      and A-C11S4-001.description array index ranges and verbatim quote with the
+      exact 79 field_paths across MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:PWY-6823,
+      MetaCyc:CALVIN-PWY, and MetaCyc:THISYN-PWY; and
+      (2) aligned EV-C11-RAW-LOCAL-ID-METACYC-REACTION-LABELS-7,
+      F-C11S4-002.description, and A-C11S4-002.description array index ranges
+      (reactions[0..5,7] for MetaCyc:CENTBENZCOA-PWY) and verbatim quote
+      (MetaCyc:RXN-10819 from data/pathways/phenylacetate-degradation-i-aerobic.yaml)
+      with the exact 49 field_paths across the 7 affected MetaCyc records.
+      Preserved open findings F-C11S4-001 and F-C11S4-002 for Cycle 11 Stage 5
+      grouped remediation with zero edits to data/pathways/*.yaml or pages/.
