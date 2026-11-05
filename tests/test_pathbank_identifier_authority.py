@@ -1999,8 +1999,8 @@ def test_audit_pathbank_manifest_snapshot_sync_partitions_synchronized_pending_a
         repo_root / "data" / "identifier_authorities" / "sources.json",
     )
     assert repo_sync["in_sync"] is True
-    assert repo_sync["manifest_archive_count"] == 16
-    assert repo_sync["snapshot_archive_count"] == 16
+    assert repo_sync["manifest_archive_count"] == 17
+    assert repo_sync["snapshot_archive_count"] == 17
     assert repo_sync["pending_snapshot_keys"] == []
     assert repo_sync["orphan_snapshot_keys"] == []
 
@@ -2402,13 +2402,17 @@ def test_summarize_registered_pathbank_archive_slices_partitions_corpus_and_auxi
             repo_root / "conf" / "identifier_sources.json",
             repo_root / "data" / "identifier_authorities" / "sources.json",
         )
-        assert live_summary["inspected_count"] == 16
+        assert live_summary["inspected_count"] == 17
         assert live_summary["all_manifest_synchronized"] is True
         assert (
             "pathbank-primary-2019-PW002074-SMP0002086"
             in live_summary["corpus_slice_verified_keys"]
         )
-        assert len(live_summary["corpus_slice_verified_keys"]) == 12
+        assert (
+            "pathbank-primary-2019-PW002043-SMP0002057"
+            in live_summary["corpus_slice_verified_keys"]
+        )
+        assert len(live_summary["corpus_slice_verified_keys"]) == 13
         assert len(live_summary["auxiliary_or_pending_keys"]) == 4
 
         live_curated = summarize_registered_pathbank_archive_slices(
@@ -2418,7 +2422,7 @@ def test_summarize_registered_pathbank_archive_slices_partitions_corpus_and_auxi
             key_filter=live_summary["corpus_slice_verified_keys"],
             require_corpus_slice_verified=True,
         )
-        assert live_curated["inspected_count"] == 12
+        assert live_curated["inspected_count"] == 13
         assert live_curated["all_corpus_slice_verified"] is True
 
 
