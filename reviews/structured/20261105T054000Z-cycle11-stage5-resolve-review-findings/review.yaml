@@ -1,0 +1,1224 @@
+schema_version: 1.0.0
+review_id: 20261105T054000Z-cycle11-stage5-resolve-review-findings
+kind: batch
+repository: CultureBotAI/PathwayMech
+title: Cycle 11 Stage 5 Successor Review Resolving F-C11S4-001 and F-C11S4-002 Across
+  11 Maintained MetaCyc Pathway Records
+started_at: '2026-11-05T05:25:00Z'
+finished_at: '2026-11-05T05:40:00Z'
+reviewer:
+  identity: Antigravity (pathwaymech-resolve-reviews + review-yaml-category)
+  kind: agent
+  model: Claude Opus 4.6 (Thinking)
+  independence: self_review
+  independence_basis: 'Same agent session (a1d1e545-faee-4294-8a87-4c2d031a6538) implemented
+    the Cycle 11 Stage 5 curation fixes for GitHub issue #791 and verified post-remediation
+    records, rendered HTML pages, and KGX exports.'
+skill: pathwaymech-resolve-reviews
+completion: completed
+verdict: pass
+native_verdict: coherent
+scientific_review: true
+summary: 'Re-inspected and verified all 11 maintained MetaCyc pathway YAML records
+  affected by Cycle 11 Stage 4 findings F-C11S4-001 (raw-local-id-structured-metacyc-reference-titles-4-records
+  across 4 maintained MetaCyc:* pathway records: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY,
+  MetaCyc:PWY-6823, MetaCyc:CALVIN-PWY, and MetaCyc:THISYN-PWY) and F-C11S4-002 (raw-local-id-metacyc-reaction-labels-7-metacyc-records
+  across 7 maintained MetaCyc:* pathway records: MetaCyc:PWY0-321, MetaCyc:P321-PWY,
+  MetaCyc:CENTBENZCOA-PWY, MetaCyc:PWY0-1477, MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY,
+  and MetaCyc:PWY-5177), grouped together under shared root-cause group G-C11S5-001
+  and GitHub issue #791. Remediated all 95 source_context-eligible fields across 7
+  records via pathwaymech.curation.publish_curation and verified the authority-locked
+  invariant on the remaining 33 reactions: (1) across the 4 MetaCyc pathway records
+  in F-C11S4-001 (biotin-biosynthesis-i.yaml, molybdenum-cofactor-biosynthesis.yaml,
+  calvin-cycle.yaml, and thiamine-diphosphate-biosynthesis-i.yaml), replaced all 79
+  structured MetaCyc:* references[] titles (31 + 20 + 16 + 12) that retained raw unprefixed
+  database frame IDs (title == local_id) with verified descriptive MetaCyc pathway,
+  reaction, monomer, complex, compound, and regulation reference titles (<descriptive
+  name> (<reference_id>)), bringing raw frame-ID reference titles to 0 / 137 structured
+  references (0 / 225 total references) across those 4 records, 0 / 546 total references
+  across all 11 reassessed records, and 0 / 7,121 total references across the entire
+  280-record corpus; and (2) across the 7 MetaCyc pathway records in F-C11S4-002,
+  replaced all 16 source_context-eligible MetaCyc:* reactions[].label entries across
+  benzoyl-coa-degradation-iii-anaerobic.yaml (8), benzoyl-coa-degradation-ii-anaerobic.yaml
+  (7), and glutaryl-coa-degradation.yaml (1: MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN)
+  with verified descriptive biochemical reaction labels (0 / 16 remaining), while
+  verifying that the remaining 33 MetaCyc:* reaction labels across phenylacetate-degradation-i-aerobic.yaml
+  (11, PHENYLACETATE_NODE_ROLES), ethanolamine-utilization.yaml (6, ETHANOLAMINE_NODE_ROLES),
+  methanogenesis-from-acetate.yaml (6, ACETATE_METHANOGENESIS_NODE_ROLES), methanogenesis-from-h2-and-co2.yaml
+  (6, METHANOGENESIS_NODE_ROLES), and glutaryl-coa-degradation.yaml (4: reactions[1..4],
+  GLUTARYL_NODE_ROLES) are authority-enforced frame-only fallback labels required
+  by src/pathwaymech/identifiers.py lines 783-806 because their issuing MetaCyc <Reaction>
+  XML frames lack a direct <common-name> slot (human-readable step names are preserved
+  in reactions[].description and on paired <Enzymatic-Reaction> participant nodes).
+  Recorded 7 append-only curation history files at history/records/<slug>/2026-11-05T053500Z-antigravity-a1d1e5.yaml,
+  regenerated rendered pages and KGX exports (.venv/bin/pathwaymech-render-pages),
+  and confirmed full pass across QC (280 pathway records, 1,036 history records, 22,954
+  evidence blocks, 33 source records).'
+source:
+  git_revision: 76578ff449edb6a71d13000353f0832e2a12710e
+  state: working_tree
+  inputs:
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+    role: context
+  - path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+    sha256: b903e3a9924a6c2e1cee62d12e3d854194b1f8e78a7664e353a7470f82c4af8e
+    role: target
+  - path: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+    sha256: 4be0b63bed1fde74849478bf8d3b879fae288e787ce8a3554e900122541642c7
+    role: target
+  - path: data/pathways/biotin-biosynthesis-i.yaml
+    sha256: 2bb360670be1cacab32bb01c5c225b8a3001e7884639382dfdeed47dac161239
+    role: target
+  - path: data/pathways/calvin-cycle.yaml
+    sha256: 322cf7dbc0e6c47bb71c016413e199a001dd1d569e2225af73bbc4111f7e7298
+    role: target
+  - path: data/pathways/ethanolamine-utilization.yaml
+    sha256: f1fd9402cab31bf3c62d53ef630abc52308c2c0e2d7b61d7ad6b9c0aaba8fb1e
+    role: target
+  - path: data/pathways/glutaryl-coa-degradation.yaml
+    sha256: 26dddc6fb787931723b24ac9eb781aa323c2c4ed23c107245281cf5c5e0a0cd8
+    role: target
+  - path: data/pathways/methanogenesis-from-acetate.yaml
+    sha256: 47d1c71951ce5806e5c9570ee00b2ab9f8634158251ee06821a0f77017b0eca3
+    role: target
+  - path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+    sha256: 553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e
+    role: target
+  - path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+    sha256: 72b426dff2696543bbbe47648a42de9bf497bb6b19ea76fd217ce9d8330466bd
+    role: target
+  - path: data/pathways/phenylacetate-degradation-i-aerobic.yaml
+    sha256: e99722d1ee920cf64aaeae7b00f1de9b59f939bd96a03a7ac5f2885933a72227
+    role: target
+  - path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    sha256: 7efcdbf561c66b1ef1d3601b9516375757a8572b544df0eadc619af169f5737b
+    role: target
+  - path: history/records/benzoyl-coa-degradation-ii-anaerobic/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    sha256: 6d434887a7846389184480dbf22644e1d8c1108daec4e3ccca32faeb758079ec
+    role: context
+  - path: history/records/benzoyl-coa-degradation-iii-anaerobic/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    sha256: aeace3de9eaaba553e65c514404fa9e1a0e0b83d544a19bcc8ba46aca60d4789
+    role: context
+  - path: history/records/biotin-biosynthesis-i/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    sha256: 0eca53eec93ea0336be914066574e8723fe76beffad5db25b62587838b12a7d2
+    role: context
+  - path: history/records/calvin-cycle/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    sha256: 3154622f63602935f1eec5fa580f32d79dbb908659c0e4ae9c0a000ab6033e64
+    role: context
+  - path: history/records/glutaryl-coa-degradation/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    sha256: e4825cfb2694ff4cac5703cc3aa96a7cd97bed8e0baadec51dc22d08234940bf
+    role: context
+  - path: history/records/molybdenum-cofactor-biosynthesis/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    sha256: 37e0146958186b8ef5cb9b10052da308552c34e038cdf248f65773863de32f62
+    role: context
+  - path: history/records/thiamine-diphosphate-biosynthesis-i/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    sha256: 19c9c737ee24b7fa53a89ee68c1c88e2102457d48ce3ca60c77c5456494cbfbf
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 33b1f765e1dd4eccb67c2389a9ea9e377791e9e6d78e143af98d5e720e42499c
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: e5c0407a97074bac6f47d754186ad0e99aa9a1523bce2f1624c4af5acd22a40c
+    role: context
+  - path: pages/records/MetaCyc_BIOTIN-BIOSYNTHESIS-PWY.html
+    sha256: 0627f76a11cfb54b00170d3794025ffa5cb22cb7f8cb50894753325eead769f3
+    role: context
+  - path: pages/records/MetaCyc_CALVIN-PWY.html
+    sha256: 6b3a28366617ebe8578e262afab81058428c51f8ad7fc67d88e4b05d962577a7
+    role: context
+  - path: pages/records/MetaCyc_CENTBENZCOA-PWY.html
+    sha256: 0d9b0f796c3b1b827217d87ec091c7265cfea10027fca99bbaa91414607738a7
+    role: context
+  - path: pages/records/MetaCyc_METH-ACETATE-PWY.html
+    sha256: f0b1a7de23e7137e8817fbb36fe3fb2d26a89310758fc554b979a5cc4c915cb1
+    role: context
+  - path: pages/records/MetaCyc_METHANOGENESIS-PWY.html
+    sha256: a42c32288a443185e02240e91016718da05b3033510cb00b72daa8c6a5ec037c
+    role: context
+  - path: pages/records/MetaCyc_P321-PWY.html
+    sha256: 09a6f3774508a80633627f6040758a8a2b6740ea28194ea5d878e895ffd1b75a
+    role: context
+  - path: pages/records/MetaCyc_PWY-5177.html
+    sha256: efd7b6f2d5957276422657f9a590c49146ad0a2052ce121e8ae83fd891390dda
+    role: context
+  - path: pages/records/MetaCyc_PWY-6823.html
+    sha256: c3dacdc32383ea6bbb27cfbca8f9a55e41519b115c79434a719a2ce8e6b10fc2
+    role: context
+  - path: pages/records/MetaCyc_PWY0-1477.html
+    sha256: eb3ed266dfbf8e85a122d94f16b79189db23eb99bdd746ad8199adfee0d591e4
+    role: context
+  - path: pages/records/MetaCyc_PWY0-321.html
+    sha256: c9fbd67a71916d1b093d95c52b2a68353eb9010c38659b0255630242dc13b9b9
+    role: context
+  - path: pages/records/MetaCyc_THISYN-PWY.html
+    sha256: 806fa78872871dfea6e05614e919c507e24e96bc3a893ceda82fb15471ab5dc8
+    role: context
+  - path: reviews/structured/20261105T030500Z-cycle11-stage4-frozen-corpus-cohort-review/review.yaml
+    sha256: 482db1eab512aa522fa17ec4e9ec9ed87d085a71717856fe32af565bf36d4b48
+    role: context
+  - path: reviews/structured/20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2/review.yaml
+    sha256: b6a7e63c23499db8d51132257739195a952955755301c97c3e6c167dd2d13cb7
+    role: context
+  - path: reviews/workflow/mech-goal-sequence-20261019/cycle-000011/stage-04/revision-0002/evidence.yaml
+    sha256: 20ef127fa86a0db4ee596a79048b06dfc0e8fbfde5f5667ec94b3e39ccdd7e90
+    role: context
+  - path: src/pathwaymech/identifiers.py
+    sha256: 86091e786eecdbffc0016470995465b35d1a435e3a0ca8310d30041851489261
+    role: context
+scope:
+  description: Complete post-remediation reassessment of the 11 maintained MetaCyc
+    pathway records in data/pathways/*.yaml that carried open findings (F-C11S4-001
+    and F-C11S4-002) in Cycle 11 Stage 4 reviews 20261105T030500Z-cycle11-stage4-frozen-corpus-cohort-review
+    and 20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2.
+  selection: All 11 maintained pathway records in CultureBotAI/PathwayMech carrying
+    open findings in reviews/structured/20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2/review.yaml
+    (100% of open Cycle 11 Stage 4 maintained-record findings).
+  coverage: full
+  population_size: 11
+  reviewed_target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  exclusions:
+  - target: Remaining 269 maintained pathway records in data/pathways/*.yaml
+    reason: Assessed with zero open findings in Cycle 11 Stage 4 review 20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2
+      and unchanged in Cycle 11 Stage 5.
+  - target: research/pathway_additions/*.yaml (6 withheld staging drafts)
+    reason: Non-maintained research staging drafts outside data/pathways/*.yaml; their
+      2 historical open findings (F01 in 20261010T090124Z-siroheme-pathway-addition-blocked-review
+      and F1 in 20261010T100956Z-ecoli-14dhna-octaprenyl-draft-review) remain untouched.
+targets:
+- target_id: MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  path: data/pathways/biotin-biosynthesis-i.yaml
+  label: biotin biosynthesis I (MetaCyc:BIOTIN-BIOSYNTHESIS-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 2bb360670be1cacab32bb01c5c225b8a3001e7884639382dfdeed47dac161239
+    description: 'Raw SHA-256 file digest of data/pathways/biotin-biosynthesis-i.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/biotin-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-6823
+  path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+  label: molybdenum cofactor biosynthesis (MetaCyc:PWY-6823)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 72b426dff2696543bbbe47648a42de9bf497bb6b19ea76fd217ce9d8330466bd
+    description: 'Raw SHA-256 file digest of data/pathways/molybdenum-cofactor-biosynthesis.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CALVIN-PWY
+  path: data/pathways/calvin-cycle.yaml
+  label: Calvin-Benson-Bassham cycle (MetaCyc:CALVIN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 322cf7dbc0e6c47bb71c016413e199a001dd1d569e2225af73bbc4111f7e7298
+    description: 'Raw SHA-256 file digest of data/pathways/calvin-cycle.yaml in Cycle
+      11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/calvin-cycle.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:THISYN-PWY
+  path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+  label: superpathway of thiamine diphosphate biosynthesis I (MetaCyc:THISYN-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 7efcdbf561c66b1ef1d3601b9516375757a8572b544df0eadc619af169f5737b
+    description: 'Raw SHA-256 file digest of data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-321
+  path: data/pathways/phenylacetate-degradation-i-aerobic.yaml
+  label: phenylacetate degradation I (aerobic) (MetaCyc:PWY0-321)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: e99722d1ee920cf64aaeae7b00f1de9b59f939bd96a03a7ac5f2885933a72227
+    description: 'Raw SHA-256 file digest of data/pathways/phenylacetate-degradation-i-aerobic.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylacetate-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:P321-PWY
+  path: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+  label: benzoyl-CoA degradation III (anaerobic) (MetaCyc:P321-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 4be0b63bed1fde74849478bf8d3b879fae288e787ce8a3554e900122541642c7
+    description: 'Raw SHA-256 file digest of data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:CENTBENZCOA-PWY
+  path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+  label: benzoyl-CoA degradation II (anaerobic) (MetaCyc:CENTBENZCOA-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: b903e3a9924a6c2e1cee62d12e3d854194b1f8e78a7664e353a7470f82c4af8e
+    description: 'Raw SHA-256 file digest of data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY0-1477
+  path: data/pathways/ethanolamine-utilization.yaml
+  label: ethanolamine utilization (MetaCyc:PWY0-1477)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: f1fd9402cab31bf3c62d53ef630abc52308c2c0e2d7b61d7ad6b9c0aaba8fb1e
+    description: 'Raw SHA-256 file digest of data/pathways/ethanolamine-utilization.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ethanolamine-utilization.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:METH-ACETATE-PWY
+  path: data/pathways/methanogenesis-from-acetate.yaml
+  label: methanogenesis from acetate (MetaCyc:METH-ACETATE-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 47d1c71951ce5806e5c9570ee00b2ab9f8634158251ee06821a0f77017b0eca3
+    description: 'Raw SHA-256 file digest of data/pathways/methanogenesis-from-acetate.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methanogenesis-from-acetate.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:METHANOGENESIS-PWY
+  path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+  label: methanogenesis from H2 and CO2 (MetaCyc:METHANOGENESIS-PWY)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 553922ede0ecdb12ebe569dbb9d8af1c70d4aa190e4fd60e69a9bc7ea0cf8e1e
+    description: 'Raw SHA-256 file digest of data/pathways/methanogenesis-from-h2-and-co2.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+    role: maintained pathway YAML
+- target_id: MetaCyc:PWY-5177
+  path: data/pathways/glutaryl-coa-degradation.yaml
+  label: glutaryl-CoA degradation (MetaCyc:PWY-5177)
+  record_class: PathwayRecord
+  kind: maintained
+  semantic_digest:
+    algorithm: sha256
+    sha256: 26dddc6fb787931723b24ac9eb781aa323c2c4ed23c107245281cf5c5e0a0cd8
+    description: 'Raw SHA-256 file digest of data/pathways/glutaryl-coa-degradation.yaml
+      in Cycle 11 Stage 5 (issue #791).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutaryl-coa-degradation.yaml
+    role: maintained pathway YAML
+checks:
+- check_id: validate
+  name: Repository QC and closed-schema validation (just validate)
+  status: passed
+  required: true
+  summary: Validated all 280 maintained pathway records (including the 11 reassessed
+    records) against the closed LinkML schema, local identifier/label authority snapshots,
+    1,036 history records, 22,954 evidence blocks, 33 source records, and pages/ synchrony.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  command: .venv/bin/pathwaymech-run-qc
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C11S5-QC
+  scope_note: 'Full-repository QC gate after applying issue #791 fixes and regenerating
+    pages/.'
+- check_id: test
+  name: Pytest unit and integration test suite (just test)
+  status: passed
+  required: true
+  summary: All pytest unit and integration tests passed across schema, KGX export,
+    SSSOM, and record-review checks.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  command: .venv/bin/pytest -q
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C11S5-PYTEST
+  scope_note: Full pytest test suite.
+- check_id: lint
+  name: Ruff lint check (just lint)
+  status: passed
+  required: true
+  summary: Ruff check passed with 0 errors.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  command: .venv/bin/ruff check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C11S5-RUFF
+  scope_note: Repository-wide Python lint check.
+- check_id: git-diff-check
+  name: Git whitespace and conflict marker check
+  status: passed
+  required: true
+  summary: git diff --check exited 0 with no whitespace or conflict marker issues.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C11S5-GIT-DIFF
+  scope_note: Worktree diff check across all Cycle 11 Stage 5 edits.
+- check_id: review-check
+  name: Structured review bundle contract check (just review-check)
+  status: passed
+  required: true
+  summary: All retained structured review bundles in reviews/structured/ passed schema
+    and append-only checks against main.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  command: .venv/bin/python scripts/record_review.py check --base main
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - EV-C11S5-REVIEW-CHECK
+  scope_note: Verifies append-only immutability of prior bundles and validity of current
+    bundle.
+evidence:
+- evidence_id: EV-C11S4-PREDECESSOR
+  kind: prior_review
+  reference: reviews/structured/20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2/review.yaml
+  locator: findings[0] (F-C11S4-001) and findings[1] (F-C11S4-002)
+  accessed_at: '2026-11-05T05:25:00Z'
+  support: supports
+  summary: 'Predecessor Cycle 11 Stage 4 cohort review recorded two minor open representation
+    findings across 11 maintained MetaCyc pathway records: F-C11S4-001 (raw-local-id-structured-metacyc-reference-titles-4-records
+    across MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:PWY-6823, MetaCyc:CALVIN-PWY,
+    and MetaCyc:THISYN-PWY) and F-C11S4-002 (raw-local-id-metacyc-reaction-labels-7-metacyc-records
+    across MetaCyc:PWY0-321, MetaCyc:P321-PWY, MetaCyc:CENTBENZCOA-PWY, MetaCyc:PWY0-1477,
+    MetaCyc:METH-ACETATE-PWY, MetaCyc:METHANOGENESIS-PWY, and MetaCyc:PWY-5177).'
+  snapshot_sha256: b6a7e63c23499db8d51132257739195a952955755301c97c3e6c167dd2d13cb7
+- evidence_id: EV-C11S4-WORKFLOW-EVIDENCE
+  kind: prior_review
+  reference: reviews/workflow/mech-goal-sequence-20261019/cycle-000011/stage-04/revision-0002/evidence.yaml
+  locator: findings[0..1] (F-C11S4-001, F-C11S4-002)
+  accessed_at: '2026-11-05T05:25:00Z'
+  support: supports
+  summary: Cycle 11 Stage 4 workflow evidence manifest carried forward F-C11S4-001
+    and F-C11S4-002 as open findings for Cycle 11 Stage 5 grouped remediation.
+  snapshot_sha256: 20ef127fa86a0db4ee596a79048b06dfc0e8fbfde5f5667ec94b3e39ccdd7e90
+- evidence_id: EV-C11S5-RAW-TITLES-FIXED-4
+  kind: record_content
+  reference: data/pathways/biotin-biosynthesis-i.yaml
+  locator: references[1..3,12..16,18,20,22,24,26,28,30,32..47] in biotin-biosynthesis-i.yaml,
+    references[18..25,27,29,30,32,34,36,38..43] in molybdenum-cofactor-biosynthesis.yaml,
+    references[2,6,12,15,21,26,28,31,34,36,38,43,46,90..92] in calvin-cycle.yaml,
+    and references[16,28..34,36..38,48] in thiamine-diphosphate-biosynthesis-i.yaml
+  accessed_at: '2026-11-05T05:36:00Z'
+  support: supports
+  summary: Across all 4 maintained MetaCyc pathway records in F-C11S4-001 (MetaCyc:BIOTIN-BIOSYNTHESIS-PWY,
+    MetaCyc:PWY-6823, MetaCyc:CALVIN-PWY, and MetaCyc:THISYN-PWY), replaced all 79
+    structured MetaCyc:* references[] entries (31 + 20 + 16 + 12) carrying raw unprefixed
+    database frame ID titles (title == local_id) with verified descriptive MetaCyc
+    reference titles (<descriptive name> (<reference_id>)) via pathwaymech.curation.publish_curation.
+  quote: "- id: MetaCyc:PWY-6519\n  title: 8-amino-7-oxononanoate biosynthesis I (MetaCyc:PWY-6519)\n\
+    \  url: https://pathway.yeastgenome.org/getxml?META:PWY-6519"
+  snapshot_sha256: 2bb360670be1cacab32bb01c5c225b8a3001e7884639382dfdeed47dac161239
+- evidence_id: EV-C11S5-REACTION-LABELS-FIXED-16
+  kind: record_content
+  reference: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+  locator: reactions[0..7].label in benzoyl-coa-degradation-iii-anaerobic.yaml, reactions[0..5,7].label
+    in benzoyl-coa-degradation-ii-anaerobic.yaml, and reactions[0].label in glutaryl-coa-degradation.yaml
+  accessed_at: '2026-11-05T05:37:00Z'
+  support: supports
+  summary: 'Across the 3 maintained MetaCyc pathway records in F-C11S4-002 with source_context-backed
+    MetaCyc reaction authorities (MetaCyc:P321-PWY: 8/8 reactions; MetaCyc:CENTBENZCOA-PWY:
+    7/7 MetaCyc reactions; MetaCyc:PWY-5177: 1/5 reaction MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN),
+    replaced all 16 source_context-eligible MetaCyc:* reactions[].label entries carrying
+    raw unprefixed database frame IDs with verified descriptive biochemical reaction
+    labels via pathwaymech.curation.publish_curation.'
+  quote: "- id: MetaCyc:1.3.99.15-RXN\n  label: benzoyl-CoA reductase reaction\n \
+    \ category: molecular_activity\n  direction: forward"
+  snapshot_sha256: 4be0b63bed1fde74849478bf8d3b879fae288e787ce8a3554e900122541642c7
+- evidence_id: EV-C11S5-NATIVE-ROLES-AUTHORITY-LOCK-33
+  kind: record_content
+  reference: src/pathwaymech/identifiers.py
+  locator: lines 783-806 (native_roles = PHENYLACETATE_NODE_ROLES | GLUTARYL_NODE_ROLES
+    | METHANOGENESIS_NODE_ROLES | ACETATE_METHANOGENESIS_NODE_ROLES | ETHANOLAMINE_NODE_ROLES)
+  accessed_at: '2026-11-05T05:37:00Z'
+  support: supports
+  summary: 'Verified that the remaining 33 MetaCyc:* reaction labels in F-C11S4-002
+    across phenylacetate-degradation-i-aerobic.yaml (11, PHENYLACETATE_NODE_ROLES),
+    ethanolamine-utilization.yaml (6, ETHANOLAMINE_NODE_ROLES), methanogenesis-from-acetate.yaml
+    (6, ACETATE_METHANOGENESIS_NODE_ROLES), methanogenesis-from-h2-and-co2.yaml (6,
+    METHANOGENESIS_NODE_ROLES), and glutaryl-coa-degradation.yaml (4: reactions[1..4],
+    GLUTARYL_NODE_ROLES) belong to complete native issuing-original profiles in src/pathwaymech/identifiers.py
+    lines 783-806, which explicitly lock unnamed <Reaction> XML frames to their frame-only
+    fallback authority labels while preserving descriptive step names in reactions[].description
+    and on paired <Enzymatic-Reaction> participant nodes.'
+  quote: '# Source-derived names and explicit frame-only fallbacks cannot
+
+    # be overridden by a namespace''s broad contextual-label rule.'
+  snapshot_sha256: 86091e786eecdbffc0016470995465b35d1a435e3a0ca8310d30041851489261
+- evidence_id: EV-C11S5-RENDERED-PAGES-AND-KGX
+  kind: record_content
+  reference: pages/downloads/nodes.tsv
+  locator: 14 distinct remediated MetaCyc:* reaction rows in pages/downloads/nodes.tsv
+    and 7 updated HTML pages in pages/records/
+  accessed_at: '2026-11-05T05:38:30Z'
+  support: supports
+  summary: After running .venv/bin/pathwaymech-render-pages, verified that pages/downloads/nodes.tsv
+    exports descriptive reaction labels for all 16 remediated source_context MetaCyc:*
+    reaction instances (14 distinct reaction CURIEs) and all 7 modified record HTML
+    pages are current.
+  quote: "MetaCyc:1.3.99.15-RXN\tbenzoyl-CoA reductase reaction\tbiolink:MolecularActivity\t\
+    infores:pathwaymech\tmolecular_activity\tforward"
+  snapshot_sha256: e5c0407a97074bac6f47d754186ad0e99aa9a1523bce2f1624c4af5acd22a40c
+- evidence_id: EV-C11S5-QC
+  kind: validation
+  reference: .venv/bin/pathwaymech-run-qc
+  locator: stdout summary (280 pathway records, 1036 history records, 22,954 evidence
+    blocks, 33 source records)
+  accessed_at: '2026-11-05T05:40:00Z'
+  support: supports
+  summary: 'Executed .venv/bin/pathwaymech-run-qc: validated 280 pathway records against
+    the closed LinkML schema, verified all identifiers and labels against local authority
+    snapshots, validated 1,036 history records (including 7 new Cycle 11 Stage 5 record
+    history entries referencing issue #791) and 22,954 evidence blocks, and confirmed
+    pages/ synchrony.'
+- evidence_id: EV-C11S5-PYTEST
+  kind: validation
+  reference: .venv/bin/pytest -q
+  locator: pytest suite execution across tests/
+  accessed_at: '2026-11-05T05:40:00Z'
+  support: supports
+  summary: Executed .venv/bin/pytest -q across the full test suite.
+- evidence_id: EV-C11S5-RUFF
+  kind: validation
+  reference: .venv/bin/ruff check --no-cache .
+  locator: ruff check output
+  accessed_at: '2026-11-05T05:40:00Z'
+  support: supports
+  summary: Executed .venv/bin/ruff check --no-cache . with exit code 0 (All checks
+    passed).
+- evidence_id: EV-C11S5-GIT-DIFF
+  kind: validation
+  reference: git diff --check
+  locator: git worktree on feat/cycle11-stage5-resolve-review-findings
+  accessed_at: '2026-11-05T05:40:00Z'
+  support: supports
+  summary: Executed git diff --check with exit code 0; no whitespace errors or conflict
+    markers.
+- evidence_id: EV-C11S5-REVIEW-CHECK
+  kind: validation
+  reference: .venv/bin/python scripts/record_review.py check --base main
+  locator: reviews/structured/
+  accessed_at: '2026-11-05T05:40:00Z'
+  support: supports
+  summary: Validated all retained structured review bundles in reviews/structured/
+    against schema/record_review.yaml and verified byte-for-byte append-only preservation
+    against main.
+assessments:
+- assessment_id: ASSESS-C11S5-RAW-FRAME-ID-HYGIENE-11
+  area: consistency
+  topic: Post-remediation elimination of raw unprefixed MetaCyc frame-ID reference
+    titles (0 / 546 reassessed references; 0 / 137 structured references across the
+    4 F-C11S4-001 records; 0 / 7,121 corpus-wide) and remediable source_context raw
+    MetaCyc frame-ID reaction labels (0 / 16 source_context reactions across P321-PWY,
+    CENTBENZCOA-PWY, and PWY-5177[0]; 0 / 1,604 non-native_roles reactions corpus-wide;
+    33 / 33 native_roles reactions verified as authority-locked frame-only fallbacks)
+  outcome: supported
+  summary: 'Replacing all 79 raw unprefixed MetaCyc frame-ID reference titles (title
+    == local_id) across MetaCyc:BIOTIN-BIOSYNTHESIS-PWY (31), MetaCyc:PWY-6823 (20),
+    MetaCyc:CALVIN-PWY (16), and MetaCyc:THISYN-PWY (12) brings raw frame-ID reference
+    titles to 0 / 137 structured references (0 / 225 total references) across those
+    4 records, 0 / 546 total references across all 11 reassessed records, and 0 /
+    7,121 total references across the entire 280-record corpus. Replacing all 16 source_context-eligible
+    MetaCyc frame-ID reaction labels across MetaCyc:P321-PWY (8), MetaCyc:CENTBENZCOA-PWY
+    (7), and MetaCyc:PWY-5177 (1: MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN) brings remediable
+    raw frame-ID reaction labels to 0 / 16 (and 0 / 1,604 non-native_roles reactions
+    corpus-wide), while the remaining 33 MetaCyc reactions across MetaCyc:PWY0-321
+    (11), MetaCyc:PWY0-1477 (6), MetaCyc:METH-ACETATE-PWY (6), MetaCyc:METHANOGENESIS-PWY
+    (6), and MetaCyc:PWY-5177 (4) are verified as authority-locked frame-only fallback
+    labels enforced by src/pathwaymech/identifiers.py lines 783-806.'
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - EV-C11S4-PREDECESSOR
+  - EV-C11S5-RAW-TITLES-FIXED-4
+  - EV-C11S5-REACTION-LABELS-FIXED-16
+  - EV-C11S5-NATIVE-ROLES-AUTHORITY-LOCK-33
+  - EV-C11S5-RENDERED-PAGES-AND-KGX
+  - EV-C11S5-QC
+  - EV-C11S5-PYTEST
+  metrics:
+  - name: raw_frame_id_reference_titles_across_reassessed_records
+    value: 0.0
+    unit: references
+    definition: Count of references[] entries carrying raw unprefixed database frame
+      IDs (title == local_id) across the 11 reassessed pathway records after updating
+      79 MetaCyc:* reference entries across MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:PWY-6823,
+      MetaCyc:CALVIN-PWY, and MetaCyc:THISYN-PWY (0 / 546 across the 11 reassessed
+      records; 0 / 137 structured references across those 4 records; 0 / 7,121 across
+      the 280-record corpus).
+    denominator: 546
+    minimum: 0.0
+    maximum: 546.0
+  - name: remediable_source_context_raw_reaction_labels_across_reassessed_records
+    value: 0.0
+    unit: reactions
+    definition: Count of source_context-eligible reactions[] entries carrying raw
+      unprefixed database frame IDs (label == local_id) across the 11 reassessed pathway
+      records after updating 16 MetaCyc:* reaction labels across MetaCyc:P321-PWY
+      (8), MetaCyc:CENTBENZCOA-PWY (7), and MetaCyc:PWY-5177 (1) (0 / 65 non-native_roles
+      reactions across the 11 reassessed records; 0 / 16 source_context MetaCyc reactions;
+      0 / 1,604 non-native_roles reactions across the 280-record corpus; 33 / 33 native_roles
+      reactions verified as authority-locked frame-only fallbacks).
+    denominator: 65
+    minimum: 0.0
+    maximum: 65.0
+  dimensions:
+  - name: rendered_page_and_kgx_verification
+    value: All 79 updated MetaCyc reference titles and 16 updated source_context MetaCyc
+      reaction labels rendered across the 7 updated pages/records/MetaCyc_*.html pages
+      and pages/downloads/nodes.tsv
+    definition: Verified post-remediation rendered HTML pages and KGX exports in pages/.
+    evidence_ids:
+    - EV-C11S5-RENDERED-PAGES-AND-KGX
+    - EV-C11S5-QC
+- assessment_id: ASSESS-C11S5-SCIENTIFIC-INTEGRITY-11
+  area: evidence
+  topic: Preservation of pathway identity, taxon grounding, participant connectivity,
+    reaction directionality, stoichiometry, and edge-level evidence across the 11
+    reassessed pathway records
+  outcome: supported
+  summary: Structural verification across all 11 reassessed pathway YAML files confirms
+    that all pathway IDs, taxon groundings, 7,892 connected participant entries (0
+    orphans), 1,637 reaction steps (737 RHEA:*), 14,782 non-reflexive mechanistic_edges,
+    1,076 source_mappings, and 22,954 structured evidence blocks remain 100% intact
+    and pass closed LinkML and authority snapshot checks.
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  evidence_ids:
+  - EV-C11S5-RAW-TITLES-FIXED-4
+  - EV-C11S5-REACTION-LABELS-FIXED-16
+  - EV-C11S5-NATIVE-ROLES-AUTHORITY-LOCK-33
+  - EV-C11S5-QC
+  - EV-C11S5-PYTEST
+  - EV-C11S5-GIT-DIFF
+findings:
+- finding_id: F-C11S4-001
+  issue_key: raw-local-id-structured-metacyc-reference-titles-4-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: All 79 structured MetaCyc:* references carrying raw unprefixed database frame
+    IDs (title == local_id) are replaced with descriptive MetaCyc reference titles
+    across MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:PWY-6823, MetaCyc:CALVIN-PWY,
+    and MetaCyc:THISYN-PWY
+  description: 'Across all 4 maintained MetaCyc pathway records in F-C11S4-001 (MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+    biotin-biosynthesis-i.yaml: 31; MetaCyc:PWY-6823 molybdenum-cofactor-biosynthesis.yaml:
+    20; MetaCyc:CALVIN-PWY calvin-cycle.yaml: 16; and MetaCyc:THISYN-PWY thiamine-diphosphate-biosynthesis-i.yaml:
+    12), replaced all 79 structured MetaCyc:* references[] entries carrying raw unprefixed
+    database frame IDs (title == local_id) with verified descriptive MetaCyc pathway,
+    reaction, monomer, complex, compound, and regulation reference titles (<descriptive
+    name> (<reference_id>)) via pathwaymech.curation.publish_curation, recorded 4
+    history/records/<slug>/2026-11-05T053500Z-antigravity-a1d1e5.yaml files, and regenerated
+    pages/ under root-cause group G-C11S5-001 (#791).'
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  field_paths:
+  - data/pathways/biotin-biosynthesis-i.yaml#references[1].title (MetaCyc:PWY-6519)
+    (PWY-6519 -> 8-amino-7-oxononanoate biosynthesis I (MetaCyc:PWY-6519))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[2].title (MetaCyc:PWY0-1507)
+    (PWY0-1507 -> biotin biosynthesis from 8-amino-7-oxononanoate I (MetaCyc:PWY0-1507))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[3].title (MetaCyc:RXN-11475)
+    (RXN-11475 -> malonyl-[acyl-carrier protein] O-methyltransferase reaction (MetaCyc:RXN-11475))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[12].title (MetaCyc:RXN-11483)
+    (RXN-11483 -> pimeloyl-[acyl-carrier protein] methyl ester esterase reaction (MetaCyc:RXN-11483))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[13].title (MetaCyc:RXN-11484)
+    (RXN-11484 -> 8-amino-7-oxononanoate synthase reaction (MetaCyc:RXN-11484))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[14].title (MetaCyc:DAPASYN-RXN)
+    (DAPASYN-RXN -> adenosylmethionine-8-amino-7-oxononanoate aminotransferase reaction
+    (MetaCyc:DAPASYN-RXN))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[15].title (MetaCyc:DETHIOBIOTIN-SYN-RXN)
+    (DETHIOBIOTIN-SYN-RXN -> dethiobiotin synthetase reaction (MetaCyc:DETHIOBIOTIN-SYN-RXN))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[16].title (MetaCyc:2.8.1.6-RXN)
+    (2.8.1.6-RXN -> biotin synthase reaction (MetaCyc:2.8.1.6-RXN))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[18].title (MetaCyc:7KAPSYN-MONOMER)
+    (7KAPSYN-MONOMER -> 8-amino-7-oxononanoate synthase monomer BioF (MetaCyc:7KAPSYN-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[20].title (MetaCyc:DAPASYN-MONOMER)
+    (DAPASYN-MONOMER -> adenosylmethionine-8-amino-7-oxononanoate aminotransferase
+    monomer BioA (MetaCyc:DAPASYN-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[22].title (MetaCyc:DETHIOBIOTIN-SYN-MONOMER)
+    (DETHIOBIOTIN-SYN-MONOMER -> dethiobiotin synthetase monomer BioD (MetaCyc:DETHIOBIOTIN-SYN-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[24].title (MetaCyc:BIOTIN-SYN-MONOMER)
+    (BIOTIN-SYN-MONOMER -> biotin synthase monomer BioB (MetaCyc:BIOTIN-SYN-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[26].title (MetaCyc:3-OXOACYL-ACP-REDUCT-MONOMER)
+    (3-OXOACYL-ACP-REDUCT-MONOMER -> 3-oxoacyl-[acyl-carrier-protein] reductase monomer
+    FabG (MetaCyc:3-OXOACYL-ACP-REDUCT-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[28].title (MetaCyc:FABZ-MONOMER)
+    (FABZ-MONOMER -> 3-hydroxy-acyl-[acyl-carrier-protein] dehydratase monomer FabZ
+    (MetaCyc:FABZ-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[30].title (MetaCyc:ENOYL-ACP-REDUCT-NADH-MONOMER)
+    (ENOYL-ACP-REDUCT-NADH-MONOMER -> enoyl-[acyl-carrier-protein] reductase [NADH]
+    monomer FabI (MetaCyc:ENOYL-ACP-REDUCT-NADH-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[32].title (MetaCyc:FABB-MONOMER)
+    (FABB-MONOMER -> beta-ketoacyl-[acyl-carrier-protein] synthase I monomer FabB
+    (MetaCyc:FABB-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[33].title (MetaCyc:EG10119-MONOMER)
+    (EG10119-MONOMER -> malonyl-[acyl-carrier protein] O-methyltransferase monomer
+    BioC (MetaCyc:EG10119-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[34].title (MetaCyc:EG10122-MONOMER)
+    (EG10122-MONOMER -> pimeloyl-[acyl-carrier protein] methyl ester esterase monomer
+    BioH (MetaCyc:EG10122-MONOMER))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[35].title (MetaCyc:ENZRXN-17863)
+    (ENZRXN-17863 -> malonyl-[acyl-carrier protein] O-methyltransferase enzymatic
+    reaction (MetaCyc:ENZRXN-17863))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[36].title (MetaCyc:ENZRXN-17867)
+    (ENZRXN-17867 -> 3-oxoacyl-[acyl-carrier-protein] reductase FabG glutaryl-step
+    enzymatic reaction (MetaCyc:ENZRXN-17867))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[37].title (MetaCyc:ENZRXN-17869)
+    (ENZRXN-17869 -> 3-hydroxy-acyl-[acyl-carrier-protein] dehydratase FabZ glutaryl-step
+    enzymatic reaction (MetaCyc:ENZRXN-17869))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[38].title (MetaCyc:ENZRXN-17871)
+    (ENZRXN-17871 -> enoyl-[acyl-carrier-protein] reductase FabI glutaryl-step enzymatic
+    reaction (MetaCyc:ENZRXN-17871))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[39].title (MetaCyc:ENZRXN-17873)
+    (ENZRXN-17873 -> beta-ketoacyl-[acyl-carrier-protein] synthase I FabB pimeloyl-condensation
+    enzymatic reaction (MetaCyc:ENZRXN-17873))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[40].title (MetaCyc:ENZRXN-17868)
+    (ENZRXN-17868 -> 3-oxoacyl-[acyl-carrier-protein] reductase FabG pimeloyl-step
+    enzymatic reaction (MetaCyc:ENZRXN-17868))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[41].title (MetaCyc:ENZRXN-17870)
+    (ENZRXN-17870 -> 3-hydroxy-acyl-[acyl-carrier-protein] dehydratase FabZ pimeloyl-step
+    enzymatic reaction (MetaCyc:ENZRXN-17870))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[42].title (MetaCyc:ENZRXN-17872)
+    (ENZRXN-17872 -> enoyl-[acyl-carrier-protein] reductase FabI pimeloyl-step enzymatic
+    reaction (MetaCyc:ENZRXN-17872))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[43].title (MetaCyc:ENZRXN-17864)
+    (ENZRXN-17864 -> pimeloyl-[acyl-carrier protein] methyl ester esterase BioH enzymatic
+    reaction (MetaCyc:ENZRXN-17864))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[44].title (MetaCyc:ENZRXN-17865)
+    (ENZRXN-17865 -> 8-amino-7-oxononanoate synthase BioF enzymatic reaction (MetaCyc:ENZRXN-17865))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[45].title (MetaCyc:DAPASYN-ENZRXN)
+    (DAPASYN-ENZRXN -> adenosylmethionine-8-amino-7-oxononanoate aminotransferase
+    BioA enzymatic reaction (MetaCyc:DAPASYN-ENZRXN))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[46].title (MetaCyc:DETHIOBIOTIN-SYN-ENZRXN)
+    (DETHIOBIOTIN-SYN-ENZRXN -> dethiobiotin synthetase BioD enzymatic reaction (MetaCyc:DETHIOBIOTIN-SYN-ENZRXN))
+  - data/pathways/biotin-biosynthesis-i.yaml#references[47].title (MetaCyc:BIOTIN-SYN-ENZRXN)
+    (BIOTIN-SYN-ENZRXN -> biotin synthase BioB enzymatic reaction (MetaCyc:BIOTIN-SYN-ENZRXN))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[18].title (MetaCyc:RXN-8340)
+    (RXN-8340 -> GTP 3',8-cyclase reaction (MetaCyc:RXN-8340))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[19].title (MetaCyc:RXN-17809)
+    (RXN-17809 -> cyclic pyranopterin monophosphate synthase reaction (MetaCyc:RXN-17809))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[20].title (MetaCyc:RXN0-308)
+    (RXN0-308 -> cysteine desulfurase reaction (MetaCyc:RXN0-308))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[21].title (MetaCyc:RXN-11361)
+    (RXN-11361 -> molybdopterin-synthase adenylyltransferase reaction (MetaCyc:RXN-11361))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[22].title (MetaCyc:RXN-12473)
+    (RXN-12473 -> [molybdopterin-synthase sulfur-carrier protein] sulfurtransferase
+    reaction (MetaCyc:RXN-12473))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[23].title (MetaCyc:RXN-8342)
+    (RXN-8342 -> molybdopterin synthase reaction (MetaCyc:RXN-8342))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[24].title (MetaCyc:RXN-8344)
+    (RXN-8344 -> molybdopterin adenylyltransferase reaction (MetaCyc:RXN-8344))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[25].title (MetaCyc:RXN-8348)
+    (RXN-8348 -> molybdopterin molybdotransferase reaction (MetaCyc:RXN-8348))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[27].title (MetaCyc:EG11666-MONOMER)
+    (EG11666-MONOMER -> cyclic pyranopterin monophosphate synthase monomer MoaC (MetaCyc:EG11666-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[29].title (MetaCyc:EG11597-MONOMER)
+    (EG11597-MONOMER -> molybdopterin synthase sulfur carrier subunit MoaD (MetaCyc:EG11597-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[30].title (MetaCyc:EG11598-MONOMER)
+    (EG11598-MONOMER -> molybdopterin synthase catalytic subunit MoaE (MetaCyc:EG11598-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[32].title (MetaCyc:EG10154-MONOMER)
+    (EG10154-MONOMER -> molybdopterin-synthase adenylyltransferase monomer MoeB (MetaCyc:EG10154-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[34].title (MetaCyc:EG11511-MONOMER)
+    (EG11511-MONOMER -> molybdopterin adenylyltransferase monomer Mog (MetaCyc:EG11511-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[36].title (MetaCyc:EG10153-MONOMER)
+    (EG10153-MONOMER -> molybdopterin molybdenumtransferase monomer MoeA (MetaCyc:EG10153-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[38].title (MetaCyc:G7325-MONOMER)
+    (G7325-MONOMER -> cysteine desulfurase monomer IscS (MetaCyc:G7325-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[39].title (MetaCyc:EG11595-MONOMER)
+    (EG11595-MONOMER -> GTP 3',8-cyclase monomer MoaA (MetaCyc:EG11595-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[40].title (MetaCyc:ENZRXN-19108)
+    (ENZRXN-19108 -> GTP 3',8-cyclase MoaA enzymatic reaction (MetaCyc:ENZRXN-19108))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[41].title (MetaCyc:G6952-MONOMER)
+    (G6952-MONOMER -> thiosulfate sulfurtransferase monomer YnjE (MetaCyc:G6952-MONOMER))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[42].title (MetaCyc:CPD-19179)
+    (CPD-19179 -> (8S)-3',8-cyclo-7,8-dihydroguanosine 5'-triphosphate compound frame
+    (MetaCyc:CPD-19179))
+  - data/pathways/molybdenum-cofactor-biosynthesis.yaml#references[43].title (MetaCyc:CPD-8123)
+    (CPD-8123 -> molybdenum cofactor compound frame (MetaCyc:CPD-8123))
+  - data/pathways/calvin-cycle.yaml#references[2].title (MetaCyc:RIB5PISOM-RXN) (RIB5PISOM-RXN
+    -> D-ribose 5-phosphate isomerase reaction (MetaCyc:RIB5PISOM-RXN))
+  - data/pathways/calvin-cycle.yaml#references[6].title (MetaCyc:PHOSPHORIBULOKINASE-RXN)
+    (PHOSPHORIBULOKINASE-RXN -> phosphoribulokinase reaction (MetaCyc:PHOSPHORIBULOKINASE-RXN))
+  - data/pathways/calvin-cycle.yaml#references[12].title (MetaCyc:RIBULP3EPIM-RXN)
+    (RIBULP3EPIM-RXN -> D-ribulose 5-phosphate 3-epimerase reaction (MetaCyc:RIBULP3EPIM-RXN))
+  - data/pathways/calvin-cycle.yaml#references[15].title (MetaCyc:SEDOHEPTULOSE-BISPHOSPHATASE-RXN)
+    (SEDOHEPTULOSE-BISPHOSPHATASE-RXN -> sedoheptulose-1,7-bisphosphatase reaction
+    (MetaCyc:SEDOHEPTULOSE-BISPHOSPHATASE-RXN))
+  - data/pathways/calvin-cycle.yaml#references[21].title (MetaCyc:2TRANSKETO-RXN)
+    (2TRANSKETO-RXN -> transketolase reaction (D-fructose 6-phosphate and D-glyceraldehyde
+    3-phosphate) (MetaCyc:2TRANSKETO-RXN))
+  - data/pathways/calvin-cycle.yaml#references[26].title (MetaCyc:1TRANSKETO-RXN)
+    (1TRANSKETO-RXN -> transketolase reaction (D-sedoheptulose 7-phosphate and D-glyceraldehyde
+    3-phosphate) (MetaCyc:1TRANSKETO-RXN))
+  - data/pathways/calvin-cycle.yaml#references[28].title (MetaCyc:F16BDEPHOS-RXN)
+    (F16BDEPHOS-RXN -> fructose-1,6-bisphosphatase reaction (MetaCyc:F16BDEPHOS-RXN))
+  - data/pathways/calvin-cycle.yaml#references[31].title (MetaCyc:SEDOBISALDOL-RXN)
+    (SEDOBISALDOL-RXN -> sedoheptulose-1,7-bisphosphate aldolase reaction (MetaCyc:SEDOBISALDOL-RXN))
+  - data/pathways/calvin-cycle.yaml#references[34].title (MetaCyc:F16ALDOLASE-RXN)
+    (F16ALDOLASE-RXN -> fructose-1,6-bisphosphate aldolase reaction (MetaCyc:F16ALDOLASE-RXN))
+  - data/pathways/calvin-cycle.yaml#references[36].title (MetaCyc:TRIOSEPISOMERIZATION-RXN)
+    (TRIOSEPISOMERIZATION-RXN -> triosephosphate isomerase reaction (MetaCyc:TRIOSEPISOMERIZATION-RXN))
+  - data/pathways/calvin-cycle.yaml#references[38].title (MetaCyc:1.2.1.13-RXN) (1.2.1.13-RXN
+    -> glyceraldehyde-3-phosphate dehydrogenase (NADP+) (phosphorylating) reaction
+    (MetaCyc:1.2.1.13-RXN))
+  - data/pathways/calvin-cycle.yaml#references[43].title (MetaCyc:PHOSGLYPHOS-RXN)
+    (PHOSGLYPHOS-RXN -> phosphoglycerate kinase reaction (MetaCyc:PHOSGLYPHOS-RXN))
+  - data/pathways/calvin-cycle.yaml#references[46].title (MetaCyc:RIBULOSE-BISPHOSPHATE-CARBOXYLASE-RXN)
+    (RIBULOSE-BISPHOSPHATE-CARBOXYLASE-RXN -> ribulose-bisphosphate carboxylase reaction
+    (MetaCyc:RIBULOSE-BISPHOSPHATE-CARBOXYLASE-RXN))
+  - data/pathways/calvin-cycle.yaml#references[90].title (MetaCyc:REG-8538) (REG-8538
+    -> AMP inhibition of CPLX-162 fructose-1,6-bisphosphatase activity (MetaCyc:REG-8538))
+  - data/pathways/calvin-cycle.yaml#references[91].title (MetaCyc:REG-8539) (REG-8539
+    -> AMP inhibition of CPLX-162 sedoheptulose-1,7-bisphosphatase activity (MetaCyc:REG-8539))
+  - data/pathways/calvin-cycle.yaml#references[92].title (MetaCyc:REG-10188) (REG-10188
+    -> Mg2+ allosteric activation of ribulose bisphosphate carboxylase/oxygenase CPLX-105
+    (MetaCyc:REG-10188))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[16].title (MetaCyc:CPLX0-743)
+    (CPLX0-743 -> 1-deoxy-D-xylulose-5-phosphate synthase complex (MetaCyc:CPLX0-743))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[28].title (MetaCyc:RXN0-308)
+    (RXN0-308 -> cysteine desulfurase reaction (MetaCyc:RXN0-308))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[29].title (MetaCyc:RXN-9789)
+    (RXN-9789 -> sulfur-carrier protein ThiS adenylyltransferase reaction (MetaCyc:RXN-9789))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[30].title (MetaCyc:DXS-RXN)
+    (DXS-RXN -> 1-deoxy-D-xylulose-5-phosphate synthase reaction (MetaCyc:DXS-RXN))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[31].title (MetaCyc:RXN-11319)
+    (RXN-11319 -> 2-iminoacetate synthase reaction (MetaCyc:RXN-11319))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[32].title (MetaCyc:THIAZOLSYN2-RXN)
+    (THIAZOLSYN2-RXN -> thiazole synthase reaction (MetaCyc:THIAZOLSYN2-RXN))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[33].title (MetaCyc:PYRIMSYN1-RXN)
+    (PYRIMSYN1-RXN -> phosphomethylpyrimidine synthase reaction (MetaCyc:PYRIMSYN1-RXN))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[34].title (MetaCyc:PYRIMSYN3-RXN)
+    (PYRIMSYN3-RXN -> phosphomethylpyrimidine kinase reaction (MetaCyc:PYRIMSYN3-RXN))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[36].title (MetaCyc:THI-P-KIN-RXN)
+    (THI-P-KIN-RXN -> thiamine-monophosphate kinase reaction (MetaCyc:THI-P-KIN-RXN))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[37].title (MetaCyc:RXN-14382)
+    (RXN-14382 -> L-cysteine desulfurase IscS to ThiI sulfur-transfer reaction (MetaCyc:RXN-14382))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[38].title (MetaCyc:RXN-9788)
+    (RXN-9788 -> ThiI persulfide to adenylated ThiS sulfur-transfer reaction (MetaCyc:RXN-9788))
+  - data/pathways/thiamine-diphosphate-biosynthesis-i.yaml#references[48].title (MetaCyc:HMP-P-KIN-CPLX)
+    (HMP-P-KIN-CPLX -> phosphomethylpyrimidine kinase complex ThiD (MetaCyc:HMP-P-KIN-CPLX))
+  evidence_ids:
+  - EV-C11S4-PREDECESSOR
+  - EV-C11S4-WORKFLOW-EVIDENCE
+  - EV-C11S5-RAW-TITLES-FIXED-4
+  - EV-C11S5-RENDERED-PAGES-AND-KGX
+  - EV-C11S5-QC
+  - EV-C11S5-PYTEST
+  rule_id: CURATION:no-raw-local-id-structured-reference-titles
+  native_severity: minor
+  normalization_reason: 'Native minor reference-title representation defect maps directly
+    to minor severity: replacing the 79 raw unprefixed MetaCyc frame-ID reference
+    titles across MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:PWY-6823, MetaCyc:CALVIN-PWY,
+    and MetaCyc:THISYN-PWY eliminates all remaining raw frame-ID reference titles
+    across those 4 records (0 / 137 structured references; 0 / 225 total references)
+    and across the entire 280-record corpus (0 / 7,121).'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/biotin-biosynthesis-i.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/calvin-cycle.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    role: maintained pathway YAML
+  disposition_reason: 'Resolved under GitHub issue #791 (group G-C11S5-001) by replacing
+    all 79 structured MetaCyc:* references[] entries carrying raw unprefixed database
+    frame IDs (title == local_id) with descriptive MetaCyc reference titles across
+    MetaCyc:BIOTIN-BIOSYNTHESIS-PWY, MetaCyc:PWY-6823, MetaCyc:CALVIN-PWY, and MetaCyc:THISYN-PWY
+    via pathwaymech.curation.publish_curation, recording 4 history/records/<slug>/2026-11-05T053500Z-antigravity-a1d1e5.yaml
+    provenance entries, and regenerating pages/.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261105T030500Z-cycle11-stage4-frozen-corpus-cohort-review
+    finding_id: F-C11S4-001
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2
+    finding_id: F-C11S4-001
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/791
+  tags:
+  - cycle11-stage5-resolve-review-findings
+  - raw-frame-id-reference-title
+  - reference-hygiene
+- finding_id: F-C11S4-002
+  issue_key: raw-local-id-metacyc-reaction-labels-7-metacyc-records
+  category: representation
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: All 16 source_context-eligible MetaCyc:* reaction labels carrying raw frame
+    IDs are replaced with descriptive reaction labels across 3 records, and the remaining
+    33 MetaCyc:* reaction labels across 5 records are verified as authority-locked
+    native_roles frame-only fallbacks
+  description: 'Across the 7 maintained MetaCyc pathway records in F-C11S4-002, remediated
+    all 16 source_context-eligible MetaCyc:* reactions[].label entries carrying raw
+    unprefixed database frame IDs (MetaCyc:P321-PWY benzoyl-coa-degradation-iii-anaerobic.yaml:
+    8/8; MetaCyc:CENTBENZCOA-PWY benzoyl-coa-degradation-ii-anaerobic.yaml: 7/7; and
+    MetaCyc:PWY-5177 glutaryl-coa-degradation.yaml: 1/5 MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN)
+    with verified descriptive biochemical reaction labels via pathwaymech.curation.publish_curation,
+    recorded 3 history/records/<slug>/2026-11-05T053500Z-antigravity-a1d1e5.yaml files,
+    and regenerated pages/ and pages/downloads/nodes.tsv under root-cause group G-C11S5-001
+    (#791). Verified that the remaining 33 MetaCyc:* reaction labels across phenylacetate-degradation-i-aerobic.yaml
+    (11, PHENYLACETATE_NODE_ROLES), ethanolamine-utilization.yaml (6, ETHANOLAMINE_NODE_ROLES),
+    methanogenesis-from-acetate.yaml (6, ACETATE_METHANOGENESIS_NODE_ROLES), methanogenesis-from-h2-and-co2.yaml
+    (6, METHANOGENESIS_NODE_ROLES), and glutaryl-coa-degradation.yaml (4: reactions[1..4],
+    GLUTARYL_NODE_ROLES) are authority-locked frame-only fallback labels enforced
+    by src/pathwaymech/identifiers.py lines 783-806 because their issuing MetaCyc
+    <Reaction> XML frames lack a direct <common-name> slot (while descriptive step
+    names are preserved in reactions[].description and on paired <Enzymatic-Reaction>
+    participant nodes).'
+  target_ids:
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  field_paths:
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[0].label (MetaCyc:RXN-10819)
+    (authority-locked frame fallback 'RXN-10819' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[1].label (MetaCyc:RXN0-2042)
+    (authority-locked frame fallback 'RXN0-2042' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[2].label (MetaCyc:RXN0-6510)
+    (authority-locked frame fallback 'RXN0-6510' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[3].label (MetaCyc:RXNMETA-12671)
+    (authority-locked frame fallback 'RXNMETA-12671' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[4].label (MetaCyc:RXNMETA-12672)
+    (authority-locked frame fallback 'RXNMETA-12672' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[5].label (MetaCyc:RXN0-6512)
+    (authority-locked frame fallback 'RXN0-6512' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[6].label (MetaCyc:RXN-2425)
+    (authority-locked frame fallback 'RXN-2425' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[7].label (MetaCyc:RXN0-2044)
+    (authority-locked frame fallback 'RXN0-2044' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[8].label (MetaCyc:RXN-3641)
+    (authority-locked frame fallback 'RXN-3641' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[9].label (MetaCyc:RXN-17752)
+    (authority-locked frame fallback 'RXN-17752' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/phenylacetate-degradation-i-aerobic.yaml#reactions[10].label (MetaCyc:RXN0-7103)
+    (authority-locked frame fallback 'RXN0-7103' via PHENYLACETATE_NODE_ROLES)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[0].label (MetaCyc:1.3.99.15-RXN)
+    (1.3.99.15-RXN -> benzoyl-CoA reductase reaction)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[1].label (MetaCyc:R265-RXN)
+    (R265-RXN -> cyclohex-1-ene-1-carbonyl-CoA dehydrogenase reaction)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[2].label (MetaCyc:R266-RXN)
+    (R266-RXN -> cyclohex-1-ene-1-carboxyl-CoA hydratase reaction)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[3].label (MetaCyc:R267-RXN)
+    (R267-RXN -> 2-hydroxycyclohexanecarboxyl-CoA dehydrogenase reaction)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[4].label (MetaCyc:R268-RXN)
+    (R268-RXN -> 2-ketocyclohexanecarboxyl-CoA hydrolase reaction)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[5].label (MetaCyc:1.3.1.62-RXN)
+    (1.3.1.62-RXN -> pimeloyl-CoA dehydrogenase reaction)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[6].label (MetaCyc:RXN-8031)
+    (RXN-8031 -> 6-carboxyhex-2-enoyl-CoA hydratase reaction)
+  - data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml#reactions[7].label (MetaCyc:1.1.1.259-RXN)
+    (1.1.1.259-RXN -> 3-hydroxypimeloyl-CoA dehydrogenase reaction)
+  - data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml#reactions[0].label (MetaCyc:1.3.99.15-RXN)
+    (1.3.99.15-RXN -> benzoyl-CoA reductase reaction)
+  - data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml#reactions[1].label (MetaCyc:4.2.1.100-RXN)
+    (4.2.1.100-RXN -> cyclohexa-1,5-diene-1-carbonyl-CoA hydratase reaction)
+  - data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml#reactions[2].label (MetaCyc:HADTHAUERA-RXN)
+    (HADTHAUERA-RXN -> 6-hydroxycyclohex-1-ene-1-carbonyl-CoA dehydrogenase reaction)
+  - data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml#reactions[3].label (MetaCyc:RXN-15012)
+    (RXN-15012 -> 6-oxocyclohex-1-ene-1-carbonyl-CoA hydratase reaction)
+  - data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml#reactions[4].label (MetaCyc:RXN-15013)
+    (RXN-15013 -> 2-hydroxy-6-oxocyclohexane-1-carbonyl-CoA hydrolase reaction)
+  - data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml#reactions[5].label (MetaCyc:1.1.1.259-RXN)
+    (1.1.1.259-RXN -> 3-hydroxypimeloyl-CoA dehydrogenase reaction)
+  - data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml#reactions[7].label (MetaCyc:OAHTHAUERA-RXN)
+    (OAHTHAUERA-RXN -> 6-oxocyclohex-1-ene-1-carbonyl-CoA hydrolase reaction)
+  - data/pathways/ethanolamine-utilization.yaml#reactions[0].label (MetaCyc:ACETALD-DEHYDROG-RXN)
+    (authority-locked frame fallback 'ACETALD-DEHYDROG-RXN' via ETHANOLAMINE_NODE_ROLES)
+  - data/pathways/ethanolamine-utilization.yaml#reactions[1].label (MetaCyc:ACETATEKIN-RXN)
+    (authority-locked frame fallback 'ACETATEKIN-RXN' via ETHANOLAMINE_NODE_ROLES)
+  - data/pathways/ethanolamine-utilization.yaml#reactions[2].label (MetaCyc:ALCOHOL-DEHYDROG-RXN)
+    (authority-locked frame fallback 'ALCOHOL-DEHYDROG-RXN' via ETHANOLAMINE_NODE_ROLES)
+  - data/pathways/ethanolamine-utilization.yaml#reactions[3].label (MetaCyc:ETHAMLY-RXN)
+    (authority-locked frame fallback 'ETHAMLY-RXN' via ETHANOLAMINE_NODE_ROLES)
+  - data/pathways/ethanolamine-utilization.yaml#reactions[4].label (MetaCyc:PHOSACETYLTRANS-RXN)
+    (authority-locked frame fallback 'PHOSACETYLTRANS-RXN' via ETHANOLAMINE_NODE_ROLES)
+  - data/pathways/ethanolamine-utilization.yaml#reactions[5].label (MetaCyc:RXN-19336)
+    (authority-locked frame fallback 'RXN-19336' via ETHANOLAMINE_NODE_ROLES)
+  - data/pathways/methanogenesis-from-acetate.yaml#reactions[0].label (MetaCyc:1.2.7.4-RXN)
+    (authority-locked frame fallback '1.2.7.4-RXN' via ACETATE_METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-acetate.yaml#reactions[1].label (MetaCyc:ACETATEKIN-RXN)
+    (authority-locked frame fallback 'ACETATEKIN-RXN' via ACETATE_METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-acetate.yaml#reactions[2].label (MetaCyc:ACETYLSYNCLTH-RXN)
+    (authority-locked frame fallback 'ACETYLSYNCLTH-RXN' via ACETATE_METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-acetate.yaml#reactions[3].label (MetaCyc:MTRMBARK-RXN)
+    (authority-locked frame fallback 'MTRMBARK-RXN' via ACETATE_METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-acetate.yaml#reactions[4].label (MetaCyc:PHOSACETYLTRANS-RXN)
+    (authority-locked frame fallback 'PHOSACETYLTRANS-RXN' via ACETATE_METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-acetate.yaml#reactions[5].label (MetaCyc:RXN-12908)
+    (authority-locked frame fallback 'RXN-12908' via ACETATE_METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-h2-and-co2.yaml#reactions[0].label (MetaCyc:2.1.1.86-RXN)
+    (authority-locked frame fallback '2.1.1.86-RXN' via METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-h2-and-co2.yaml#reactions[1].label (MetaCyc:2.3.1.101-RXN)
+    (authority-locked frame fallback '2.3.1.101-RXN' via METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-h2-and-co2.yaml#reactions[2].label (MetaCyc:3.5.4.27-RXN)
+    (authority-locked frame fallback '3.5.4.27-RXN' via METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-h2-and-co2.yaml#reactions[3].label (MetaCyc:FORMYLMETHANOFURAN-DEHYDROGENASE-RXN)
+    (authority-locked frame fallback 'FORMYLMETHANOFURAN-DEHYDROGENASE-RXN' via METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-h2-and-co2.yaml#reactions[4].label (MetaCyc:H2-METHYLENE-THMPT-DEHYDRO-RXN)
+    (authority-locked frame fallback 'H2-METHYLENE-THMPT-DEHYDRO-RXN' via METHANOGENESIS_NODE_ROLES)
+  - data/pathways/methanogenesis-from-h2-and-co2.yaml#reactions[5].label (MetaCyc:METHELENE-THMPT-OXI-RXN)
+    (authority-locked frame fallback 'METHELENE-THMPT-OXI-RXN' via METHANOGENESIS_NODE_ROLES)
+  - data/pathways/glutaryl-coa-degradation.yaml#reactions[0].label (MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN)
+    (ACETYL-COA-ACETYLTRANSFER-RXN -> acetyl-CoA C-acetyltransferase reaction)
+  - data/pathways/glutaryl-coa-degradation.yaml#reactions[1].label (MetaCyc:GLUTACONYL-COA-DECARBOXYLASE-RXN)
+    (authority-locked frame fallback 'GLUTACONYL-COA-DECARBOXYLASE-RXN' via GLUTARYL_NODE_ROLES)
+  - data/pathways/glutaryl-coa-degradation.yaml#reactions[2].label (MetaCyc:GLUTARYL-COA-DEHYDROG-RXN)
+    (authority-locked frame fallback 'GLUTARYL-COA-DEHYDROG-RXN' via GLUTARYL_NODE_ROLES)
+  - data/pathways/glutaryl-coa-degradation.yaml#reactions[3].label (MetaCyc:GLUTARYL-COA-DEHYDROGENASE-RXN)
+    (authority-locked frame fallback 'GLUTARYL-COA-DEHYDROGENASE-RXN' via GLUTARYL_NODE_ROLES)
+  - data/pathways/glutaryl-coa-degradation.yaml#reactions[4].label (MetaCyc:RXN-11662)
+    (authority-locked frame fallback 'RXN-11662' via GLUTARYL_NODE_ROLES)
+  evidence_ids:
+  - EV-C11S4-PREDECESSOR
+  - EV-C11S4-WORKFLOW-EVIDENCE
+  - EV-C11S5-REACTION-LABELS-FIXED-16
+  - EV-C11S5-NATIVE-ROLES-AUTHORITY-LOCK-33
+  - EV-C11S5-RENDERED-PAGES-AND-KGX
+  - EV-C11S5-QC
+  - EV-C11S5-PYTEST
+  rule_id: CURATION:no-raw-local-id-reaction-labels
+  native_severity: minor
+  normalization_reason: 'Native minor reaction-label representation finding maps directly
+    to minor severity: replacing all 16 source_context-eligible raw frame-ID reaction
+    labels across MetaCyc:P321-PWY, MetaCyc:CENTBENZCOA-PWY, and MetaCyc:PWY-5177[0]
+    eliminates all remediable raw frame-ID reaction labels in the 280-record corpus
+    (0 / 1,604 non-native_roles reactions), while the remaining 33 native_roles reactions
+    are verified as authority-enforced frame-only fallbacks in src/pathwaymech/identifiers.py.'
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/phenylacetate-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-iii-anaerobic.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/ethanolamine-utilization.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methanogenesis-from-acetate.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/methanogenesis-from-h2-and-co2.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/glutaryl-coa-degradation.yaml
+    role: maintained pathway YAML
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/identifiers.py
+    role: identifier authority validator enforcing native_roles frame-only fallbacks
+  disposition_reason: 'Resolved under GitHub issue #791 (group G-C11S5-001) by replacing
+    all 16 source_context-eligible MetaCyc:* reactions[].label entries carrying raw
+    unprefixed database frame IDs with descriptive biochemical reaction labels across
+    MetaCyc:P321-PWY (8), MetaCyc:CENTBENZCOA-PWY (7), and MetaCyc:PWY-5177 (1) via
+    pathwaymech.curation.publish_curation (with 3 history files and regenerated pages/),
+    and verifying that the remaining 33 MetaCyc:* reactions across PHENYLACETATE_NODE_ROLES
+    (11), ETHANOLAMINE_NODE_ROLES (6), ACETATE_METHANOGENESIS_NODE_ROLES (6), METHANOGENESIS_NODE_ROLES
+    (6), and GLUTARYL_NODE_ROLES (4) are authority-locked frame-only fallback labels
+    enforced by src/pathwaymech/identifiers.py lines 783-806.'
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261105T030500Z-cycle11-stage4-frozen-corpus-cohort-review
+    finding_id: F-C11S4-002
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2
+    finding_id: F-C11S4-002
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/791
+  tags:
+  - cycle11-stage5-resolve-review-findings
+  - reaction-label-hygiene
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - MetaCyc:BIOTIN-BIOSYNTHESIS-PWY
+  - MetaCyc:PWY-6823
+  - MetaCyc:CALVIN-PWY
+  - MetaCyc:THISYN-PWY
+  - MetaCyc:PWY0-321
+  - MetaCyc:P321-PWY
+  - MetaCyc:CENTBENZCOA-PWY
+  - MetaCyc:PWY0-1477
+  - MetaCyc:METH-ACETATE-PWY
+  - MetaCyc:METHANOGENESIS-PWY
+  - MetaCyc:PWY-5177
+  rationale: Retain all 11 reassessed MetaCyc pathway records as distinct, non-duplicate
+    source-scoped pathway definitions with 0 raw database frame-ID reference titles
+    (0 / 546 across reassessed records; 0 / 7,121 corpus-wide), 0 remediable source_context
+    raw frame-ID reaction labels (0 / 16 across P321-PWY, CENTBENZCOA-PWY, and PWY-5177[0];
+    0 / 1,604 non-native_roles reactions corpus-wide), and 33 authority-locked native_roles
+    reaction labels verified against src/pathwaymech/identifiers.py.
+  evidence_ids:
+  - EV-C11S5-RAW-TITLES-FIXED-4
+  - EV-C11S5-REACTION-LABELS-FIXED-16
+  - EV-C11S5-NATIVE-ROLES-AUTHORITY-LOCK-33
+  - EV-C11S5-QC
+limitations:
+- This Cycle 11 Stage 5 successor review is scoped to verifying the remediation of
+  Cycle 11 Stage 4 findings F-C11S4-001 and F-C11S4-002 across the 11 affected maintained
+  MetaCyc pathway records; the remaining 269 maintained records had zero findings
+  in Cycle 11 Stage 4 and were verified via repository-wide QC and pytest gates.
+notes:
+- CLAW aggregator CLI (kg_microbe_reviews) is not installed in the local culturebotai-claw
+  environment; finding lineage (predecessor review_ids 20261105T030500Z-cycle11-stage4-frozen-corpus-cohort-review
+  and 20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2, finding_ids
+  F-C11S4-001 and F-C11S4-002, exact issue_keys, 100% target_ids retention, and absence
+  of competing heads) was explicitly verified against reviews/structured/.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261105T040000Z-cycle11-stage4-frozen-corpus-cohort-review-rev2
+  relationship: resolves_findings_from
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261105T030500Z-cycle11-stage4-frozen-corpus-cohort-review
+  relationship: resolves_findings_from
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/791
+tags:
+- mech-goal-sequence-20261019
+- cycle-11
+- stage-5
+- resolve-review-findings
