@@ -28,6 +28,7 @@ from pathwaymech.pathbank_provenance import (
     rank_pathbank_archive_member_candidates,
     select_next_pathbank_archive_candidate,
     summarize_pathbank_archive_candidate_frontier,
+    summarize_registered_pathbank_archive_slices,
     verify_pathbank_archive_candidate_post_registration,
 )
 from scripts.build_source_identifier_snapshot import (
@@ -2270,3 +2271,238 @@ def test_verify_pathbank_archive_candidate_post_registration_rejects_invalid_or_
             require_corpus_slice_verified=require_corpus_slice_verified,  # type: ignore[arg-type]
             require_fully_verified=require_fully_verified,  # type: ignore[arg-type]
         )
+
+
+def test_summarize_registered_pathbank_archive_slices_partitions_corpus_and_auxiliary_slices(
+    tmp_path: Path,
+) -> None:
+    archive_path = tmp_path / "candidates.zip"
+    root_a = _member_root_for_accession("SMP9999991", uniprot_ids=("P0A9T0",))
+    root_b = _member_root_for_accession("SMP9999992", uniprot_ids=("P00877",))
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr(
+            "PW9999991.owl",
+            ET.tostring(root_a, encoding="utf-8", xml_declaration=True),
+        )
+        archive.writestr(
+            "PW9999992.owl",
+            ET.tostring(root_b, encoding="utf-8", xml_declaration=True),
+        )
+
+    entry_a = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999991.owl", "SMP9999991"
+    )
+    entry_b = build_pathbank_archive_manifest_entry(
+        archive_path, "PW9999992.owl", "SMP9999992"
+    )
+    manifest_path = tmp_path / "identifier_sources.json"
+    manifest_path.write_text(
+        json.dumps(
+            [
+                {"key": "chebi-obo", "kind": "obo", "path": "data/chebi.obo"},
+                entry_a,
+                entry_b,
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    inspected_a = inspect_pathbank_archive_member(
+        archive_path, "PW9999991.owl", "SMP9999991"
+    )
+    terms: dict[str, dict[str, object]] = {
+        term_id: {
+            "label": f"Label for {term_id}",
+            "synonyms": [],
+            "sources": [entry_a["key"]],
+        }
+        for term_id in inspected_a["native_term_ids"]
+    }
+    for prefix, curies in inspected_a["external_xrefs"].items():
+        for curie in curies:
+            terms[curie] = {
+                "label": f"{prefix} label",
+                "synonyms": [],
+                "sources": [f"{prefix.lower()}-source"],
+            }
+    snapshot_entry_a = {
+        "kind": entry_a["kind"],
+        "url": entry_a["url"],
+        "version": entry_a["version"],
+        "license": entry_a["license"],
+        "sha256": entry_a["sha256"],
+        "archive": copy.deepcopy(entry_a["archive"]),
+        "pathway_accessions": ["SMP9999991"],
+    }
+    snapshot_entry_b = {
+        "kind": entry_b["kind"],
+        "url": entry_b["url"],
+        "version": entry_b["version"],
+        "license": entry_b["license"],
+        "sha256": entry_b["sha256"],
+        "archive": copy.deepcopy(entry_b["archive"]),
+        "pathway_accessions": ["SMP9999992"],
+    }
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "sources": {
+                    entry_a["key"]: snapshot_entry_a,
+                    entry_b["key"]: snapshot_entry_b,
+                },
+                "terms": terms,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = summarize_registered_pathbank_archive_slices(
+        archive_path,
+        manifest_path,
+        snapshot_path,
+    )
+    assert summary["inspected_count"] == 2
+    assert summary["manifest_synchronized_keys"] == [entry_a["key"], entry_b["key"]]
+    assert summary["corpus_slice_verified_keys"] == [entry_a["key"]]
+    assert summary["auxiliary_or_pending_keys"] == [entry_b["key"]]
+    assert summary["fully_verified_keys"] == [entry_a["key"]]
+    assert summary["unverified_full_keys"] == [entry_b["key"]]
+    assert summary["all_manifest_synchronized"] is True
+    assert summary["all_corpus_slice_verified"] is False
+    assert summary["all_fully_verified"] is False
+
+    filtered = summarize_registered_pathbank_archive_slices(
+        archive_path,
+        manifest_path,
+        snapshot_path,
+        key_filter=[entry_a["key"]],
+        require_corpus_slice_verified=True,
+        require_fully_verified=True,
+    )
+    assert filtered["inspected_count"] == 1
+    assert filtered["corpus_slice_verified_keys"] == [entry_a["key"]]
+    assert filtered["auxiliary_or_pending_keys"] == []
+    assert filtered["all_corpus_slice_verified"] is True
+    assert filtered["all_fully_verified"] is True
+
+    repo_root = Path(__file__).resolve().parents[1]
+    real_archive = (
+        repo_root
+        / "reports"
+        / "local_source_ingestion"
+        / "2026-10-08-pathbank-dbcan"
+        / "pathbank"
+        / "pathbank_primary_biopax.zip"
+    )
+    if real_archive.is_file():
+        live_summary = summarize_registered_pathbank_archive_slices(
+            real_archive,
+            repo_root / "conf" / "identifier_sources.json",
+            repo_root / "data" / "identifier_authorities" / "sources.json",
+        )
+        assert live_summary["inspected_count"] == 16
+        assert live_summary["all_manifest_synchronized"] is True
+        assert (
+            "pathbank-primary-2019-PW002074-SMP0002086"
+            in live_summary["corpus_slice_verified_keys"]
+        )
+        assert len(live_summary["corpus_slice_verified_keys"]) == 12
+        assert len(live_summary["auxiliary_or_pending_keys"]) == 4
+
+        live_curated = summarize_registered_pathbank_archive_slices(
+            real_archive,
+            repo_root / "conf" / "identifier_sources.json",
+            repo_root / "data" / "identifier_authorities" / "sources.json",
+            key_filter=live_summary["corpus_slice_verified_keys"],
+            require_corpus_slice_verified=True,
+        )
+        assert live_curated["inspected_count"] == 12
+        assert live_curated["all_corpus_slice_verified"] is True
+
+
+@pytest.mark.parametrize(
+    ("problem", "match"),
+    [
+        ("invalid-require-corpus-bool", "require_corpus_slice_verified must be a bool"),
+        ("invalid-require-full-bool", "require_fully_verified must be a bool"),
+        ("invalid-key-filter-type", "key_filter must be a collection of non-empty string keys"),
+        ("blank-key-filter-item", "key_filter must be a collection of non-empty string keys"),
+        ("unknown-key-filter-key", "unknown key_filter keys: unknown-key"),
+        (
+            "require-corpus-slice-verified-when-auxiliary",
+            "has unverified corpus slices: pathbank-primary-2019-PW9999999-SMP9999999",
+        ),
+        (
+            "require-fully-verified-when-partial",
+            "has unverified full slices: pathbank-primary-2019-PW9999999-SMP9999999",
+        ),
+    ],
+)
+def test_summarize_registered_pathbank_archive_slices_rejects_invalid_inputs(
+    tmp_path: Path,
+    problem: str,
+    match: str,
+) -> None:
+    path, _ = archive_fixture(tmp_path)
+    entry = build_pathbank_archive_manifest_entry(path, "PW9999999.owl", "SMP9999999")
+    manifest_path = tmp_path / "identifier_sources.json"
+    manifest_path.write_text(json.dumps([entry]), encoding="utf-8")
+
+    snapshot_entry = {
+        "kind": entry["kind"],
+        "url": entry["url"],
+        "version": entry["version"],
+        "license": entry["license"],
+        "sha256": entry["sha256"],
+        "archive": copy.deepcopy(entry["archive"]),
+        "pathway_accessions": ["SMP9999999"],
+    }
+    terms: dict[str, dict[str, object]] = {}
+    if problem == "require-fully-verified-when-partial":
+        terms["PathBank:SMP9999999"] = {
+            "label": "Native pathway title",
+            "synonyms": [],
+            "sources": [entry["key"]],
+        }
+    snapshot_path = tmp_path / "sources.json"
+    snapshot_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "sources": {entry["key"]: snapshot_entry},
+                "terms": terms,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    key_filter: object = None
+    require_corpus_slice_verified: object = False
+    require_fully_verified: object = False
+    if problem == "invalid-require-corpus-bool":
+        require_corpus_slice_verified = "yes"
+    elif problem == "invalid-require-full-bool":
+        require_fully_verified = "yes"
+    elif problem == "invalid-key-filter-type":
+        key_filter = "not-a-collection"
+    elif problem == "blank-key-filter-item":
+        key_filter = [" "]
+    elif problem == "unknown-key-filter-key":
+        key_filter = ["unknown-key"]
+    elif problem == "require-corpus-slice-verified-when-auxiliary":
+        require_corpus_slice_verified = True
+    elif problem == "require-fully-verified-when-partial":
+        require_fully_verified = True
+
+    with pytest.raises(ValueError, match=match):
+        summarize_registered_pathbank_archive_slices(
+            path,
+            manifest_path,
+            snapshot_path,
+            key_filter=key_filter,  # type: ignore[arg-type]
+            require_corpus_slice_verified=require_corpus_slice_verified,  # type: ignore[arg-type]
+            require_fully_verified=require_fully_verified,  # type: ignore[arg-type]
+        )
+

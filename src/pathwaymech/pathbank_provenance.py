@@ -875,3 +875,135 @@ def verify_pathbank_archive_candidate_post_registration(
         "member_audit": member_audit,
         "sync_audit": sync_audit,
     }
+
+
+def summarize_registered_pathbank_archive_slices(
+    archive_path: Path,
+    manifest_path: Path,
+    authority_snapshot_path: Path,
+    *,
+    key_filter: set[str] | frozenset[str] | list[str] | tuple[str, ...] | None = None,
+    require_corpus_slice_verified: bool = False,
+    require_fully_verified: bool = False,
+) -> dict[str, Any]:
+    """Summarize post-registration verification across registered PathBank ZIP slices.
+
+    Audits ``manifest_path`` (``conf/identifier_sources.json``) and
+    ``authority_snapshot_path`` (``data/identifier_authorities/sources.json``) via
+    ``audit_pathbank_manifest_snapshot_sync``, runs
+    ``verify_pathbank_archive_candidate_post_registration`` for every registered
+    ``pathbank-biopax-zip`` manifest entry (or the subset matching ``key_filter``),
+    and partitions inspected keys into ``corpus_slice_verified_keys``,
+    ``auxiliary_or_pending_keys``, ``fully_verified_keys``, and
+    ``unverified_full_keys``.
+    """
+    if not isinstance(require_corpus_slice_verified, bool):
+        raise ValueError(
+            "PathBank registered slice summary require_corpus_slice_verified must be a bool"
+        )
+    if not isinstance(require_fully_verified, bool):
+        raise ValueError(
+            "PathBank registered slice summary require_fully_verified must be a bool"
+        )
+    selected_keys: set[str] | None = None
+    if key_filter is not None:
+        if not isinstance(key_filter, (set, frozenset, list, tuple)) or any(
+            not isinstance(item, str) or not item.strip() for item in key_filter
+        ):
+            raise ValueError(
+                "PathBank registered slice summary key_filter must be a collection of "
+                "non-empty string keys"
+            )
+        selected_keys = set(key_filter)
+
+    sync_audit = audit_pathbank_manifest_snapshot_sync(
+        manifest_path,
+        authority_snapshot_path,
+    )
+    manifest_entries = _load_validated_manifest_entries(manifest_path)
+    archive_entries = [
+        entry for entry in manifest_entries if entry.get("kind") == PATHBANK_ARCHIVE_KIND
+    ]
+    if selected_keys is not None:
+        known_keys = {entry["key"] for entry in archive_entries}
+        unknown_keys = sorted(selected_keys - known_keys)
+        if unknown_keys:
+            raise ValueError(
+                "PathBank registered slice summary unknown key_filter keys: "
+                f"{', '.join(unknown_keys)}"
+            )
+        archive_entries = [
+            entry for entry in archive_entries if entry["key"] in selected_keys
+        ]
+
+    slices = [
+        verify_pathbank_archive_candidate_post_registration(
+            archive_path,
+            entry["archive"]["member"],
+            entry["archive"]["root"],
+            manifest_path,
+            authority_snapshot_path,
+            key=entry["key"],
+            path=entry["path"],
+            version=entry["version"],
+            license=entry["license"],
+        )
+        for entry in archive_entries
+    ]
+    manifest_synchronized_keys = [
+        item["manifest_key"] for item in slices if item["manifest_synchronized"]
+    ]
+    corpus_slice_verified_keys = [
+        item["manifest_key"] for item in slices if item["corpus_slice_verified"]
+    ]
+    auxiliary_or_pending_keys = [
+        item["manifest_key"] for item in slices if not item["corpus_slice_verified"]
+    ]
+    fully_verified_keys = [
+        item["manifest_key"] for item in slices if item["fully_verified"]
+    ]
+    unverified_full_keys = [
+        item["manifest_key"] for item in slices if not item["fully_verified"]
+    ]
+    all_manifest_synchronized = bool(
+        sync_audit["in_sync"] and len(manifest_synchronized_keys) == len(slices)
+    )
+    all_corpus_slice_verified = bool(
+        all_manifest_synchronized and not auxiliary_or_pending_keys
+    )
+    all_fully_verified = bool(all_manifest_synchronized and not unverified_full_keys)
+
+    if require_corpus_slice_verified and not all_corpus_slice_verified:
+        failing = (
+            auxiliary_or_pending_keys
+            or sync_audit["pending_snapshot_keys"]
+            or sync_audit["orphan_snapshot_keys"]
+        )
+        raise ValueError(
+            "PathBank registered slice summary has unverified corpus slices: "
+            f"{', '.join(failing)}"
+        )
+    if require_fully_verified and not all_fully_verified:
+        failing = (
+            unverified_full_keys
+            or sync_audit["pending_snapshot_keys"]
+            or sync_audit["orphan_snapshot_keys"]
+        )
+        raise ValueError(
+            "PathBank registered slice summary has unverified full slices: "
+            f"{', '.join(failing)}"
+        )
+    return {
+        "inspected_count": len(slices),
+        "manifest_synchronized_keys": manifest_synchronized_keys,
+        "corpus_slice_verified_keys": corpus_slice_verified_keys,
+        "auxiliary_or_pending_keys": auxiliary_or_pending_keys,
+        "fully_verified_keys": fully_verified_keys,
+        "unverified_full_keys": unverified_full_keys,
+        "all_manifest_synchronized": all_manifest_synchronized,
+        "all_corpus_slice_verified": all_corpus_slice_verified,
+        "all_fully_verified": all_fully_verified,
+        "slices": slices,
+        "sync_audit": sync_audit,
+    }
+
