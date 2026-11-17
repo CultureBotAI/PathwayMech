@@ -428,3 +428,8 @@ Six additional specialist sources now have enabled `support` adapters in
 4. **Keep MetaCyc and KEGG as licensed local/bounded extractors**, Rhea as the
    reaction normalizer, and `vmh-agora2` deferred behind `bigg` and `modelseed`
    until strain-specific gut reconstruction membership is needed.
+
+## Bounded MIBiG refresh, 2026-11-16
+
+[Actinorhodin source check and cluster addition](2026-11-16-actinorhodin.md)
+retains the pinned 4.0 archive and records chemical-identity limits.
