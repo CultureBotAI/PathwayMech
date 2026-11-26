@@ -1,0 +1,110 @@
+id: MIBiG:BGC0000433
+label: surfactin biosynthetic gene cluster
+description: >-
+  Surfactin biosynthetic gene cluster of Bacillus velezensis FZB42, called
+  Bacillus amyloliquefaciens FZB42 in the original study. This bounded graph
+  preserves three annotated NRPS components and cluster-level genetic evidence;
+  it does not assert that each component independently synthesizes surfactin.
+  MIBiG reports active status, questionable quality and complete locus coverage.
+  The graph is partial. Module substrate assignments are structure-based
+  inferences and are not promoted to measured reaction steps. The native locus
+  coordinates 0..0 are unspecified and are omitted rather than treated as bounds.
+pathway_type: biosynthetic-gene-cluster
+taxa:
+  - id: NCBITaxon:326423
+    label: Bacillus velezensis FZB42
+participants:
+  - id: NCBIProtein:CAE02630.1
+    label: surfactin synthetase A
+    category: protein
+  - id: NCBIProtein:CAE02631.1
+    label: surfactin synthetase B
+    category: protein
+  - id: NCBIProtein:CAE02633.1
+    label: surfactin synthetase C
+    category: protein
+reactions: []
+mechanistic_edges:
+  - id: srfAA-component
+    subject: NCBIProtein:CAE02630.1
+    predicate: enables
+    object: MIBiG:BGC0000433
+    description: >-
+      Component participation; the srfA disruption experiment establishes
+      cluster involvement, not individual enzyme sufficiency or freedom from
+      polar effects on downstream genes.
+    evidence:
+      - reference_id: MIBiG:BGC0000433
+        source_assertion: MIBiG annotates CAE02630.1 (srfAA) as surfactin synthetase A with a scaffold-biosynthesis function and knockout evidence.
+        source_locator: genes.annotations[id='CAE02630.1'].product; functions[].function.name; functions[].evidence
+      - reference_id: NCBIProtein:CAE02630.1
+        source_assertion: GenBank identifies CAE02630.1 as srfAA from strain FZB42, encoded by AJ575642.1:8558..19312, with product surfactin synthetase A.
+        source_locator: GBSeq[GBSeq_accession-version='CAE02630.1']/GBSeq_feature-table; CDS gene and coded_by; Protein product
+      - reference_id: PMID:14762003
+        source_assertion: Cassette disruption of srfA in strain FZB42 abolished detectable surfactin while bacillomycin D peaks remained, supporting involvement of the srf cluster.
+        source_locator: Abstract and Figure 2F caption; CH1 (srfA::Emr)
+  - id: srfAB-component
+    subject: NCBIProtein:CAE02631.1
+    predicate: enables
+    object: MIBiG:BGC0000433
+    description: Source-annotated component role; no independent assay of this protein is asserted.
+    evidence:
+      - reference_id: MIBiG:BGC0000433
+        source_assertion: MIBiG annotates CAE02631.1 (srfAB) as surfactin synthetase B with a scaffold-biosynthesis role. Its function-evidence list is empty; modules 4-6 are assigned to this gene.
+        source_locator: genes.annotations[id='CAE02631.1']; biosynthesis.modules[name='4'|'5'|'6'].genes
+      - reference_id: NCBIProtein:CAE02631.1
+        source_assertion: GenBank identifies CAE02631.1 as srfAB from strain FZB42, encoded by AJ575642.1:19334..30094, with product surfactin synthetase B.
+        source_locator: GBSeq[GBSeq_accession-version='CAE02631.1']/GBSeq_feature-table; CDS gene and coded_by; Protein product
+  - id: srfAC-component
+    subject: NCBIProtein:CAE02633.1
+    predicate: enables
+    object: MIBiG:BGC0000433
+    description: Source-annotated component role; no independent assay of this protein is asserted.
+    evidence:
+      - reference_id: MIBiG:BGC0000433
+        source_assertion: MIBiG annotates CAE02633.1 (srfAC) as surfactin synthetase C with a scaffold-biosynthesis role. Its function-evidence list is empty; module 7 is assigned to this gene.
+        source_locator: genes.annotations[id='CAE02633.1']; biosynthesis.modules[name='7'].genes
+      - reference_id: NCBIProtein:CAE02633.1
+        source_assertion: GenBank identifies CAE02633.1 as srfAC from strain FZB42, encoded by AJ575642.1:30129..33965, with product surfactin synthetase C.
+        source_locator: GBSeq[GBSeq_accession-version='CAE02633.1']/GBSeq_feature-table; CDS gene and coded_by; Protein product
+gene_clusters:
+  - id: MIBiG:BGC0000433
+    label: surfactin biosynthetic gene cluster
+    products: [surfactin]
+    biosynthetic_classes: ['NRPS:Type I']
+    loci:
+      - accession: AJ575642.1
+    genes:
+      - {id: NCBIProtein:CAE02630.1, label: srfAA}
+      - {id: NCBIProtein:CAE02631.1, label: srfAB}
+      - {id: CAE02632.1, label: comS}
+      - {id: NCBIProtein:CAE02633.1, label: srfAC}
+      - {id: CAE02634.1, label: srfAD}
+      - {id: CAE02636.1, label: ycxc}
+      - {id: CAE02637.1, label: ycxD}
+      - {id: CAE02638.1, label: sfp}
+      - {id: CAE02639.1, label: yczE}
+references:
+  - id: MIBiG:BGC0000433
+    title: MIBiG surfactin cluster BGC0000433, entry version 5
+    url: https://dl.secondarymetabolites.org/mibig/mibig_json_4.0.tar.gz
+    source_version: MIBiG 4.0; member mibig_json_4.0/BGC0000433.json; entry version 5
+    source_sha256: 986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b
+  - id: PMID:14762003
+    title: Structural and functional characterization of gene clusters directing nonribosomal synthesis of bioactive cyclic lipopeptides in Bacillus amyloliquefaciens strain FZB42
+    url: https://pubmed.ncbi.nlm.nih.gov/14762003/
+  - id: NCBIProtein:CAE02630.1
+    title: GenBank surfactin synthetase A, FZB42
+    url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=CAE02630.1,CAE02631.1,CAE02633.1&rettype=gb&retmode=xml
+    source_version: CAE02630.1; CAE02631.1; CAE02633.1 (GBSet batch)
+    source_sha256: a242df8b52e4f1ba0b8890ab504c44dd3a607557528e7be54adda3aa0a00560d
+  - id: NCBIProtein:CAE02631.1
+    title: GenBank surfactin synthetase B, FZB42
+    url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=CAE02630.1,CAE02631.1,CAE02633.1&rettype=gb&retmode=xml
+    source_version: CAE02630.1; CAE02631.1; CAE02633.1 (GBSet batch)
+    source_sha256: a242df8b52e4f1ba0b8890ab504c44dd3a607557528e7be54adda3aa0a00560d
+  - id: NCBIProtein:CAE02633.1
+    title: GenBank surfactin synthetase C, FZB42
+    url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=CAE02630.1,CAE02631.1,CAE02633.1&rettype=gb&retmode=xml
+    source_version: CAE02630.1; CAE02631.1; CAE02633.1 (GBSet batch)
+    source_sha256: a242df8b52e4f1ba0b8890ab504c44dd3a607557528e7be54adda3aa0a00560d
