@@ -1,0 +1,76 @@
+{
+  "checked_at": "2026-11-27T09:07:21.385862+00:00",
+  "scope": "One named MIBiG/primary-paper lead, BGC0001090; not a full source-release scan.",
+  "candidate": {
+    "id": "MIBiG:BGC0001090",
+    "label": "bacillomycin D biosynthetic gene cluster",
+    "disposition": "added_native_draft",
+    "path": "data/pathways/bacillomycin-biosynthetic-gene-cluster.yaml",
+    "sha256": "a957a143477807845731886ad90c88f4a25e117509869ef6861a504d8513c908"
+  },
+  "absence_search": "Exact BGC0001090, bacillomycin, PMID 14762003 and ABS74179.1 searched across the fresh main worktree with rg --no-ignore --hidden; no matches before addition. Git objects, virtualenv and bytecode excluded. Open PR inventory checked separately; surfactin PR 810 is a different BGC.",
+  "sources": [
+    {
+      "file": "BGC0001090.json",
+      "url": "https://mibig.secondarymetabolites.org/repository/BGC0001090.5/annotations.json",
+      "checked_at": "2026-11-27T08:35:29.135420+00:00",
+      "exit": 0,
+      "bytes": 6826,
+      "sha256": "538fed15ff09b5d51fee5f714011a6774c55560edc5e535ffe5831f6eb736347",
+      "stderr": ""
+    },
+    {
+      "file": "bacillomycin-proteins.xml",
+      "url": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=ABS74179.1,ABS74180.1,ABS74181.1,ABS74182.1&rettype=gb&retmode=xml",
+      "checked_at": "2026-11-27T08:35:29.258811+00:00",
+      "exit": 0,
+      "bytes": 73042,
+      "sha256": "da610dff4b3091927e025c8c8c7feb9993c5d449feceaeaa1dd0f3918450da46",
+      "stderr": ""
+    },
+    {
+      "file": "primary-paper.json",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:14762003%20AND%20SRC:MED&format=json&resultType=core",
+      "checked_at": "2026-11-27T08:38:02.181859+00:00",
+      "exit": 0,
+      "bytes": 7410,
+      "sha256": "3b93457a39eed1b8d7052373179e8ca425c2fa6e0e41400db33ca1dd993347f3",
+      "stderr": ""
+    }
+  ],
+  "archive": {
+    "key": "mibig-4.0",
+    "kind": "mibig-tar",
+    "path": "mibig_json_4.0.tar.gz",
+    "url": "https://dl.secondarymetabolites.org/mibig/mibig_json_4.0.tar.gz",
+    "version": "4.0",
+    "license": "CC-BY-4.0",
+    "sha256": "986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b"
+  },
+  "source_coverage": {
+    "four_genes": "All four MIBiG core annotations represented as source-annotated enables edges, with independent exact GenBank protein and strain identities.",
+    "taxonomy": "NCBITaxon:326423 independently projected with native ontology builder; historical B. amyloliquefaciens name retained in prose.",
+    "gene_name_conflict": "MIBiG bmyD vs GenBank fabD retained for ABS74182.1; no nomenclature repair asserted.",
+    "coordinates": "MIBiG native bounds retained with CP000560.1. Current protein coded_by positions refer to CP000560.2; no cross-version coordinate equivalence asserted.",
+    "primary_experiment": "PMID:14762003 abstract inspected via Europe PMC. Cluster-level cassette mutagenesis evidence does not establish individual protein sufficiency or absence of polar effects.",
+    "modules": "Structure/sequence-inferred substrates and domain annotations not promoted to measured reaction steps.",
+    "quality": "MIBiG active/questionable/complete preserved; graph explicitly partial.",
+    "products": "Source product name retained. No unverified exact chemical CURIE or antifungal mechanism edge added."
+  },
+  "projection_checks": {
+    "new_export_edges": 4,
+    "record_page_components_and_limits_present": true
+  },
+  "saturation": "Not established outside this one-candidate frontier.",
+  "validation_receipts": [
+    "gate-0-uv-sync.json",
+    "gate-1-just-render-pages.json",
+    "gate-2-just-validate.json",
+    "gate-3-just-test.json",
+    "gate-4-just-lint.json",
+    "gate-5-just-vendored-check.json",
+    "gate-6-git-diff.json"
+  ],
+  "authority_audit": "additive-authority-audit.json",
+  "resume": "No goal resumed. Further independent BGC leads can be proposed for a later bounded pass."
+}
