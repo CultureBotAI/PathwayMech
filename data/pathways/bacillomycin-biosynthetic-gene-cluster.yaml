@@ -1,0 +1,131 @@
+id: MIBiG:BGC0001090
+label: bacillomycin D biosynthetic gene cluster
+description: >-
+  Bacillomycin D biosynthetic gene cluster of Bacillus velezensis FZB42,
+  called Bacillus amyloliquefaciens FZB42 in the original study. This partial
+  graph preserves four source-annotated biosynthetic components, not a complete
+  reaction sequence or independent enzyme sufficiency. MIBiG reports active
+  status, questionable quality and complete locus coverage. Its bmyD name for
+  ABS74182.1 differs from the current GenBank fabD annotation. MIBiG bounds
+  refer to CP000560.1; current protein coded_by annotations refer to CP000560.2
+  and are not used to remap those bounds. Module substrates are inferred from
+  structure and sequence and are not promoted to measured reactions.
+pathway_type: biosynthetic-gene-cluster
+taxa:
+  - id: NCBITaxon:326423
+    label: Bacillus velezensis FZB42
+participants:
+  - id: NCBIProtein:ABS74182.1
+    label: ACP S-malonyltransferase
+    category: protein
+  - id: NCBIProtein:ABS74181.1
+    label: non-ribosomal peptide synthetase
+    category: protein
+  - id: NCBIProtein:ABS74180.1
+    label: non-ribosomal peptide synthetase
+    category: protein
+  - id: NCBIProtein:ABS74179.1
+    label: non-ribosomal peptide synthetase
+    category: protein
+reactions: []
+mechanistic_edges:
+  - id: bmyD-component
+    subject: NCBIProtein:ABS74182.1
+    predicate: enables
+    object: MIBiG:BGC0001090
+    description: >-
+      MIBiG-annotated component role, not an independently demonstrated reaction.
+      MIBiG calls this protein bmyD; GenBank currently calls its gene fabD.
+      The differing gene names are retained without asserting a nomenclature correction.
+    evidence:
+      - reference_id: MIBiG:BGC0001090
+        source_assertion: MIBiG annotates ABS74182.1 as bmyD, malonyl-CoA transacylase, with a scaffold-biosynthesis function and an empty function-evidence list.
+        source_locator: genes.annotations[id='ABS74182.1']; functions[].function.name; functions[].evidence
+      - reference_id: NCBIProtein:ABS74182.1
+        source_assertion: GenBank identifies ABS74182.1 as ACP S-malonyltransferase from FZB42, gene fabD, encoded by complement(CP000560.2:1907227..1908429).
+        source_locator: GBSeq[GBSeq_accession-version='ABS74182.1']/GBSeq_feature-table; source strain; CDS gene and coded_by; Protein product
+  - id: bmyA-component
+    subject: NCBIProtein:ABS74181.1
+    predicate: enables
+    object: MIBiG:BGC0001090
+    description: >-
+      Component participation with source knockout evidence. The paper establishes
+      cluster involvement, not independent enzyme sufficiency or freedom from
+      polar effects on downstream genes.
+    evidence:
+      - reference_id: MIBiG:BGC0001090
+        source_assertion: MIBiG annotates ABS74181.1 as bmyA, bacillomycin D synthetase A, with a scaffold-biosynthesis function and knockout evidence.
+        source_locator: genes.annotations[id='ABS74181.1']; functions[].function.name; functions[].evidence
+      - reference_id: NCBIProtein:ABS74181.1
+        source_assertion: GenBank identifies ABS74181.1 as a non-ribosomal peptide synthetase from FZB42, encoded by complement(CP000560.2:1895259..1907207).
+        source_locator: GBSeq[GBSeq_accession-version='ABS74181.1']/GBSeq_feature-table; source strain; CDS coded_by; Protein product
+      - reference_id: PMID:14762003
+        source_assertion: The study attributes the bmy cluster to bacillomycin D biosynthesis and reports that cassette mutagenesis of the bmy, fen and srf clusters eliminated production of their corresponding peptides.
+        source_locator: Abstract; bmy cluster attribution and cassette-mutagenesis results
+  - id: bmyB-component
+    subject: NCBIProtein:ABS74180.1
+    predicate: enables
+    object: MIBiG:BGC0001090
+    description: Source-annotated component role; no independent assay of this protein is asserted.
+    evidence:
+      - reference_id: MIBiG:BGC0001090
+        source_assertion: MIBiG annotates ABS74180.1 as bmyB, bacillomycin D synthetase B, with a scaffold-biosynthesis function. Its function-evidence list is empty.
+        source_locator: genes.annotations[id='ABS74180.1']; functions[].function.name; functions[].evidence
+      - reference_id: NCBIProtein:ABS74180.1
+        source_assertion: GenBank identifies ABS74180.1 as a non-ribosomal peptide synthetase from FZB42, encoded by complement(CP000560.2:1879123..1895214).
+        source_locator: GBSeq[GBSeq_accession-version='ABS74180.1']/GBSeq_feature-table; source strain; CDS coded_by; Protein product
+  - id: bmyC-component
+    subject: NCBIProtein:ABS74179.1
+    predicate: enables
+    object: MIBiG:BGC0001090
+    description: Source-annotated component role; no independent assay of this protein is asserted.
+    evidence:
+      - reference_id: MIBiG:BGC0001090
+        source_assertion: MIBiG annotates ABS74179.1 as bmyC, bacillomycin D synthetase C, with a scaffold-biosynthesis function. Its function-evidence list is empty.
+        source_locator: genes.annotations[id='ABS74179.1']; functions[].function.name; functions[].evidence
+      - reference_id: NCBIProtein:ABS74179.1
+        source_assertion: GenBank identifies ABS74179.1 as a non-ribosomal peptide synthetase from FZB42, encoded by complement(CP000560.2:1871179..1879038).
+        source_locator: GBSeq[GBSeq_accession-version='ABS74179.1']/GBSeq_feature-table; source strain; CDS coded_by; Protein product
+gene_clusters:
+  - id: MIBiG:BGC0001090
+    label: bacillomycin D biosynthetic gene cluster
+    products: [bacillomycin D]
+    biosynthetic_classes: ['NRPS:Type I', 'PKS:Unknown']
+    loci:
+      - accession: CP000560.1
+        start: 1867976
+        end: 1912622
+    genes:
+      - {id: NCBIProtein:ABS74182.1, label: bmyD}
+      - {id: NCBIProtein:ABS74181.1, label: bmyA}
+      - {id: NCBIProtein:ABS74180.1, label: bmyB}
+      - {id: NCBIProtein:ABS74179.1, label: bmyC}
+references:
+  - id: MIBiG:BGC0001090
+    title: MIBiG bacillomycin D cluster BGC0001090, entry version 5
+    url: https://dl.secondarymetabolites.org/mibig/mibig_json_4.0.tar.gz
+    source_version: MIBiG 4.0; member mibig_json_4.0/BGC0001090.json; entry version 5
+    source_sha256: 986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b
+  - id: PMID:14762003
+    title: Structural and functional characterization of gene clusters directing nonribosomal synthesis of bioactive cyclic lipopeptides in Bacillus amyloliquefaciens strain FZB42
+    url: https://pubmed.ncbi.nlm.nih.gov/14762003/
+  - id: NCBIProtein:ABS74182.1
+    title: GenBank ABS74182.1, Bacillus velezensis FZB42
+    url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=ABS74179.1,ABS74180.1,ABS74181.1,ABS74182.1&rettype=gb&retmode=xml
+    source_version: ABS74179.1; ABS74180.1; ABS74181.1; ABS74182.1 (GBSet batch)
+    source_sha256: da610dff4b3091927e025c8c8c7feb9993c5d449feceaeaa1dd0f3918450da46
+  - id: NCBIProtein:ABS74181.1
+    title: GenBank ABS74181.1, Bacillus velezensis FZB42
+    url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=ABS74179.1,ABS74180.1,ABS74181.1,ABS74182.1&rettype=gb&retmode=xml
+    source_version: ABS74179.1; ABS74180.1; ABS74181.1; ABS74182.1 (GBSet batch)
+    source_sha256: da610dff4b3091927e025c8c8c7feb9993c5d449feceaeaa1dd0f3918450da46
+  - id: NCBIProtein:ABS74180.1
+    title: GenBank ABS74180.1, Bacillus velezensis FZB42
+    url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=ABS74179.1,ABS74180.1,ABS74181.1,ABS74182.1&rettype=gb&retmode=xml
+    source_version: ABS74179.1; ABS74180.1; ABS74181.1; ABS74182.1 (GBSet batch)
+    source_sha256: da610dff4b3091927e025c8c8c7feb9993c5d449feceaeaa1dd0f3918450da46
+  - id: NCBIProtein:ABS74179.1
+    title: GenBank ABS74179.1, Bacillus velezensis FZB42
+    url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=ABS74179.1,ABS74180.1,ABS74181.1,ABS74182.1&rettype=gb&retmode=xml
+    source_version: ABS74179.1; ABS74180.1; ABS74181.1; ABS74182.1 (GBSet batch)
+    source_sha256: da610dff4b3091927e025c8c8c7feb9993c5d449feceaeaa1dd0f3918450da46
